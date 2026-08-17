@@ -1,0 +1,74 @@
+**GASTRA — Requisitos e Regras de Negócio**
+
+*Módulo de Comandas (front-of-house) — documento de trabalho*
+
+TG — FATEC Araraquara | Autores: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
+
+Versão: 17/08/2026
+
+# 1. Escopo considerado neste documento
+
+Este documento trata exclusivamente do módulo de comandas e dos módulos analíticos diretamente conectados a ele (recomendação de pratos, alocação de garçons por programação linear e BI), restritos ao front-of-house (salão). A cozinha e os papéis de Chef, Cozinheiro e Commis de cozinha estão fora do foco atual, por decisão da dupla registrada em 17/08/2026.
+
+Os requisitos aqui descritos cobrem duas camadas de confiança distintas, herdadas do status do projeto:
+
+(a) Núcleo do módulo de comandas — expansão de escopo decidida entre a dupla em 13/08/2026, ainda pendente de validação formal com o orientador; e (b) extensão do cardápio digital para consulta do cliente (opção B), decidida em 17/08/2026, também pendente de validação e tratada como extensão opcional, não como bloco obrigatório do TG.
+
+*Nota: enquanto a validação formal não ocorrer, nenhuma seção do TG deve pressupor a aprovação destes itens como escopo fechado — ver conflito registrado no GASTRA_STATUS.md (seção 1).*
+
+# 2. Requisitos Funcionais (RF)
+
+Um Requisito Funcional descreve algo que o sistema deve fazer — uma função ou comportamento observável, associado a um ator que a aciona ou que dela se beneficia.
+
+| **ID** | **Descrição** | **Ator(es)** | **Justificativa / Origem** |
+| --- | --- | --- | --- |
+| RF01 | O sistema deve permitir que o Garçom abra uma comanda vinculada a uma mesa específica. | Garçom | *Base operacional do módulo de comandas (item 5, escopo).* |
+| RF02 | O sistema deve sugerir automaticamente a composição da mesa (Solo, Casal, Grupo pequeno, Família, Grupo grande), permitindo ao Garçom confirmar ou ajustar a sugestão. | Garçom | *Decisão de design de 13/08/2026 — modelo híbrido (regra + confirmação humana).* |
+| RF03 | O sistema deve permitir ao Garçom registrar os itens do pedido associados à comanda aberta. | Garçom | *Base operacional do módulo de comandas.* |
+| RF04 | O sistema deve permitir ao Garçom fechar a comanda, calculando o valor total com taxa de serviço. | Garçom | *Base operacional do módulo de comandas.* |
+| RF05 | O sistema deve permitir ao Cliente consultar, via QR code ou tablet na mesa, o cardápio digital com fotos, preço e flags dietéticas (vegano, vegetariano, sem glúten, sem lactose), sem função de registro de pedido — o pedido continua sendo feito verbalmente ao Garçom. | Cliente (condicional) | *PENDENTE DE VALIDAÇÃO com o orientador (item 6, escopo — opção B). 83% dos clientes pesquisados relataram dificuldade de identificar flags dietéticas no cardápio atual.* |
+| RF06 | O sistema deve calcular uma sugestão de alocação de garçons às mesas/praças com base no algoritmo de programação linear. | Sistema / Metre | *Escopo original, bloco de Programação Linear.* |
+| RF07 | O sistema deve permitir ao Metre visualizar e ajustar manualmente a alocação sugerida antes de confirmá-la. | Metre | *Mantém decisão humana final sobre a sugestão algorítmica.* |
+| RF08 | O sistema deve registrar o histórico de alocações de garçons para uso posterior em BI. | Sistema | *100% dos garçons pesquisados percebem diferença de faturamento entre praças; nota média 4,0/5 para **"**rotação baseada em dados seria mais justa**"**.* |
+| RF09 | O sistema deve sugerir combinações de pratos ao Garçom com base em clusterização e regras de associação. | Garçom | *Escopo original, bloco de Ciência de Dados.* |
+| RF10 | O sistema deve exibir ao Gerente relatórios agregados de faturamento por praça e por garçom. | Gerente | *Escopo original, bloco de BI.* |
+| RF11 | O sistema deve exibir indicadores de desempenho e ranking dos garçons (gamificação). | Gerente, Garçom (própria posição) | *100% dos garçons pesquisados (n=2) indicaram que um ranking os motivaria — achado preliminar, amostra pequena.* |
+| RF12 | O sistema deve permitir ao Cliente solicitar a exclusão do seu histórico de pedidos a qualquer momento. | Cliente | *Direito ao esquecimento (LGPD, Art. 6º). Metade dos clientes que aceitam uso do histórico para recomendação exige poder apagá-lo.* |
+
+# 3. Requisitos Não Funcionais (RNF)
+
+Um Requisito Não Funcional descreve uma qualidade ou restrição sobre como o sistema deve se comportar — desempenho, usabilidade, segurança, privacidade, disponibilidade — em vez de uma função específica.
+
+| **ID** | **Descrição** | **Categoria** | **Justificativa / Origem** |
+| --- | --- | --- | --- |
+| RNF01 | O sistema deve refletir um novo pedido registrado na comanda em, no máximo, X segundos (valor a definir). | Desempenho | *"**Demora para o pedido chegar**"** foi o maior incômodo relatado pelos clientes pesquisados (50%).* |
+| RNF02 | A interface de comanda do Garçom deve permitir abrir mesa e registrar um pedido em, no máximo, N toques/passos (valor a definir). | Usabilidade | *Meta testável para reduzir tempo de atendimento; conecta-se ao mesmo achado de demora.* |
+| RNF03 | Dados pessoais do cliente devem ser armazenados com minimização — apenas o necessário para a função — e acesso restrito por papel. | Privacidade / LGPD | *Princípio de minimização (LGPD, Art. 6º); ver matriz de acesso (seção 2 do status do projeto).* |
+| RNF04 | Cada papel (Gerente, Coordenador, Metre, Garçom) deve ter permissões de leitura/escrita distintas conforme a matriz de acesso definida. | Segurança | *Controle de acesso baseado em papel (RBAC), já modelado para o front-of-house.* |
+| RNF05 | O módulo de comanda deve estar operacional durante todo o horário de funcionamento do restaurante. | Disponibilidade | *É o módulo que alimenta os demais blocos analíticos — indisponibilidade compromete toda a operação.* |
+
+# 4. Regras de Negócio (RN)
+
+Uma Regra de Negócio é uma política ou restrição do domínio do restaurante que o sistema deve respeitar, independentemente de qual tela ou função a aciona — muitas vezes ela é compartilhada por vários requisitos funcionais.
+
+| **ID** | **Regra** | **Racional** |
+| --- | --- | --- |
+| RN01 | A composição da mesa é classificada como: Solo (1 lugar) / Casal (2 lugares) / Grupo pequeno (3–4, sem item infantil) / Família (3+, com item infantil) / Grupo grande (5+). | *Fechado em 13/08/2026 com base em sinais observáveis, não sensíveis.* |
+| RN02 | Uma comanda só pode ser fechada se todos os itens estiverem com status "entregue" ou com justificativa de cancelamento registrada. | *Garante integridade do fechamento de conta e rastreabilidade de cancelamentos.* |
+| RN03 | A alocação de garçons sugerida pelo algoritmo de programação linear deve considerar [critério a definir — ex.: nº de mesas, faturamento histórico da praça, tempo de espera]. | *EM ABERTO — função objetivo do PL ainda não definida entre a dupla nem validada com o orientador.* |
+| RN04 | Dados pessoais do cliente só podem ser acessados por Garçom ou Metre no contexto da mesa ativa; fora desse contexto, apenas em forma agregada/anonimizada (Gerente/BI). | *Aplica minimização e finalidade específica de tratamento (LGPD, Art. 6º).* |
+| RN05 | O sistema não deve capturar, inferir ou armazenar atributos sensíveis do cliente (gênero, classe social, condição de saúde) para fins de segmentação. | *Decisão de 13/08/2026 — risco de viés/discriminação; dado de saúde é sensível por definição legal (LGPD, Art. 5º, II).* |
+
+# 5. Pendências abertas relevantes para este documento
+
+• RN03 — função objetivo exata do algoritmo de programação linear ainda não foi definida (minimizar tempo de espera, equilibrar faturamento entre garçons ou maximizar gorjeta total são hipóteses em aberto).
+
+• RF05 — depende da validação do orientador quanto ao cardápio digital (item 6 do escopo).
+
+• RNF01 e RNF02 — valores numéricos (X segundos, N toques) ainda não definidos; ficam como metas a testar, não como números fechados.
+
+• Qualificador livre vs. lista fechada para o garçom na composição da mesa — impacta o bloco de análise de dados e não foi decidido.
+
+# 6. Próximo passo
+
+A partir deste documento, o próximo artefato a produzir é a Matriz de Rastreabilidade de Requisitos, conectando cada RF/RNF/RN à sua origem (questionário, entrevista, decisão de design) e, posteriormente, ao artefato que o implementa (caso de uso, entidade do MER/DER, tela).

@@ -1,0 +1,54 @@
+**GASTRA — Matriz de Rastreabilidade de Requisitos**
+
+*Módulo de Comandas e blocos analíticos conectados (front-of-house) — documento de trabalho*
+
+TG — FATEC Araraquara | Autores: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
+
+Versão: 17/08/2026 | Documento base: GASTRA — Requisitos e Regras de Negócio
+
+# 1. Propósito deste documento
+
+Esta matriz conecta cada Requisito Funcional (RF), Requisito Não Funcional (RNF) e Regra de Negócio (RN) — já descritos em detalhe no documento "GASTRA — Requisitos e Regras de Negócio" — à sua origem (o que motivou sua existência: um questionário, uma decisão de design, o projeto de pesquisa formal) e ao seu status de validação atual. O objetivo é permitir, a qualquer momento, responder duas perguntas: de onde veio este requisito, e ele já pode ser tratado como escopo fechado do TG?
+
+A coluna "Caso de Uso relacionado" antecipa o rótulo que cada requisito deve assumir no diagrama de casos de uso — ainda não desenhado formalmente. Requisitos não funcionais e regras de negócio, por natureza, normalmente não mapeiam para um caso de uso único; nesses casos, a coluna indica os casos de uso aos quais o requisito se aplica de forma transversal.
+
+# 2. Legenda — Status de validação
+
+• Validado (escopo original) — consta no projeto de pesquisa formal (Gastra.pdf); não depende de nova aprovação.
+
+• Pendente de validação — parte da expansão de escopo (módulo de comandas e/ou cardápio digital) discutida com a dupla, ainda não aprovada formalmente pelo Prof. Ferrucci.
+
+• Decisão interna (não depende de escopo) — decisão de design ou modelagem tomada pela dupla que não altera o escopo do TG perante o orientador (ex.: regras de LGPD, RBAC, classificação de mesa).
+
+• Em aberto — nem sequer decidido internamente pela dupla; requer definição antes de seguir para modelagem/implementação.
+
+# 3. Matriz de rastreabilidade
+
+| **ID** | **Tipo** | **Descrição resumida** | **Ator(es)** | **Caso de Uso relacionado** | **Origem / Fonte** | **Status de validação** |
+| --- | --- | --- | --- | --- | --- | --- |
+| **RF01** | RF | Garçom abre comanda vinculada a uma mesa. | Garçom | *Abrir Comanda* | *Decisão de escopo — expansão comandas (13/08/2026)* | **Pendente de validação** |
+| **RF02** | RF | Sistema sugere composição da mesa; Garçom confirma/ajusta. | Garçom | *Classificar Composição da Mesa* | *Decisão de design (13/08/2026)* | **Decisão interna (não depende de escopo)** |
+| **RF03** | RF | Garçom registra itens do pedido na comanda. | Garçom | *Registrar Pedido* | *Decisão de escopo — expansão comandas (13/08/2026)* | **Pendente de validação** |
+| **RF04** | RF | Garçom fecha comanda com cálculo de total + taxa. | Garçom | *Fechar Comanda* | *Decisão de escopo — expansão comandas (13/08/2026)* | **Pendente de validação** |
+| **RF05** | RF | Cliente consulta cardápio digital (fotos, preço, flags) via QR/tablet, sem pedido. | Cliente (condicional) | *Consultar Cardápio Digital* | *Questionário Cliente (Jotform, n=12) — 83% relatou dificuldade com flags; decisão da dupla (17/08/2026)* | **Pendente de validação** |
+| **RF06** | RF | Sistema calcula sugestão de alocação de garçons via PL. | Sistema / Metre | *Calcular Alocação de Garçons* | *Escopo original (Gastra.pdf)* | **Validado (escopo original)** |
+| **RF07** | RF | Metre visualiza e ajusta manualmente a alocação sugerida. | Metre | *Ajustar Alocação de Garçons* | *Escopo original (Gastra.pdf) + decisão de manter decisão humana final* | **Validado (escopo original)** |
+| **RF08** | RF | Sistema registra histórico de alocações para BI. | Sistema | *Registrar Histórico de Alocação* | *Questionário Garçom (Jotform, n=2) — 100% percebe diferença de faturamento entre praças* | **Validado (escopo original)** |
+| **RF09** | RF | Sistema sugere combinações de pratos ao Garçom. | Garçom | *Sugerir Recomendação de Pratos* | *Escopo original (Gastra.pdf)* | **Validado (escopo original)** |
+| **RF10** | RF | Gerente consulta relatórios agregados de faturamento. | Gerente | *Consultar Relatório de Faturamento* | *Escopo original (Gastra.pdf)* | **Validado (escopo original)** |
+| **RF11** | RF | Sistema exibe ranking/indicadores de desempenho dos garçons. | Gerente, Garçom | *Consultar Ranking de Garçons* | *Questionário Garçom (Jotform, n=2) — 100% indicou que ranking motivaria* | **Validado (escopo original)** |
+| **RF12** | RF | Cliente solicita exclusão do próprio histórico de pedidos. | Cliente | *Excluir Histórico de Pedidos* | *Questionário Cliente (Jotform, n=12) — direito ao esquecimento (LGPD, Art. 6º)* | **Validado (escopo original)** |
+| **RNF01** | RNF | Registro de pedido refletido em, no máx., X segundos. | — | *Registrar Pedido (transversal)* | *Questionário Cliente (Jotform, n=12) — demora foi maior incômodo (50%)* | **Pendente de validação** |
+| **RNF02** | RNF | Abrir mesa + registrar pedido em, no máx., N toques. | — | *Abrir Comanda / Registrar Pedido (transversal)* | *Questionário Cliente (Jotform, n=12) — mesmo achado de demora* | **Pendente de validação** |
+| **RNF03** | RNF | Dados pessoais armazenados com minimização e acesso restrito. | — | *Transversal (todos os casos com dado pessoal)* | *Decisão de design — LGPD (13/08/2026)* | **Decisão interna (não depende de escopo)** |
+| **RNF04** | RNF | Permissões de leitura/escrita distintas por papel (RBAC). | — | *Transversal (controle de acesso)* | *Modelagem de hierarquia/RBAC front-of-house (17/08/2026)* | **Decisão interna (não depende de escopo)** |
+| **RNF05** | RNF | Módulo de comanda disponível em todo horário de funcionamento. | — | *Abrir Comanda / Registrar Pedido / Fechar Comanda* | *Decisão de escopo — módulo de comandas como fundação (13/08/2026)* | **Pendente de validação** |
+| **RN01** | RN | Regras de classificação da composição da mesa (Solo/Casal/...). | — | *Classificar Composição da Mesa* | *Decisão de design (13/08/2026)* | **Decisão interna (não depende de escopo)** |
+| **RN02** | RN | Comanda só fecha com itens entregues ou cancelamento justificado. | — | *Fechar Comanda* | *Definição da dupla (regra derivada, sem fonte externa direta)* | **Decisão interna (não depende de escopo)** |
+| **RN03** | RN | Função objetivo do algoritmo de PL ainda não definida. | — | *Calcular Alocação de Garçons* | *Em aberto — não definida entre a dupla nem validada* | **Em aberto** |
+| **RN04** | RN | Dado pessoal do cliente só acessível por Garçom/Metre na mesa ativa. | — | *Transversal (todos os casos com dado pessoal)* | *Decisão de design — LGPD (13/08/2026)* | **Decisão interna (não depende de escopo)** |
+| **RN05** | RN | Proibição de captar atributos sensíveis do cliente para segmentação. | — | *Transversal (segmentação / recomendação)* | *Decisão de design — LGPD (13/08/2026)* | **Decisão interna (não depende de escopo)** |
+
+# 4. Observações
+
+Nenhum item com status "Pendente de validação" deve ser tratado como escopo fechado em texto do TG até a validação formal ocorrer (ver conflito de delimitação registrado no GASTRA_STATUS.md, seção 1). O item RN03 ("Em aberto") bloqueia a formalização completa do Bloco de Programação Linear e deve ser priorizado nas próximas conversas da dupla, independentemente da fila de validação com o orientador.

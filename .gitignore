@@ -1,0 +1,41 @@
+# === LGPD / dados sensíveis — NUNCA versionar ===
+data-science/data/raw/
+*.env
+.env
+.env.*
+!*.env.example
+
+# === Python (data-science) ===
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints/
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# === .NET (backend) ===
+bin/
+obj/
+*.user
+*.suo
+appsettings.Development.json
+appsettings.Local.json
+
+# === Node / Angular (frontend) ===
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log*
+
+# === IDEs / editores ===
+.vscode/
+.idea/
+*.rider.json
+.DS_Store
+Thumbs.db
+
+# === Logs e temporários ===
+*.log
+*.tmp

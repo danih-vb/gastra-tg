@@ -1,0 +1,38 @@
+MIT License
+
+Copyright (c) 2026 Daniel (Danih) e Pedro
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Nota sobre esta escolha (não é convenção obrigatória)
+
+A MIT foi escolhida aqui como **padrão sugerido** por ser permissiva, simples e comum em projetos
+acadêmicos abertos — não é uma exigência da ABNT nem da FATEC. É uma **decisão de projeto em
+aberto**, e vale confirmar dois pontos antes da banca:
+
+1. **Regras institucionais da FATEC/orientador sobre propriedade intelectual de TG.** Algumas
+   instituições preferem que o código do trabalho fique com direitos reservados até a defesa
+   (ou permanentemente), especialmente se houver intenção de publicação futura ou uso comercial do
+   GASTRA. Se for esse o caso, substituam esta licença por "Todos os direitos reservados" (sem
+   licença aberta) ou por uma licença mais restritiva (ex.: CC BY-NC-ND para a documentação).
+2. **Autoria dupla.** Como o TG é feito em dupla, os dois nomes devem constar no copyright — já
+   ajustado acima. Se o repositório for movido para uma conta/organização única, mantenham os dois
+   nomes na licença mesmo assim.
