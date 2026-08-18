@@ -70,7 +70,7 @@ gastra/
 - **Matriz de Rastreabilidade:** [`docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`](docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx)
 - **Projeto de pesquisa formal:** [`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf)
 - **Setup do GitHub (Projects, milestones, labels):** [`docs/GASTRA_GITHUB_SETUP.md`](docs/GASTRA_GITHUB_SETUP.md)
-- **Quadro de tarefas (GitHub Projects):** _adicionar link aqui após criar o board_
+- **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
 
 ## Como rodar localmente
 

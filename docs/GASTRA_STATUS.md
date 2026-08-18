@@ -2,7 +2,7 @@
 
 TG (Trabalho de Graduação) — FATEC Araraquara
 Alunos: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
-Última atualização: 17/08/2026 (revisão: hierarquia front-of-house, atores, cardápio digital opção B)
+Última atualização: 18/08/2026 (revisão: setup completo do GitHub — repositório, branches, board, workflows)
 
 > **Como manter este arquivo vivo:** ele fica versionado no repositório (`docs/GASTRA_STATUS.md` ou
 > na raiz). Toda vez que um item mudar de status, editem aqui e façam commit com uma mensagem clara
@@ -45,7 +45,8 @@ Stack definida: Python (análise de dados), Angular (frontend), ASP.NET Core (ba
 incluindo "sistemas de pedidos, cardápios digitais nem a substituição do atendimento humano" — os
 itens 5 e 6 acima colidem diretamente com essa delimitação original. Até validação formal, tratar
 ambos como **propostas de expansão**, não como escopo fechado, e evitar redigir seções do TG que
-pressuponham a aprovação.
+pressuponham a aprovação. Essa regra agora também está formalizada em `CONTRIBUTING.md` (seção 2),
+como controle de processo no próprio repositório.
 
 **⚪ Hierarquia/atores (modelagem interna, não depende de validação de escopo):**
 Front-of-house apenas, por decisão de 17/08/2026 — cozinha fica fora de foco por ora.
@@ -62,6 +63,11 @@ Gerente → Coordenador → Metre → Garçom. Commis de salão fica anotado com
 | Uso de atributos sensíveis (gênero, classe social, condição de saúde) na segmentação | **Excluídos deliberadamente.** Substituídos por sinais observáveis e não sensíveis (tamanho do grupo, horário, itens pedidos) e por informação que o cliente comunica voluntariamente (não por inferência visual do garçom) | 13/08/2026 |
 | Regras de inferência de estrutura da mesa | Solo (1 lugar) / Casal (2 lugares) / Grupo pequeno (3–4, sem item infantil) / Família (3+, com item infantil) / Grupo grande (5+) — qualificadores como "jovem"/"executivo" ficam a critério do garçom, não do algoritmo | 13/08/2026 |
 | Ferramenta de levantamento de requisitos | Jotform (conectado e configurado) | 13/08/2026 |
+| Modelo de branches | GitFlow simplificado (`main`, `dev`, `feature/*`) — sem `release/*` completo de livro, adaptado pra dupla | 18/08/2026 |
+| Visibilidade do repositório | Público. Motivo: branch protection real (bloqueio de push direto) só é aplicada em repositório privado a partir do plano GitHub Pro; sem restrição de confidencialidade sobre o código em si, decidiu-se tornar público em vez de depender de disciplina sem enforcement técnico. Dados de questionário/pessoais continuam fora do Git em qualquer cenário (ver seção 4 do `CONTRIBUTING.md`) | 18/08/2026 |
+| Mecanismo de proteção de branch | Rulesets (não branch protection clássica) — clássica ficou obsoleta na migração; `main` e `dev` protegidas, PR obrigatório + 1 aprovação | 18/08/2026 |
+| Convenção de sub-issues | Issues do checklist geral (seção 3 deste arquivo) funcionam como issue guarda-chuva; quebradas em sub-issues nativas do GitHub conforme o trabalho fica concreto — documentado em `CONTRIBUTING.md`, seção 4 | 18/08/2026 |
+| Licenciamento do repositório | MIT como padrão sugerido (não é exigência ABNT/FATEC) — nota de justificativa e ressalvas movida do `LICENSE` para `CONTRIBUTING.md` (seção 8), pra não interferir na detecção automática de licença do GitHub | 18/08/2026 |
 
 **Pendente de decisão:** ver checklist "A fazer" (seção 3) para itens em aberto — qualificador
 livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
@@ -83,11 +89,34 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
       do item 6 de escopo)
 - [x] Rascunho inicial de RF/RNF/RN para o módulo de comandas (núcleo — RF05 ainda precisa ser
       revisado pra refletir a decisão de cardápio digital opção B)
+- [x] Matriz de rastreabilidade de requisitos (RF/RNF/RN → origem → status de validação)
+- [x] **Setup do repositório GitHub**: repositório criado, Pedro como colaborador, estrutura de
+      pastas definida (`backend/`, `frontend/`, `data-science/`, `docs/`, `scripts/`, `.github/`)
+- [x] **main e dev protegidas** via Ruleset (PR obrigatório + 1 aprovação; migrado de branch
+      protection clássica, que não era aplicada em repositório privado no plano Free)
+- [x] Repositório tornado público (decisão registrada na seção 2)
+- [x] Labels criadas (`bloco:*`, `tipo:*`, `prioridade:*`)
+- [x] **Setup do GitHub Projects**: board "GASTRA - TG" criado com 5 colunas (Backlog, A Fazer,
+      Em Andamento, Em Revisão, Concluído)
+- [x] Workflows automáticos configurados: Item added to project → Backlog · Pull request linked to
+      issue → Em Revisão · Pull request merged → Concluído · Item closed → Concluído
+- [x] Workflow "Auto-add to project" corrigido (removido filtro indevido `label:bug`) e ativado —
+      issues novas entram no board sozinhas
+- [x] Campo Iteration (sprints de 2 semanas) configurado via view em Table
+- [x] Issues do checklist deste arquivo criadas (via `scripts/create_issues_from_checklist.sh`) e
+      adicionadas manualmente ao board (criadas antes do "Auto-add to project" estar corrigido)
+- [x] Link do Project adicionado ao `README.md`
+- [x] `CONTRIBUTING.md` criado e expandido: modelo de branches, convenção de commits, regra de
+      escopo pendente de validação, convenção de sub-issues, uso do quadro (Status manual vs.
+      automático), segurança/LGPD, estrutura de pastas, licenciamento
+- [x] `LICENSE` (MIT) definido, com nota de justificativa movida para `CONTRIBUTING.md`
 
 ### 🔄 Em andamento
 - [ ] Divulgação dos questionários para garçons e clientes / coleta de respostas
       (parcial em 17/08/2026: 2 respostas de garçom, 12 de cliente — amostra ainda pequena, análise
       abaixo é preliminar, não conclusiva)
+- [ ] PR de `feature/docs-licenca` → `dev` (LICENSE + CONTRIBUTING.md + este arquivo) — aguardando
+      revisão do Pedro
 
 ### ⏳ A fazer
 
@@ -111,6 +140,9 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 - [ ] Parágrafo de justificativa da expansão de escopo (introdução) — módulo de comandas
 - [ ] Parágrafo de justificativa da extensão opcional — cardápio digital (condicionado à validação)
 - [ ] Revisão ABNT do que já foi escrito até aqui
+- [ ] Acrescentar ao README, seção de Privacidade/LGPD, menção explícita de que o repositório é
+      público mas nenhum dado pessoal de cliente/garçom é versionado (reforço agora que o repo
+      deixou de ser privado)
 
 **Modelagem**
 - [ ] Bloco 4 — MER do módulo de comandas: entidades e relacionamentos em linguagem natural
@@ -139,38 +171,53 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 - [ ] Documentar limitações e suposições dos dados usados
 
 **Infraestrutura**
-- [ ] Setup do repositório GitHub (ver seção 4)
-- [ ] Setup do GitHub Projects (ver seção 4)
+- [ ] Milestones com datas reais preenchidas
+- [ ] Planejamento do primeiro sprint (atribuir Iteration + mover itens de Backlog para A Fazer)
 
 ---
 
-## 4. Setup do GitHub (roteiro)
+## 4. Setup do GitHub (roteiro) — ✅ concluído em 18/08/2026
 
 ### Repositório
-- Nome sugerido: `gastra` ou `gastra-tg`
-- Branch principal: `main` (protegida — sem push direto, só via PR)
-- Branch de desenvolvimento: `dev`
+- Nome: `gastra-tg`, **público** (ver decisão na seção 2)
+- Branch principal: `main` (protegida via Ruleset — PR obrigatório + 1 aprovação, sem push direto)
+- Branch de desenvolvimento: `dev` (protegida via Ruleset, mesmas regras)
 - Branches de feature: `feature/comandas`, `feature/cardapio-digital`, `feature/clusterizacao`,
-  `feature/programacao-linear`, `feature/lgpd`, um por bloco/módulo
-- Pasta `docs/` para guardar este arquivo, o MER/DER, e demais documentos de apoio do TG
+  `feature/programacao-linear`, `feature/lgpd`, `feature/mer-der`, `feature/docs-licenca`, uma por
+  bloco/módulo ou tarefa de documentação
+- Pasta `docs/` guarda este arquivo, o MER/DER, e demais documentos de apoio do TG
 
-### Labels sugeridas
+> **Nota técnica:** a proteção de branch inicialmente configurada como "branch protection rule"
+> clássica não era aplicada de fato (repositório privado no plano GitHub Free não aplica a regra,
+> só a exibe como configurada — aviso "Not enforced" na tela de Settings). Resolvido migrando para
+> **Rulesets** após tornar o repositório público (branch protection em repositório público é
+> gratuita em qualquer plano). Ver decisão completa na seção 2.
+
+### Labels
 `bloco:bi` · `bloco:clusterizacao` · `bloco:pl` · `bloco:lgpd` · `bloco:comandas` ·
 `tipo:documentacao` · `tipo:modelagem` · `tipo:codigo` · `prioridade:alta` · `prioridade:media` ·
-`prioridade:baixa`
+`prioridade:baixa` — todas criadas.
 
-### GitHub Projects — colunas do quadro
-1. **Backlog** — tudo que está na seção "A fazer" acima, sem prazo definido ainda
-2. **A Fazer (Sprint atual)** — o que vocês dois decidiram atacar agora
-3. **Em Andamento**
-4. **Em Revisão** — pronto, esperando o outro revisar (documentação principalmente, já que é tese
-   de dupla — cada um deveria revisar o que o outro escreve antes de considerar concluído)
-5. **Concluído**
+### GitHub Projects — board "GASTRA - TG"
+Link: https://github.com/users/danih-vb/projects/3
 
-### Como popular o Projects rapidamente
-Cada item da seção 3 (Checklist) deste arquivo vira uma Issue no GitHub, com a label do bloco
-correspondente, e entra automaticamente na coluna "Backlog" do Projects. Ao criar as issues, usem o
-texto exato dos itens daqui — assim este arquivo e o board não divergem com o tempo.
+Colunas (Status): **Backlog** → **A Fazer** → **Em Andamento** → **Em Revisão** → **Concluído**.
+
+Transições manuais vs. automáticas (detalhado em `CONTRIBUTING.md`, seção 5):
+- Backlog → A Fazer → Em Andamento: manual
+- Em Andamento → Em Revisão: automático (workflow "Pull request linked to issue")
+- Em Revisão → Concluído: automático (workflows "Pull request merged" e "Item closed")
+- Item novo → Backlog: automático (workflow "Item added to project", alimentado por "Auto-add to
+  project" sem filtro de label)
+
+Campo **Iteration** configurado (sprints de 2 semanas) — atribuição de sprint a cada item é manual,
+sem workflow automático para isso.
+
+### Issues do checklist
+Criadas via `scripts/create_issues_from_checklist.sh` a partir da seção 3 deste arquivo, com a
+label de bloco correspondente, e adicionadas ao board. Issues guarda-chuva (genéricas) devem ser
+quebradas em sub-issues nativas do GitHub conforme o trabalho fica concreto — ver `CONTRIBUTING.md`,
+seção 4.
 
 ---
 
@@ -235,3 +282,16 @@ mudou" já fica no `git log` deste arquivo.*
   mesmo aprovado, entra como extensão opcional do módulo de comandas, não como escopo principal do TG.
   Motivo: preservar o papel do garçom como quem tira o pedido, resolvendo ao mesmo tempo a dor
   empírica de 83% dos clientes com flags dietéticas pouco claras.
+- **18/08/2026** — Setup completo do GitHub: repositório criado, labels, board "GASTRA - TG" com 5
+  colunas e 4 workflows automáticos, campo Iteration, issues do checklist criadas e no board.
+- **18/08/2026** — Repositório tornado público. Motivo: branch protection real (bloqueio de push
+  direto na `main`/`dev`) não é aplicada em repositório privado no plano GitHub Free — só no Pro ou
+  superior. Sem restrição de confidencialidade sobre o código, optou-se por público em vez de
+  depender de disciplina sem enforcement técnico, ou de aguardar aprovação do GitHub Student Pack.
+- **18/08/2026** — Migração de branch protection clássica para Rulesets em `main` e `dev` (regra
+  antiga era exibida como configurada mas não era de fato aplicada; Rulesets, com o repositório
+  público, aplica a regra de verdade — PR obrigatório + 1 aprovação).
+- **18/08/2026** — `CONTRIBUTING.md` expandido: regra explícita proibindo tratar itens "Pendente de
+  validação" como escopo fechado em código/texto commitado; convenção de sub-issues nativas do
+  GitHub para quebrar issues guarda-chuva do checklist; tabela de transições manuais vs. automáticas
+  do quadro de tarefas; seção de licenciamento (nota que antes estava dentro do `LICENSE`).
