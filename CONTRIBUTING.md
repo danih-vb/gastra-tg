@@ -85,6 +85,10 @@ Exemplos reais para o GASTRA:
 
 ## 4. Pull Requests e revisão
 
+Antes de aprovar qualquer PR, siga o roteiro em [`docs/CHECKLIST_REVISAO_PR.md`](docs/CHECKLIST_REVISAO_PR.md)
+— ele cobre pontos que passam batido numa leitura rápida (escopo pendente de validação, dados
+sensíveis, consistência com RF/RNF/RN).
+
 - Todo PR usa o template em `.github/PULL_REQUEST_TEMPLATE.md` (preenchido automaticamente ao abrir).
 - Vincule o PR à Issue correspondente (`Closes #12`, por exemplo) — isso move o card automaticamente
   no GitHub Projects.
