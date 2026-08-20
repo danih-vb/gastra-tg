@@ -2,7 +2,7 @@
 
 TG (Trabalho de Graduação) — FATEC Araraquara
 Alunos: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
-Última atualização: 18/08/2026 (revisão: setup completo do GitHub — repositório, branches, board, workflows)
+Última atualização: 19/08/2026 (revisão: milestones com datas reais, Sprint 1 planejada, sub-issues criadas, entrevista Cocobambu agendada)
 
 > **Como manter este arquivo vivo:** ele fica versionado no repositório (`docs/GASTRA_STATUS.md` ou
 > na raiz). Toda vez que um item mudar de status, editem aqui e façam commit com uma mensagem clara
@@ -64,10 +64,14 @@ Gerente → Coordenador → Metre → Garçom. Commis de salão fica anotado com
 | Regras de inferência de estrutura da mesa | Solo (1 lugar) / Casal (2 lugares) / Grupo pequeno (3–4, sem item infantil) / Família (3+, com item infantil) / Grupo grande (5+) — qualificadores como "jovem"/"executivo" ficam a critério do garçom, não do algoritmo | 13/08/2026 |
 | Ferramenta de levantamento de requisitos | Jotform (conectado e configurado) | 13/08/2026 |
 | Modelo de branches | GitFlow simplificado (`main`, `dev`, `feature/*`) — sem `release/*` completo de livro, adaptado pra dupla | 18/08/2026 |
-| Visibilidade do repositório | Público. Motivo: branch protection real (bloqueio de push direto) só é aplicada em repositório privado a partir do plano GitHub Pro; sem restrição de confidencialidade sobre o código em si, decidiu-se tornar público em vez de depender de disciplina sem enforcement técnico. Dados de questionário/pessoais continuam fora do Git em qualquer cenário (ver seção 4 do `CONTRIBUTING.md`) | 18/08/2026 |
+| Visibilidade do repositório | Público. Motivo: branch protection real (bloqueio de push direto) só é aplicada em repositório privado a partir do plano GitHub Pro; sem restrição de confidencialidade sobre o código em si, decidiu-se tornar público em vez de depender de disciplina sem enforcement técnico. Dados de questionário/pessoais continuam fora do Git em qualquer cenário (ver seção 6 do `CONTRIBUTING.md`) | 18/08/2026 |
 | Mecanismo de proteção de branch | Rulesets (não branch protection clássica) — clássica ficou obsoleta na migração; `main` e `dev` protegidas, PR obrigatório + 1 aprovação | 18/08/2026 |
 | Convenção de sub-issues | Issues do checklist geral (seção 3 deste arquivo) funcionam como issue guarda-chuva; quebradas em sub-issues nativas do GitHub conforme o trabalho fica concreto — documentado em `CONTRIBUTING.md`, seção 4 | 18/08/2026 |
 | Licenciamento do repositório | MIT como padrão sugerido (não é exigência ABNT/FATEC) — nota de justificativa e ressalvas movida do `LICENSE` para `CONTRIBUTING.md` (seção 8), pra não interferir na detecção automática de licença do GitHub | 18/08/2026 |
+| Branch padrão do repositório | Alterada de `main` para `dev` — reduz risco de abrir PR sem querer direcionado à `main`, já que a maioria dos PRs do dia a dia vai para `dev` | 19/08/2026 |
+| Duração das Iterations (sprints) | Ajustada de 2 semanas (configuração inicial) para 1 semana — ritmo mais rápido faz sentido na fase de documentação atual; pode ser revisitada quando entrar a fase de implementação de código | 19/08/2026 |
+| Auto-delete de branches após merge | Ativado (Settings > General > Pull Requests). Branches protegidas (`main`, `dev`) são poupadas pela regra "Restrict deletions" do Ruleset — ver nota de cautela na seção 4 | 19/08/2026 |
+| Processo de release | Usa **tags Git** (não branches vivas) para marcar checkpoints — `release/*` é descartável após a tag criada; se apagada antes do merge para `dev`, usar PR `main → dev` em vez de tentar restaurar a branch | 19/08/2026 |
 
 **Pendente de decisão:** ver checklist "A fazer" (seção 3) para itens em aberto — qualificador
 livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
@@ -90,33 +94,48 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 - [x] Rascunho inicial de RF/RNF/RN para o módulo de comandas (núcleo — RF05 ainda precisa ser
       revisado pra refletir a decisão de cardápio digital opção B)
 - [x] Matriz de rastreabilidade de requisitos (RF/RNF/RN → origem → status de validação)
+- [x] **Roteiro de entrevista com garçom do Cocobambu** — salvo em
+      `docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx`. Entrevista agendada
+      para 20/08/2026.
 - [x] **Setup do repositório GitHub**: repositório criado, Pedro como colaborador, estrutura de
       pastas definida (`backend/`, `frontend/`, `data-science/`, `docs/`, `scripts/`, `.github/`)
 - [x] **main e dev protegidas** via Ruleset (PR obrigatório + 1 aprovação; migrado de branch
       protection clássica, que não era aplicada em repositório privado no plano Free)
 - [x] Repositório tornado público (decisão registrada na seção 2)
-- [x] Labels criadas (`bloco:*`, `tipo:*`, `prioridade:*`)
+- [x] Labels criadas (`bloco:*`, `tipo:*`, `prioridade:*`), incluindo `tipo:infraestrutura` (nova)
 - [x] **Setup do GitHub Projects**: board "GASTRA - TG" criado com 5 colunas (Backlog, A Fazer,
       Em Andamento, Em Revisão, Concluído)
 - [x] Workflows automáticos configurados: Item added to project → Backlog · Pull request linked to
       issue → Em Revisão · Pull request merged → Concluído · Item closed → Concluído
 - [x] Workflow "Auto-add to project" corrigido (removido filtro indevido `label:bug`) e ativado —
       issues novas entram no board sozinhas
-- [x] Campo Iteration (sprints de 2 semanas) configurado via view em Table
+- [x] Campo Iteration configurado via view em Table (duração ajustada para 1 semana — ver seção 2)
 - [x] Issues do checklist deste arquivo criadas (via `scripts/create_issues_from_checklist.sh`) e
-      adicionadas manualmente ao board (criadas antes do "Auto-add to project" estar corrigido)
+      adicionadas ao board (#1 a #15)
 - [x] Link do Project adicionado ao `README.md`
 - [x] `CONTRIBUTING.md` criado e expandido: modelo de branches, convenção de commits, regra de
       escopo pendente de validação, convenção de sub-issues, uso do quadro (Status manual vs.
       automático), segurança/LGPD, estrutura de pastas, licenciamento
 - [x] `LICENSE` (MIT) definido, com nota de justificativa movida para `CONTRIBUTING.md`
+- [x] `docs/CHECKLIST_REVISAO_PR.md` criado (roteiro para quem revisa um PR) e referenciado no
+      `CONTRIBUTING.md`, seção 4
+- [x] **PR `feature/docs-licenca` → `dev` mergeado** (LICENSE, CONTRIBUTING.md, GASTRA_STATUS.md,
+      CHECKLIST_REVISAO_PR.md)
+- [x] **Milestones criados** (M1 a M10) com datas reais preenchidas — datas originais reajustadas
+      em 19/08/2026 por serem otimistas demais (ver seção 5)
+- [x] `gh` CLI atualizado para versão ≥ 2.94.0 (suporte nativo a `--parent` para sub-issues)
+- [x] `scripts/create_sprint_issues.sh` criado e executado: sub-issues adicionadas em #1, #2, #5,
+      #10, #11, #12; novas issues-pai criadas ("Confirmar notação de diagramas", "Diagrama de Casos
+      de Uso", "Diagrama de Classes")
+- [x] **Planejamento da Sprint 1** — issues atribuídas à Iteration e movidas para "A Fazer" (ver
+      seção 5)
+- [x] Fluxo de release praticado de ponta a ponta (release → main + tag → dev) — ver seção 4
 
 ### 🔄 Em andamento
 - [ ] Divulgação dos questionários para garçons e clientes / coleta de respostas
       (parcial em 17/08/2026: 2 respostas de garçom, 12 de cliente — amostra ainda pequena, análise
       abaixo é preliminar, não conclusiva)
-- [ ] PR de `feature/docs-licenca` → `dev` (LICENSE + CONTRIBUTING.md + este arquivo) — aguardando
-      revisão do Pedro
+- [ ] Entrevista com garçom do Cocobambu — **agendada para 20/08/2026**
 
 ### ⏳ A fazer
 
@@ -124,8 +143,8 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 - [ ] Coletar respostas dos dois questionários
 - [ ] Definir critério de análise das respostas (gráficos por bloco, cruzamento garçom × cliente nos
       pontos em comum — ex.: dificuldade com flags dietéticas no cardápio)
-- [ ] Roteiro de entrevista com garçom do Cocobambu
-- [ ] Realizar entrevista e sistematizar achados
+- [ ] Realizar entrevista e sistematizar achados (bloqueia formalização de RF/RNF/RN e definição de
+      RN03 — ver sub-issues de #5 e #6)
 - [ ] Formalizar RF/RNF/RN do módulo de comandas em tabela rastreável (RF → ator → fonte/justificativa)
 - [ ] Definir função objetivo exata do algoritmo de programação linear (RN03 — minimizar tempo de
       espera? equilibrar faturamento entre garçons? maximizar gorjeta total?)
@@ -134,25 +153,25 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 **Validação com o orientador (fila)**
 - [ ] Validar módulo de comandas como expansão de escopo (item 5, seção 1)
 - [ ] Validar cardápio digital opção B — consulta pelo cliente, sem pedido (item 6, seção 1)
-- [ ] Confirmar notação esperada pros diagramas de apoio (UML / BPMN / fluxograma simples)
+- [ ] Confirmar notação esperada pros diagramas de apoio (UML / BPMN / fluxograma simples) — issue
+      aberta no board, prioridade alta por destravar toda a Sprint 2
 
 **Documentação (TG)**
 - [ ] Parágrafo de justificativa da expansão de escopo (introdução) — módulo de comandas
 - [ ] Parágrafo de justificativa da extensão opcional — cardápio digital (condicionado à validação)
 - [ ] Revisão ABNT do que já foi escrito até aqui
-- [ ] Acrescentar ao README, seção de Privacidade/LGPD, menção explícita de que o repositório é
-      público mas nenhum dado pessoal de cliente/garçom é versionado (reforço agora que o repo
-      deixou de ser privado)
 
 **Modelagem**
+- [ ] Diagrama de Casos de Uso (UML) — depende da notação confirmada com o orientador
 - [ ] Bloco 4 — MER do módulo de comandas: entidades e relacionamentos em linguagem natural
-- [ ] Bloco 4 — DER formal (a partir do MER, não pular direto pro diagrama)
+- [ ] Bloco 4 — DER formal (a partir do MER, não pular direto pro diagrama), incluindo justificativa
+      de 1FN/2FN/3FN por tabela
 - [ ] Bloco 3 — Modelagem do banco de dados: comanda, cardápio (com flags dietéticas), taxa de
       serviço, feedback — com pontos de atenção LGPD sinalizados
 - [ ] Confirmar consistência entre MER/DER e modelagem do banco
+- [ ] Diagrama de Classes (a partir do DER) — prioridade baixa, útil mas não bloqueante
 
 **Diagramas de apoio**
-- [ ] Confirmar notação esperada pela banca/orientador
 - [ ] Fluxo do garçom (abertura de mesa → pedido → fechamento)
 - [ ] Fluxo de recomendação de pratos (clusterização/regras de associação)
 - [ ] Fluxo de alocação de garçons (programação linear)
@@ -171,8 +190,9 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 - [ ] Documentar limitações e suposições dos dados usados
 
 **Infraestrutura**
-- [ ] Milestones com datas reais preenchidas
-- [ ] Planejamento do primeiro sprint (atribuir Iteration + mover itens de Backlog para A Fazer)
+- [ ] Confirmar exclusão das labels padrão irrelevantes (`duplicate`, `invalid`, `wontfix`,
+      `help wanted`, `good first issue`, `documentation`) — triagem sugerida em 19/08/2026, execução
+      a confirmar
 
 ---
 
@@ -181,7 +201,8 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 ### Repositório
 - Nome: `gastra-tg`, **público** (ver decisão na seção 2)
 - Branch principal: `main` (protegida via Ruleset — PR obrigatório + 1 aprovação, sem push direto)
-- Branch de desenvolvimento: `dev` (protegida via Ruleset, mesmas regras)
+- Branch de desenvolvimento: `dev` (protegida via Ruleset, mesmas regras — **branch padrão do
+  repositório desde 19/08/2026**, ver seção 2)
 - Branches de feature: `feature/comandas`, `feature/cardapio-digital`, `feature/clusterizacao`,
   `feature/programacao-linear`, `feature/lgpd`, `feature/mer-der`, `feature/docs-licenca`, uma por
   bloco/módulo ou tarefa de documentação
@@ -193,10 +214,21 @@ livre vs. lista fechada, notação de diagramas, função objetivo do PL, etc.
 > **Rulesets** após tornar o repositório público (branch protection em repositório público é
 > gratuita em qualquer plano). Ver decisão completa na seção 2.
 
+> **Nota de cautela — auto-delete e branches protegidas:** com "Automatically delete head branches"
+> ativo, a documentação do GitHub garante que branches protegidas (como `main`) são poupadas da
+> exclusão automática — mas há relatos de usuários de comportamento inconsistente especificamente
+> com Rulesets (diferente da branch protection clássica). Prática recomendada: sempre conferir
+> manualmente que `main` continua existindo após qualquer PR onde ela é a branch de origem (`compare`),
+> como no fluxo `main → dev` do processo de release abaixo.
+
 ### Labels
 `bloco:bi` · `bloco:clusterizacao` · `bloco:pl` · `bloco:lgpd` · `bloco:comandas` ·
-`tipo:documentacao` · `tipo:modelagem` · `tipo:codigo` · `prioridade:alta` · `prioridade:media` ·
-`prioridade:baixa` — todas criadas.
+`bloco:cardapio-digital` · `tipo:documentacao` · `tipo:modelagem` · `tipo:codigo` ·
+`tipo:infraestrutura` · `prioridade:alta` · `prioridade:media` · `prioridade:baixa` · `bug` ·
+`enhancement` · `question` — mantidas por cobrirem categoria útil não coberta pelas labels
+customizadas. Labels padrão do GitHub sem uso claro no contexto de dupla (`duplicate`, `invalid`,
+`wontfix`, `help wanted`, `good first issue`, `documentation`) sugeridas para remoção — ver checklist
+"A fazer", seção Infraestrutura.
 
 ### GitHub Projects — board "GASTRA - TG"
 Link: https://github.com/users/danih-vb/projects/3
@@ -210,14 +242,62 @@ Transições manuais vs. automáticas (detalhado em `CONTRIBUTING.md`, seção 5
 - Item novo → Backlog: automático (workflow "Item added to project", alimentado por "Auto-add to
   project" sem filtro de label)
 
-Campo **Iteration** configurado (sprints de 2 semanas) — atribuição de sprint a cada item é manual,
-sem workflow automático para isso.
+Campo **Iteration** configurado, duração ajustada para 1 semana (ver seção 2) — atribuição de sprint
+a cada item é manual, sem workflow automático para isso.
 
 ### Issues do checklist
-Criadas via `scripts/create_issues_from_checklist.sh` a partir da seção 3 deste arquivo, com a
-label de bloco correspondente, e adicionadas ao board. Issues guarda-chuva (genéricas) devem ser
-quebradas em sub-issues nativas do GitHub conforme o trabalho fica concreto — ver `CONTRIBUTING.md`,
-seção 4.
+Criadas via `scripts/create_issues_from_checklist.sh` (issues #1-#15) e `scripts/create_sprint_issues.sh`
+(sub-issues + issues novas de diagrama/notação). Issues guarda-chuva (genéricas) são quebradas em
+sub-issues nativas do GitHub conforme o trabalho fica concreto — ver `CONTRIBUTING.md`, seção 4.
+
+### Processo de release (praticado em 19/08/2026)
+1. `release/<versao>` nasce de `dev`, recebe só ajustes finais.
+2. PR `release/<versao> → main`, revisão do Pedro, merge.
+3. Criar tag anotada na `main` (`git tag -a v<versao> -m "..."` + `git push origin v<versao>`) —
+   é a tag, não a branch, que preserva o checkpoint permanentemente.
+4. PR `release/<versao> → dev` para trazer qualquer ajuste feito na release de volta à integração.
+   **Se a branch de release já tiver sido apagada** (auto-delete ativo) antes desse passo, usar
+   `main → dev` no lugar — o conteúdo já está acessível via `main`, então funciona igual.
+5. Deletar `release/<versao>` (manual ou automático) — seguro fazer, o conteúdo já está preservado
+   pela tag e pelos merges.
+
+Primeira tag criada: `v0.1-setup-inicial` (infraestrutura + documentação base, sem código ainda).
+
+---
+
+## 5. Milestones e Sprints
+
+Milestones (marcos temáticos com prazo) e Iterations/Sprints (blocos semanais de trabalho) são
+campos independentes no GitHub Projects — ver `CONTRIBUTING.md`, seção 5, para a diferença entre os
+dois conceitos.
+
+### Milestones (datas reajustadas em 19/08/2026)
+
+As datas originais eram otimistas demais (M1 venceria em apenas 2 dias após a criação). Reajustadas
+mantendo o espaçamento relativo entre elas, com atenção especial a M2, que depende da agenda do
+orientador:
+
+| Milestone | Data |
+|---|---|
+| M1 - Levantamento de Requisitos | 28/08/2026 |
+| M2 - Validação de Escopo | 05/09/2026 ⚠️ depende de agenda do orientador, tratar como meta, não garantia |
+| M3 - Modelagem | 18/09/2026 |
+| M4 - Módulo de Comandas (MVP) | 05/10/2026 |
+| M5 - BI | 19/10/2026 |
+| M6 - Ciência de Dados | 26/10/2026 |
+| M7 - Programação Linear | 09/11/2026 |
+| M8 - LGPD | 16/11/2026 |
+| M9 - Redação Final (ABNT) | 23/11/2026 |
+| M10 - Defesa | 07/12/2026 |
+
+### Sprint 1 (19–26/08/2026)
+
+Foco: destravar M1. A entrevista com o garçom do Cocobambu, agendada para 20/08/2026, destrava as
+issues #5 e #6 (dependentes dos achados sistematizados).
+
+Issues planejadas para esta sprint: #1 (+ 3 sub-issues), #2 (+ 3 sub-issues), #3, #4, #5 (+ 2
+sub-issues), #6, e a issue "Confirmar notação esperada para diagramas de apoio com o orientador".
+Atribuições (Danih/Pedro) combinadas no planejamento — ver comentários nas issues correspondentes.
 
 ---
 
@@ -251,9 +331,9 @@ seção 4.
 - Respostas abertas: "demora" aparece repetidamente como ponto negativo e como algo a melhorar —
   candidato a citação (parafraseada) na introdução do TG.
 
-**Próximo passo desta seção:** reanalisar quando a amostra crescer; se os achados se confirmarem,
-viram parágrafos formais na seção de resultados do TG (com o `[TG]` de cada item indicando pra que
-bloco cada achado serve).
+**Próximo passo desta seção:** reanalisar quando a amostra crescer (a entrevista de 20/08 deve
+somar achados qualitativos); se os achados se confirmarem, viram parágrafos formais na seção de
+resultados do TG (com o `[TG]` de cada item indicando pra que bloco cada achado serve).
 
 ---
 
@@ -295,3 +375,22 @@ mudou" já fica no `git log` deste arquivo.*
   validação" como escopo fechado em código/texto commitado; convenção de sub-issues nativas do
   GitHub para quebrar issues guarda-chuva do checklist; tabela de transições manuais vs. automáticas
   do quadro de tarefas; seção de licenciamento (nota que antes estava dentro do `LICENSE`).
+- **19/08/2026** — PR `feature/docs-licenca` aprovado pelo Pedro e mergeado em `dev`. Primeira
+  contribuição em par completa, do fluxo de branch até o merge revisado.
+- **19/08/2026** — Milestones M1-M10 criados no GitHub com datas iniciais; datas reajustadas no
+  mesmo dia por serem consideradas otimistas demais frente ao trabalho real restante (ver seção 5).
+- **19/08/2026** — Branch padrão do repositório alterada de `main` para `dev`, reduzindo risco de
+  abrir PR sem querer contra a branch errada.
+- **19/08/2026** — Duração do campo Iteration ajustada de 2 semanas para 1 semana — sprints
+  semanais fazem mais sentido na fase atual de documentação (mais rápida que a fase de
+  implementação que vem a seguir).
+- **19/08/2026** — Praticado o fluxo completo de release (`release/0.1-setup-inicial` → `main` +
+  tag `v0.1-setup-inicial` → `dev`), incluindo o cenário de branch de release apagada pelo
+  auto-delete antes do merge para `dev` — resolvido usando PR `main → dev` no lugar.
+- **19/08/2026** — `scripts/create_sprint_issues.sh` criado e executado: sub-issues adicionadas a
+  #1, #2, #5, #10, #11, #12 (sem duplicar as issues-mãe já existentes); novas issues-pai criadas
+  para notação de diagramas e diagramas de casos de uso/classes.
+- **19/08/2026** — Roteiro de entrevista com garçom do Cocobambu adicionado ao repositório em
+  `docs/requisitos/entrevistas/`. Entrevista agendada para 20/08/2026.
+- **19/08/2026** — Sprint 1 planejada: issues atribuídas à Iteration "Sprint 1" e movidas de
+  Backlog para "A Fazer", com atribuição de responsável (Danih/Pedro) combinada entre a dupla.
