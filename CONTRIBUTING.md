@@ -11,10 +11,14 @@ Usamos GitFlow simplificado (a versão completa tem branches `support/*` que nã
 | Branch | Papel | Regras |
 |---|---|---|
 | `main` | Sempre reflete a versão estável/entregável (ex.: o que foi apresentado numa entrega parcial ou na banca) | **Protegida.** Nunca commitar direto. Só recebe merge de `release/*` ou `hotfix/*` via Pull Request. |
-| `dev` | Branch de integração — onde as features se juntam | **Protegida.** Só recebe merge de `feature/*` via Pull Request. |
+| `dev` | Branch de integração — onde as features se juntam. **Branch padrão do repositório** desde 19/08/2026 | **Protegida.** Só recebe merge de `feature/*` via Pull Request. |
 | `feature/<nome-curto>` | Uma funcionalidade ou bloco específico | Nasce de `dev`, volta para `dev`. Ex.: `feature/comandas`, `feature/cardapio-digital`, `feature/clusterizacao`, `feature/programacao-linear`, `feature/lgpd`, `feature/mer-der` |
 | `release/<versao>` | Preparação de uma entrega (ex.: entrega parcial do TG) | Nasce de `dev`, só ajustes finais (docs, bugs pequenos), depois vai para `main` **e** volta para `dev` |
 | `hotfix/<descricao>` | Correção urgente em algo já em `main` | Nasce de `main`, volta para `main` **e** para `dev` |
+
+> **Nota:** a branch padrão do repositório é `dev`, não `main` — o botão "Compare & pull request"
+> do GitHub já sugere `dev` como base automaticamente. Mesmo assim, sempre confira a base antes de
+> abrir o PR, principalmente ao abrir um PR de release (nesse caso a base É `main`, de propósito).
 
 ### Por que proteger `main` e `dev`?
 
@@ -37,6 +41,61 @@ git push origin feature/nome-da-tarefa
 # pedir revisão do outro integrante
 # só faz merge depois de aprovado
 ```
+
+Depois do merge, a branch de feature é apagada automaticamente (auto-delete ativo no repositório).
+Localmente, sincronizem antes de começar a próxima tarefa:
+
+```bash
+git checkout dev
+git pull origin dev
+git branch -d feature/nome-da-tarefa   # limpa a cópia local também
+```
+
+### Fluxo de release (checkpoints entregáveis)
+
+Usado quando um bloco de trabalho fica estável o suficiente pra representar um ponto que poderia
+ser mostrado ao orientador ou na banca — não precisa ser "o TG pronto", só "estável até aqui".
+
+```bash
+git checkout dev
+git pull origin dev
+git checkout -b release/<versao>
+
+# ...só ajustes finais (docs, bugs pequenos), nada de feature nova...
+
+git push origin release/<versao>
+# abrir PR: release/<versao> -> main, revisão do Pedro, merge
+```
+
+Depois do merge na `main`, criem uma **tag** — é a tag, não a branch, que preserva o checkpoint
+permanentemente:
+
+```bash
+git checkout main
+git pull origin main
+git tag -a v<versao> -m "Descrição curta do que essa versão contém"
+git push origin v<versao>
+```
+
+Por fim, tragam o conteúdo de volta para `dev` (garante que qualquer ajuste feito durante a release
+não fique só na `main`):
+
+```bash
+# abrir PR: release/<versao> -> dev, revisão do Pedro, merge
+```
+
+**Se a branch `release/<versao>` já tiver sido apagada** (pelo auto-delete, antes desse último
+passo), não tem problema — o conteúdo já está preservado na `main` via o merge commit. Basta abrir
+o PR `main -> dev` no lugar; o resultado final é o mesmo.
+
+> ⚠️ **Cautela com `main` e o auto-delete:** com "Automatically delete head branches" ativo, toda
+> branch de origem (`compare`) de um PR mergeado é apagada — inclusive `main`, se ela for a origem
+> de algum PR (como no PR `main -> dev` acima). A documentação do GitHub garante que branches
+> protegidas são poupadas dessa exclusão automática, mas há relatos de comportamento inconsistente
+> especificamente com Rulesets. **Depois de qualquer PR onde `main` é a origem, confiram manualmente
+> que ela continua existindo na lista de branches.** Se um dia sumir mesmo assim, ela pode ser
+> recriada a partir de qualquer tag (`git checkout -b main v<ultima-tag>`) ou a partir da `dev`
+> atualizada, já que o conteúdo nunca é perdido de fato.
 
 ## 2. Escopo do TG — itens pendentes de validação
 
@@ -103,7 +162,8 @@ elas funcionam como **issue guarda-chuva** de um bloco de trabalho (ex.: "Formal
 módulo de comandas em tabela rastreável"), não como a unidade de execução real.
 
 Conforme um item começa a ficar concreto, quebrem a issue-mãe em **sub-issues nativas do GitHub**
-(não checkboxes soltos na descrição). Vantagens: cada sub-issue herda Status/Iteration
+(não checkboxes soltos na descrição) — usando `gh issue create --parent <numero>` (requer `gh` CLI
+≥ 2.94.0) ou pela interface do GitHub. Vantagens: cada sub-issue herda Status/Iteration
 independentemente, o workflow "Auto-add sub-issues to project" já garante que toda sub-issue criada
 entra automaticamente no board, e o progresso aparece como barra (X de Y concluídas) direto no card
 da issue-mãe, sem atualização manual.
@@ -114,7 +174,23 @@ Exemplo:
   - Sub-issue: "Preencher coluna Origem/Fonte de cada RF na matriz"
   - Sub-issue: "Validar RN03 com orientador antes de fechar"
 
+Scripts de criação em lote ficam em `scripts/` (ex.: `create_issues_from_checklist.sh` para o lote
+inicial, `create_sprint_issues.sh` para sub-issues e issues novas de sprint). **Antes de rodar um
+script de criação em lote, confira se ele já não foi rodado antes** — nenhum deles verifica
+duplicidade sozinho; rodar duas vezes cria issues repetidas.
+
 ## 5. Quadro de tarefas (GitHub Projects)
+
+Três conceitos diferentes, que se complementam:
+
+| Conceito | O que representa | Escala de tempo |
+|---|---|---|
+| **Milestone** | Um entregável temático do TG (ex.: "Levantamento de Requisitos") | Semanas a meses — pode abranger várias sprints |
+| **Iteration** (campo Sprint) | Um bloco de tempo fixo de trabalho | 1 semana (ajustado de 2 semanas em 19/08/2026) |
+| **Status** (coluna do board) | O estado atual de uma issue específica | Muda dia a dia |
+
+Uma issue pode pertencer à Milestone M1, estar na Iteration "Sprint 1", e ter Status "Em Andamento"
+ao mesmo tempo — os três campos coexistem sem conflito.
 
 O board tem 5 colunas de Status: Backlog → A Fazer → Em Andamento → Em Revisão → Concluído. Nem
 toda transição é automática — importante saber qual é qual pra não ficar esperando um card se mover
@@ -127,18 +203,21 @@ sozinho quando ele não vai:
 | Em Andamento → Em Revisão | **Automático.** Dispara quando um PR é aberto vinculado à issue (workflow "Pull request linked to issue"). |
 | Em Revisão → Concluído | **Automático.** Dispara no merge do PR (workflow "Pull request merged"), ou ao fechar a issue diretamente sem PR (workflow "Item closed") — útil para itens de documentação/decisão que não passam por código. |
 
-O campo **Iteration** (sprint) também é manual — não existe workflow que atribua sprint sozinho.
-No planejamento de cada sprint (sugestão: ciclos de 2 semanas), atribuam manualmente o Iteration de
-cada item que entrar em "A Fazer".
+O campo **Iteration** (sprint, 1 semana) também é manual — não existe workflow que atribua sprint
+sozinho. No planejamento de cada sprint, atribuam manualmente a Iteration de cada item que entrar
+em "A Fazer", e o Assignee (quem da dupla fica responsável) junto, no mesmo momento — evita que os
+dois comecem a mesma tarefa sem perceber.
 
 ## 6. Segurança e integridade de dados
 
-Como o GASTRA lida com dados de clientes e garçons (questionários, futuramente dados reais de
-pedidos), alguns cuidados são obrigatórios, não opcionais:
+Como o GASTRA lida com dados de clientes e garçons (questionários, entrevistas, futuramente dados
+reais de pedidos), alguns cuidados são obrigatórios, não opcionais:
 
-- **Nunca commitar dados brutos de questionário ou qualquer dado que identifique uma pessoa.**
-  A pasta `data-science/data/raw/` está no `.gitignore` propositalmente — dados brutos ficam só
-  localmente ou num storage separado (ex.: Google Drive restrito), nunca no Git.
+- **Nunca commitar dados brutos de questionário, gravação/transcrição de entrevista, ou qualquer
+  dado que identifique uma pessoa.** A pasta `data-science/data/raw/` está no `.gitignore`
+  propositalmente — dados brutos ficam só localmente ou num storage separado (ex.: Google Drive
+  restrito), nunca no Git. Isso vale também para roteiros de entrevista: o **roteiro** (perguntas,
+  estrutura) pode ser versionado normalmente, mas gravação/transcrição literal da entrevista, não.
 - **Apenas dados agregados/anonimizados** entram em `data-science/data/processed/` e podem ser
   versionados.
 - **Nunca commitar segredos**: strings de conexão de banco, chaves de API, senhas. Usem variáveis de
@@ -164,9 +243,11 @@ pedidos), alguns cuidados são obrigatórios, não opcionais:
 | Documento de status vivo | `docs/GASTRA_STATUS.md` |
 | Projeto de pesquisa formal | `docs/pesquisa/` |
 | RF/RNF/RN e matriz de rastreabilidade | `docs/requisitos/` |
+| Roteiros de entrevista (nunca gravação/transcrição bruta) | `docs/requisitos/entrevistas/` |
 | MER (linguagem natural) e DER (formal) | `docs/modelagem/mer/` e `docs/modelagem/der/` |
 | Diagramas de apoio (fluxos, casos de uso) | `docs/diagramas/` |
 | Logo, identidade visual | `docs/assets/logo/` |
+| Scripts de apoio (criação de issues em lote, etc.) | `scripts/` |
 
 ## 8. Licenciamento
 
