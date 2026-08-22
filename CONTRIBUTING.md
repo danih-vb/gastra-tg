@@ -97,23 +97,34 @@ o PR `main -> dev` no lugar; o resultado final é o mesmo.
 > recriada a partir de qualquer tag (`git checkout -b main v<ultima-tag>`) ou a partir da `dev`
 > atualizada, já que o conteúdo nunca é perdido de fato.
 
-## 2. Escopo do TG — itens pendentes de validação
+## 2. Escopo do TG — status atual (revisado em 21/08/2026)
 
 O `docs/GASTRA_STATUS.md` (seção 1) e a `docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`
-mantêm o status de validação de cada item de escopo. Alguns itens — hoje, o módulo de comandas e o
-cardápio digital (opção B) — estão marcados como **"Pendente de validação"**: foram decididos entre
-a dupla, mas ainda não aprovados formalmente pelo Prof. Ferrucci, e colidem com a delimitação do
-projeto de pesquisa formal (`docs/pesquisa/Gastra.pdf`), que exclui explicitamente sistemas de
-pedido e cardápios digitais.
+mantêm o status de validação de cada item de escopo, com a legenda completa de status. Resumo do
+que vale hoje:
 
-**Regra:** nenhum código ou texto commitado neste repositório deve tratar um item marcado
-"Pendente de validação" como escopo fechado — nem em comentário de código, nem em texto de TG, nem
-em nome de branch/PR que pressuponha aprovação. Antes de escrever algo que dependa desses itens,
-confira o status atual em `docs/GASTRA_STATUS.md`, seção 1.
+- **Foco e entrega central do TG:** os quatro blocos analíticos do projeto de pesquisa formal — BI,
+  Ciência de Dados, Programação Linear, LGPD.
+- **Núcleo do módulo de comandas** (abrir/pedir/fechar) — **validado com o orientador em
+  21/08/2026** como componente **adicional**: necessário para alimentar os blocos analíticos com
+  dado real, mas não é o centro da entrega. Antes dessa data era tratado como "pendente de
+  validação" — essa fase já passou.
+- **Extras condicionados a sobrar tempo** (validados, mas não são compromisso de entrega): cardápio
+  digital (consulta via QR/tablet), consulta da comanda em tempo real pelo cliente, e lista de
+  pendências do garçom. Só entram em desenvolvimento depois que o núcleo (comandas + os 4 blocos)
+  tiver um MVP apresentável.
+- **Fora do escopo do TG:** integração com a cozinha (acesso a pedidos, confirmação de preparo).
+  Não é pendência — é decisão de excluir, tratada como feature futura pós-defesa. Nenhuma issue
+  deste ciclo do TG deve incluir esse item.
 
-Isso deixa de valer automaticamente assim que o item mudar de status para "Validado (escopo
-original)" ou equivalente na Matriz de Rastreabilidade — quem atualizar a matriz após validação com
-o orientador deve, no mesmo PR, atualizar qualquer texto que já dependia disso.
+**Regra que continua valendo:** nenhum código ou texto commitado neste repositório deve tratar um
+item como escopo mais avançado do que o status registrado no `GASTRA_STATUS.md` permite — nem em
+comentário de código, nem em texto de TG, nem em nome de branch/PR. Antes de escrever algo que
+dependa de um item de escopo, confiram o status atual em `docs/GASTRA_STATUS.md`, seção 1.
+
+Isso deixa de valer automaticamente assim que um item mudar de status na Matriz de Rastreabilidade —
+quem atualizar a matriz após nova validação com o orientador deve, no mesmo PR, atualizar qualquer
+texto que já dependia disso.
 
 ## 3. Convenção de commits
 
@@ -208,6 +219,11 @@ sozinho. No planejamento de cada sprint, atribuam manualmente a Iteration de cad
 em "A Fazer", e o Assignee (quem da dupla fica responsável) junto, no mesmo momento — evita que os
 dois comecem a mesma tarefa sem perceber.
 
+> **Nota (21/08/2026):** o cronograma oficial do TG ainda está por vir. Issues dos artefatos novos
+> (Business Model Canvas, User Stories, UX/UI, arquitetura, testes, manual do usuário — ver
+> `docs/GASTRA_STATUS.md`) já podem ser criadas no Backlog sem Milestone/Iteration atribuída; a
+> distribuição final entre Milestones acontece assim que o cronograma chegar.
+
 ## 6. Segurança e integridade de dados
 
 Como o GASTRA lida com dados de clientes e garçons (questionários, entrevistas, futuramente dados
@@ -219,7 +235,10 @@ reais de pedidos), alguns cuidados são obrigatórios, não opcionais:
   restrito), nunca no Git. Isso vale também para roteiros de entrevista: o **roteiro** (perguntas,
   estrutura) pode ser versionado normalmente, mas gravação/transcrição literal da entrevista, não.
 - **Apenas dados agregados/anonimizados** entram em `data-science/data/processed/` e podem ser
-  versionados.
+  versionados — com uma ressalva: amostras muito pequenas (ex.: n=2, caso do questionário de
+  garçom) não devem virar dataset estruturado ali, porque um "agregado" de 2 respostas praticamente
+  reidentifica a resposta individual. Nesses casos, tratar como texto narrativo em
+  `docs/GASTRA_STATUS.md`, não como planilha/CSV.
 - **Nunca commitar segredos**: strings de conexão de banco, chaves de API, senhas. Usem variáveis de
   ambiente (`.env`, já no `.gitignore`) e um `.env.example` sem valores reais para documentar quais
   variáveis existem.
@@ -242,9 +261,15 @@ reais de pedidos), alguns cuidados são obrigatórios, não opcionais:
 | Dados brutos (NUNCA commitar) | `data-science/data/raw/` (local, fora do Git) |
 | Documento de status vivo | `docs/GASTRA_STATUS.md` |
 | Projeto de pesquisa formal | `docs/pesquisa/` |
-| RF/RNF/RN e matriz de rastreabilidade | `docs/requisitos/` |
+| Material institucional de apoio (guia de orientação, modelo de estrutura da FATEC) | `docs/pesquisa/referencias/` |
+| Business Model Canvas | `docs/negocio/` |
+| RF/RNF/RN, matriz de rastreabilidade e User Stories | `docs/requisitos/` |
 | Roteiros de entrevista (nunca gravação/transcrição bruta) | `docs/requisitos/entrevistas/` |
 | MER (linguagem natural) e DER (formal) | `docs/modelagem/mer/` e `docs/modelagem/der/` |
+| Definição de arquitetura do sistema | `docs/arquitetura/` |
+| Wireframes e protótipo navegável (UX/UI) | `docs/ux-ui/` |
+| Cenários de teste executados | `docs/testes/` |
+| Manual de uso do usuário | `docs/manual-usuario/` |
 | Diagramas de apoio (fluxos, casos de uso) | `docs/diagramas/` |
 | Logo, identidade visual | `docs/assets/logo/` |
 | Scripts de apoio (criação de issues em lote, etc.) | `scripts/` |
