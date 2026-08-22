@@ -126,6 +126,15 @@ Isso deixa de valer automaticamente assim que um item mudar de status na Matriz 
 quem atualizar a matriz após nova validação com o orientador deve, no mesmo PR, atualizar qualquer
 texto que já dependia disso.
 
+## 2.1 Notação de diagramas de apoio
+
+Confirmado com o orientador em 21/08/2026: os diagramas de apoio do TG (casos de uso,
+classes, sequência, atividades) seguem notação **UML**. Vale para tudo que for para
+`docs/diagramas/` e `docs/modelagem/der/` (quando entrar em pauta na Sprint 2), e
+para qualquer diagrama de fluxo referenciado no texto do TG. O MER continua em
+linguagem natural antes do DER formal — etapa intermediária deliberada, não é UML,
+sem conflito com essa decisão.
+
 ## 3. Convenção de commits
 
 Usamos [Conventional Commits](https://www.conventionalcommits.org/) — mensagens em português está
