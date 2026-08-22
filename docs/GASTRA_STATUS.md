@@ -2,7 +2,7 @@
 
 TG (Trabalho de Graduação) — FATEC Araraquara
 Alunos: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
-Última atualização: 21/08/2026
+Última atualização: 22/08/2026
 
 > **Como manter este arquivo vivo:** ele fica versionado no repositório (`docs/GASTRA_STATUS.md`).
 > Toda vez que um item mudar de status, editem aqui e façam commit com uma mensagem clara.
@@ -45,12 +45,13 @@ registrar como ideia futura, não como tarefa.
 | **Critério de rotação de garçons (RN03)** | **Proposta:** equilibrar faturamento acumulado por garçom, ponderado pelo faturamento histórico da praça — ver `GASTRA_Requisitos_RN.docx`, seção 3.1 | 21/08/2026 — decisão interna proposta, pendente de validação final |
 | **KPIs de BI e ranking (RF10/RF11)** | Faturamento por garçom/praça, ticket médio, tempo médio de atendimento, índice composto (não só venda) — ver seção 3.2 do Requisitos_RN.docx | 21/08/2026 — decisão interna proposta |
 | **Critério de recomendação de pratos (RF09)** | Regras de associação com limiares de suporte/confiança a calibrar; clusterização por padrão de consumo, nº de clusters a definir experimentalmente | 21/08/2026 — decisão interna proposta, calibração numérica pendente de dado |
+| **Notação dos diagramas de apoio** | UML (casos de uso, classes, sequência, atividades) — confirmado com o orientador | 21/08/2026 |
+| **Função objetivo do algoritmo de PL (RN03)** | Estrutura fechada (issue #6) — equilibrar faturamento acumulado por garçom, ponderado pelo faturamento histórico da praça (seção 3.1 do Requisitos_RN.docx) | 22/08/2026 — estrutura definida; validação com orientador e calibração numérica seguem pendentes (issue #26) |
 
 **Pendente de decisão:**
 - Qualificador livre vs. lista fechada de opções pro garçom (impacta o Bloco 6 — análise de dados)
-- Notação dos diagramas de apoio (UML / BPMN / fluxograma simples)
 - Valores numéricos de RNF01/RNF02 (X segundos, N toques)
-- Pesos exatos do critério de rotação (RN03) — estrutura definida, calibração pendente de dado real/simulado
+- Pesos exatos do critério de rotação (RN03) — estrutura definida, calibração pendente de dado real/simulado (issue #26)
 
 ---
 
@@ -71,6 +72,10 @@ registrar como ideia futura, não como tarefa.
 - [x] RF/RNF/RN atualizados pós-entrevista (RF13 novo, RN03 com proposta de resolução)
 - [x] Matriz de Rastreabilidade atualizada com os novos status
 - [x] Achados do questionário cruzados com a entrevista (seção 6) — sem citação literal, agregado
+- [x] Notação de diagramas de apoio confirmada com o orientador (UML) — 21/08/2026
+- [x] User Stories formalizadas (`GASTRA_User_Stories.docx`), derivadas dos RF já fechados
+- [x] Função objetivo do algoritmo de PL (RN03) — estrutura definida (issue #6, ver seção 3.1 do Requisitos_RN.docx)
+- [x] Especificação de gráficos por bloco temático (issue #22)
 
 ### 🔄 Em andamento
 - [ ] Exportar respostas brutas do Jotform via download nativo (CSV) e salvar em
@@ -86,10 +91,8 @@ registrar como ideia futura, não como tarefa.
 - [ ] Redigir seção de resultados do TG com achados do questionário + entrevista, limitações de
       amostra explícitas
 
-**Artefatos novos definidos em 21/08/2026**
+**Artefatos novos definidos em 21/08/2026 (Sprint 2 — fora do escopo da Sprint 1)**
 - [ ] **Business Model Canvas** — `docs/negocio/`
-- [ ] **User Stories** (obrigatório) — `docs/requisitos/`, formato "Como [ator], quero [ação], para
-      [benefício]", derivadas dos RF já existentes
 - [ ] **Prototipagem / UX-UI** — wireframes e protótipo navegável — `docs/ux-ui/`
 - [ ] **Definição de arquitetura** (parte teórica do TG) — `docs/arquitetura/`
 - [ ] **Tabela de cenários de teste executados** — `docs/testes/`
@@ -99,14 +102,17 @@ registrar como ideia futura, não como tarefa.
 - [ ] Parágrafo de justificativa da expansão de escopo (comandas como adicional, não foco)
 - [ ] Revisão ABNT do que já foi escrito até aqui
 
-**Modelagem**
+**Modelagem (Sprint 2)**
 - [ ] MER do núcleo do módulo de comandas
 - [ ] DER formal (a partir do MER)
 - [ ] Modelagem do banco de dados (comanda, cardápio, taxa de serviço) com pontos LGPD sinalizados
 
-**Diagramas de apoio**
-- [ ] Confirmar notação esperada pela banca/orientador
-- [ ] Fluxo do garçom, fluxo de recomendação, fluxo de alocação (PL)
+**Diagramas de apoio (Sprint 2)**
+- [x] Confirmar notação esperada pela banca/orientador — UML, confirmado 21/08/2026
+- [ ] Diagrama de casos de uso
+- [ ] Diagrama de classes (depende do DER)
+- [ ] Diagrama de sequência — fluxo do garçom, fluxo de alocação (PL), fluxo de recomendação
+- [ ] Diagrama de atividades — mesmos fluxos principais
 
 **Back-end / Front-end**
 - [ ] Implementação do núcleo de comandas
@@ -203,6 +209,16 @@ registrar como ideia futura, não como tarefa.
 - **21/08/2026** — Perguntas dos dois formulários recuperadas via API do Jotform e documentadas em
   `docs/requisitos/GASTRA_Instrumento_Coleta.md`. Achados do questionário cruzados com a entrevista
   Cocobambu (seção 6). Ferramenta de análise definida: Python/pandas.
+- **22/08/2026** — Função objetivo do algoritmo de PL (RN03) formalizada em sua estrutura (issue #6
+  fechada) — equilibrar faturamento acumulado por garçom, ponderado pelo faturamento histórico da
+  praça (seção 3.1 do Requisitos_RN.docx). Validação final com o orientador (issue #26) e
+  calibração numérica dos pesos seguem pendentes — dependem de dado real/simulado.
+- **22/08/2026** — Exportação manual do CSV do Jotform (garçom e cliente) iniciada, salva em
+  `data-science/data/raw/` (fora do Git, seção 8). Não impacta a feature/release da Sprint 1, já
+  que dado bruto nunca é versionado.
+- **22/08/2026** — Especificação de gráficos por bloco temático definida (issue #22), ver seção 6.
+  Execução real em pandas depende do CSV exportado.
+- **22/08/2026** — Fechamento da Sprint 1 (ver seção 10).
 
 ---
 
@@ -255,3 +271,16 @@ O cronograma esperado deve chegar no fim de semana. Até lá:
 - Assim que o cronograma chegar: revisar M1–M10, marcar Issues concluídas (RF/RN atualizados, Matriz
   atualizada, entrevista realizada), e distribuir os itens novos entre as Milestones existentes ou
   criar uma nova, conforme o prazo real informado.
+
+---
+
+## 10. Fechamento da Sprint 1 (22/08/2026)
+
+Sprint 1 fecha com todas as issues resolvidas, exceto:
+- **#26 — Validar RN03 com o orientador antes de fechar**: depende de calibração
+  numérica (CSV exportado + análise em pandas) e de validação formal com o Prof.
+  Ferrucci. Carregada para a próxima feature/sprint, junto com a sistematização
+  final dos achados da entrevista.
+
+Business Model Canvas, MER/DER e diagramas de apoio (UML) ficam formalmente para a
+Sprint 2.
