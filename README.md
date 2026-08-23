@@ -44,6 +44,12 @@ Definida no projeto de pesquisa formal:
 - **Frontend:** Angular
 - **Análise de dados:** Python (clusterização, regras de associação, programação linear)
 
+## Notação de diagramas
+
+Notação confirmada com o orientador em 21/08/2026: **UML** (casos de uso, classes,
+sequência, atividades). MER/DER e Business Model Canvas ficam para a Sprint 2 — não
+fazem parte do escopo da Sprint 1.
+
 ## Estrutura do repositório
 
 ```
@@ -90,9 +96,11 @@ gastra/
 - **Roteiro de entrevista (Cocobambu):** [`docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx`](docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx)
 - **Projeto de pesquisa formal:** [`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf)
 - **Checklist de revisão de PR:** [`docs/CHECKLIST_REVISAO_PR.md`](docs/CHECKLIST_REVISAO_PR.md)
+- **User Stories:** [`docs/requisitos/GASTRA_User_Stories.docx`](docs/requisitos/GASTRA_User_Stories.docx)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
-- *A criar:* User Stories, Business Model Canvas, definição de arquitetura, protótipo UX/UI,
-  cenários de teste, manual do usuário — ver checklist em `docs/GASTRA_STATUS.md`, seção "A fazer".
+- *A criar (Sprint 2):* Business Model Canvas, MER/DER, diagramas de apoio (UML),
+  definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário —
+  ver checklist em `docs/GASTRA_STATUS.md`.
 
 ## Como rodar localmente
 
