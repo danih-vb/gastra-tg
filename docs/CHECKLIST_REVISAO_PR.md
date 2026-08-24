@@ -23,13 +23,21 @@ documentação, onde é mais fácil "só ler por cima e aprovar".
 - [ ] Se o PR menciona ou implementa um RF/RNF/RN, ele é consistente com o que está descrito em
       `docs/requisitos/GASTRA_Requisitos_RN.docx` e na Matriz de Rastreabilidade. Se o PR muda o
       comportamento de um requisito, os dois documentos foram atualizados juntos — não só um deles.
+      Se um RF for removido do escopo (como aconteceu com o RF12 em 23/08/2026), confira se a
+      remoção também foi refletida nas User Stories (nenhuma US deve apontar para um RF inexistente).
 - [ ] Se o PR muda escopo, decisão de design, ou item do checklist, o `docs/GASTRA_STATUS.md` foi
       atualizado no mesmo PR (não deixado para depois).
+- [ ] Se o PR resolve ou levanta uma pendência que depende do orientador, o
+      `docs/GASTRA_Pendencias_Orientador.docx` foi atualizado no mesmo PR (pergunta adicionada,
+      pendência resolvida movida para o histórico, etc.).
 
 ## 3. Dados sensíveis e segurança
 - [ ] Nenhum dado bruto de questionário, resposta identificável de garçom/cliente, ou qualquer
       informação pessoal foi adicionado fora de `data-science/data/processed/` (que só recebe dado
-      já agregado/anonimizado).
+      já agregado/anonimizado e interpretado).
+- [ ] Se o PR toca em `GASTRA_Dados_Processados.docx`, confira que a amostra do garçom (n=2)
+      continua tratada só como síntese narrativa — nunca como tabela/gráfico estruturado por
+      resposta individual.
 - [ ] Nenhum segredo (chave de API, string de conexão, senha) aparece em texto plano em nenhum
       arquivo do PR — nem em código, nem em exemplo de configuração.
 
@@ -41,12 +49,14 @@ documentação, onde é mais fácil "só ler por cima e aprovar".
       "pedido" num lugar e "comanda" em outro pra a mesma coisa, sem motivo).
 - [ ] Se o PR faz uma afirmação numérica ou estatística (ex.: resultado de questionário), ela está
       corretamente atribuída à fonte e a amostra pequena/preliminar está sinalizada, quando for o
-      caso — mesmo padrão já usado na seção 6 do `GASTRA_STATUS.md`.
+      caso — mesmo padrão já usado no `GASTRA_Dados_Processados.docx`.
 
 ## 5. Mecânica do GitHub
 - [ ] Labels aplicadas fazem sentido (bloco certo + tipo certo).
 - [ ] Se existe uma issue correspondente, o PR está vinculado a ela (`Closes #N` na descrição) —
       isso é o que move o card automaticamente no board.
+- [ ] Se o PR fecha uma issue que era sub-issue de outra (ex.: #54, sub-issue de #5), confira se a
+      relação de parentesco continua correta no board depois do merge.
 - [ ] Sem conflitos de merge pendentes (o GitHub avisa isso na própria tela do PR).
 
 ## 6. Depois de aprovar
@@ -55,6 +65,9 @@ documentação, onde é mais fácil "só ler por cima e aprovar".
 - [ ] Conferir que o card da issue relacionada realmente moveu para "Concluído" no board (o
       workflow deveria fazer isso sozinho — se não mover, algo está errado na configuração do
       workflow, vale investigar, não só ignorar).
+- [ ] Se o PR fechou ou consolidou issues (como a resolução da sobreposição #26/#54/#55 em
+      23/08/2026), confira se `docs/GASTRA_MEMORIA_GITHUB_PROJECTS.md` foi atualizado no mesmo PR
+      ou logo em seguida, para não ficar defasado em relação ao board real.
 
 ---
 
