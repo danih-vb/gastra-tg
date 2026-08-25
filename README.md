@@ -36,6 +36,14 @@ condicionados a sobrar tempo**, e um item foi formalmente excluído do TG.
 > Itens 🟠 não são compromisso de entrega: só entram em desenvolvimento depois que o núcleo
 > (comandas + os 4 blocos analíticos) tiver um MVP apresentável.
 
+**Atualização de requisitos (23/08/2026, fechamento da Sprint 1):** RF12 (exclusão de histórico de
+pedidos) foi removido do escopo por contradizer a decisão de não reter identificador persistente do
+cliente entre visitas — resolvido por minimização de dados por desenho, não por uma funcionalidade
+de exclusão. RF14 foi incluído para formalizar o registro híbrido (lista fechada + campo livre) de
+restrição/preferência alimentar pelo garçom. Detalhes em
+[`docs/requisitos/GASTRA_Requisitos_RN.docx`](docs/requisitos/GASTRA_Requisitos_RN.docx), seção 5.1,
+e em [`docs/GASTRA_Pendencias_Orientador.docx`](docs/GASTRA_Pendencias_Orientador.docx).
+
 ## Stack tecnológica
 
 Definida no projeto de pesquisa formal:
@@ -62,8 +70,10 @@ gastra/
 │   └── data/
 │       ├── raw/                # NUNCA versionado (dados pessoais/LGPD) — ver docs/requisitos
 │       └── processed/          # Dados tratados/anonimizados, versionáveis
+│           └── GASTRA_Dados_Processados.docx  # Achados interpretados (questionários + entrevista)
 ├── docs/
 │   ├── GASTRA_STATUS.md       # Documento vivo — status, decisões, checklist, roadmap
+│   ├── GASTRA_Pendencias_Orientador.docx  # Pauta, perguntas e histórico de reuniões com o orientador
 │   ├── CHECKLIST_REVISAO_PR.md # Roteiro para quem revisa um Pull Request
 │   ├── pesquisa/               # Projeto de pesquisa formal (Gastra.pdf)
 │   │   └── referencias/        # Material institucional de apoio (guia de orientação da FATEC, etc.)
@@ -89,11 +99,14 @@ gastra/
 ## Documentação
 
 - **Status vivo do projeto:** [`docs/GASTRA_STATUS.md`](docs/GASTRA_STATUS.md) — escopo, decisões,
-  checklist de tarefas, milestones, sprints, resultados preliminares dos questionários e da
-  entrevista.
+  checklist de tarefas, milestones, sprints, resumo dos resultados dos questionários e da entrevista.
+- **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
+  — achados agregados e interpretados, com gráficos, versionável (dado bruto nunca entra aqui).
+- **Pendências e histórico com o orientador:** [`docs/GASTRA_Pendencias_Orientador.docx`](docs/GASTRA_Pendencias_Orientador.docx)
+  — pauta de reunião, perguntas específicas, decisões já aprovadas.
 - **Requisitos e Regras de Negócio:** [`docs/requisitos/GASTRA_Requisitos_RN.docx`](docs/requisitos/GASTRA_Requisitos_RN.docx)
 - **Matriz de Rastreabilidade:** [`docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`](docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx)
-- **Roteiro de entrevista (Cocobambu):** [`docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx`](docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx)
+- **Roteiro de entrevista (restaurante colaborador):** [`docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx`](docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx)
 - **Projeto de pesquisa formal:** [`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf)
 - **Checklist de revisão de PR:** [`docs/CHECKLIST_REVISAO_PR.md`](docs/CHECKLIST_REVISAO_PR.md)
 - **User Stories:** [`docs/requisitos/GASTRA_User_Stories.docx`](docs/requisitos/GASTRA_User_Stories.docx)
@@ -121,12 +134,13 @@ sensíveis (LGPD).
 
 Este repositório é **público**, mas nenhum dado pessoal identificável de cliente ou garçom
 (entrevistado ou respondente de questionário) é versionado nele — nem em texto, nem em planilha,
-nem em gravação/transcrição. Apenas dados agregados/anonimizados entram em
-`data-science/data/processed/`, e mesmo assim com cautela: amostras muito pequenas (ex.: n=2) não
-são estruturadas como dataset, só como texto narrativo, porque um "agregado" de amostra pequena
-pode reidentificar a resposta individual. Roteiros de entrevista (perguntas, estrutura) são
-versionados normalmente em `docs/requisitos/entrevistas/`, mas a gravação ou transcrição literal de
-qualquer entrevista realizada nunca é commitada. Ver detalhes completos em
+nem em gravação/transcrição. Apenas dados agregados/anonimizados e interpretados entram em
+`data-science/data/processed/` (hoje, `GASTRA_Dados_Processados.docx`) — mesmo assim com cautela:
+a amostra do garçom (n=2) nunca é apresentada como recorte estruturado por resposta, só como
+síntese narrativa, porque um "agregado" de amostra tão pequena pode reidentificar a resposta
+individual. Roteiros de entrevista (perguntas, estrutura) são versionados normalmente em
+`docs/requisitos/entrevistas/`, mas a gravação ou transcrição literal de qualquer entrevista
+realizada nunca é commitada. Ver detalhes completos em
 [`CONTRIBUTING.md`](CONTRIBUTING.md#6-segurança-e-integridade-de-dados) e em
 [`docs/GASTRA_STATUS.md`](docs/GASTRA_STATUS.md), seção "Dados do questionário e da entrevista".
 

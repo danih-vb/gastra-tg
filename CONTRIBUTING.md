@@ -97,7 +97,7 @@ o PR `main -> dev` no lugar; o resultado final é o mesmo.
 > recriada a partir de qualquer tag (`git checkout -b main v<ultima-tag>`) ou a partir da `dev`
 > atualizada, já que o conteúdo nunca é perdido de fato.
 
-## 2. Escopo do TG — status atual (revisado em 21/08/2026)
+## 2. Escopo do TG — status atual (revisado em 21/08/2026, requisitos ajustados em 23/08/2026)
 
 O `docs/GASTRA_STATUS.md` (seção 1) e a `docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`
 mantêm o status de validação de cada item de escopo, com a legenda completa de status. Resumo do
@@ -107,15 +107,18 @@ que vale hoje:
   Ciência de Dados, Programação Linear, LGPD.
 - **Núcleo do módulo de comandas** (abrir/pedir/fechar) — **validado com o orientador em
   21/08/2026** como componente **adicional**: necessário para alimentar os blocos analíticos com
-  dado real, mas não é o centro da entrega. Antes dessa data era tratado como "pendente de
-  validação" — essa fase já passou.
+  dado real, mas não é o centro da entrega.
 - **Extras condicionados a sobrar tempo** (validados, mas não são compromisso de entrega): cardápio
   digital (consulta via QR/tablet), consulta da comanda em tempo real pelo cliente, e lista de
   pendências do garçom. Só entram em desenvolvimento depois que o núcleo (comandas + os 4 blocos)
   tiver um MVP apresentável.
 - **Fora do escopo do TG:** integração com a cozinha (acesso a pedidos, confirmação de preparo).
-  Não é pendência — é decisão de excluir, tratada como feature futura pós-defesa. Nenhuma issue
-  deste ciclo do TG deve incluir esse item.
+  Não é pendência — é decisão de excluir, tratada como feature futura pós-defesa.
+- **Ajuste de requisito (23/08/2026):** RF12 (exclusão de histórico de pedidos pelo cliente) foi
+  removido do escopo — contradizia RN04/RN05 (sem identificador persistente de cliente entre
+  visitas). Ver `docs/requisitos/GASTRA_Requisitos_RN.docx`, seção 5.1, e
+  `docs/GASTRA_Pendencias_Orientador.docx` para o racional completo. RF14 foi incluído para
+  formalizar o registro híbrido (lista fechada + campo livre) de restrição/preferência alimentar.
 
 **Regra que continua valendo:** nenhum código ou texto commitado neste repositório deve tratar um
 item como escopo mais avançado do que o status registrado no `GASTRA_STATUS.md` permite — nem em
@@ -161,6 +164,7 @@ Exemplos reais para o GASTRA:
 - `feat: adiciona classificação híbrida de composição de mesa (RF02)`
 - `docs: atualiza matriz de rastreabilidade após validação do orientador`
 - `fix: corrige cálculo de taxa de serviço no fechamento de comanda`
+- `docs: remove RF12 do escopo e inclui RF14 (qualificador híbrido de restrição alimentar)`
 
 ## 4. Pull Requests e revisão
 
@@ -188,11 +192,10 @@ independentemente, o workflow "Auto-add sub-issues to project" já garante que t
 entra automaticamente no board, e o progresso aparece como barra (X de Y concluídas) direto no card
 da issue-mãe, sem atualização manual.
 
-Exemplo:
-- Issue-mãe: *"Formalizar RF/RNF/RN do módulo de comandas em tabela rastreável"*
-  - Sub-issue: "Revisar RF05 pra refletir cardápio digital opção B"
-  - Sub-issue: "Preencher coluna Origem/Fonte de cada RF na matriz"
-  - Sub-issue: "Validar RN03 com orientador antes de fechar"
+Exemplo real do projeto: a issue-mãe #5 ("Formalizar RF/RNF/RN do módulo de comandas em tabela
+rastreável") tem como sub-issue a #54 ("Separar validação estrutural do RN03 da calibração
+numérica dos pesos") — reparentada em 23/08/2026 depois que a antiga sub-issue #26 foi identificada
+como duplicata e fechada.
 
 Scripts de criação em lote ficam em `scripts/` (ex.: `create_issues_from_checklist.sh` para o lote
 inicial, `create_sprint_issues.sh` para sub-issues e issues novas de sprint). **Antes de rodar um
@@ -221,7 +224,7 @@ sozinho quando ele não vai:
 | Backlog → A Fazer | **Manual.** Vocês decidem no planejamento do sprint o que entra na Iteration atual. |
 | A Fazer → Em Andamento | **Manual.** Movam o card (ou mudem o Status) ao começar a trabalhar de fato. |
 | Em Andamento → Em Revisão | **Automático.** Dispara quando um PR é aberto vinculado à issue (workflow "Pull request linked to issue"). |
-| Em Revisão → Concluído | **Automático.** Dispara no merge do PR (workflow "Pull request merged"), ou ao fechar a issue diretamente sem PR (workflow "Item closed") — útil para itens de documentação/decisão que não passam por código. |
+| Em Revisão → Concluído | **Automático.** Dispara no merge do PR (workflow "Pull request merged"), ou ao fechar a issue diretamente sem PR (workflow "Item closed") — útil para itens de documentação/decisão que não passam por código (ex.: issue #4, fechada diretamente em 23/08/2026). |
 
 O campo **Iteration** (sprint, 1 semana) também é manual — não existe workflow que atribua sprint
 sozinho. No planejamento de cada sprint, atribuam manualmente a Iteration de cada item que entrar
@@ -243,11 +246,11 @@ reais de pedidos), alguns cuidados são obrigatórios, não opcionais:
   propositalmente — dados brutos ficam só localmente ou num storage separado (ex.: Google Drive
   restrito), nunca no Git. Isso vale também para roteiros de entrevista: o **roteiro** (perguntas,
   estrutura) pode ser versionado normalmente, mas gravação/transcrição literal da entrevista, não.
-- **Apenas dados agregados/anonimizados** entram em `data-science/data/processed/` e podem ser
-  versionados — com uma ressalva: amostras muito pequenas (ex.: n=2, caso do questionário de
-  garçom) não devem virar dataset estruturado ali, porque um "agregado" de 2 respostas praticamente
-  reidentifica a resposta individual. Nesses casos, tratar como texto narrativo em
-  `docs/GASTRA_STATUS.md`, não como planilha/CSV.
+- **Apenas dados agregados/anonimizados e já interpretados** entram em `data-science/data/processed/`
+  e podem ser versionados — hoje, isso é o arquivo `GASTRA_Dados_Processados.docx`. Ressalva
+  importante: a amostra do garçom (n=2) nunca é apresentada ali como recorte estruturado por
+  resposta ou gráfico — só como síntese narrativa, porque um "agregado" de 2 respostas praticamente
+  reidentifica a resposta individual.
 - **Nunca commitar segredos**: strings de conexão de banco, chaves de API, senhas. Usem variáveis de
   ambiente (`.env`, já no `.gitignore`) e um `.env.example` sem valores reais para documentar quais
   variáveis existem.
@@ -266,9 +269,10 @@ reais de pedidos), alguns cuidados são obrigatórios, não opcionais:
 | Código do frontend (Angular) | `frontend/` |
 | Notebooks de exploração (Python) | `data-science/notebooks/` |
 | Código de produção dos algoritmos (clusterização, PL, etc.) | `data-science/src/` |
-| Dados anonimizados/tratados | `data-science/data/processed/` |
+| Dados anonimizados/tratados e interpretados (ex.: `GASTRA_Dados_Processados.docx`) | `data-science/data/processed/` |
 | Dados brutos (NUNCA commitar) | `data-science/data/raw/` (local, fora do Git) |
 | Documento de status vivo | `docs/GASTRA_STATUS.md` |
+| Pendências, perguntas e histórico de reuniões com o orientador | `docs/GASTRA_Pendencias_Orientador.docx` |
 | Projeto de pesquisa formal | `docs/pesquisa/` |
 | Material institucional de apoio (guia de orientação, modelo de estrutura da FATEC) | `docs/pesquisa/referencias/` |
 | Business Model Canvas | `docs/negocio/` |
