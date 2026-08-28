@@ -1,7 +1,7 @@
 # GASTRA — Gestão Analítica de Restaurantes
 
 **Trabalho de Graduação (TG)** — Análise e Desenvolvimento de Sistemas, FATEC Araraquara
-**Autores:** Daniel (Danih) e Pedro
+**Autores:** Daniel Velluto Bento e Pedro Luis Otrente de Campos
 **Orientador:** Prof. Me. Leonardo José de Lima Ferrucci
 
 ---
@@ -11,7 +11,7 @@
 GASTRA é um sistema de apoio à decisão para gestão de restaurantes, combinando quatro blocos
 analíticos com um módulo operacional de comandas que alimenta esses blocos com dados reais.
 
-**Atualização de escopo (21/08/2026, validada com o orientador):** os quatro blocos analíticos
+Os quatro blocos analíticos
 continuam sendo o foco e a entrega central do TG. O módulo de comandas foi aprovado como
 **adicional necessário** — não substitui nem compete com o foco, apenas fornece os dados
 operacionais que os blocos analíticos consomem. Alguns itens do módulo de comandas são **extras
@@ -28,21 +28,8 @@ condicionados a sobrar tempo**, e um item foi formalmente excluído do TG.
 | **Comanda em tempo real** (consulta pelo cliente) | Cliente acompanha itens e valor parcial da própria comanda | 🟠 Validado como **extra opcional** — só se sobrar tempo |
 | **Lista de pendências do garçom** | Itens do pedido ainda não entregues, como lembrete ativo | 🟠 Validado como **extra opcional** — simples, se sobrar tempo |
 | **Integração com a cozinha** | Acesso a pedidos, confirmação de preparo | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa |
+| **Programa de fidelização** | Cadastro voluntário do cliente, identificador persistente (CPF/QR), histórico entre visitas | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa |
 
-> ℹ️ **Sobre o escopo:** o projeto de pesquisa formal ([`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf))
-> delimitava originalmente o GASTRA como não incluindo sistemas de pedidos ou cardápios digitais.
-> Essa delimitação foi revisada com o orientador em 21/08/2026 — o histórico completo da decisão e
-> o racional de cada item estão em [`docs/GASTRA_STATUS.md`](docs/GASTRA_STATUS.md#1-escopo-do-projeto-revisado-em-21082026--validado-com-o-orientador).
-> Itens 🟠 não são compromisso de entrega: só entram em desenvolvimento depois que o núcleo
-> (comandas + os 4 blocos analíticos) tiver um MVP apresentável.
-
-**Atualização de requisitos (23/08/2026, fechamento da Sprint 1):** RF12 (exclusão de histórico de
-pedidos) foi removido do escopo por contradizer a decisão de não reter identificador persistente do
-cliente entre visitas — resolvido por minimização de dados por desenho, não por uma funcionalidade
-de exclusão. RF14 foi incluído para formalizar o registro híbrido (lista fechada + campo livre) de
-restrição/preferência alimentar pelo garçom. Detalhes em
-[`docs/requisitos/GASTRA_Requisitos_RN.docx`](docs/requisitos/GASTRA_Requisitos_RN.docx), seção 5.1,
-e em [`docs/GASTRA_Pendencias_Orientador.docx`](docs/GASTRA_Pendencias_Orientador.docx).
 
 ## Stack tecnológica
 
@@ -54,7 +41,7 @@ Definida no projeto de pesquisa formal:
 
 ## Notação de diagramas
 
-Notação confirmada com o orientador em 21/08/2026: **UML** (casos de uso, classes,
+**UML** (casos de uso, classes,
 sequência, atividades). MER/DER e Business Model Canvas ficam para a Sprint 2 — não
 fazem parte do escopo da Sprint 1.
 
@@ -112,8 +99,7 @@ gastra/
 - **User Stories:** [`docs/requisitos/GASTRA_User_Stories.docx`](docs/requisitos/GASTRA_User_Stories.docx)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
 - *A criar (Sprint 2):* Business Model Canvas, MER/DER, diagramas de apoio (UML),
-  definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário —
-  ver checklist em `docs/GASTRA_STATUS.md`.
+  definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Como rodar localmente
 
@@ -146,6 +132,4 @@ realizada nunca é commitada. Ver detalhes completos em
 
 ## Licença
 
-Este projeto está sob a licença definida em [`LICENSE`](LICENSE). **Atenção:** por ser um Trabalho
-de Graduação, confirmem com o Prof. Ferrucci e a FATEC se há alguma exigência institucional sobre
-licenciamento/propriedade intelectual antes da defesa — ver `CONTRIBUTING.md`, seção 8.
+Este projeto está sob a licença definida em [`LICENSE`](LICENSE). 
