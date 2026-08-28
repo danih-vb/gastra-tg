@@ -1,31 +1,31 @@
 # GASTRA — Status do Projeto
 
 TG (Trabalho de Graduação) — FATEC Araraquara
-Alunos: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
-Última atualização: 23/08/2026
+Alunos: Daniel Velluto Bento e Pedro Luis Otrente de Campos | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
+Última atualização: 27/08/2026 (Sprint 1 encerrada por completo)
 
 > **Como manter este arquivo vivo:** ele fica versionado no repositório (`docs/GASTRA_STATUS.md`).
-> Toda vez que um item mudar de status, editem aqui e façam commit com uma mensagem clara.
+> Toda vez que um item mudar de status, edite aqui e faça commit com uma mensagem clara.
 
 ---
 
-## 1. Escopo do projeto (revisado em 21/08/2026 — validado com o orientador)
+## 1. Escopo do projeto
 
-**Foco e entrega central do TG (inalterado):**
+**Foco e entrega central do TG:**
 1. BI (Business Intelligence)
 2. Ciência de dados — clusterização e regras de associação (recomendação de pratos)
 3. Programação linear — alocação/distribuição de garçons
 4. Conformidade LGPD
 
-**O que mudou nesta validação (21/08):**
 
-| Item | Status até 17/08 | Status a partir de 21/08 |
-|---|---|---|
-| Núcleo do módulo de comandas (abrir/pedir/fechar) | 🟡 Pendente de validação | 🟢 **Validado como adicional** — necessário para alimentar os 4 blocos, mas **não é o foco** do TG |
-| Cardápio digital (consulta, QR/tablet) | 🟠 Pendente, extensão opcional | 🟠 **Validado como extra opcional** — só se sobrar tempo |
-| Cliente acompanhar a comanda em tempo real | (não existia) | 🟠 **Validado como extra opcional** — achado da entrevista Cocobambu, só se sobrar tempo |
-| Lista de pendências do garçom (itens não entregues) | (não existia) | 🟠 **Validado como extra opcional** — achado da entrevista, simples de implementar |
-| Integração com a cozinha (acesso a pedidos, confirmar preparo) | Nunca cogitado | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa |
+| Item | Status |
+|---|---|
+| Núcleo do módulo de comandas (abrir/pedir/fechar) | 🟢 **Validado como adicional** — necessário para alimentar os 4 blocos, mas **não é o foco** do TG |
+| Cardápio digital (consulta, QR/tablet) | 🟠 **Validado como extra opcional** — só se sobrar tempo |
+| Cliente acompanhar a comanda em tempo real | 🟠 **Validado como extra opcional** — achado da entrevista, só se sobrar tempo |
+| Lista de pendências do garçom (itens não entregues) | 🟠 **Validado como extra opcional** — achado da entrevista, simples de implementar |
+| Integração com a cozinha (acesso a pedidos, confirmar preparo) | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa |
+| Programa de fidelização (cadastro do cliente, identificador persistente, histórico entre visitas) | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa (decisão de 27/08/2026) |
 
 **Regra prática:** esforço de desenvolvimento e de documentação prioriza sempre o núcleo (comandas) +
 os 4 blocos analíticos. Os itens 🟠 só começam depois que houver um MVP apresentável do núcleo. O
@@ -33,7 +33,7 @@ item ⚫ não entra em nenhuma issue deste ciclo do TG.
 
 ---
 
-## 2. Decisões de design já fechadas
+## 2. Decisões de design
 
 | Decisão | Resolução | Data |
 |---|---|---|
@@ -44,16 +44,20 @@ item ⚫ não entra em nenhuma issue deste ciclo do TG.
 | **Critério de rotação de garçons (RN03)** | **Proposta:** equilibrar faturamento acumulado por garçom, ponderado pelo faturamento histórico da praça — ver `GASTRA_Requisitos_RN.docx`, seção 3.1 | 21/08/2026 — decisão interna proposta |
 | **KPIs de BI e ranking (RF10/RF11)** | Faturamento por garçom/praça, ticket médio, tempo médio de atendimento, índice composto (não só venda) | 21/08/2026 — decisão interna proposta |
 | **Critério de recomendação de pratos (RF09)** | Regras de associação com limiares de suporte/confiança a calibrar; clusterização por padrão de consumo, nº de clusters a definir experimentalmente | 21/08/2026 — decisão interna proposta, calibração numérica pendente de dado |
-| **Notação dos diagramas de apoio** | UML (casos de uso, classes, sequência, atividades) — confirmado com o orientador | 21/08/2026 |
+| **Notação dos diagramas de apoio** | UML (casos de uso, classes, sequência, atividades) | 21/08/2026 |
 | **Função objetivo do algoritmo de PL (RN03)** | Estrutura fechada (issue #6) — equilibrar faturamento acumulado por garçom, ponderado pelo faturamento histórico da praça | 22/08/2026 |
 | **Qualificador de restrição/preferência alimentar (RF14)** | Modelo híbrido: lista fechada de categorias comuns + campo de observação livre, vinculado à comanda ativa; o campo livre não entra na análise estruturada do Bloco 6 | 23/08/2026 — issue #7 |
 | **Resolução da contradição RF12 x RN04/RN05** | RF12 removido do escopo — sem identificador persistente de cliente entre visitas, não existe histórico pessoal individualizável para excluir após a comanda fechar/agregar. Minimização por desenho substitui a funcionalidade de exclusão | 23/08/2026 — issue #53 |
-| **Consolidação de #26/#54/#55 (RN03)** | Issue #26 fechada como duplicata; #54 (validação estrutural do RN03 com o orientador) tornou-se sub-issue de #5; #55 (calibração numérica) segue no Milestone M7, sem sobreposição | 23/08/2026 |
+| **Consolidação de #26/#54/#55 (RN03)** | Issue #26 fechada como duplicata; #54 (validação estrutural do RN03 com o orientador) tornou-se sub-issue de #5; #55 (calibração numérica) segue no Milestone M5, sem sobreposição | 27/08/2026 |
+| **Estrutura final do RN03** | Validada com o orientador: dois fatores combinados por soma ponderada — faturamento acumulado ponderado pelo histórico da praça + tempo desde a última alocação em praça de alto potencial (w1+w2=1, ambos normalizados). Issue #54 fechada. Ver `GASTRA_Requisitos_RN.docx`, seção 3.1 | 27/08/2026 |
+| **Fonte de dado para calibração de RN03** | Dado simulado, com premissas documentadas, confirmado como suficiente para o TG. Issue #55 desbloqueada | 27/08/2026 |
+| **Valores de RNF01/RNF02** | Definidos como meta inicial: 2 segundos (RNF01) e 5 toques (RNF02), baseados em referencial de usabilidade (Nielsen); a validar empiricamente na Etapa 4 (M6) | 27/08/2026 |
+| **Programa de fidelização** | Mantido fora do escopo do TG — feature futura pós-defesa. Contradiz o compromisso de anonimização já assumido no projeto de pesquisa formal | 27/08/2026 |
+| **Milestones M3–M10 reestruturadas** | Realinhadas ao Cronograma de Entregas do TGII da coordenação; blocos analíticos tratados como frentes paralelas dentro de uma sprint única de backend. Ver `GASTRA_MEMORIA_GITHUB_PROJECTS.md`, seção 13 | 27/08/2026 |
 
 **Pendente de decisão:**
-- Valores numéricos de RNF01/RNF02 (X segundos, N toques).
-- Pesos exatos do critério de rotação (RN03) — estrutura definida, calibração pendente de dado real/simulado (issue #55).
-- Validação formal de RN03 com o orientador (issue #54) — pauta da próxima reunião.
+- Pesos exatos (w1, w2) do critério de rotação (RN03) — estrutura fechada, calibração numérica em andamento com dado simulado (issue #55).
+- Limiares de suporte/confiança do RF09 — depende de volume de dado.
 
 ---
 
@@ -82,9 +86,13 @@ item ⚫ não entra em nenhuma issue deste ciclo do TG.
 - [x] Decisão do qualificador de restrição alimentar — modelo híbrido (RF14, issue #7)
 - [x] Resolução da contradição RF12 x RN04/RN05 — RF12 removido do escopo (issue #53)
 - [x] Consolidação das issues de acompanhamento de RN03 (#26/#54/#55)
+- [x] Validação formal de RN03 com o orientador (issue #54) — estrutura final fechada em 27/08/2026
+- [x] Valores de RNF01/RNF02 definidos (2s / 5 toques)
+- [x] Decisão sobre programa de fidelização — mantido fora do escopo do TG
+- [x] Reestruturação das Milestones M3–M10 alinhada ao cronograma oficial do TGII
+- [x] Fechamento completo da Sprint 1 (27/08/2026)
 
 ### 🔄 Em andamento
-- [ ] Validação formal de RN03 com o orientador (issue #54) — reunião prevista para 24/08/2026
 - [ ] Decidir se o restaurante colaborador é citado nominalmente no TG ou tratado como "restaurante colaborador" (permanece como termo padrão até decisão contrária)
 
 ### ⏳ A fazer
@@ -134,9 +142,7 @@ item ⚫ não entra em nenhuma issue deste ciclo do TG.
 Esta seção mantém apenas um resumo executivo; para qualquer citação numérica no texto do TG, usar o
 documento processado como fonte, não este resumo.
 
-> Amostras pequenas (garçom n=2, cliente n=13). Tratar como indicativo, não como estatisticamente
-> representativo. Nenhuma citação literal de resposta individual aparece em nenhum documento do
-> projeto, só padrão agregado.
+> Amostras pequenas (garçom n=2, cliente n=13).
 
 - **Flags dietéticas:** 77% dos clientes relatam dificuldade em identificar pratos vegano/vegetariano/sem glúten/sem lactose no cardápio; a entrevista mostra que a causa raiz é escassez de opções no cardápio, não falha de comunicação do garçom.
 - **Rotação de praças (RN03):** 100% dos garçons concordam que rotação por dado seria mais justa que escala fixa; entrevista fornece o racional concreto (praças com potencial de faturamento estruturalmente diferente).
@@ -166,10 +172,14 @@ documento processado como fonte, não este resumo.
 - **23/08/2026** — Issue #7 fechada: decisão híbrida (lista fechada + campo livre) para restrição/preferência alimentar, formalizada como RF14/US11.
 - **23/08/2026** — Issue #53 fechada: RF12 removido do escopo por minimização de dados por desenho — ver seção 2 e `GASTRA_Requisitos_RN.docx`, seção 5.1.
 - **23/08/2026** — Dados de questionário e entrevista processados e versionados em `GASTRA_Dados_Processados.docx`; pendências com o orientador organizadas em `GASTRA_Pendencias_Orientador.docx`.
+- **27/08/2026** — Cronograma oficial do TGII recebido (`Cronograma_TGII_ADS_2026.pdf`); Milestones M3–M10 reestruturadas no GitHub Projects para alinhar às 8 etapas oficiais; issues reatribuídas; `GASTRA_MEMORIA_GITHUB_PROJECTS.md` atualizado.
+- **27/08/2026** — Reunião com o orientador: RN03 validado em sua estrutura final (dois fatores, soma ponderada); dado simulado aceito como fonte para calibração numérica (issue #55); argumento de remoção de RF12 confirmado como aceitável para a banca; decisão de manter o programa de fidelização fora do escopo do TG.
+- **27/08/2026** — RNF01/RNF02 definidos como meta inicial (2s / 5 toques), com base em referencial de usabilidade (Nielsen).
+- **27/08/2026** — Issue #54 fechada; Sprint 1 encerrada por completo.
 
 ---
 
-## 8. Dados do questionário e da entrevista — onde ficam e como tratar
+## 8. Dados do questionário e da entrevista
 
 **Regra geral (já em `CONTRIBUTING.md`, seção 6): dado bruto identificável nunca vai para o Git.**
 
@@ -178,7 +188,7 @@ documento processado como fonte, não este resumo.
 | Transcrição bruta da entrevista (docx) | `data-science/data/raw/` local + backup restrito | **Não** |
 | Exportação bruta do Jotform (CSV, resposta por resposta) | `data-science/data/raw/` local | **Não** |
 | Dados processados, agregados e interpretados (cliente + garçom + entrevista, com gráficos) | `data-science/data/processed/GASTRA_Dados_Processados.docx` | **Sim** |
-| Achados da entrevista, em texto corrido resumido | `docs/GASTRA_STATUS.md`, seção 6 (resumo executivo; detalhe fica no documento processado) | **Sim** |
+| Achados da entrevista, em texto corrido resumido | `docs/GASTRA_STATUS.md`, seção 6 | **Sim** |
 
 **Sobre recuperar as perguntas originais:** `docs/requisitos/GASTRA_Instrumento_Coleta.md` tem a lista completa das perguntas dos dois formulários, sem nenhuma resposta.
 
@@ -186,24 +196,34 @@ documento processado como fonte, não este resumo.
 
 ---
 
-## 9. Cronograma oficial — aguardando
+## 9. Cronograma oficial — recebido em 27/08/2026
 
-Sem mudanças desde a última rodada — o cronograma oficial do TG ainda não chegou. Até lá, Milestones no GitHub Projects não são alteradas para evitar retrabalho.
+O `Cronograma_TGII_ADS_2026.pdf` chegou com 8 etapas de entrega fixadas pela coordenação do curso,
+cobrindo de 26/08/2026 até a banca (janela 30/11–05/12/2026). As Milestones M3–M10 do GitHub
+Projects foram reestruturadas no mesmo dia para alinhar a essas etapas — detalhamento completo em
+`GASTRA_MEMORIA_GITHUB_PROJECTS.md`, seção 13. Essa reestruturação ainda não foi validada
+formalmente com o Prof. Ferrucci (ver `GASTRA_Pendencias_Orientador.docx`, seção 4).
 
 ---
 
-## 10. Fechamento da Sprint 1 (atualizado em 23/08/2026)
+## 10. Fechamento da Sprint 1 (concluído em 27/08/2026)
 
 PR #52 mesclada, fechando #6, #18 e #22. Ao longo do dia 23/08, as pendências estruturais da Sprint 1
 foram resolvidas: #4 (entrevista sistematizada), #7 (qualificador híbrido), #53 (RF12 removido), e a
 sobreposição #26/#54/#55 (consolidada).
 
-**Único item que carrega para a próxima etapa:**
-- **#54 (sub-issue de #5) — Validar RN03 com o orientador**: depende de reunião formal com o Prof.
-  Ferrucci, prevista para 24/08/2026. A calibração numérica dos pesos (#55) segue bloqueada por
-  falta de dado real/simulado, e não é pré-requisito para a Sprint 2 começar.
+**Item que fechou a Sprint 1:**
+- **#54 (sub-issue de #5) — Validar RN03 com o orientador**: reunião realizada em 27/08/2026.
+  Estrutura final validada (dois fatores, soma ponderada); dado simulado aceito como fonte para a
+  calibração numérica (#55, que segue aberta no Milestone M5 — calibração não é pré-requisito para
+  a Sprint 2 começar). Issue #54 fechada; #5 fecha junto por consequência.
 
-Business Model Canvas, MER/DER e diagramas de apoio (UML) ficam formalmente para a Sprint 2, cujo
-planning acontece logo após a reunião de 24/08.
+Junto com o fechamento de #54, ficaram definidos nesta mesma rodada: valores de RNF01/RNF02 (meta
+inicial), o argumento de banca para a remoção de RF12 (confirmado pelo orientador), e a decisão de
+manter o programa de fidelização fora do escopo do TG. Toda a Sprint 1 está, portanto, encerrada.
+
+Business Model Canvas, MER/DER e diagramas de apoio (UML) — já mapeados nas Milestones M3 e M4 —
+são o conteúdo da Sprint 2, cujo planning segue logo após o Sprint Review/Retrospectiva da Sprint 1
+e a release de apresentação ao orientador.
 
 Pauta completa e histórico de decisões com o orientador: ver `docs/GASTRA_Pendencias_Orientador.docx`.

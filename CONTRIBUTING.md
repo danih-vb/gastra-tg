@@ -24,8 +24,7 @@ Usamos GitFlow simplificado (a versão completa tem branches `support/*` que nã
 
 Porque commit direto sem PR = sem revisão do outro integrante = maior risco de um dos dois não
 conseguir explicar um trecho na banca. A regra de "sempre passar por PR" força os dois a lerem o
-código/documento um do outro antes de considerar pronto — o mesmo princípio já registrado no
-`GASTRA_STATUS.md` para a coluna "Em Revisão" do quadro de tarefas.
+código/documento um do outro antes de considerar pronto.
 
 ### Fluxo do dia a dia
 
@@ -97,7 +96,7 @@ o PR `main -> dev` no lugar; o resultado final é o mesmo.
 > recriada a partir de qualquer tag (`git checkout -b main v<ultima-tag>`) ou a partir da `dev`
 > atualizada, já que o conteúdo nunca é perdido de fato.
 
-## 2. Escopo do TG — status atual (revisado em 21/08/2026, requisitos ajustados em 23/08/2026)
+## 2. Escopo do TG
 
 O `docs/GASTRA_STATUS.md` (seção 1) e a `docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`
 mantêm o status de validação de cada item de escopo, com a legenda completa de status. Resumo do
@@ -131,7 +130,7 @@ texto que já dependia disso.
 
 ## 2.1 Notação de diagramas de apoio
 
-Confirmado com o orientador em 21/08/2026: os diagramas de apoio do TG (casos de uso,
+Os diagramas de apoio do TG (casos de uso,
 classes, sequência, atividades) seguem notação **UML**. Vale para tudo que for para
 `docs/diagramas/` e `docs/modelagem/der/` (quando entrar em pauta na Sprint 2), e
 para qualquer diagrama de fluxo referenciado no texto do TG. O MER continua em
@@ -209,7 +208,7 @@ Três conceitos diferentes, que se complementam:
 | Conceito | O que representa | Escala de tempo |
 |---|---|---|
 | **Milestone** | Um entregável temático do TG (ex.: "Levantamento de Requisitos") | Semanas a meses — pode abranger várias sprints |
-| **Iteration** (campo Sprint) | Um bloco de tempo fixo de trabalho | 1 semana (ajustado de 2 semanas em 19/08/2026) |
+| **Iteration** (campo Sprint) | Um bloco de tempo fixo de trabalho | 1 semana |
 | **Status** (coluna do board) | O estado atual de uma issue específica | Muda dia a dia |
 
 Uma issue pode pertencer à Milestone M1, estar na Iteration "Sprint 1", e ter Status "Em Andamento"
@@ -230,11 +229,6 @@ O campo **Iteration** (sprint, 1 semana) também é manual — não existe workf
 sozinho. No planejamento de cada sprint, atribuam manualmente a Iteration de cada item que entrar
 em "A Fazer", e o Assignee (quem da dupla fica responsável) junto, no mesmo momento — evita que os
 dois comecem a mesma tarefa sem perceber.
-
-> **Nota (21/08/2026):** o cronograma oficial do TG ainda está por vir. Issues dos artefatos novos
-> (Business Model Canvas, User Stories, UX/UI, arquitetura, testes, manual do usuário — ver
-> `docs/GASTRA_STATUS.md`) já podem ser criadas no Backlog sem Milestone/Iteration atribuída; a
-> distribuição final entre Milestones acontece assim que o cronograma chegar.
 
 ## 6. Segurança e integridade de dados
 
@@ -289,14 +283,6 @@ reais de pedidos), alguns cuidados são obrigatórios, não opcionais:
 
 ## 8. Licenciamento
 
-Este repositório usa licença MIT (ver `LICENSE`), escolhida como **padrão sugerido** por ser
-permissiva, simples e comum em projetos acadêmicos abertos — não é exigência da ABNT nem da FATEC.
-É uma decisão de projeto em aberto. Antes da banca, confirmem:
+Este repositório usa licença MIT (ver `LICENSE`).
 
-1. **Regras institucionais da FATEC/orientador sobre propriedade intelectual de TG.** Algumas
-   instituições preferem "todos os direitos reservados" até a defesa, especialmente se houver
-   intenção de publicação futura ou uso comercial do GASTRA. Se for esse o caso, substituam a
-   licença por "Todos os direitos reservados" (sem licença aberta) ou por uma licença mais
-   restritiva (ex.: CC BY-NC-ND para a documentação).
-2. **Autoria dupla.** Os dois nomes devem constar no copyright do `LICENSE` — já ajustado. Se o
-   repositório for movido para uma conta/organização única, mantenham os dois nomes mesmo assim.
+

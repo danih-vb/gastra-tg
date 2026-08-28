@@ -5,10 +5,6 @@ checklist que já existe em `.github/PULL_REQUEST_TEMPLATE.md`, que é preenchid
 o PR. Os dois se complementam: um garante que o autor não esqueceu nada, este garante que o revisor
 não aprova no automático.
 
-Não precisa ser burocrático — a maioria dos PRs vai passar por isso em 2-3 minutos. A ideia é ter
-uma lista fixa pra não depender de lembrar tudo de cabeça toda vez, principalmente em PRs de
-documentação, onde é mais fácil "só ler por cima e aprovar".
-
 ## 1. A base do PR está certa?
 - [ ] O PR está direcionado para `dev`, não para `main` (a menos que seja explicitamente um PR de
       release, `dev` → `main`, o que deve ser raro e combinado entre os dois antes).
@@ -72,6 +68,4 @@ documentação, onde é mais fácil "só ler por cima e aprovar".
 ---
 
 **Regra geral:** se alguma dessas checkboxes te deixar em dúvida, é melhor comentar no PR e pedir
-ajuste do que aprovar "confiando que está tudo bem". O ponto inteiro de revisão cruzada é os dois
-conseguirem defender qualquer parte do repositório na banca — aprovar sem entender de verdade
-anula esse propósito.
+ajuste do que aprovar "confiando que está tudo bem".

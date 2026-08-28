@@ -1,11 +1,7 @@
 # GASTRA — Instrumento de Coleta (Questionários Jotform)
 
-TG — FATEC Araraquara | Autores: Daniel (Danih) e Pedro | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
-Gerado em: 21/08/2026, direto do Jotform (via API) — **contém só as perguntas, nenhuma resposta.**
-
-> Este documento é o que se cita no TG como instrumento de coleta. As respostas brutas nunca entram
-> aqui nem em nenhum outro arquivo versionado — ver `docs/GASTRA_STATUS.md`, seção 8.
-
+TG — FATEC Araraquara | Autores: Daniel Velluto Bento e Pedro Luis Otrente de Campos | Orientador: Prof. Me. Leonardo José de Lima Ferrucci
+Gerado em: 21/08/2026, direto do Jotform (via API)
 ---
 
 ## 1. Formulário — Garçom/Atendente
@@ -103,5 +99,5 @@ Gerado em: 21/08/2026, direto do Jotform (via API) — **contém só as pergunta
   desenho (título "Pesquisa Anônima de Experiência em Restaurantes").
 - Isso reduz o risco de reidentificação, mas não elimina — para o formulário de garçom (n=2),
   respostas abertas ainda podem ser identificáveis dentro da equipe pequena de um restaurante.
-  Continua valendo a regra da seção 8 do `GASTRA_STATUS.md`: dado de garçom não vira dataset
+  Dado de garçom não vira dataset
   estruturado, só texto narrativo agregado.
