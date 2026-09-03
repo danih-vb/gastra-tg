@@ -9,27 +9,24 @@
 ## Sobre o projeto
 
 GASTRA é um sistema de apoio à decisão para gestão de restaurantes, combinando quatro blocos
-analíticos com um módulo operacional de comandas que alimenta esses blocos com dados reais.
+analíticos — Business Intelligence, Ciência de Dados, Programação Linear e conformidade com a
+LGPD — com um módulo operacional de comandas que alimenta esses blocos com dados reais de
+atendimento.
 
-Os quatro blocos analíticos
-continuam sendo o foco e a entrega central do TG. O módulo de comandas foi aprovado como
-**adicional necessário** — não substitui nem compete com o foco, apenas fornece os dados
-operacionais que os blocos analíticos consomem. Alguns itens do módulo de comandas são **extras
-condicionados a sobrar tempo**, e um item foi formalmente excluído do TG.
+## Escopo
 
-| Bloco | O que faz | Status de escopo |
+| Bloco | O que faz | Enquadramento |
 |---|---|---|
-| **BI** (Business Intelligence) | Relatórios agregados de faturamento por praça/garçom, KPIs definidos | 🟢 Validado — escopo original, foco do TG |
-| **Ciência de Dados** | Clusterização e regras de associação para recomendação de pratos | 🟢 Validado — escopo original, foco do TG |
-| **Programação Linear** | Otimização da alocação de garçons por praça (critério RN03) | 🟢 Validado — escopo original, foco do TG |
-| **LGPD** | Conformidade e minimização de dados pessoais em todo o sistema | 🟢 Validado — escopo original, foco do TG |
-| **Núcleo do Módulo de Comandas** | Abertura/fechamento de mesa, registro de pedido (front-of-house) | 🟢 Validado como **adicional** — necessário, mas não é o foco |
-| **Cardápio Digital** (consulta) | Consulta via QR/tablet, sem função de pedido | 🟠 Validado como **extra opcional** — só se sobrar tempo |
-| **Comanda em tempo real** (consulta pelo cliente) | Cliente acompanha itens e valor parcial da própria comanda | 🟠 Validado como **extra opcional** — só se sobrar tempo |
-| **Lista de pendências do garçom** | Itens do pedido ainda não entregues, como lembrete ativo | 🟠 Validado como **extra opcional** — simples, se sobrar tempo |
-| **Integração com a cozinha** | Acesso a pedidos, confirmação de preparo | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa |
-| **Programa de fidelização** | Cadastro voluntário do cliente, identificador persistente (CPF/QR), histórico entre visitas | ⚫ **Fora do escopo do TG** — feature futura, pós-defesa |
-
+| **BI** (Business Intelligence) | Relatórios agregados de faturamento por praça/garçom, KPIs definidos | Escopo original, foco do TG |
+| **Ciência de Dados** | Clusterização e regras de associação para recomendação de pratos | Escopo original, foco do TG |
+| **Programação Linear** | Otimização da alocação de garçons por praça (critério RN03) | Escopo original, foco do TG |
+| **LGPD** | Conformidade e minimização de dados pessoais em todo o sistema | Escopo original, foco do TG |
+| **Núcleo do Módulo de Comandas** | Abertura/fechamento de mesa, registro de pedido (front-of-house) | Adicional — necessário para alimentar os blocos analíticos, mas não é o foco |
+| **Cardápio Digital** (consulta) | Consulta via QR/tablet, sem função de pedido | Extra opcional — condicionado a sobrar tempo |
+| **Comanda em tempo real** (consulta pelo cliente) | Cliente acompanha itens e valor parcial da própria comanda | Extra opcional — condicionado a sobrar tempo |
+| **Lista de pendências do garçom** | Itens do pedido ainda não entregues, como lembrete ativo | Extra opcional — condicionado a sobrar tempo |
+| **Integração com a cozinha** | Acesso a pedidos, confirmação de preparo | Fora do escopo do TG — feature futura, pós-defesa |
+| **Programa de fidelização** | Cadastro voluntário do cliente, identificador persistente, histórico entre visitas | Fora do escopo do TG — feature futura, pós-defesa |
 
 ## Stack tecnológica
 
@@ -41,95 +38,84 @@ Definida no projeto de pesquisa formal:
 
 ## Notação de diagramas
 
-**UML** (casos de uso, classes,
-sequência, atividades). MER/DER e Business Model Canvas ficam para a Sprint 2 — não
-fazem parte do escopo da Sprint 1.
+**UML** para os diagramas de apoio (casos de uso, classes, sequência, atividades). O
+modelo de dados segue MER em linguagem natural, formalizado em seguida como DER. O modelo de
+negócio é representado em Business Model Canvas.
 
 ## Estrutura do repositório
 
 ```
-gastra/
-├── backend/                   # API ASP.NET Core
-├── frontend/                  # Aplicação Angular
-├── data-science/              # Python — BI, clusterização, regras de associação, PL
-│   ├── notebooks/             # Exploração e prototipagem (Jupyter)
-│   ├── src/                   # Código de produção dos algoritmos
+gastra-tg/
+├── backend/                       # API ASP.NET Core
+├── frontend/                      # Aplicação Angular
+├── data-science/                  # Python — BI, clusterização, regras de associação, PL
+│   ├── notebooks/                 # Exploração e prototipagem (Jupyter)
+│   ├── src/                       # Código de produção dos algoritmos
 │   └── data/
-│       ├── raw/                # NUNCA versionado (dados pessoais/LGPD) — ver docs/requisitos
-│       └── processed/          # Dados tratados/anonimizados, versionáveis
-│           └── GASTRA_Dados_Processados.docx  # Achados interpretados (questionários + entrevista)
+│       ├── raw/                   # Nunca versionado (dados pessoais/LGPD)
+│       └── processed/             # Dados tratados/anonimizados, versionáveis
+│           └── GASTRA_Dados_Processados.docx
 ├── docs/
-│   ├── GASTRA_STATUS.md       # Documento vivo — status, decisões, checklist, roadmap
-│   ├── GASTRA_Pendencias_Orientador.docx  # Pauta, perguntas e histórico de reuniões com o orientador
-│   ├── CHECKLIST_REVISAO_PR.md # Roteiro para quem revisa um Pull Request
-│   ├── pesquisa/               # Projeto de pesquisa formal (Gastra.pdf)
-│   │   └── referencias/        # Material institucional de apoio (guia de orientação da FATEC, etc.)
-│   ├── negocio/                 # Business Model Canvas
-│   ├── requisitos/             # RF/RNF/RN, Matriz de Rastreabilidade, User Stories
-│   │   └── entrevistas/        # Roteiros de entrevista (nunca gravação/transcrição bruta)
+│   ├── pesquisa/                  # Projeto de pesquisa formal
+│   │   ├── Gastra.pdf
+│   │   └── referencias/           # Referências bibliográficas e material de apoio
+│   │       └── GASTRA_Referencias_Bibliograficas.docx
+│   ├── negocio/                   # Business Model Canvas
+│   ├── requisitos/                # RF/RNF/RN, Matriz de Rastreabilidade, User Stories, KPIs
+│   │   ├── GASTRA_Requisitos_RN.docx
+│   │   ├── GASTRA_Matriz_Rastreabilidade.docx
+│   │   ├── GASTRA_User_Stories.docx
+│   │   ├── GASTRA_KPIs_Criterios_Analiticos.docx
+│   │   ├── entrevistas/           # Roteiros de entrevista (nunca gravação/transcrição bruta)
+│   │   │   └── GASTRA_Roteiro_Entrevista_Restaurante.docx
+│   │   └── questionarios/         # Instrumento de coleta (Jotform)
+│   │       └── GASTRA_Instrumento_Coleta.docx
 │   ├── modelagem/
-│   │   ├── mer/                 # Modelo de Entidade-Relacionamento (linguagem natural, primeiro)
-│   │   └── der/                 # Diagrama formal (a partir do MER)
-│   ├── arquitetura/             # Definição de arquitetura do sistema (parte teórica do TG)
-│   ├── ux-ui/                   # Wireframes e protótipo navegável
-│   ├── testes/                  # Cenários de teste executados
-│   ├── manual-usuario/          # Manual de uso do usuário
-│   ├── diagramas/               # Diagramas de apoio (fluxos, casos de uso)
-│   └── assets/logo/             # Identidade visual do GASTRA
-├── scripts/                   # Scripts de apoio (criação de issues em lote, etc.)
-├── .github/                   # Templates de issue/PR, workflows
-├── CONTRIBUTING.md            # Fluxo de contribuição (GitFlow), commits, segurança
+│   │   ├── mer/                   # Modelo de Entidade-Relacionamento (linguagem natural)
+│   │   └── der/                   # Diagrama formal, a partir do MER
+│   ├── arquitetura/                # Definição de arquitetura do sistema
+│   ├── ux-ui/                      # Wireframes e protótipo navegável
+│   ├── testes/                     # Cenários de teste executados
+│   ├── manual-usuario/             # Manual de uso do usuário
+│   ├── diagramas/                  # Diagramas de apoio (UML)
+│   └── assets/
+│       └── logo/                   # Identidade visual do GASTRA
+├── scripts/                        # Scripts de apoio ao repositório
+├── .github/                        # Templates de issue/PR, workflows
+├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
 
 ## Documentação
 
-- **Status vivo do projeto:** [`docs/GASTRA_STATUS.md`](docs/GASTRA_STATUS.md) — escopo, decisões,
-  checklist de tarefas, milestones, sprints, resumo dos resultados dos questionários e da entrevista.
-- **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
-  — achados agregados e interpretados, com gráficos, versionável (dado bruto nunca entra aqui).
-- **Pendências e histórico com o orientador:** [`docs/GASTRA_Pendencias_Orientador.docx`](docs/GASTRA_Pendencias_Orientador.docx)
-  — pauta de reunião, perguntas específicas, decisões já aprovadas.
+- **Projeto de pesquisa formal:** [`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf)
+- **Referências bibliográficas:** [`docs/pesquisa/referencias/GASTRA_Referencias_Bibliograficas.docx`](docs/pesquisa/referencias/GASTRA_Referencias_Bibliograficas.docx)
 - **Requisitos e Regras de Negócio:** [`docs/requisitos/GASTRA_Requisitos_RN.docx`](docs/requisitos/GASTRA_Requisitos_RN.docx)
 - **Matriz de Rastreabilidade:** [`docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`](docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx)
-- **Roteiro de entrevista (restaurante colaborador):** [`docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx`](docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Cocobambu.docx)
-- **Projeto de pesquisa formal:** [`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf)
-- **Checklist de revisão de PR:** [`docs/CHECKLIST_REVISAO_PR.md`](docs/CHECKLIST_REVISAO_PR.md)
 - **User Stories:** [`docs/requisitos/GASTRA_User_Stories.docx`](docs/requisitos/GASTRA_User_Stories.docx)
+- **KPIs e Critérios Analíticos:** [`docs/requisitos/GASTRA_KPIs_Criterios_Analiticos.docx`](docs/requisitos/GASTRA_KPIs_Criterios_Analiticos.docx)
+- **Roteiro de entrevista (restaurante colaborador):** [`docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Restaurante.docx`](docs/requisitos/entrevistas/GASTRA_Roteiro_Entrevista_Restaurante.docx)
+- **Instrumento de coleta (questionários Jotform):** [`docs/requisitos/questionarios/GASTRA_Instrumento_Coleta.docx`](docs/requisitos/questionarios/GASTRA_Instrumento_Coleta.docx)
+- **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
+- **Fluxo de contribuição:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
-- *A criar (Sprint 2):* Business Model Canvas, MER/DER, diagramas de apoio (UML),
-  definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
-
-## Como rodar localmente
-
-Cada módulo terá seu próprio `README.md` com instruções de setup assim que o código for iniciado:
-
-- `backend/README.md` — a criar junto com o primeiro commit de código do ASP.NET Core
-- `frontend/README.md` — a criar junto com o primeiro commit de código do Angular
-- `data-science/README.md` — a criar junto com os primeiros notebooks/scripts Python
-
-## Fluxo de contribuição
-
-Este repositório segue **GitFlow**. Antes de commitar, leia [`CONTRIBUTING.md`](CONTRIBUTING.md) —
-ele cobre branches, convenção de commits, fluxo de release, uso do quadro de tarefas (Milestones,
-Sprints/Iterations e Status), processo de revisão entre a dupla e regras de segurança para dados
-sensíveis (LGPD).
+- *A criar:* Business Model Canvas, MER/DER, diagramas de apoio (UML), definição de
+  arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
 
 Este repositório é **público**, mas nenhum dado pessoal identificável de cliente ou garçom
-(entrevistado ou respondente de questionário) é versionado nele — nem em texto, nem em planilha,
-nem em gravação/transcrição. Apenas dados agregados/anonimizados e interpretados entram em
-`data-science/data/processed/` (hoje, `GASTRA_Dados_Processados.docx`) — mesmo assim com cautela:
-a amostra do garçom (n=2) nunca é apresentada como recorte estruturado por resposta, só como
-síntese narrativa, porque um "agregado" de amostra tão pequena pode reidentificar a resposta
-individual. Roteiros de entrevista (perguntas, estrutura) são versionados normalmente em
-`docs/requisitos/entrevistas/`, mas a gravação ou transcrição literal de qualquer entrevista
-realizada nunca é commitada. Ver detalhes completos em
-[`CONTRIBUTING.md`](CONTRIBUTING.md#6-segurança-e-integridade-de-dados) e em
-[`docs/GASTRA_STATUS.md`](docs/GASTRA_STATUS.md), seção "Dados do questionário e da entrevista".
+(entrevistado ou respondente de questionário) é versionado nele — nem em texto, nem em
+planilha, nem em gravação/transcrição. Apenas dados agregados/anonimizados e interpretados
+entram em `data-science/data/processed/` (hoje, `GASTRA_Dados_Processados.docx`) — mesmo assim
+com cautela: amostras muito pequenas nunca são apresentadas como recorte estruturado por
+resposta, só como síntese narrativa, porque um "agregado" de amostra tão pequena pode
+reidentificar a resposta individual. Roteiros de entrevista (perguntas, estrutura) são
+versionados normalmente em `docs/requisitos/entrevistas/`, mas a gravação ou transcrição
+literal de qualquer entrevista realizada nunca é commitada. Ver detalhes completos em
+[`CONTRIBUTING.md`](CONTRIBUTING.md#4-segurança-de-dados-e-lgpd).
 
 ## Licença
 
-Este projeto está sob a licença definida em [`LICENSE`](LICENSE). 
+Este projeto está sob a licença definida em [`LICENSE`](LICENSE).
