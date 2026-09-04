@@ -61,6 +61,7 @@ gastra-tg/
 │   │   └── referencias/           # Referências bibliográficas e material de apoio
 │   │       └── GASTRA_Referencias_Bibliograficas.docx
 │   ├── negocio/                   # Business Model Canvas
+│   │   └── GASTRA_Business_Model_Canvas.png
 │   ├── requisitos/                # RF/RNF/RN, Matriz de Rastreabilidade, User Stories, KPIs
 │   │   ├── GASTRA_Requisitos_RN.docx
 │   │   ├── GASTRA_Matriz_Rastreabilidade.docx
@@ -100,7 +101,8 @@ gastra-tg/
 - **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
 - **Fluxo de contribuição:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
-- *A criar:* Business Model Canvas, MER/DER, diagramas de apoio (UML), definição de
+- **Business Model Canvas:** [`docs/negocio/GASTRA_Business_Model_Canvas.png`](docs/negocio/GASTRA_Business_Model_Canvas.png)
+- *A criar:* MER/DER, diagramas de apoio (UML), definição de
   arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
