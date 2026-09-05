@@ -79,6 +79,7 @@ gastra-tg/
 │   ├── testes/                     # Cenários de teste executados
 │   ├── manual-usuario/             # Manual de uso do usuário
 │   ├── diagramas/                  # Diagramas de apoio (UML)
+│       └── casos-de-uso/           # Diagramas UML de Casos de Uso
 │   └── assets/
 │       └── logo/                   # Identidade visual do GASTRA
 ├── scripts/                        # Scripts de apoio ao repositório
@@ -102,8 +103,10 @@ gastra-tg/
 - **Fluxo de contribuição:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
 - **Business Model Canvas:** [`docs/negocio/GASTRA_Business_Model_Canvas.png`](docs/negocio/GASTRA_Business_Model_Canvas.png)
-- *A criar:* MER/DER, diagramas de apoio (UML), definição de
-  arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
+- **Casos de Uso:** [`docs/requisitos/GASTRA_Casos_de_Uso.docx`](docs/requisitos/GASTRA_Casos_de_Uso.docx)
+
+- *A criar:* Business Model Canvas, MER/DER, diagramas de sequência/atividade/classes,
+definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
 
