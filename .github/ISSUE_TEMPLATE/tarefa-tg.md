@@ -1,6 +1,6 @@
 ---
 name: Tarefa do TG
-about: Item de trabalho vindo do checklist do GASTRA_STATUS.md
+about: Item de trabalho do GASTRA, vinculado ao board do GitHub Projects
 title: "[BLOCO] Descrição curta"
 labels: ""
 assignees: ""
@@ -33,5 +33,5 @@ assignees: ""
 
 ## Status de validação com o orientador
 
-- [ ] Não se aplica (decisão interna / escopo já validado)
-- [ ] Depende de validação pendente — ver `docs/GASTRA_STATUS.md`, seção 1
+- [ ] Não se aplica
+- [ ] Depende de validação pendente
