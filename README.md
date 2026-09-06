@@ -35,6 +35,7 @@ Definida no projeto de pesquisa formal:
 - **Backend:** ASP.NET Core
 - **Frontend:** Angular
 - **Análise de dados:** Python (clusterização, regras de associação, programação linear)
+- **Banco de dados:** MySQL, containerizado via Docker Compose no ambiente de desenvolvimento
 
 ## Notação de diagramas
 
@@ -55,6 +56,9 @@ gastra-tg/
 │       ├── raw/                   # Nunca versionado (dados pessoais/LGPD)
 │       └── processed/             # Dados tratados/anonimizados, versionáveis
 │           └── GASTRA_Dados_Processados.docx
+├── infra/                         # Ambiente de banco via Docker Compose (dev/testes)
+│   ├── docker-compose.yml         # Serviço MySQL containerizado
+│   └── .env.example               # Variáveis necessárias, sem valor real (.env não é versionado)
 ├── docs/
 │   ├── pesquisa/                  # Projeto de pesquisa formal
 │   │   ├── Gastra.pdf
@@ -80,6 +84,8 @@ gastra-tg/
 │   ├── manual-usuario/             # Manual de uso do usuário
 │   ├── diagramas/                  # Diagramas de apoio (UML)
 │       └── casos-de-uso/           # Diagramas UML de Casos de Uso
+│       ├── atividade/              # Diagramas UML de Atividade
+│       └── sequencia/              # Diagramas UML de Sequência
 │   └── assets/
 │       └── logo/                   # Identidade visual do GASTRA
 ├── scripts/                        # Scripts de apoio ao repositório
@@ -101,11 +107,16 @@ gastra-tg/
 - **Instrumento de coleta (questionários Jotform):** [`docs/requisitos/questionarios/GASTRA_Instrumento_Coleta.docx`](docs/requisitos/questionarios/GASTRA_Instrumento_Coleta.docx)
 - **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
 - **Fluxo de contribuição:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- **Ambiente de banco de dados (Docker):** [`infra/README.md`](infra/README.md)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
 - **Business Model Canvas:** [`docs/negocio/GASTRA_Business_Model_Canvas.png`](docs/negocio/GASTRA_Business_Model_Canvas.png)
 - **Casos de Uso:** [`docs/requisitos/GASTRA_Casos_de_Uso.docx`](docs/requisitos/GASTRA_Casos_de_Uso.docx)
+- **Diagrama de Atividade — Núcleo de Comandas:** [`docs/diagramas/atividade/GASTRA_Atividade_NucleoComandas.png`](docs/diagramas/atividade/GASTRA_Atividade_NucleoComandas.png)
+- **Diagrama de Atividade — Alocação de Garçons:** [`docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png`](docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png)
+- **Diagrama de Sequência — Núcleo de Comandas:** [`docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png`](docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png)
+- **Diagrama de Sequência — Recomendação de Pratos:** [`docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png`](docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png)
 
-- *A criar:* Business Model Canvas, MER/DER, diagramas de sequência/atividade/classes,
+- *A criar:* Business Model Canvas, MER/DER, diagrama de classes,
 definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
