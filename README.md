@@ -77,15 +77,19 @@ gastra-tg/
 │   │       └── GASTRA_Instrumento_Coleta.docx
 │   ├── modelagem/
 │   │   ├── mer/                   # Modelo de Entidade-Relacionamento (linguagem natural)
-│   │   └── der/                   # Diagrama formal, a partir do MER
+│   │   │   └── GASTRA_MER.docx
+│   │   └── der/                   # Diagrama formal (notação de Chen), a partir do MER
+│   │       ├── GASTRA_DER.brm3
+│   │       └── GASTRA_DER.png
 │   ├── arquitetura/                # Definição de arquitetura do sistema
 │   ├── ux-ui/                      # Wireframes e protótipo navegável
 │   ├── testes/                     # Cenários de teste executados
 │   ├── manual-usuario/             # Manual de uso do usuário
 │   ├── diagramas/                  # Diagramas de apoio (UML)
-│       └── casos-de-uso/           # Diagramas UML de Casos de Uso
-│       ├── atividade/              # Diagramas UML de Atividade
-│       └── sequencia/              # Diagramas UML de Sequência
+│   │   ├── casos-de-uso/           # Diagramas UML de Casos de Uso
+│   │   ├── classe/                 # Diagrama de Classes do domínio
+│   │   ├── atividade/              # Diagramas UML de Atividade
+│   │   └── sequencia/              # Diagramas UML de Sequência
 │   └── assets/
 │       └── logo/                   # Identidade visual do GASTRA
 ├── scripts/                        # Scripts de apoio ao repositório
@@ -115,9 +119,11 @@ gastra-tg/
 - **Diagrama de Atividade — Alocação de Garçons:** [`docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png`](docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png)
 - **Diagrama de Sequência — Núcleo de Comandas:** [`docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png`](docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png)
 - **Diagrama de Sequência — Recomendação de Pratos:** [`docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png`](docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png)
+- **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
+- **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
+- **Diagrama de Classes:** [`docs/diagramas/classe/GASTRA_Classe.png`](docs/diagramas/classe/GASTRA_Classe.png)
 
-- *A criar:* Business Model Canvas, MER/DER, diagrama de classes,
-definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
+- *A criar:* definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
 
