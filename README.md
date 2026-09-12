@@ -79,7 +79,7 @@ gastra-tg/
 │   │   ├── mer/                   # Modelo de Entidade-Relacionamento (linguagem natural)
 │   │   │   └── GASTRA_MER.docx
 │   │   └── der/                   # Diagrama formal (notação de Chen), a partir do MER
-│   │       ├── GASTRA_DER.brm3
+│   │       ├── GASTRA_DER.brM3
 │   │       └── GASTRA_DER.png
 │   ├── arquitetura/                # Definição de arquitetura do sistema
 │   ├── ux-ui/                      # Wireframes e protótipo navegável
@@ -92,7 +92,6 @@ gastra-tg/
 │   │   └── sequencia/              # Diagramas UML de Sequência
 │   └── assets/
 │       └── logo/                   # Identidade visual do GASTRA
-├── scripts/                        # Scripts de apoio ao repositório
 ├── .github/                        # Templates de issue/PR, workflows
 ├── CONTRIBUTING.md
 ├── LICENSE
