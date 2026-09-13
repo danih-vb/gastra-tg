@@ -26,11 +26,13 @@ Ambiente de desenvolvimento/testes via Docker Compose, com MySQL containerizado.
 ## Conectando via MySQL Workbench
 
 - Host: `localhost`
-- Porta: `3306` (padrão) — **se a porta 3306 já estiver em uso na sua máquina**
-  (ex.: outra instalação local de MySQL), altere o mapeamento no
-  `docker-compose.yml` para `"3307:3306"` (ou outra porta livre) antes de subir
-  o container, e use essa porta na conexão.
+- Porta: o valor de `MYSQL_PORT` do seu `.env` (padrão `3307`)
 - Usuário/senha: valores de `MYSQL_USER`/`MYSQL_PASSWORD` do seu `.env`
+
+> O container usa a porta 3307 no host por padrão para não colidir com uma
+> instalação local de MySQL, que normalmente ocupa a 3306. Se a 3307 também
+> estiver em uso na sua máquina, altere `MYSQL_PORT` no `.env` e suba de novo
+> com `docker compose up -d` — não é necessário editar o `docker-compose.yml`.
 
 ## Resetando o ambiente
 
