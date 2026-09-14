@@ -20,7 +20,7 @@ validar o projeto em 14/09/2026.
 | Docker Compose | 5.5.1 | sobe o `infra/docker-compose.yml` | vem com o Docker Desktop |
 | WSL | 2.7.14 | backend Linux do Docker Desktop | `wsl --install` (ver seção 5) |
 | .NET SDK | **10.0.401** | backend (fixado pelo `backend/global.json`) | `winget install Microsoft.DotNet.SDK.10` |
-| dotnet-ef | 10.0.8 | migrations do Entity Framework | `dotnet tool install --global dotnet-ef` |
+| dotnet-ef | 9.0.20 | migrations do Entity Framework | ferramenta **local** do projeto: `dotnet tool restore` dentro de `backend/` (versão fixada em `backend/dotnet-tools.json`) |
 | Node.js | 24.16.0 | frontend | https://nodejs.org |
 | npm | 11.13.0 | pacotes do frontend | vem com o Node.js |
 | Python | 3.13.3 | camada analítica | https://www.python.org |
@@ -100,8 +100,13 @@ Detalhes (inclusive o uso do solver do PuLP) em `data-science/README.md`.
 ```bash
 cd backend
 dotnet --version
+dotnet tool restore
 dotnet test
 ```
+
+O `dotnet tool restore` instala o `dotnet-ef` na versão do projeto (EF Core 9). Não use um
+`dotnet-ef` global de outra versão principal. A string de conexão com o MySQL é configurada em
+`src/Gastra.Api/appsettings.Development.json` — ver `backend/README.md`.
 
 O `dotnet --version` dentro de `backend/` deve mostrar `10.0.x`. Detalhes em `backend/README.md`.
 
@@ -124,7 +129,7 @@ Com tudo instalado, cada linha abaixo deve dar o resultado esperado.
 | Verificação | Comando | Esperado |
 |---|---|---|
 | .NET fixado | `dotnet --version` (dentro de `backend/`) | `10.0.x` |
-| Migrations disponíveis | `dotnet ef --version` | `10.x` |
+| Migrations disponíveis | `dotnet tool restore` e depois `dotnet ef --version` (dentro de `backend/`) | `9.0.20` |
 | Docker ativo | `docker version` | seções *Client* e *Server* sem erro |
 | MySQL de pé | `docker compose ps` (dentro de `infra/`) | `gastra-mysql` com status `healthy` |
 | Testes do backend | `dotnet test` (dentro de `backend/`) | todos aprovados |
