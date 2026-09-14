@@ -1,0 +1,9 @@
+[project]
+name = "gastra-analitica"
+version = "0.1.0"
+description = "Camada analítica do GASTRA: recomendação de pratos e alocação de garçons"
+requires-python = ">=3.13"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

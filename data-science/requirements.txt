@@ -24,3 +24,12 @@ pymysql==1.2.0
 
 # Notebooks de exploração (data-science/notebooks/)
 jupyterlab==4.6.3
+
+# Serviço HTTP consumido pelo backend em C# (src/gastra_analitica/api/)
+fastapi==0.141.1
+uvicorn==0.53.0
+
+# Testes (pytest + TestClient do FastAPI)
+# httpx2 no lugar de httpx: o TestClient do Starlette marca o uso do httpx como obsoleto.
+pytest==9.1.1
+httpx2==2.13.0
