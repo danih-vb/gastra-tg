@@ -1,6 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Gastra.Api/Gastra.Api.csproj" />
+    <Project Path="src/Gastra.Application/Gastra.Application.csproj" />
+    <Project Path="src/Gastra.Communication/Gastra.Communication.csproj" />
+    <Project Path="src/Gastra.Domain/Gastra.Domain.csproj" />
+    <Project Path="src/Gastra.Exceptions/Gastra.Exceptions.csproj" />
+    <Project Path="src/Gastra.Infrastructure/Gastra.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Gastra.Api.Tests/Gastra.Api.Tests.csproj" />

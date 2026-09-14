@@ -8,6 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.20">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gastra.Application\Gastra.Application.csproj" />
+    <ProjectReference Include="..\Gastra.Communication\Gastra.Communication.csproj" />
+    <ProjectReference Include="..\Gastra.Exceptions\Gastra.Exceptions.csproj" />
+    <ProjectReference Include="..\Gastra.Infrastructure\Gastra.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
