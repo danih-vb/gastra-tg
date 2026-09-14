@@ -126,6 +126,7 @@ gastra-tg/
 - **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
 - **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
 - **Diagrama de Classes:** [`docs/diagramas/classe/GASTRA_Classe.png`](docs/diagramas/classe/GASTRA_Classe.png)
+- **Política de Log e Auditoria (LGPD):** [`docs/arquitetura/GASTRA_Politica_Log_Auditoria.md`](docs/arquitetura/GASTRA_Politica_Log_Auditoria.md)
 
 - *A criar:* definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
 
