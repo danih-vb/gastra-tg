@@ -82,6 +82,7 @@ gastra-tg/
 │   │       ├── GASTRA_DER.brM3
 │   │       └── GASTRA_DER.png
 │   ├── arquitetura/                # Definição de arquitetura do sistema
+│   │   └── GASTRA_Ambiente_Desenvolvimento.md
 │   ├── ux-ui/                      # Wireframes e protótipo navegável
 │   ├── testes/                     # Cenários de teste executados
 │   ├── manual-usuario/             # Manual de uso do usuário
@@ -111,6 +112,7 @@ gastra-tg/
 - **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
 - **Fluxo de contribuição:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - **Ambiente de banco de dados (Docker):** [`infra/README.md`](infra/README.md)
+- **Guia do ambiente de desenvolvimento (setup do zero):** [`docs/arquitetura/GASTRA_Ambiente_Desenvolvimento.md`](docs/arquitetura/GASTRA_Ambiente_Desenvolvimento.md)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
 - **Business Model Canvas:** [`docs/negocio/GASTRA_Business_Model_Canvas.png`](docs/negocio/GASTRA_Business_Model_Canvas.png)
 - **Casos de Uso:** [`docs/requisitos/GASTRA_Casos_de_Uso.docx`](docs/requisitos/GASTRA_Casos_de_Uso.docx)
