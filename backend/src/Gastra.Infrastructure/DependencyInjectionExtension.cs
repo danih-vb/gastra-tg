@@ -1,3 +1,5 @@
+using Gastra.Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +12,19 @@ public static class DependencyInjectionExtension
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        AddDbContext(services, configuration);
+
         return services;
+    }
+
+    private static void AddDbContext(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Gastra");
+
+        // Versão fixa em vez de ServerVersion.AutoDetect: o AutoDetect conecta no banco na
+        // inicialização, e a API não subiria com o MySQL desligado.
+        var serverVersion = new MySqlServerVersion(new Version(8, 4, 0));
+
+        services.AddDbContext<GastraDbContext>(options => options.UseMySql(connectionString, serverVersion));
     }
 }
