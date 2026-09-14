@@ -9,18 +9,55 @@ API em ASP.NET Core (.NET 10), com controllers.
 
 ## Estrutura
 
+Arquitetura em camadas: cada camada é um projeto separado na solução.
+
 ```
 backend/
-├── global.json                 # Fixa o SDK do .NET 10
-├── Gastra.slnx                 # Solução
+├── global.json                    # Fixa o SDK do .NET 10
+├── Gastra.slnx                    # Solução
 ├── src/
-│   └── Gastra.Api/             # API (controllers, Program.cs, configurações)
+│   ├── Gastra.Api/                # Porta de entrada: controllers, middlewares, filters
+│   ├── Gastra.Application/        # Casos de uso: orquestram o domínio
+│   ├── Gastra.Communication/      # Contratos da API: requests e responses
+│   ├── Gastra.Domain/             # Entidades, enums, regras de negócio, interfaces de repositório
+│   ├── Gastra.Exceptions/         # Exceções de negócio e mensagens (pt-BR / en)
+│   └── Gastra.Infrastructure/     # Acesso a dados: Entity Framework, repositórios, migrations
 └── tests/
-    └── Gastra.Api.Tests/       # Testes (xUnit + WebApplicationFactory)
+    └── Gastra.Api.Tests/          # Testes de integração e de arquitetura
 ```
 
-A organização em camadas (domínio, serviços, repositórios) será definida junto com a
-arquitetura do sistema (issue #46). Por enquanto, um único projeto de API.
+### Regra de dependência
+
+As dependências apontam **para dentro**: o domínio não depende de nenhuma outra camada.
+
+| Camada | Pode referenciar |
+|---|---|
+| `Domain` | nenhuma |
+| `Communication` | nenhuma |
+| `Exceptions` | nenhuma |
+| `Infrastructure` | `Domain` |
+| `Application` | `Domain`, `Communication`, `Exceptions` |
+| `Api` | `Application`, `Communication`, `Exceptions`, `Infrastructure` |
+
+A `Api` referencia a `Infrastructure` apenas para registrar as dependências na inicialização
+(*composition root*): os controllers conversam somente com a `Application`.
+
+Essa regra é verificada automaticamente por `tests/Gastra.Api.Tests/ArquiteturaTests.cs` —
+se uma camada passar a depender de outra indevidamente, o `dotnet test` falha.
+
+### Injeção de dependência
+
+Cada camada registra os próprios serviços em um método de extensão, e o `Program.cs` apenas os
+chama:
+
+```csharp
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+```
+
+O nome da camada de exceções está no plural (`Gastra.Exceptions`) de propósito: um namespace
+`Gastra.Exception` faria a palavra `Exception` apontar para o namespace, e não para
+`System.Exception`, dentro de todo código `Gastra.*`.
 
 ## Comandos
 

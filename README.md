@@ -47,7 +47,9 @@ negócio é representado em Business Model Canvas.
 
 ```
 gastra-tg/
-├── backend/                       # API ASP.NET Core
+├── backend/                       # API ASP.NET Core — arquitetura em camadas (ver backend/README.md)
+│   ├── src/                       # Api, Application, Communication, Domain, Exceptions, Infrastructure
+│   └── tests/                     # Testes de integração e de arquitetura
 ├── frontend/                      # Aplicação Angular
 ├── data-science/                  # Python — BI, clusterização, regras de associação, PL
 │   ├── notebooks/                 # Exploração e prototipagem (Jupyter)

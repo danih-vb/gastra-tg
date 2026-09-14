@@ -10,4 +10,11 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Gastra.Application\Gastra.Application.csproj" />
+    <ProjectReference Include="..\Gastra.Communication\Gastra.Communication.csproj" />
+    <ProjectReference Include="..\Gastra.Exceptions\Gastra.Exceptions.csproj" />
+    <ProjectReference Include="..\Gastra.Infrastructure\Gastra.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
