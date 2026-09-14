@@ -49,9 +49,10 @@ negócio é representado em Business Model Canvas.
 gastra-tg/
 ├── backend/                       # API ASP.NET Core
 ├── frontend/                      # Aplicação Angular
-├── data-science/                  # Python — BI, clusterização, regras de associação, PL
+├── data-science/                  # Python — clusterização, regras de associação, PL (serviço FastAPI)
 │   ├── notebooks/                 # Exploração e prototipagem (Jupyter)
-│   ├── src/                       # Código de produção dos algoritmos
+│   ├── src/gastra_analitica/      # Código de produção: api/, recomendacao/, alocacao/
+│   ├── tests/                     # Testes (pytest)
 │   └── data/
 │       ├── raw/                   # Nunca versionado (dados pessoais/LGPD)
 │       └── processed/             # Dados tratados/anonimizados, versionáveis

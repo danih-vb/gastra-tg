@@ -42,18 +42,47 @@ problema.solve(solver)
 Não use `pulp.PULP_CBC_CMD()` nem `prob.solve()` sem solver: funcionam hoje, mas quebram na
 atualização para o PuLP 4.0.
 
+## Responsabilidade
+
+A camada analítica **calcula e devolve** resultados: recomendação de pratos (clusterização e
+regras de associação) e alocação de garçons (programação linear). **A gravação no banco é
+responsabilidade do backend em C#**, que consome este serviço por HTTP.
+
 ## Estrutura
 
 ```
 data-science/
-├── notebooks/        # Exploração e prototipagem (Jupyter)
-├── src/              # Código de produção dos algoritmos
+├── pyproject.toml              # Configuração do pacote e do pytest
+├── requirements.txt
+├── src/
+│   └── gastra_analitica/
+│       ├── api/                # FastAPI: recebe as requisições e chama os algoritmos
+│       ├── recomendacao/       # Clusterização e regras de associação (RF09)
+│       └── alocacao/           # Programação linear — alocação de garçons (RF06, RN03)
+├── tests/                      # pytest
+├── notebooks/                  # Exploração e prototipagem (Jupyter)
 └── data/
-    ├── raw/          # NUNCA versionado (dados pessoais/LGPD) — está no .gitignore
-    └── processed/    # Dados tratados/anonimizados, versionáveis
+    ├── raw/                    # NUNCA versionado (dados pessoais/LGPD) — está no .gitignore
+    └── processed/              # Dados tratados/anonimizados, versionáveis
 ```
 
-Para abrir os notebooks: `jupyter lab` (com o ambiente ativado).
+**Regra:** os módulos de algoritmos (`recomendacao/`, `alocacao/`) **não dependem da API**.
+São funções Python puras, usadas tanto pelo FastAPI quanto pelos notebooks, sem duplicar
+código. A regra é verificada por `tests/test_arquitetura.py`.
+
+## Comandos
+
+Todos executados dentro de `data-science/`, com o ambiente ativado.
+
+| Comando | O que faz |
+|---|---|
+| `uvicorn gastra_analitica.api.main:app --app-dir src --reload` | Sobe o serviço em `http://localhost:8000` (o `--reload` reinicia ao salvar) |
+| `pytest` | Roda os testes |
+| `jupyter lab` | Abre os notebooks |
+
+Com o serviço rodando:
+- `http://localhost:8000/health` responde `{"status": "Healthy"}`
+- `http://localhost:8000/docs` abre a documentação interativa da API (gerada pelo FastAPI)
 
 ## LGPD
 
