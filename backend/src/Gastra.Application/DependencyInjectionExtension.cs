@@ -1,6 +1,7 @@
 using Gastra.Application.Mapeamento;
 using Gastra.Application.UseCases.Autenticacao;
 using Gastra.Application.UseCases.Cardapio;
+using Gastra.Application.UseCases.Usuarios;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Gastra.Application;
@@ -30,5 +31,11 @@ public static class DependencyInjectionExtension
         services.AddScoped<IConfigurarSegundoFatorUseCase, ConfigurarSegundoFatorUseCase>();
         services.AddScoped<IConfirmarSegundoFatorUseCase, ConfirmarSegundoFatorUseCase>();
         services.AddScoped<IEncerrarSessaoUseCase, EncerrarSessaoUseCase>();
+
+        services.AddScoped<ICadastrarUsuarioUseCase, CadastrarUsuarioUseCase>();
+        services.AddScoped<IListarUsuariosUseCase, ListarUsuariosUseCase>();
+        services.AddScoped<IObterUsuarioUseCase, ObterUsuarioUseCase>();
+        services.AddScoped<IEditarUsuarioUseCase, EditarUsuarioUseCase>();
+        services.AddScoped<IAlterarSituacaoUsuarioUseCase, AlterarSituacaoUsuarioUseCase>();
     }
 }

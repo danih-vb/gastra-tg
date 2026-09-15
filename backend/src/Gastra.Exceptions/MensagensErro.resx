@@ -22,4 +22,13 @@
   <data name="SegundoFatorNaoConfigurado" xml:space="preserve"><value>Configure o aplicativo autenticador antes de confirmar o código.</value></data>
   <data name="NaoAutenticado" xml:space="preserve"><value>É necessário fazer login.</value></data>
   <data name="AcessoNegado" xml:space="preserve"><value>Seu perfil não tem permissão para esta ação.</value></data>
+  <data name="EmailInvalido" xml:space="preserve"><value>O e-mail informado é inválido.</value></data>
+  <data name="EmailMuitoLongo" xml:space="preserve"><value>O e-mail deve ter no máximo 150 caracteres.</value></data>
+  <data name="SenhaCurta" xml:space="preserve"><value>A senha deve ter pelo menos 8 caracteres.</value></data>
+  <data name="SenhaLonga" xml:space="preserve"><value>A senha é longa demais.</value></data>
+  <data name="PapelInvalido" xml:space="preserve"><value>Papel de usuário inválido.</value></data>
+  <data name="EmailJaCadastrado" xml:space="preserve"><value>Já existe uma conta com este e-mail.</value></data>
+  <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>Usuário não encontrado.</value></data>
+  <data name="AlterarProprioPapel" xml:space="preserve"><value>Você não pode alterar o próprio papel.</value></data>
+  <data name="InativarPropriaConta" xml:space="preserve"><value>Você não pode inativar a própria conta.</value></data>
 </root>
