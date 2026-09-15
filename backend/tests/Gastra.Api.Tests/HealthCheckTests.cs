@@ -1,10 +1,9 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Gastra.Api.Tests.Infraestrutura;
 
 namespace Gastra.Api.Tests;
 
-public class HealthCheckTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public class HealthCheckTests(GastraApiFactory factory) : IClassFixture<GastraApiFactory>
 {
     [Fact]
     public async Task Health_RespondeOkQuandoAApiSobe()

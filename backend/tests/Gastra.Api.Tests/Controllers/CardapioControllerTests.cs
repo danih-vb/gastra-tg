@@ -1,22 +1,22 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Gastra.Api.Tests.Infraestrutura;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Enums;
+using static Gastra.Api.Tests.Infraestrutura.GastraApiFactory;
 
 namespace Gastra.Api.Tests.Controllers;
 
-public class CardapioControllerTests(GastraApiFactory factory) : IClassFixture<GastraApiFactory>
+public class CardapioControllerTests(GastraApiFactory factory) : IClassFixture<GastraApiFactory>, IAsyncLifetime
 {
     private const string Rota = "/api/cardapio";
 
-    private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
-    {
-        Converters = { new JsonStringEnumConverter() },
-    };
-
     private readonly HttpClient _cliente = factory.CreateClient();
+
+    // Os testes de gestão do cardápio rodam autenticados como Gerente (RF19–RF21).
+    public async Task InitializeAsync() => Autenticar(_cliente, await factory.TokenGerente(factory.CreateClient()));
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     private static object ItemValido(string nome = "Risoto de cogumelos") => new
     {
@@ -118,9 +118,46 @@ public class CardapioControllerTests(GastraApiFactory factory) : IClassFixture<G
         var resposta = await _cliente.PatchAsJsonAsync($"{Rota}/{item.Id}/disponibilidade", new { disponivel = false }, Json);
         Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
 
-        var disponiveis = await _cliente.GetFromJsonAsync<List<ItemCardapioResponse>>($"{Rota}?somenteDisponiveis=true", Json);
-        var todos = await _cliente.GetFromJsonAsync<List<ItemCardapioResponse>>(Rota, Json);
-        Assert.DoesNotContain(disponiveis!, i => i.Id == item.Id);
-        Assert.Contains(todos!, i => i.Id == item.Id && !i.Disponivel);
+        var digital = await factory.CreateClient().GetFromJsonAsync<List<ItemCardapioResponse>>($"{Rota}/digital", Json);
+        var gestao = await _cliente.GetFromJsonAsync<List<ItemCardapioResponse>>(Rota, Json);
+        Assert.DoesNotContain(digital!, i => i.Id == item.Id);
+        Assert.Contains(gestao!, i => i.Id == item.Id && !i.Disponivel);
+    }
+
+    // --- Autorização (RF19–RF21, RNF04) ---
+
+    [Fact]
+    public async Task Cadastrar_SemLogin_Retorna401()
+    {
+        var anonimo = factory.CreateClient();
+
+        var resposta = await anonimo.PostAsJsonAsync(Rota, ItemValido(), Json);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, resposta.StatusCode);
+        Assert.Equal(["É necessário fazer login."], await LerErros(resposta));
+    }
+
+    [Fact]
+    public async Task Cadastrar_ComoGarcom_Retorna403()
+    {
+        var email = $"garcom-{Guid.NewGuid():N}@gastra.test";
+        await factory.CriarUsuario(email, PapelUsuario.Garcom);
+        var garcom = factory.CreateClient();
+        Autenticar(garcom, await factory.Login(garcom, email));
+
+        var resposta = await garcom.PostAsJsonAsync(Rota, ItemValido(), Json);
+
+        Assert.Equal(HttpStatusCode.Forbidden, resposta.StatusCode);
+        Assert.Equal(["Seu perfil não tem permissão para esta ação."], await LerErros(resposta));
+    }
+
+    [Fact]
+    public async Task CardapioDigital_SemLogin_Retorna200()
+    {
+        await Cadastrar("Água com gás");
+
+        var resposta = await factory.CreateClient().GetAsync($"{Rota}/digital");
+
+        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
     }
 }

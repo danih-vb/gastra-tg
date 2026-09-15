@@ -13,4 +13,13 @@
   <data name="ItemCardapioNaoEncontrado" xml:space="preserve"><value>Menu item not found.</value></data>
   <data name="RequisicaoInvalida" xml:space="preserve"><value>Invalid request.</value></data>
   <data name="ErroInesperado" xml:space="preserve"><value>An unexpected error occurred.</value></data>
+  <data name="EmailObrigatorio" xml:space="preserve"><value>Email is required.</value></data>
+  <data name="SenhaObrigatoria" xml:space="preserve"><value>Password is required.</value></data>
+  <data name="CredenciaisInvalidas" xml:space="preserve"><value>Invalid email or password.</value></data>
+  <data name="TokenSegundoFatorInvalido" xml:space="preserve"><value>Verification step expired or invalid. Please log in again.</value></data>
+  <data name="CodigoSegundoFatorInvalido" xml:space="preserve"><value>Invalid verification code.</value></data>
+  <data name="SegundoFatorJaConfigurado" xml:space="preserve"><value>The authenticator app is already set up for this user.</value></data>
+  <data name="SegundoFatorNaoConfigurado" xml:space="preserve"><value>Set up the authenticator app before confirming the code.</value></data>
+  <data name="NaoAutenticado" xml:space="preserve"><value>You must log in.</value></data>
+  <data name="AcessoNegado" xml:space="preserve"><value>Your role is not allowed to perform this action.</value></data>
 </root>

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Gastra.Api.Configuracao;
 using Gastra.Api.Filtros;
 using Gastra.Application;
 using Gastra.Communication.Responses;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAutenticacaoJwt(builder.Configuration);
 
 builder.Services
     .AddControllers(opcoes => opcoes.Filters.Add<FiltroExcecao>())
@@ -31,6 +33,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // i18n: o idioma da resposta vem do cabeçalho Accept-Language (pt-BR por padrão, ou en).
+// Fica antes da autenticação para que as mensagens de 401/403 também saiam traduzidas.
 string[] culturas = ["pt-BR", "en"];
 app.UseRequestLocalization(opcoes => opcoes
     .SetDefaultCulture(culturas[0])
@@ -39,10 +42,13 @@ app.UseRequestLocalization(opcoes => opcoes
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
+
+await InicializadorAdministrador.Executar(app);
 
 app.Run();
 

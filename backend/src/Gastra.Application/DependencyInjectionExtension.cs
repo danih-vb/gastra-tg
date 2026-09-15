@@ -1,4 +1,5 @@
 using Gastra.Application.Mapeamento;
+using Gastra.Application.UseCases.Autenticacao;
 using Gastra.Application.UseCases.Cardapio;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,5 +25,10 @@ public static class DependencyInjectionExtension
         services.AddScoped<IObterItemCardapioUseCase, ObterItemCardapioUseCase>();
         services.AddScoped<IAtualizarPrecoItemUseCase, AtualizarPrecoItemUseCase>();
         services.AddScoped<IAlterarDisponibilidadeItemUseCase, AlterarDisponibilidadeItemUseCase>();
+
+        services.AddScoped<IAutenticarUseCase, AutenticarUseCase>();
+        services.AddScoped<IConfigurarSegundoFatorUseCase, ConfigurarSegundoFatorUseCase>();
+        services.AddScoped<IConfirmarSegundoFatorUseCase, ConfirmarSegundoFatorUseCase>();
+        services.AddScoped<IEncerrarSessaoUseCase, EncerrarSessaoUseCase>();
     }
 }
