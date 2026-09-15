@@ -22,6 +22,15 @@ public static class MensagensErro
     public static string ItemCardapioNaoEncontrado => Obter(nameof(ItemCardapioNaoEncontrado));
     public static string RequisicaoInvalida => Obter(nameof(RequisicaoInvalida));
     public static string ErroInesperado => Obter(nameof(ErroInesperado));
+    public static string EmailObrigatorio => Obter(nameof(EmailObrigatorio));
+    public static string SenhaObrigatoria => Obter(nameof(SenhaObrigatoria));
+    public static string CredenciaisInvalidas => Obter(nameof(CredenciaisInvalidas));
+    public static string TokenSegundoFatorInvalido => Obter(nameof(TokenSegundoFatorInvalido));
+    public static string CodigoSegundoFatorInvalido => Obter(nameof(CodigoSegundoFatorInvalido));
+    public static string SegundoFatorJaConfigurado => Obter(nameof(SegundoFatorJaConfigurado));
+    public static string SegundoFatorNaoConfigurado => Obter(nameof(SegundoFatorNaoConfigurado));
+    public static string NaoAutenticado => Obter(nameof(NaoAutenticado));
+    public static string AcessoNegado => Obter(nameof(AcessoNegado));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;

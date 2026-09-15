@@ -13,4 +13,13 @@
   <data name="ItemCardapioNaoEncontrado" xml:space="preserve"><value>Item do cardápio não encontrado.</value></data>
   <data name="RequisicaoInvalida" xml:space="preserve"><value>Requisição inválida.</value></data>
   <data name="ErroInesperado" xml:space="preserve"><value>Ocorreu um erro inesperado.</value></data>
+  <data name="EmailObrigatorio" xml:space="preserve"><value>O e-mail é obrigatório.</value></data>
+  <data name="SenhaObrigatoria" xml:space="preserve"><value>A senha é obrigatória.</value></data>
+  <data name="CredenciaisInvalidas" xml:space="preserve"><value>E-mail ou senha inválidos.</value></data>
+  <data name="TokenSegundoFatorInvalido" xml:space="preserve"><value>Etapa de verificação expirada ou inválida. Faça login novamente.</value></data>
+  <data name="CodigoSegundoFatorInvalido" xml:space="preserve"><value>Código de verificação inválido.</value></data>
+  <data name="SegundoFatorJaConfigurado" xml:space="preserve"><value>O aplicativo autenticador já foi configurado para este usuário.</value></data>
+  <data name="SegundoFatorNaoConfigurado" xml:space="preserve"><value>Configure o aplicativo autenticador antes de confirmar o código.</value></data>
+  <data name="NaoAutenticado" xml:space="preserve"><value>É necessário fazer login.</value></data>
+  <data name="AcessoNegado" xml:space="preserve"><value>Seu perfil não tem permissão para esta ação.</value></data>
 </root>

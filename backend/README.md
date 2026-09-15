@@ -100,15 +100,27 @@ aceita apenas EF Core 9.0.x). O EF Core 9 roda normalmente em .NET 10.
    ```
    Dentro de `backend/`, `dotnet ef --version` deve mostrar `9.0.20`, mesmo que haja outra
    versão instalada globalmente.
-3. Configure a string de conexão em `src/Gastra.Api/appsettings.Development.json` (arquivo
-   ignorado pelo Git), com os mesmos valores do `infra/.env`:
+3. Configure `src/Gastra.Api/appsettings.Development.json` (arquivo ignorado pelo Git):
    ```json
    {
      "ConnectionStrings": {
        "Gastra": "Server=localhost;Port=3307;Database=gastra_dev;User=gastra_app;Password=SUA_SENHA;"
+     },
+     "Jwt": {
+       "ChaveAssinatura": "UMA_CHAVE_ALEATORIA_COM_PELO_MENOS_32_CARACTERES"
+     },
+     "Administrador": {
+       "Nome": "Seu nome",
+       "Email": "gerente@gastra.local",
+       "Senha": "UMA_SENHA_FORTE"
      }
    }
    ```
+   - `ConnectionStrings:Gastra`: mesmos valores do `infra/.env`.
+   - `Jwt:ChaveAssinatura`: segredo que assina os tokens. **A API não inicia sem ela.** Para gerar
+     uma: `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+   - `Administrador`: cria o **primeiro Gerente** quando o banco não tem nenhum usuário (sem ele,
+     ninguém consegue entrar para cadastrar os demais). Depois de criado, a seção é ignorada.
 
 ### Migrations
 
@@ -122,6 +134,31 @@ Executados dentro de `backend/`:
 
 O `--project` aponta onde ficam o contexto e as migrations; o `--startup-project` é o projeto
 que inicializa a aplicação e fornece a configuração.
+
+## Autenticação e autorização
+
+| Etapa | Endpoint | Quem |
+|---|---|---|
+| Login com e-mail e senha (UC01) | `POST /api/autenticacao/login` | todos |
+| Vincular o app autenticador, uma única vez (RN07) | `POST /api/autenticacao/segundo-fator/configurar` | Gerente, Coordenador |
+| Confirmar o código de 6 dígitos (UC02) | `POST /api/autenticacao/segundo-fator/confirmar` | Gerente, Coordenador |
+| Encerrar sessão (UC03) | `POST /api/autenticacao/logoff` | usuário logado |
+
+- **Garçom e Metre** recebem o token de acesso direto no login. **Gerente e Coordenador** (RF16)
+  recebem só um token temporário (5 min), que não abre nenhum endpoint: o token de acesso vem depois
+  do código do app autenticador (Google Authenticator, Microsoft Authenticator etc.). No primeiro
+  acesso, a resposta do `configurar` traz a URI `otpauth://` (para gerar o QR code) e a chave manual.
+- **Senha:** hash BCrypt com fator de custo 12 (RN06). Login com e-mail inexistente ou senha errada
+  devolve a mesma mensagem, e o tempo de resposta é o mesmo nos dois casos.
+- **Token:** JWT assinado com `Jwt:ChaveAssinatura`, válido por 8 horas. Enviar no cabeçalho
+  `Authorization: Bearer <token>`.
+- **Logoff e inativação valem na hora:** cada usuário tem uma `chave_sessao`; todo token a carrega,
+  e a API confere a cada requisição. O logoff troca a chave, invalidando os tokens emitidos antes.
+- **Segredo do TOTP criptografado** no banco com o Data Protection do ASP.NET Core. As chaves do Data
+  Protection ficam no perfil do usuário da máquina (`%LOCALAPPDATA%\ASP.NET\DataProtection-Keys`):
+  se forem apagadas, os autenticadores já vinculados precisam ser configurados de novo.
+- **Permissões:** gestão do cardápio só para Gerente e Coordenador; `GET /api/cardapio/digital` e
+  `GET /api/cardapio/{id}` são públicos (o cliente não faz login).
 
 ## Configurações locais
 

@@ -10,6 +10,7 @@ namespace Gastra.Infrastructure.DataAccess;
 public class GastraDbContext(DbContextOptions<GastraDbContext> options) : DbContext(options)
 {
     public DbSet<ItemDoCardapio> ItensCardapio => Set<ItemDoCardapio>();
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

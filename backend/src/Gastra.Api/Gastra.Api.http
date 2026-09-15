@@ -1,11 +1,59 @@
 @Gastra.Api_HostAddress = http://localhost:5019
 
+# Cole aqui o tokenAcesso devolvido pelo login (ou pela confirmação do segundo fator)
+@token = COLE_O_TOKEN_DE_ACESSO_AQUI
+# Cole aqui o tokenSegundoFator devolvido pelo login de Gerente/Coordenador
+@tokenSegundoFator = COLE_O_TOKEN_DO_SEGUNDO_FATOR_AQUI
+
 GET {{Gastra.Api_HostAddress}}/health
 
 ###
 
-# UC05 — Cadastrar item do cardápio
+# ===================== Autenticação =====================
+
+# UC01 — Login (use o e-mail e a senha da seção Administrador do appsettings.Development.json)
+POST {{Gastra.Api_HostAddress}}/api/autenticacao/login
+Content-Type: application/json
+
+{
+  "email": "gerente@gastra.local",
+  "senha": "SUA_SENHA"
+}
+
+###
+
+# Primeiro acesso de Gerente/Coordenador: vincula o app autenticador (uma única vez)
+POST {{Gastra.Api_HostAddress}}/api/autenticacao/segundo-fator/configurar
+Content-Type: application/json
+
+{
+  "tokenSegundoFator": "{{tokenSegundoFator}}"
+}
+
+###
+
+# UC02 — Código de 6 dígitos do app autenticador
+POST {{Gastra.Api_HostAddress}}/api/autenticacao/segundo-fator/confirmar
+Content-Type: application/json
+
+{
+  "tokenSegundoFator": "{{tokenSegundoFator}}",
+  "codigo": "123456"
+}
+
+###
+
+# UC03 — Encerrar sessão
+POST {{Gastra.Api_HostAddress}}/api/autenticacao/logoff
+Authorization: Bearer {{token}}
+
+###
+
+# ===================== Cardápio =====================
+
+# UC05 — Cadastrar item (Gerente/Coordenador)
 POST {{Gastra.Api_HostAddress}}/api/cardapio
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -18,22 +66,9 @@ Content-Type: application/json
 
 ###
 
-# Cadastro inválido — mensagens em português
-POST {{Gastra.Api_HostAddress}}/api/cardapio
-Content-Type: application/json
-
-{
-  "nome": "",
-  "categoria": "Bebida",
-  "preco": 0,
-  "descricao": "",
-  "flagsDieteticas": []
-}
-
-###
-
 # Cadastro inválido — mensagens em inglês
 POST {{Gastra.Api_HostAddress}}/api/cardapio
+Authorization: Bearer {{token}}
 Content-Type: application/json
 Accept-Language: en
 
@@ -47,13 +82,14 @@ Accept-Language: en
 
 ###
 
-# Gestão do cardápio: todos os itens
+# Gestão do cardápio: todos os itens (Gerente/Coordenador)
 GET {{Gastra.Api_HostAddress}}/api/cardapio
+Authorization: Bearer {{token}}
 
 ###
 
-# UC19 — Cardápio digital: só os disponíveis
-GET {{Gastra.Api_HostAddress}}/api/cardapio?somenteDisponiveis=true
+# UC19 — Cardápio digital: público, só itens disponíveis
+GET {{Gastra.Api_HostAddress}}/api/cardapio/digital
 
 ###
 
@@ -63,6 +99,7 @@ GET {{Gastra.Api_HostAddress}}/api/cardapio/1
 
 # UC06 — Atualizar preço
 PATCH {{Gastra.Api_HostAddress}}/api/cardapio/1/preco
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -73,6 +110,7 @@ Content-Type: application/json
 
 # UC07 — Marcar indisponível
 PATCH {{Gastra.Api_HostAddress}}/api/cardapio/1/disponibilidade
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
