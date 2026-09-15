@@ -3,3 +3,80 @@
 GET {{Gastra.Api_HostAddress}}/health
 
 ###
+
+# UC05 — Cadastrar item do cardápio
+POST {{Gastra.Api_HostAddress}}/api/cardapio
+Content-Type: application/json
+
+{
+  "nome": "Moqueca de banana-da-terra",
+  "categoria": "PratoPrincipal",
+  "preco": 72.50,
+  "descricao": "Banana-da-terra, leite de coco e dendê",
+  "flagsDieteticas": ["Vegano", "SemGluten", "SemLactose"]
+}
+
+###
+
+# Cadastro inválido — mensagens em português
+POST {{Gastra.Api_HostAddress}}/api/cardapio
+Content-Type: application/json
+
+{
+  "nome": "",
+  "categoria": "Bebida",
+  "preco": 0,
+  "descricao": "",
+  "flagsDieteticas": []
+}
+
+###
+
+# Cadastro inválido — mensagens em inglês
+POST {{Gastra.Api_HostAddress}}/api/cardapio
+Content-Type: application/json
+Accept-Language: en
+
+{
+  "nome": "",
+  "categoria": "Bebida",
+  "preco": 0,
+  "descricao": "",
+  "flagsDieteticas": []
+}
+
+###
+
+# Gestão do cardápio: todos os itens
+GET {{Gastra.Api_HostAddress}}/api/cardapio
+
+###
+
+# UC19 — Cardápio digital: só os disponíveis
+GET {{Gastra.Api_HostAddress}}/api/cardapio?somenteDisponiveis=true
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/cardapio/1
+
+###
+
+# UC06 — Atualizar preço
+PATCH {{Gastra.Api_HostAddress}}/api/cardapio/1/preco
+Content-Type: application/json
+
+{
+  "preco": 79.90
+}
+
+###
+
+# UC07 — Marcar indisponível
+PATCH {{Gastra.Api_HostAddress}}/api/cardapio/1/disponibilidade
+Content-Type: application/json
+
+{
+  "disponivel": false
+}
+
+###

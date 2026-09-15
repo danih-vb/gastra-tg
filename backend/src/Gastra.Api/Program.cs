@@ -1,12 +1,25 @@
+using System.Text.Json.Serialization;
+using Gastra.Api.Filtros;
 using Gastra.Application;
+using Gastra.Communication.Responses;
+using Gastra.Exceptions;
 using Gastra.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers(opcoes => opcoes.Filters.Add<FiltroExcecao>())
+    .AddJsonOptions(opcoes => opcoes.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+    .ConfigureApiBehaviorOptions(opcoes =>
+    {
+        // JSON malformado ou enum inexistente: mesmo formato de erro do resto da API.
+        opcoes.InvalidModelStateResponseFactory = _ =>
+            new BadRequestObjectResult(new ErroResponse(MensagensErro.RequisicaoInvalida));
+    });
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 
@@ -16,6 +29,13 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// i18n: o idioma da resposta vem do cabeçalho Accept-Language (pt-BR por padrão, ou en).
+string[] culturas = ["pt-BR", "en"];
+app.UseRequestLocalization(opcoes => opcoes
+    .SetDefaultCulture(culturas[0])
+    .AddSupportedCultures(culturas)
+    .AddSupportedUICultures(culturas));
 
 app.UseHttpsRedirection();
 

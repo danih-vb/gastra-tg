@@ -11,6 +11,11 @@ public class RepositorioItemCardapio(GastraDbContext contexto) : IRepositorioIte
     public async Task<ItemDoCardapio?> ObterPorId(int id) =>
         await contexto.ItensCardapio.FirstOrDefaultAsync(i => i.Id == id);
 
+    public async Task<List<ItemDoCardapio>> ListarTodos() =>
+        await contexto.ItensCardapio.AsNoTracking()
+            .OrderBy(i => i.Categoria).ThenBy(i => i.Nome)
+            .ToListAsync();
+
     public async Task<List<ItemDoCardapio>> ListarDisponiveis() =>
         await contexto.ItensCardapio.AsNoTracking()
             .Where(i => i.Disponivel)
