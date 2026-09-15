@@ -9,5 +9,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Gastra.Api.Tests/Gastra.Api.Tests.csproj" />
+    <Project Path="tests/Gastra.Domain.Tests/Gastra.Domain.Tests.csproj" />
   </Folder>
 </Solution>
