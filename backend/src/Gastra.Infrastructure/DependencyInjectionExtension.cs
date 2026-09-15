@@ -1,4 +1,6 @@
+using Gastra.Domain.Repositorios;
 using Gastra.Infrastructure.DataAccess;
+using Gastra.Infrastructure.DataAccess.Repositorios;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,8 +15,15 @@ public static class DependencyInjectionExtension
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         AddDbContext(services, configuration);
+        AddRepositorios(services);
 
         return services;
+    }
+
+    private static void AddRepositorios(IServiceCollection services)
+    {
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IRepositorioItemCardapio, RepositorioItemCardapio>();
     }
 
     private static void AddDbContext(IServiceCollection services, IConfiguration configuration)

@@ -1,3 +1,4 @@
+using Gastra.Domain.Entidades;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gastra.Infrastructure.DataAccess;
@@ -8,6 +9,8 @@ namespace Gastra.Infrastructure.DataAccess;
 /// </summary>
 public class GastraDbContext(DbContextOptions<GastraDbContext> options) : DbContext(options)
 {
+    public DbSet<ItemDoCardapio> ItensCardapio => Set<ItemDoCardapio>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(GastraDbContext).Assembly);
