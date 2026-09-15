@@ -26,6 +26,17 @@ dividir em **quatro diagramas**, cada um respondendo uma pergunta:
 
 As seções 5 a 9 detalham as classes das demais camadas em tabelas, para consulta.
 
+Os quatro diagramas já estão desenhados no draw.io, a partir desta especificação:
+
+| Diagrama | Imagem | Fonte editável |
+|---|---|---|
+| Pacotes | `docs/diagramas/classe/GASTRA_Classe_Pacotes.png` | `docs/diagramas/_fontes/GASTRA_Classe_Pacotes.drawio` |
+| Domínio | `docs/diagramas/classe/GASTRA_Classe_Dominio.png` | `docs/diagramas/_fontes/GASTRA_Classe_Dominio.drawio` |
+| Contratos e implementações | `docs/diagramas/classe/GASTRA_Classe_Contratos.png` | `docs/diagramas/_fontes/GASTRA_Classe_Contratos.drawio` |
+| Fatia vertical — abrir comanda | `docs/diagramas/classe/GASTRA_Classe_AbrirComanda.png` | `docs/diagramas/_fontes/GASTRA_Classe_AbrirComanda.drawio` |
+
+Cores por camada: Api cinza, Application roxo, Communication laranja, Domain azul (entidades) e verde (interfaces), Exceptions vermelho, Infrastructure amarelo.
+
 ### 0.2 Tipos de relação (notação UML)
 
 | Relação | Desenho | Quando usar no GASTRA | Tem multiplicidade? |
@@ -341,8 +352,9 @@ Ficaram fora do desenho acima, para não poluir as relações que importam:
 - **`EntidadeBase`**: todas as entidades herdam dela (`+Id: int`). No draw.io, desenhe a
   `EntidadeBase` uma vez, com **uma única** seta de generalização até uma nota "todas as entidades
   do domínio", em vez de nove setas cruzando o diagrama.
-- **Enums** da seção 3.1: aparecem como classes com o estereótipo «enumeration», ligadas às
-  entidades por **dependência** («usa»).
+- **Enums** da seção 3.1: aparecem como classes com o estereótipo «enumeration». No draw.io
+  ficam agrupados abaixo das entidades, sem setas: cada enum já é identificado pelo tipo do
+  atributo que o usa (ex.: `+ Status: StatusComanda`).
 
 ---
 

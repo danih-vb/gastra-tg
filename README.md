@@ -125,7 +125,11 @@ gastra-tg/
 - **Diagrama de Sequência — Recomendação de Pratos:** [`docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png`](docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png)
 - **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
 - **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
-- **Diagrama de Classes:** [`docs/diagramas/classe/GASTRA_Classe.png`](docs/diagramas/classe/GASTRA_Classe.png)
+- **Diagrama de Classes** (por camadas):
+  [pacotes](docs/diagramas/classe/GASTRA_Classe_Pacotes.png) ·
+  [domínio](docs/diagramas/classe/GASTRA_Classe_Dominio.png) ·
+  [contratos e implementações](docs/diagramas/classe/GASTRA_Classe_Contratos.png) ·
+  [fatia vertical — abrir comanda](docs/diagramas/classe/GASTRA_Classe_AbrirComanda.png)
 - **Política de Log e Auditoria (LGPD):** [`docs/arquitetura/GASTRA_Politica_Log_Auditoria.md`](docs/arquitetura/GASTRA_Politica_Log_Auditoria.md)
 - **Diagrama de Classes por Camadas (especificação):** [`docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md)
 
