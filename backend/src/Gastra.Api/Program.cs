@@ -22,15 +22,13 @@ builder.Services
         opcoes.InvalidModelStateResponseFactory = _ =>
             new BadRequestObjectResult(new ErroResponse(MensagensErro.RequisicaoInvalida));
     });
-builder.Services.AddOpenApi();
+builder.Services.AddDocumentacaoOpenApi();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Swagger em /swagger (só em desenvolvimento).
+app.UseDocumentacaoOpenApi();
 
 // i18n: o idioma da resposta vem do cabeçalho Accept-Language (pt-BR por padrão, ou en).
 // Fica antes da autenticação para que as mensagens de 401/403 também saiam traduzidas.

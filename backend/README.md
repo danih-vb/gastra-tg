@@ -69,7 +69,21 @@ Todos executados dentro de `backend/`.
 | `dotnet test` | Compila e roda os testes |
 | `dotnet run --project src/Gastra.Api` | Sobe a API em `http://localhost:5019` |
 
-Com a API rodando, `http://localhost:5019/health` deve responder `Healthy`. O arquivo
+Com a API rodando, `http://localhost:5019/health` deve responder `Healthy`.
+
+### Documentação interativa (Swagger)
+
+Com a API rodando em desenvolvimento, `http://localhost:5019/swagger` lista todos os endpoints,
+com as descrições tiradas dos comentários `///` dos controllers, e permite testá-los pelo navegador:
+
+1. Chame `POST /api/autenticacao/login` (e, para Gerente ou Coordenador, `segundo-fator/confirmar`).
+2. Copie o `tokenAcesso` da resposta, clique em **Authorize** e cole o token.
+3. Os endpoints com cadeado passam a enviar o token automaticamente.
+
+A especificação fica em `http://localhost:5019/openapi/v1.json`, gerada pelo próprio ASP.NET Core
+(`Microsoft.AspNetCore.OpenApi`); o pacote `Swashbuckle.AspNetCore.SwaggerUI` só desenha a tela.
+Fora do ambiente de desenvolvimento, nenhum dos dois endereços existe.
+ O arquivo
 `src/Gastra.Api/Gastra.Api.http` tem as requisições prontas para testar pelo VS Code / Rider /
 Visual Studio.
 
