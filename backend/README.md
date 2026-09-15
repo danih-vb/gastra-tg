@@ -160,6 +160,30 @@ que inicializa a aplicação e fornece a configuração.
 - **Permissões:** gestão do cardápio só para Gerente e Coordenador; `GET /api/cardapio/digital` e
   `GET /api/cardapio/{id}` são públicos (o cliente não faz login).
 
+## Gestão de usuários (UC04)
+
+Só o **Gerente** acessa (RF18). O primeiro Gerente vem da seção `Administrador`; os demais são
+cadastrados por ele.
+
+| Ação | Endpoint |
+|---|---|
+| Cadastrar conta (nome, e-mail, senha inicial, papel) | `POST /api/usuarios` |
+| Listar contas, ativas e inativas | `GET /api/usuarios` |
+| Consultar uma conta | `GET /api/usuarios/{id}` |
+| Editar nome, e-mail e papel | `PUT /api/usuarios/{id}` |
+| Inativar (soft delete) ou reativar | `PATCH /api/usuarios/{id}/situacao` |
+
+- **Soft delete:** a conta inativada continua no banco (comandas e auditoria apontam para ela),
+  mas perde o acesso na hora: o token em uso para de valer e o login é recusado.
+- **Trocar o papel também derruba os tokens da pessoa**, porque o papel vai dentro do token: sem
+  isso, um Gerente rebaixado a Garçom manteria as permissões de Gerente até o token expirar.
+- **O Gerente não pode alterar o próprio papel nem inativar a própria conta**, para o restaurante
+  não ficar sem ninguém que consiga gerenciar contas.
+- **E-mail único**, sem diferenciar maiúsculas de minúsculas.
+- **Senha:** mínimo de 8 caracteres e máximo de 72 bytes. O limite superior existe porque o BCrypt
+  ignora o que passa de 72 bytes: uma senha maior seria aceita, mas só o começo dela valeria.
+- A resposta nunca traz hash de senha nem segredo do autenticador.
+
 ## Configurações locais
 
 `appsettings.Development.json` está no `.gitignore` de propósito: é onde ficam valores da sua

@@ -22,4 +22,13 @@
   <data name="SegundoFatorNaoConfigurado" xml:space="preserve"><value>Set up the authenticator app before confirming the code.</value></data>
   <data name="NaoAutenticado" xml:space="preserve"><value>You must log in.</value></data>
   <data name="AcessoNegado" xml:space="preserve"><value>Your role is not allowed to perform this action.</value></data>
+  <data name="EmailInvalido" xml:space="preserve"><value>The email address is invalid.</value></data>
+  <data name="EmailMuitoLongo" xml:space="preserve"><value>Email must have at most 150 characters.</value></data>
+  <data name="SenhaCurta" xml:space="preserve"><value>Password must have at least 8 characters.</value></data>
+  <data name="SenhaLonga" xml:space="preserve"><value>Password is too long.</value></data>
+  <data name="PapelInvalido" xml:space="preserve"><value>Invalid user role.</value></data>
+  <data name="EmailJaCadastrado" xml:space="preserve"><value>An account with this email already exists.</value></data>
+  <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>User not found.</value></data>
+  <data name="AlterarProprioPapel" xml:space="preserve"><value>You cannot change your own role.</value></data>
+  <data name="InativarPropriaConta" xml:space="preserve"><value>You cannot deactivate your own account.</value></data>
 </root>

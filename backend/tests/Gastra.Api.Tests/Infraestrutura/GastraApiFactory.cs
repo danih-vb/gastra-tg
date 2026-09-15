@@ -33,6 +33,9 @@ public class GastraApiFactory : WebApplicationFactory<Program>
     private readonly string _nomeBanco = $"gastra-testes-{Guid.NewGuid()}";
     private string? _tokenGerente;
 
+    /// <summary>Id do Gerente dono do token de <see cref="TokenGerente"/>.</summary>
+    public int IdGerente { get; private set; }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testes");
@@ -84,7 +87,7 @@ public class GastraApiFactory : WebApplicationFactory<Program>
             return _tokenGerente;
 
         var email = $"gerente-{Guid.NewGuid():N}@gastra.test";
-        await CriarUsuario(email, PapelUsuario.Gerente);
+        IdGerente = (await CriarUsuario(email, PapelUsuario.Gerente)).Id;
 
         var login = await (await cliente.PostAsJsonAsync("/api/autenticacao/login", new { email, senha = SenhaPadrao }, Json))
             .Content.ReadFromJsonAsync<LoginResponse>(Json);

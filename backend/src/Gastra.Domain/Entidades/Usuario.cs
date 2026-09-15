@@ -51,12 +51,29 @@ public class Usuario : EntidadeBase
     /// <summary>RF17: invalida todos os tokens de acesso emitidos até agora.</summary>
     public void EncerrarSessoes() => ChaveSessao = Guid.NewGuid();
 
+    /// <summary>
+    /// RF18: edição da conta. O papel vai dentro do token; se ele muda, os tokens antigos deixam de
+    /// valer para ninguém continuar com as permissões anteriores.
+    /// </summary>
+    public void AtualizarDados(string nome, string email, PapelUsuario papel)
+    {
+        if (Papel != papel)
+            EncerrarSessoes();
+
+        Nome = nome;
+        Email = NormalizarEmail(email);
+        Papel = papel;
+    }
+
     /// <summary>RF18: inativação (soft delete) com perda imediata de acesso.</summary>
     public void Inativar()
     {
         Ativo = false;
         EncerrarSessoes();
     }
+
+    /// <summary>Desfaz a inativação: a conta volta com a mesma senha e o mesmo autenticador.</summary>
+    public void Reativar() => Ativo = true;
 
     public static string NormalizarEmail(string email) => email.Trim().ToLowerInvariant();
 }

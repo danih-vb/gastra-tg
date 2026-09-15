@@ -31,6 +31,15 @@ public static class MensagensErro
     public static string SegundoFatorNaoConfigurado => Obter(nameof(SegundoFatorNaoConfigurado));
     public static string NaoAutenticado => Obter(nameof(NaoAutenticado));
     public static string AcessoNegado => Obter(nameof(AcessoNegado));
+    public static string EmailInvalido => Obter(nameof(EmailInvalido));
+    public static string EmailMuitoLongo => Obter(nameof(EmailMuitoLongo));
+    public static string SenhaCurta => Obter(nameof(SenhaCurta));
+    public static string SenhaLonga => Obter(nameof(SenhaLonga));
+    public static string PapelInvalido => Obter(nameof(PapelInvalido));
+    public static string EmailJaCadastrado => Obter(nameof(EmailJaCadastrado));
+    public static string UsuarioNaoEncontrado => Obter(nameof(UsuarioNaoEncontrado));
+    public static string AlterarProprioPapel => Obter(nameof(AlterarProprioPapel));
+    public static string InativarPropriaConta => Obter(nameof(InativarPropriaConta));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;

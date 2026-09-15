@@ -17,5 +17,8 @@ public class RepositorioUsuario(GastraDbContext contexto) : IRepositorioUsuario
         return await contexto.Usuarios.FirstOrDefaultAsync(u => u.Email == normalizado);
     }
 
+    public async Task<List<Usuario>> ListarTodos() =>
+        await contexto.Usuarios.AsNoTracking().OrderBy(u => u.Nome).ToListAsync();
+
     public async Task<bool> ExisteAlgum() => await contexto.Usuarios.AnyAsync();
 }

@@ -118,3 +118,54 @@ Content-Type: application/json
 }
 
 ###
+
+# ===================== Usuários (só Gerente) =====================
+
+# UC04 — Cadastrar conta
+POST {{Gastra.Api_HostAddress}}/api/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nome": "Carlos Lima",
+  "email": "carlos@gastra.local",
+  "senha": "SenhaForte123",
+  "papel": "Garcom"
+}
+
+###
+
+# UC04 — Listar contas (ativas e inativas)
+GET {{Gastra.Api_HostAddress}}/api/usuarios
+Authorization: Bearer {{token}}
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/usuarios/2
+Authorization: Bearer {{token}}
+
+###
+
+# UC04 — Editar (trocar o papel derruba os tokens antigos dessa pessoa)
+PUT {{Gastra.Api_HostAddress}}/api/usuarios/2
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nome": "Carlos Lima",
+  "email": "carlos@gastra.local",
+  "papel": "Metre"
+}
+
+###
+
+# UC04 — Inativar (soft delete). Para reativar, envie "ativo": true
+PATCH {{Gastra.Api_HostAddress}}/api/usuarios/2/situacao
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "ativo": false
+}
+
+###
