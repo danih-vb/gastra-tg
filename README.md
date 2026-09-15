@@ -50,7 +50,11 @@ gastra-tg/
 ├── backend/                       # API ASP.NET Core — arquitetura em camadas (ver backend/README.md)
 │   ├── src/                       # Api, Application, Communication, Domain, Exceptions, Infrastructure
 │   └── tests/                     # Testes de integração e de arquitetura
-├── frontend/                      # Aplicação Angular
+├── frontend/                      # Aplicação Angular (ver frontend/README.md)
+│   └── src/app/
+│       ├── core/                  # Sessão, interceptador do token, guardas por papel
+│       ├── shared/                # Componentes reutilizados
+│       └── features/              # Um módulo por grupo de casos de uso: acesso, cardapio, comandas, alocacao, analises, cliente
 ├── data-science/                  # Python — clusterização, regras de associação, PL (serviço FastAPI)
 │   ├── notebooks/                 # Exploração e prototipagem (Jupyter)
 │   ├── src/gastra_analitica/      # Código de produção: api/, recomendacao/, alocacao/
