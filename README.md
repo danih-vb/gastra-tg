@@ -85,11 +85,16 @@ gastra-tg/
 │   │       ├── GASTRA_DER.brM3
 │   │       └── GASTRA_DER.png
 │   ├── arquitetura/                # Definição de arquitetura do sistema
+│   │   ├── GASTRA_Arquitetura.md       # Arquitetura: camadas, decisões e tecnologias (fonte)
+│   │   ├── GASTRA_Arquitetura.docx     # Mesma arquitetura, gerada para a monografia
+│   │   ├── GASTRA_Diagrama_Classes_Camadas.md
+│   │   ├── GASTRA_Politica_Log_Auditoria.md
 │   │   └── GASTRA_Ambiente_Desenvolvimento.md
 │   ├── ux-ui/                      # Wireframes e protótipo navegável
 │   ├── testes/                     # Cenários de teste executados
 │   ├── manual-usuario/             # Manual de uso do usuário
 │   ├── diagramas/                  # Diagramas de apoio (UML)
+│   │   ├── arquitetura/            # Implantação e caminho de uma requisição
 │   │   ├── casos-de-uso/           # Diagramas UML de Casos de Uso
 │   │   ├── classe/                 # Diagrama de Classes do domínio
 │   │   ├── atividade/              # Diagramas UML de Atividade
@@ -130,10 +135,11 @@ gastra-tg/
   [domínio](docs/diagramas/classe/GASTRA_Classe_Dominio.png) ·
   [contratos e implementações](docs/diagramas/classe/GASTRA_Classe_Contratos.png) ·
   [fatia vertical — abrir comanda](docs/diagramas/classe/GASTRA_Classe_AbrirComanda.png)
+- **Arquitetura do sistema:** [`docs/arquitetura/GASTRA_Arquitetura.md`](docs/arquitetura/GASTRA_Arquitetura.md) (versão para a monografia: [`.docx`](docs/arquitetura/GASTRA_Arquitetura.docx))
 - **Política de Log e Auditoria (LGPD):** [`docs/arquitetura/GASTRA_Politica_Log_Auditoria.md`](docs/arquitetura/GASTRA_Politica_Log_Auditoria.md)
 - **Diagrama de Classes por Camadas (especificação):** [`docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md)
 
-- *A criar:* definição de arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
+- *A criar:* protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
 

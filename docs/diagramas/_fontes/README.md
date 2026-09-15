@@ -7,6 +7,7 @@ editável de cada diagrama fica aqui, com o mesmo nome-base do PNG correspondent
 |---|---|---|
 | `casos-de-uso/GASTRA_UC_*.png` | `GASTRA_UC_*.drawio` | draw.io / diagrams.net |
 | `classe/GASTRA_Classe_*.png` | `GASTRA_Classe_*.drawio` | draw.io / diagrams.net |
+| `arquitetura/GASTRA_Arquitetura_*.png` | `GASTRA_Arquitetura_*.drawio` | draw.io / diagrams.net |
 | `atividade/GASTRA_Atividade_*.png` | `GASTRA_Atividade_*.drawio` | draw.io / diagrams.net |
 | `sequencia/GASTRA_Sequencia_*.png` | `GASTRA_Sequencia_*.vsdx` | Lucidchart |
 | `negocio/GASTRA_Business_Model_Canvas.png` | `GASTRA_Business_Model_Canvas.drawio` | draw.io / diagrams.net |
