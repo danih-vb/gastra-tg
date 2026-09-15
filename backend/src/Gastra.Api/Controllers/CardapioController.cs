@@ -42,6 +42,7 @@ public class CardapioController : ControllerBase
         return Ok(await useCase.Executar(somenteDisponiveis: true));
     }
 
+    /// <summary>Consultar um item do cardápio (público).</summary>
     [AllowAnonymous]
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ItemCardapioResponse), StatusCodes.Status200OK)]

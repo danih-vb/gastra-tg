@@ -34,6 +34,7 @@ public class UsuarioController : ControllerBase
         return Ok(await useCase.Executar());
     }
 
+    /// <summary>UC04 — Consultar uma conta.</summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
