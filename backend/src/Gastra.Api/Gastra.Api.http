@@ -169,3 +169,99 @@ Content-Type: application/json
 }
 
 ###
+
+# ===================== Comandas (Garçom) =====================
+
+# UC10 — Abrir comanda (informe uma mesa existente)
+POST {{Gastra.Api_HostAddress}}/api/comandas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "mesaId": 1,
+  "quantidadePessoas": 4
+}
+
+###
+
+# UC11 — Confirmar ou ajustar a composição sugerida
+PATCH {{Gastra.Api_HostAddress}}/api/comandas/1/composicao
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantidadePessoas": 4,
+  "composicao": "GrupoGrande"
+}
+
+###
+
+# UC12 — Registrar item do pedido
+POST {{Gastra.Api_HostAddress}}/api/comandas/1/itens
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemCardapioId": 1,
+  "quantidade": 2
+}
+
+###
+
+# UC23 — Marcar item entregue
+PATCH {{Gastra.Api_HostAddress}}/api/comandas/1/itens/1/situacao
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "situacao": "Entregue"
+}
+
+###
+
+# UC23 — Cancelar item (motivo obrigatório: ErroDeLancamento | ClienteDesistiu | ItemEmFalta)
+PATCH {{Gastra.Api_HostAddress}}/api/comandas/1/itens/1/situacao
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "situacao": "Cancelado",
+  "motivoCancelamento": "ItemEmFalta"
+}
+
+###
+
+# UC13 — Registrar restrição alimentar
+POST {{Gastra.Api_HostAddress}}/api/comandas/1/restricoes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "categoria": "SemGluten",
+  "observacaoLivre": "sem molho de soja"
+}
+
+###
+
+# RF04 — Remover a taxa de serviço a pedido do cliente
+DELETE {{Gastra.Api_HostAddress}}/api/comandas/1/taxa-servico
+Authorization: Bearer {{token}}
+
+###
+
+# UC14 — Fechar a comanda
+POST {{Gastra.Api_HostAddress}}/api/comandas/1/fechamento
+Authorization: Bearer {{token}}
+
+###
+
+# Painel do salão: comandas abertas
+GET {{Gastra.Api_HostAddress}}/api/comandas
+Authorization: Bearer {{token}}
+
+###
+
+# UC20 — Consulta do cliente pelo QR code (sem login): use o codigoAcessoCliente da comanda
+GET {{Gastra.Api_HostAddress}}/api/comandas/consulta/COLE_O_CODIGO_DE_ACESSO_AQUI
+
+###

@@ -31,4 +31,19 @@
   <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>User not found.</value></data>
   <data name="AlterarProprioPapel" xml:space="preserve"><value>You cannot change your own role.</value></data>
   <data name="InativarPropriaConta" xml:space="preserve"><value>You cannot deactivate your own account.</value></data>
+  <data name="ComandaNaoEncontrada" xml:space="preserve"><value>Order not found.</value></data>
+  <data name="MesaNaoEncontrada" xml:space="preserve"><value>Table not found.</value></data>
+  <data name="ItemPedidoNaoEncontrado" xml:space="preserve"><value>Order item not found in this tab.</value></data>
+  <data name="ComandaNaoEstaAberta" xml:space="preserve"><value>The tab is not open.</value></data>
+  <data name="QuantidadePessoasInvalida" xml:space="preserve"><value>The table must have at least one person.</value></data>
+  <data name="QuantidadeItemInvalida" xml:space="preserve"><value>Quantity must be greater than zero.</value></data>
+  <data name="ComposicaoInvalida" xml:space="preserve"><value>Invalid table composition.</value></data>
+  <data name="CategoriaRestricaoInvalida" xml:space="preserve"><value>Invalid dietary restriction category.</value></data>
+  <data name="ObservacaoMuitoLonga" xml:space="preserve"><value>The note must have at most 200 characters.</value></data>
+  <data name="SituacaoItemInvalida" xml:space="preserve"><value>State whether the item was delivered or cancelled.</value></data>
+  <data name="MotivoCancelamentoObrigatorio" xml:space="preserve"><value>Cancelling requires a reason.</value></data>
+  <data name="MotivoCancelamentoInvalido" xml:space="preserve"><value>Invalid cancellation reason.</value></data>
+  <data name="ItemNaoEstaPendente" xml:space="preserve"><value>This item was already delivered or cancelled.</value></data>
+  <data name="ItemCardapioIndisponivel" xml:space="preserve"><value>The menu item is unavailable.</value></data>
+  <data name="ComandaComItensPendentes" xml:space="preserve"><value>There are pending items: deliver or cancel each one before closing.</value></data>
 </root>

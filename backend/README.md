@@ -198,6 +198,35 @@ cadastrados por ele.
   ignora o que passa de 72 bytes: uma senha maior seria aceita, mas só o começo dela valeria.
 - A resposta nunca traz hash de senha nem segredo do autenticador.
 
+## Núcleo de comandas (UC10–UC14, UC20, UC23)
+
+Endpoints do **Garçom**, exceto onde indicado:
+
+| Ação | Endpoint |
+|---|---|
+| UC10 — Abrir comanda (mesa + nº de pessoas) | `POST /api/comandas` |
+| UC11 — Confirmar ou ajustar a composição | `PATCH /api/comandas/{id}/composicao` |
+| UC12 — Registrar item do pedido | `POST /api/comandas/{id}/itens` |
+| UC23 — Entregar ou cancelar item | `PATCH /api/comandas/{id}/itens/{itemId}/situacao` |
+| UC13 — Registrar restrição alimentar | `POST /api/comandas/{id}/restricoes` |
+| RF04 — Remover a taxa de serviço | `DELETE /api/comandas/{id}/taxa-servico` |
+| UC14 — Fechar a comanda | `POST /api/comandas/{id}/fechamento` |
+| Consultar comanda / painel do salão *(garçom, metre, coordenador, gerente)* | `GET /api/comandas/{id}` · `GET /api/comandas` |
+| UC20 — Consulta do cliente por QR code *(sem login)* | `GET /api/comandas/consulta/{codigoAcesso}` |
+
+- **Composição da mesa (RN01):** o garçom informa quantas pessoas estão na mesa e o sistema sugere
+  Solo, Casal, Grupo pequeno, Família ou Grupo grande. Um item infantil numa mesa de 3 ou mais
+  pessoas muda para Família — mas, se o garçom já tiver ajustado a composição na mão, a escolha dele
+  prevalece.
+- **Preço congelado (RF03):** o valor vai para o item do pedido no momento do lançamento; mudar o
+  preço no cardápio depois não altera comanda aberta.
+- **Fechamento (RN02):** só fecha sem itens pendentes. Cancelar exige motivo da lista fechada, e o
+  item cancelado sai da conta. O total é subtotal + 10% de taxa, removível a pedido do cliente.
+- **LGPD:** ao fechar, a observação livre da restrição é apagada e fica só a categoria. A consulta do
+  cliente mostra itens e valores, nunca a restrição ou quem é o garçom (RN04).
+- **Código de acesso:** cada comanda recebe um código único, usado no QR code da mesa. Ele funciona
+  como senha da conta, por isso nunca aparece em log.
+
 ## Configurações locais
 
 `appsettings.Development.json` está no `.gitignore` de propósito: é onde ficam valores da sua

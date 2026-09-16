@@ -40,6 +40,21 @@ public static class MensagensErro
     public static string UsuarioNaoEncontrado => Obter(nameof(UsuarioNaoEncontrado));
     public static string AlterarProprioPapel => Obter(nameof(AlterarProprioPapel));
     public static string InativarPropriaConta => Obter(nameof(InativarPropriaConta));
+    public static string ComandaNaoEncontrada => Obter(nameof(ComandaNaoEncontrada));
+    public static string MesaNaoEncontrada => Obter(nameof(MesaNaoEncontrada));
+    public static string ItemPedidoNaoEncontrado => Obter(nameof(ItemPedidoNaoEncontrado));
+    public static string ComandaNaoEstaAberta => Obter(nameof(ComandaNaoEstaAberta));
+    public static string QuantidadePessoasInvalida => Obter(nameof(QuantidadePessoasInvalida));
+    public static string QuantidadeItemInvalida => Obter(nameof(QuantidadeItemInvalida));
+    public static string ComposicaoInvalida => Obter(nameof(ComposicaoInvalida));
+    public static string CategoriaRestricaoInvalida => Obter(nameof(CategoriaRestricaoInvalida));
+    public static string ObservacaoMuitoLonga => Obter(nameof(ObservacaoMuitoLonga));
+    public static string SituacaoItemInvalida => Obter(nameof(SituacaoItemInvalida));
+    public static string MotivoCancelamentoObrigatorio => Obter(nameof(MotivoCancelamentoObrigatorio));
+    public static string MotivoCancelamentoInvalido => Obter(nameof(MotivoCancelamentoInvalido));
+    public static string ItemNaoEstaPendente => Obter(nameof(ItemNaoEstaPendente));
+    public static string ItemCardapioIndisponivel => Obter(nameof(ItemCardapioIndisponivel));
+    public static string ComandaComItensPendentes => Obter(nameof(ComandaComItensPendentes));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;
