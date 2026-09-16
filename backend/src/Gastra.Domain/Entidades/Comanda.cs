@@ -23,6 +23,12 @@ public class Comanda : EntidadeBase
     public ComposicaoMesa Composicao { get; private set; }
     public bool TaxaServicoRemovida { get; private set; }
 
+    /// <summary>
+    /// Verdadeiro quando o garçom trocou a composição sugerida por outra. A partir daí o sistema não
+    /// reclassifica mais sozinho: quem está na mesa vê o que o sistema não vê (decisão da dupla, 16/09).
+    /// </summary>
+    public bool ComposicaoAjustadaManualmente { get; private set; }
+
     /// <summary>Token da consulta do cliente por QR code (UC20), sem login. Não expira no fechamento.</summary>
     public string CodigoAcessoCliente { get; private set; } = string.Empty;
 
@@ -57,7 +63,10 @@ public class Comanda : EntidadeBase
     public ComposicaoMesa SugerirComposicao(int quantidadePessoas) =>
         Classificar(quantidadePessoas, Composicao == ComposicaoMesa.Familia);
 
-    /// <summary>RF02: o garçom confirma a sugestão ou ajusta, inclusive a quantidade de pessoas.</summary>
+    /// <summary>
+    /// RF02: o garçom confirma a sugestão ou ajusta, inclusive a quantidade de pessoas. Um ajuste manual
+    /// passa a valer sobre a regra automática.
+    /// </summary>
     public void ConfirmarComposicao(int quantidadePessoas, ComposicaoMesa composicao)
     {
         GarantirAberta();
@@ -68,6 +77,8 @@ public class Comanda : EntidadeBase
         if (!Enum.IsDefined(composicao))
             throw new ArgumentOutOfRangeException(nameof(composicao), "Composição inválida.");
 
+        // Confirmar a sugestão não congela nada; trocar por outra, sim.
+        ComposicaoAjustadaManualmente = composicao != SugerirComposicao(quantidadePessoas);
         QuantidadePessoas = quantidadePessoas;
         Composicao = composicao;
     }
@@ -83,8 +94,9 @@ public class Comanda : EntidadeBase
         var pedido = new ItemDoPedido(item.Id, quantidade, item.Preco);
         _itens.Add(pedido);
 
-        // RN01: item infantil em mesa de 3 ou mais pessoas reclassifica a composição.
-        if (item.FlagsDieteticas.Contains(FlagDietetica.OpcaoInfantil))
+        // RN01: item infantil em mesa de 3 ou mais pessoas reclassifica a composição — a não ser que
+        // o garçom já tenha ajustado a composição na mão.
+        if (!ComposicaoAjustadaManualmente && item.FlagsDieteticas.Contains(FlagDietetica.OpcaoInfantil))
             Composicao = Classificar(QuantidadePessoas, true);
 
         return pedido;

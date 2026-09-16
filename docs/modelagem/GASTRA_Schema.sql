@@ -101,6 +101,7 @@ CREATE TABLE `comanda` (
     `quantidade_pessoas` int NOT NULL,
     `composicao` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
     `taxa_servico_removida` tinyint(1) NOT NULL,
+    `composicao_ajustada_manualmente` tinyint(1) NOT NULL,
     `codigo_acesso_cliente` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
     CONSTRAINT `PK_comanda` PRIMARY KEY (`id`),
     CONSTRAINT `FK_comanda_mesa_mesa_id` FOREIGN KEY (`mesa_id`) REFERENCES `mesa` (`id`) ON DELETE RESTRICT,
@@ -159,7 +160,7 @@ CREATE INDEX `IX_registro_auditoria_usuario_id_data_hora_utc` ON `registro_audit
 CREATE INDEX `IX_restricao_alimentar_comanda_id` ON `restricao_alimentar` (`comanda_id`);
 
 INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
-VALUES ('20260916043617_CriaNucleoComandas', '9.0.20');
+VALUES ('20260916045126_CriaNucleoComandas', '9.0.20');
 
 COMMIT;
 

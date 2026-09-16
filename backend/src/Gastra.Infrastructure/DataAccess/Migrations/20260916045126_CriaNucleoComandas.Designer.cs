@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gastra.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(GastraDbContext))]
-    [Migration("20260916043617_CriaNucleoComandas")]
+    [Migration("20260916045126_CriaNucleoComandas")]
     partial class CriaNucleoComandas
     {
         /// <inheritdoc />
@@ -88,6 +88,10 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)")
                         .HasColumnName("composicao");
+
+                    b.Property<bool>("ComposicaoAjustadaManualmente")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("composicao_ajustada_manualmente");
 
                     b.Property<DateTime>("DataHoraAbertura")
                         .HasColumnType("datetime(6)")

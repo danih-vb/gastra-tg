@@ -86,6 +86,10 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("composicao");
 
+                    b.Property<bool>("ComposicaoAjustadaManualmente")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("composicao_ajustada_manualmente");
+
                     b.Property<DateTime>("DataHoraAbertura")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("data_hora_abertura");

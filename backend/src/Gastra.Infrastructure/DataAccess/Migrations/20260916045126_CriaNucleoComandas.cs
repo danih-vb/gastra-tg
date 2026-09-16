@@ -134,6 +134,7 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                     composicao = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     taxa_servico_removida = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    composicao_ajustada_manualmente = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     codigo_acesso_cliente = table.Column<string>(type: "varchar(32)", maxLength: 32, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },

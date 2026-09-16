@@ -20,6 +20,7 @@ public class ComandaConfiguracao : IEntityTypeConfiguration<Comanda>
         builder.Property(c => c.QuantidadePessoas).HasColumnName("quantidade_pessoas").IsRequired();
         builder.Property(c => c.Composicao).HasColumnName("composicao").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(c => c.TaxaServicoRemovida).HasColumnName("taxa_servico_removida").IsRequired();
+        builder.Property(c => c.ComposicaoAjustadaManualmente).HasColumnName("composicao_ajustada_manualmente").IsRequired();
         builder.Property(c => c.CodigoAcessoCliente).HasColumnName("codigo_acesso_cliente").HasMaxLength(32).IsRequired();
 
         // O cliente consulta a comanda por esse código (UC20): dois iguais dariam acesso à conta errada.

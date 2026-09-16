@@ -64,6 +64,32 @@ public class ComandaTests
     }
 
     [Fact]
+    public void AjustarComposicaoNaMao_CongelaARegraAutomatica()
+    {
+        var comanda = AbrirComanda(4);
+
+        // O garçom viu a mesa e decidiu que é um grupo grande.
+        comanda.ConfirmarComposicao(4, ComposicaoMesa.GrupoGrande);
+        comanda.AdicionarItem(Item(flags: FlagDietetica.OpcaoInfantil), 1);
+
+        Assert.True(comanda.ComposicaoAjustadaManualmente);
+        Assert.Equal(ComposicaoMesa.GrupoGrande, comanda.Composicao);
+    }
+
+    [Fact]
+    public void ConfirmarASugestaoSemMudar_NaoCongelaARegraAutomatica()
+    {
+        var comanda = AbrirComanda(4);
+
+        // Os 2 toques da abertura: escolher a mesa e confirmar o que o sistema sugeriu.
+        comanda.ConfirmarComposicao(4, ComposicaoMesa.GrupoPequeno);
+        comanda.AdicionarItem(Item(flags: FlagDietetica.OpcaoInfantil), 1);
+
+        Assert.False(comanda.ComposicaoAjustadaManualmente);
+        Assert.Equal(ComposicaoMesa.Familia, comanda.Composicao);
+    }
+
+    [Fact]
     public void Abrir_ComZeroPessoas_LancaExcecao()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => AbrirComanda(0));
