@@ -1,0 +1,27 @@
+## Entidades e atributos
+- mesa.praca_id: só no físico (chave estrangeira)
+- Praca.faturamento_medio_historico (derivado): derivado, não é coluna (calculado em view)
+- comanda.mesa_id: só no físico (chave estrangeira)
+- comanda.garcom_id: só no físico (chave estrangeira)
+- item_pedido.comanda_id: só no físico (chave estrangeira)
+- item_pedido.item_cardapio_id: só no físico (chave estrangeira)
+- ItemDoCardapio.flags_dieteticas: multivalorado, não é coluna (virou tabela própria)
+- alocacao.garcom_id: só no físico (chave estrangeira)
+- alocacao.praca_id: só no físico (chave estrangeira)
+- restricao_alimentar.comanda_id: só no físico (chave estrangeira)
+- Promocao: sem tabela
+- registro_auditoria.usuario_id: só no físico (chave estrangeira)
+
+## Relacionamentos x chaves estrangeiras
+- Mesa (1,1) — pertence a — Praca (0,n): mesa.praca_id NOT NULL -> confere
+- Comanda (1,1) — pertence a — Mesa (0,n): comanda.mesa_id NOT NULL -> confere
+- Comanda (1,1) — é aberta por — Usuario (0,n): comanda.garcom_id NOT NULL -> confere
+- ItemDoPedido (1,1) — contém — Comanda (0,n): item_pedido.comanda_id NOT NULL -> confere
+- ItemDoPedido (1,1) — refere-se — ItemDoCardapio (0,n): item_pedido.item_cardapio_id NOT NULL -> confere
+- Alocacao (1,1) — refere-se — Usuario (0,n): alocacao.garcom_id NOT NULL -> confere
+- Alocacao (1,1) — refere-se — Praca (0,n): alocacao.praca_id NOT NULL -> confere
+- RestricaoAlimentar (1,1) — possui — Comanda (0,n): restricao_alimentar.comanda_id NOT NULL -> confere
+- ItemDoCardapio (0,n) — refere-se — Promocao (0,n): sem chave estrangeira
+- RegistroAuditoria (0,1) — é gerado por — Usuario (0,n): registro_auditoria.usuario_id NULL -> confere
+
+- tabela item_cardapio_flag: sem entidade correspondente

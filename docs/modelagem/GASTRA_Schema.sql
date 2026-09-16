@@ -255,5 +255,27 @@ SIGNAL SQLSTATE '45000'
 INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
 VALUES ('20260916152243_CriaViewsETriggersAnaliticos', '9.0.20');
 
+DROP TRIGGER IF EXISTS trg_registro_auditoria_impede_delete;
+
+CREATE TRIGGER trg_registro_auditoria_impede_delete
+BEFORE DELETE ON registro_auditoria
+FOR EACH ROW
+BEGIN
+    IF OLD.data_hora_utc > UTC_TIMESTAMP(6) - INTERVAL 6 MONTH THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'O registro de auditoria só pode ser apagado depois do prazo de retenção de 6 meses.';
+    END IF;
+END;
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20260916155746_PermiteEliminarAuditoriaAposRetencao', '9.0.20');
+
+ALTER TABLE `item_pedido` ADD CONSTRAINT `CK_item_pedido_motivo_cancelamento` CHECK ((status = 'Cancelado' AND motivo_cancelamento IS NOT NULL) OR (status <> 'Cancelado' AND motivo_cancelamento IS NULL));
+
+ALTER TABLE `comanda` ADD CONSTRAINT `CK_comanda_status_fechamento` CHECK ((status = 'Aberta' AND data_hora_fechamento IS NULL) OR (status = 'Fechada' AND data_hora_fechamento IS NOT NULL));
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20260916160313_GaranteConsistenciaDeStatus', '9.0.20');
+
 COMMIT;
 

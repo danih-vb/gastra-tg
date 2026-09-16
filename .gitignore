@@ -43,3 +43,8 @@ Thumbs.db
 
 # Configuração local criada pelo brModelo ao abrir
 config.chc
+
+# Arquivos intermediários da engenharia reversa
+docs/modelagem/engenharia-reversa/schema.tsv
+docs/modelagem/engenharia-reversa/fisico.json
+docs/modelagem/engenharia-reversa/*.xml
