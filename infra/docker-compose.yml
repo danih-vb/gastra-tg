@@ -3,6 +3,10 @@ services:
     image: mysql:8.4
     container_name: gastra-mysql
     restart: unless-stopped
+    # Permite que o usuário da aplicação crie os triggers das migrations. Sem isso, com o log
+    # binário ligado (padrão do 8.4), o MySQL exige privilégio SUPER. Os triggers do GASTRA são
+    # determinísticos (só bloqueiam a operação), então não há risco para a replicação.
+    command: --log-bin-trust-function-creators=ON
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
