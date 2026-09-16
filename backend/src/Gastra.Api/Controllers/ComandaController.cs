@@ -123,6 +123,20 @@ public class ComandaController : ControllerBase
         return Ok(await useCase.Executar(id));
     }
 
+    /// <summary>
+    /// UC18 — Sugestões de itens para oferecer na mesa (RF09). Se a camada analítica estiver fora do ar,
+    /// responde 200 com a lista vazia e <c>servicoDisponivel = false</c>: o atendimento não para (D3).
+    /// </summary>
+    [Authorize(Roles = Garcom)]
+    [HttpGet("{id:int}/sugestoes")]
+    [ProducesResponseType(typeof(SugestoesComandaResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> Sugestoes(int id, [FromServices] ISugerirCombinacoesUseCase useCase)
+    {
+        return Ok(await useCase.Executar(id));
+    }
+
     /// <summary>Consultar uma comanda pelo salão.</summary>
     [Authorize(Roles = PapeisDeLeitura)]
     [HttpGet("{id:int}")]

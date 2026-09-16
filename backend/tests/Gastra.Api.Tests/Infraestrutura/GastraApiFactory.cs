@@ -7,19 +7,21 @@ using Gastra.Domain.Entidades;
 using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
+using Gastra.Domain.Servicos;
 using Gastra.Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OtpNet;
 
 namespace Gastra.Api.Tests.Infraestrutura;
 
 /// <summary>
 /// Sobe a API completa para os testes, trocando o MySQL por um banco em memória exclusivo de cada
-/// instância da fábrica, com uma chave JWT só de teste.
+/// instância da fábrica, o Python por um <see cref="ServicoAnaliticoFalso"/> e usando uma chave JWT só de teste.
 /// </summary>
 public class GastraApiFactory : WebApplicationFactory<Program>
 {
@@ -32,6 +34,9 @@ public class GastraApiFactory : WebApplicationFactory<Program>
 
     private readonly string _nomeBanco = $"gastra-testes-{Guid.NewGuid()}";
     private string? _tokenGerente;
+
+    /// <summary>O "Python" desta fábrica: os testes dizem o que ele responde e conferem o que recebeu.</summary>
+    public ServicoAnaliticoFalso ServicoAnalitico { get; } = new();
 
     /// <summary>Id do Gerente dono do token de <see cref="TokenGerente"/>.</summary>
     public int IdGerente { get; private set; }
@@ -52,6 +57,10 @@ public class GastraApiFactory : WebApplicationFactory<Program>
                 services.Remove(servico);
 
             services.AddDbContext<GastraDbContext>(opcoes => opcoes.UseInMemoryDatabase(_nomeBanco));
+
+            // Nenhum teste da API depende do serviço Python estar no ar.
+            services.RemoveAll<IServicoAnalitico>();
+            services.AddSingleton<IServicoAnalitico>(ServicoAnalitico);
         });
     }
 

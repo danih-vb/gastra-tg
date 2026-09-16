@@ -255,6 +255,12 @@ Authorization: Bearer {{token}}
 
 ###
 
+# UC18 — Sugestões de itens para oferecer na mesa (suba o serviço Python para ver resultado)
+GET {{Gastra.Api_HostAddress}}/api/comandas/1/sugestoes
+Authorization: Bearer {{token}}
+
+###
+
 # Painel do salão: comandas abertas
 GET {{Gastra.Api_HostAddress}}/api/comandas
 Authorization: Bearer {{token}}
