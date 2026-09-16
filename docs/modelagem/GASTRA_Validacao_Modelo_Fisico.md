@@ -19,7 +19,7 @@ Base analisada: o schema `gastra_dev` depois de todas as migrations até
 | 2 | O trigger de auditoria bloqueava **qualquer** exclusão, o que impediria a eliminação ao fim dos 6 meses de retenção (LGPD, art. 16) | Migration `PermiteEliminarAuditoriaAposRetencao`: bloqueia só registros dentro do prazo |
 | 3 | `comanda.status` repete o que `data_hora_fechamento` já diz, e as duas podiam se contradizer | `CHECK` que obriga as duas a concordarem (migration `GaranteConsistenciaDeStatus`) |
 | 4 | `item_pedido.motivo_cancelamento` podia existir em item não cancelado, ou faltar em item cancelado | `CHECK` com a regra RN02 (mesma migration) |
-| 5 | A API mostrava a restrição alimentar do cliente a Gerente e Coordenador, contra a RN04 | Correção na API, em PR próprio (seção 3.3) |
+| 5 | A API mostrava a restrição alimentar do cliente a Gerente e Coordenador, contra a RN04 | Correção na API, no PR #118 (seção 3.3) |
 
 ---
 
@@ -255,7 +255,7 @@ a comanda está aberta. O modelo de dados está correto; a exposição acontece 
 
 **Correção:** as restrições só aparecem na resposta para Garçom e Metre, e só com a comanda
 aberta. Para os demais papéis, e depois do fechamento, a lista vem vazia. Por ser mudança de
-código da API, a correção vai num PR próprio.
+código da API, a correção está no PR #118.
 
 ### 3.4 Retenção e eliminação no banco
 
