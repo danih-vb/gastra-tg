@@ -43,6 +43,21 @@ public class ItemDoCardapio : EntidadeBase
     /// <summary>RF21.</summary>
     public void MarcarDisponibilidade(bool disponivel) => Disponivel = disponivel;
 
+    /// <summary>
+    /// Diz se o item pode ser sugerido a uma mesa com essa restrição. Na dúvida, não: só atende quem tem a
+    /// flag no cardápio. Alergia e "outro" dependem do texto livre e não filtram nada; ficam com o garçom.
+    /// </summary>
+    public bool AtendeRestricao(CategoriaRestricao restricao) => restricao switch
+    {
+        CategoriaRestricao.Vegano => Possui(FlagDietetica.Vegano),
+        CategoriaRestricao.Vegetariano => Possui(FlagDietetica.Vegetariano) || Possui(FlagDietetica.Vegano),
+        CategoriaRestricao.SemGluten => Possui(FlagDietetica.SemGluten),
+        CategoriaRestricao.SemLactose => Possui(FlagDietetica.SemLactose) || Possui(FlagDietetica.Vegano),
+        _ => true,
+    };
+
+    private bool Possui(FlagDietetica flag) => _flags.Any(f => f.Flag == flag);
+
     private void DefinirPreco(decimal preco)
     {
         if (preco <= 0)
