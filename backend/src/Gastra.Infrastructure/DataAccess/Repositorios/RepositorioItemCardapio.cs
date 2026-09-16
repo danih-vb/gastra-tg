@@ -16,6 +16,9 @@ public class RepositorioItemCardapio(GastraDbContext contexto) : IRepositorioIte
             .OrderBy(i => i.Categoria).ThenBy(i => i.Nome)
             .ToListAsync();
 
+    public async Task<List<ItemDoCardapio>> ListarPorIds(IEnumerable<int> ids) =>
+        await contexto.ItensCardapio.AsNoTracking().Where(i => ids.Contains(i.Id)).ToListAsync();
+
     public async Task<List<ItemDoCardapio>> ListarDisponiveis() =>
         await contexto.ItensCardapio.AsNoTracking()
             .Where(i => i.Disponivel)

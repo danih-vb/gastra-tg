@@ -69,6 +69,43 @@ public class GastraApiFactory : WebApplicationFactory<Program>
         return usuario;
     }
 
+    /// <summary>Cria uma praça com uma mesa e devolve o id da mesa (pré-requisito das comandas).</summary>
+    public async Task<int> CriarMesa(int capacidade = 4)
+    {
+        using var escopo = Services.CreateScope();
+        var praca = new Praca($"P{Guid.NewGuid():N}"[..8], quantidadeGarcons: 2);
+        await escopo.ServiceProvider.GetRequiredService<IRepositorioPraca>().Adicionar(praca);
+        await escopo.ServiceProvider.GetRequiredService<IUnitOfWork>().Commit();
+
+        var mesa = new Mesa($"M{Guid.NewGuid():N}"[..6], capacidade, praca.Id);
+        await escopo.ServiceProvider.GetRequiredService<IRepositorioMesa>().Adicionar(mesa);
+        await escopo.ServiceProvider.GetRequiredService<IUnitOfWork>().Commit();
+        return mesa.Id;
+    }
+
+    /// <summary>Cria um item do cardápio e devolve o id.</summary>
+    public async Task<int> CriarItemCardapio(decimal preco = 50m, bool disponivel = true, params FlagDietetica[] flags)
+    {
+        using var escopo = Services.CreateScope();
+        var item = new ItemDoCardapio($"Prato {Guid.NewGuid():N}"[..12], CategoriaItemCardapio.PratoPrincipal,
+            preco, "Descrição", flags);
+
+        if (!disponivel)
+            item.MarcarDisponibilidade(false);
+
+        await escopo.ServiceProvider.GetRequiredService<IRepositorioItemCardapio>().Adicionar(item);
+        await escopo.ServiceProvider.GetRequiredService<IUnitOfWork>().Commit();
+        return item.Id;
+    }
+
+    /// <summary>Cria um garçom e devolve o token de acesso dele.</summary>
+    public async Task<string> TokenGarcom(HttpClient cliente)
+    {
+        var email = $"garcom-{Guid.NewGuid():N}@gastra.test";
+        await CriarUsuario(email, PapelUsuario.Garcom);
+        return await Login(cliente, email);
+    }
+
     /// <summary>Login de papel sem segundo fator (Garçom, Metre): devolve o token de acesso.</summary>
     public async Task<string> Login(HttpClient cliente, string email, string senha = SenhaPadrao)
     {

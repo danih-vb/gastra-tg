@@ -40,6 +40,9 @@ public static class DependencyInjectionExtension
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRepositorioItemCardapio, RepositorioItemCardapio>();
         services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
+        services.AddScoped<IRepositorioComanda, RepositorioComanda>();
+        services.AddScoped<IRepositorioMesa, RepositorioMesa>();
+        services.AddScoped<IRepositorioPraca, RepositorioPraca>();
     }
 
     private static void AddSeguranca(IServiceCollection services, IConfiguration configuration)

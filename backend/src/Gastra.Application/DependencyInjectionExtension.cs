@@ -1,6 +1,7 @@
 using Gastra.Application.Mapeamento;
 using Gastra.Application.UseCases.Autenticacao;
 using Gastra.Application.UseCases.Cardapio;
+using Gastra.Application.UseCases.Comandas;
 using Gastra.Application.UseCases.Usuarios;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,5 +38,16 @@ public static class DependencyInjectionExtension
         services.AddScoped<IObterUsuarioUseCase, ObterUsuarioUseCase>();
         services.AddScoped<IEditarUsuarioUseCase, EditarUsuarioUseCase>();
         services.AddScoped<IAlterarSituacaoUsuarioUseCase, AlterarSituacaoUsuarioUseCase>();
+
+        services.AddScoped<IAbrirComandaUseCase, AbrirComandaUseCase>();
+        services.AddScoped<IConfirmarComposicaoUseCase, ConfirmarComposicaoUseCase>();
+        services.AddScoped<IRegistrarItemPedidoUseCase, RegistrarItemPedidoUseCase>();
+        services.AddScoped<IAtualizarSituacaoItemUseCase, AtualizarSituacaoItemUseCase>();
+        services.AddScoped<IRegistrarRestricaoUseCase, RegistrarRestricaoUseCase>();
+        services.AddScoped<IRemoverTaxaServicoUseCase, RemoverTaxaServicoUseCase>();
+        services.AddScoped<IFecharComandaUseCase, FecharComandaUseCase>();
+        services.AddScoped<IObterComandaUseCase, ObterComandaUseCase>();
+        services.AddScoped<IListarComandasAbertasUseCase, ListarComandasAbertasUseCase>();
+        services.AddScoped<IConsultarComandaClienteUseCase, ConsultarComandaClienteUseCase>();
     }
 }

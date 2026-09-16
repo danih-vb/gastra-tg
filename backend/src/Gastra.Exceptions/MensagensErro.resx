@@ -31,4 +31,19 @@
   <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>Usuário não encontrado.</value></data>
   <data name="AlterarProprioPapel" xml:space="preserve"><value>Você não pode alterar o próprio papel.</value></data>
   <data name="InativarPropriaConta" xml:space="preserve"><value>Você não pode inativar a própria conta.</value></data>
+  <data name="ComandaNaoEncontrada" xml:space="preserve"><value>Comanda não encontrada.</value></data>
+  <data name="MesaNaoEncontrada" xml:space="preserve"><value>Mesa não encontrada.</value></data>
+  <data name="ItemPedidoNaoEncontrado" xml:space="preserve"><value>Item do pedido não encontrado nesta comanda.</value></data>
+  <data name="ComandaNaoEstaAberta" xml:space="preserve"><value>A comanda não está aberta.</value></data>
+  <data name="QuantidadePessoasInvalida" xml:space="preserve"><value>A mesa precisa ter pelo menos uma pessoa.</value></data>
+  <data name="QuantidadeItemInvalida" xml:space="preserve"><value>A quantidade deve ser maior que zero.</value></data>
+  <data name="ComposicaoInvalida" xml:space="preserve"><value>Composição de mesa inválida.</value></data>
+  <data name="CategoriaRestricaoInvalida" xml:space="preserve"><value>Categoria de restrição inválida.</value></data>
+  <data name="ObservacaoMuitoLonga" xml:space="preserve"><value>A observação deve ter no máximo 200 caracteres.</value></data>
+  <data name="SituacaoItemInvalida" xml:space="preserve"><value>Informe se o item foi entregue ou cancelado.</value></data>
+  <data name="MotivoCancelamentoObrigatorio" xml:space="preserve"><value>O cancelamento exige um motivo.</value></data>
+  <data name="MotivoCancelamentoInvalido" xml:space="preserve"><value>Motivo de cancelamento inválido.</value></data>
+  <data name="ItemNaoEstaPendente" xml:space="preserve"><value>Este item já foi entregue ou cancelado.</value></data>
+  <data name="ItemCardapioIndisponivel" xml:space="preserve"><value>O item está indisponível no cardápio.</value></data>
+  <data name="ComandaComItensPendentes" xml:space="preserve"><value>Há itens pendentes: entregue ou cancele cada um antes de fechar.</value></data>
 </root>
