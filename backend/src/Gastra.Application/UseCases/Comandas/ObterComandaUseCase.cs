@@ -14,7 +14,10 @@ public interface IObterComandaUseCase
     Task<ComandaResponse> Executar(int comandaId);
 }
 
-public class ObterComandaUseCase(IRepositorioComanda repositorio, IRepositorioItemCardapio repositorioCardapio)
+public class ObterComandaUseCase(
+    IRepositorioComanda repositorio,
+    IRepositorioItemCardapio repositorioCardapio,
+    IUsuarioLogado usuarioLogado)
     : IObterComandaUseCase
 {
     public async Task<ComandaResponse> Executar(int comandaId)
@@ -23,6 +26,6 @@ public class ObterComandaUseCase(IRepositorioComanda repositorio, IRepositorioIt
                       ?? throw new NaoEncontradoException(MensagensErro.ComandaNaoEncontrada);
 
         var nomes = await LeitorDeNomesDoCardapio.Obter(repositorioCardapio, comanda);
-        return MapeadorComanda.Montar(comanda, nomes);
+        return MapeadorComanda.Montar(comanda, nomes, usuarioLogado.ObterPapel());
     }
 }

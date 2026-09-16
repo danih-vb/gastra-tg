@@ -260,6 +260,10 @@ Endpoints do **Garçom**, exceto onde indicado:
   item cancelado sai da conta. O total é subtotal + 10% de taxa, removível a pedido do cliente.
 - **LGPD:** ao fechar, a observação livre da restrição é apagada e fica só a categoria. A consulta do
   cliente mostra itens e valores, nunca a restrição ou quem é o garçom (RN04).
+- **Quem vê a restrição alimentar (RN04):** só Garçom e Metre, e só com a comanda aberta. Para
+  Coordenador e Gerente, e depois do fechamento, `restricoes` vem vazia nas consultas e no painel.
+  A regra fica no domínio (`Comanda.RestricoesVisiveisPara`), e o papel vem do token, sem consulta
+  ao banco.
 - **Código de acesso:** cada comanda recebe um código único, usado no QR code da mesa. Ele funciona
   como senha da conta, por isso nunca aparece em log.
 

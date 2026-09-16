@@ -35,6 +35,13 @@ public class Comanda : EntidadeBase
     public IReadOnlyCollection<ItemDoPedido> Itens => _itens;
     public IReadOnlyCollection<RestricaoAlimentar> Restricoes => _restricoes;
 
+    /// <summary>
+    /// RN04: a restrição alimentar é dado do cliente e só pode ser vista por quem atende a mesa (Garçom
+    /// ou Metre) enquanto a comanda está aberta. Gestão e comanda fechada recebem a lista vazia.
+    /// </summary>
+    public IReadOnlyCollection<RestricaoAlimentar> RestricoesVisiveisPara(PapelUsuario papel) =>
+        Status == StatusComanda.Aberta && papel is (PapelUsuario.Garcom or PapelUsuario.Metre) ? _restricoes : [];
+
     // Usado pelo Entity Framework ao ler do banco.
     private Comanda()
     {

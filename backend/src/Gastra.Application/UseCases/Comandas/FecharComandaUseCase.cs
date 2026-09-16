@@ -17,6 +17,7 @@ public interface IFecharComandaUseCase
 public class FecharComandaUseCase(
     IRepositorioComanda repositorio,
     IRepositorioItemCardapio repositorioCardapio,
+    IUsuarioLogado usuarioLogado,
     IUnitOfWork unitOfWork) : IFecharComandaUseCase
 {
     public async Task<ComandaResponse> Executar(int comandaId)
@@ -31,6 +32,6 @@ public class FecharComandaUseCase(
         await unitOfWork.Commit();
 
         var nomes = await LeitorDeNomesDoCardapio.Obter(repositorioCardapio, comanda);
-        return MapeadorComanda.Montar(comanda, nomes);
+        return MapeadorComanda.Montar(comanda, nomes, usuarioLogado.ObterPapel());
     }
 }

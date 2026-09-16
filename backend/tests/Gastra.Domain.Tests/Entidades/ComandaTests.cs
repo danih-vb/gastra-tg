@@ -195,6 +195,33 @@ public class ComandaTests
         Assert.Equal(CategoriaRestricao.Alergia, restricao.Categoria);
     }
 
+    // --- RN04: quem pode ver a restrição alimentar ---
+
+    [Theory]
+    [InlineData(PapelUsuario.Garcom, 1)]
+    [InlineData(PapelUsuario.Metre, 1)]
+    [InlineData(PapelUsuario.Coordenador, 0)]
+    [InlineData(PapelUsuario.Gerente, 0)]
+    public void RestricoesVisiveis_ComComandaAberta_SoParaQuemAtendeAMesa(PapelUsuario papel, int esperado)
+    {
+        var comanda = AbrirComanda();
+        comanda.RegistrarRestricao(CategoriaRestricao.SemGluten, "doença celíaca");
+
+        Assert.Equal(esperado, comanda.RestricoesVisiveisPara(papel).Count);
+    }
+
+    [Fact]
+    public void RestricoesVisiveis_DepoisDoFechamento_NinguemVe()
+    {
+        var comanda = AbrirComanda();
+        comanda.RegistrarRestricao(CategoriaRestricao.SemGluten, null);
+
+        comanda.Fechar();
+
+        Assert.Empty(comanda.RestricoesVisiveisPara(PapelUsuario.Garcom));
+        Assert.Single(comanda.Restricoes); // a categoria continua guardada, só não é exibida
+    }
+
     [Fact]
     public void ComandaFechada_NaoAceitaNovoItemNemRestricao()
     {
