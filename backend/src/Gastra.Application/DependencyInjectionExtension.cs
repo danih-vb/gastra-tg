@@ -50,6 +50,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IObterComandaUseCase, ObterComandaUseCase>();
         services.AddScoped<IListarComandasAbertasUseCase, ListarComandasAbertasUseCase>();
         services.AddScoped<IConsultarComandaClienteUseCase, ConsultarComandaClienteUseCase>();
+        services.AddScoped<ISugerirCombinacoesUseCase, SugerirCombinacoesUseCase>();
 
         services.AddScoped<ICadastrarPracaUseCase, CadastrarPracaUseCase>();
         services.AddScoped<IEditarPracaUseCase, EditarPracaUseCase>();

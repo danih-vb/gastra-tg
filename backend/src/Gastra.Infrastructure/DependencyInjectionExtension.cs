@@ -1,8 +1,10 @@
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
+using Gastra.Domain.Servicos;
 using Gastra.Infrastructure.DataAccess;
 using Gastra.Infrastructure.DataAccess.Repositorios;
 using Gastra.Infrastructure.Seguranca;
+using Gastra.Infrastructure.ServicoAnalitico;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,7 @@ public static class DependencyInjectionExtension
         AddDbContext(services, configuration);
         AddRepositorios(services);
         AddSeguranca(services, configuration);
+        AddServicoAnalitico(services, configuration);
 
         return services;
     }
@@ -56,5 +59,17 @@ public static class DependencyInjectionExtension
 
         services.AddHttpContextAccessor();
         services.AddScoped<IUsuarioLogado, UsuarioLogado>();
+    }
+
+    private static void AddServicoAnalitico(IServiceCollection services, IConfiguration configuration)
+    {
+        var opcoes = OpcoesServicoAnalitico.Carregar(configuration);
+
+        services.AddHttpClient<IServicoAnalitico, ServicoAnaliticoHttp>(http =>
+        {
+            // Barra final obrigatória: sem ela, a rota relativa substitui o último trecho da URL base.
+            http.BaseAddress = new Uri(opcoes.UrlBase.TrimEnd('/') + "/");
+            http.Timeout = TimeSpan.FromMilliseconds(opcoes.TempoLimiteMilissegundos);
+        });
     }
 }

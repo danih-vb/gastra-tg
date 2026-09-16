@@ -397,7 +397,7 @@ encontrar.
 
 | Interface | Métodos | Requisito |
 |---|---|---|
-| `IServicoAnalitico` | `+SugerirAlocacao(data: DateOnly, periodo: PeriodoAlocacao): Task<List<SugestaoAlocacao>>` · `+SugerirCombinacoes(itemIds: List<int>): Task<List<int>>` | RF06, RF09 |
+| `IServicoAnalitico` | `+SugerirAlocacao(data: DateOnly, periodo: PeriodoAlocacao): Task<List<SugestaoAlocacao>>` · `+SugerirCombinacoes(pedidos: List<int>, permitidos: List<int>, limite: int): Task<List<int>>` | RF06, RF09 |
 
 `SugestaoAlocacao` é um objeto de valor do domínio (`GarcomId`, `PracaId`) — o resultado que o
 Python devolve e a Application transforma em `Alocacao`.
@@ -428,7 +428,7 @@ classDiagram
     class IServicoAnalitico {
         <<interface>>
         +SugerirAlocacao(data, periodo) Task~List~
-        +SugerirCombinacoes(itemIds) Task~List~
+        +SugerirCombinacoes(pedidos, permitidos, limite) Task~List~
     }
 
     class RepositorioComanda

@@ -71,4 +71,33 @@ public class ItemDoCardapioTests
         Assert.IsAssignableFrom<IReadOnlyCollection<FlagDietetica>>(item.FlagsDieteticas);
         Assert.Null(typeof(ItemDoCardapio).GetProperty(nameof(ItemDoCardapio.Preco))!.GetSetMethod());
     }
+
+    // --- Sugestão de pratos (RF09) respeitando a restrição registrada (RF14) ---
+
+    [Theory]
+    [InlineData(CategoriaRestricao.Vegano, FlagDietetica.Vegano, true)]
+    [InlineData(CategoriaRestricao.Vegano, FlagDietetica.Vegetariano, false)]
+    [InlineData(CategoriaRestricao.Vegetariano, FlagDietetica.Vegano, true)]
+    [InlineData(CategoriaRestricao.Vegetariano, FlagDietetica.SemGluten, false)]
+    [InlineData(CategoriaRestricao.SemGluten, FlagDietetica.SemGluten, true)]
+    [InlineData(CategoriaRestricao.SemLactose, FlagDietetica.Vegano, true)]
+    [InlineData(CategoriaRestricao.SemLactose, FlagDietetica.OpcaoInfantil, false)]
+    public void AtendeRestricao_ConfereAsFlagsDoCardapio(CategoriaRestricao restricao, FlagDietetica flag, bool esperado)
+    {
+        Assert.Equal(esperado, CriarItem(50m, flag).AtendeRestricao(restricao));
+    }
+
+    [Fact]
+    public void AtendeRestricao_ItemSemFlag_NaoAtendeRestricaoVerificavel()
+    {
+        Assert.False(CriarItem(50m).AtendeRestricao(CategoriaRestricao.SemGluten));
+    }
+
+    [Theory]
+    [InlineData(CategoriaRestricao.Alergia)]
+    [InlineData(CategoriaRestricao.Outro)]
+    public void AtendeRestricao_AlergiaEOutro_NaoFiltramPorqueDependemDoTextoLivre(CategoriaRestricao restricao)
+    {
+        Assert.True(CriarItem(50m).AtendeRestricao(restricao));
+    }
 }
