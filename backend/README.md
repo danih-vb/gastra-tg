@@ -198,6 +198,27 @@ cadastrados por ele.
   ignora o que passa de 72 bytes: uma senha maior seria aceita, mas só o começo dela valeria.
 - A resposta nunca traz hash de senha nem segredo do autenticador.
 
+## Salão: praças e mesas (UC24)
+
+Cadastro do **Gerente** (RF23); a leitura vale para todo o salão, porque o garçom precisa da lista de
+mesas para abrir comanda.
+
+| Ação | Endpoint |
+|---|---|
+| Cadastrar praça | `POST /api/pracas` |
+| Editar praça | `PUT /api/pracas/{id}` |
+| Listar praças | `GET /api/pracas` *(qualquer usuário autenticado)* |
+| Cadastrar mesa numa praça | `POST /api/mesas` |
+| Editar número e capacidade da mesa | `PUT /api/mesas/{id}` |
+| Listar mesas | `GET /api/mesas` *(qualquer usuário autenticado)* |
+
+- **Toda mesa pertence a uma praça** (REL01), e esse vínculo **não muda**: o histórico de faturamento
+  por praça, que alimenta a alocação (RN03), perderia o sentido se a mesa trocasse de lugar. Por isso
+  a edição da mesa só altera número e capacidade.
+- **Código da praça e número da mesa são únicos.**
+- **`quantidadeGarcons`** é quantos garçons a praça comporta por turno: é entrada da programação
+  linear da alocação.
+
 ## Núcleo de comandas (UC10–UC14, UC20, UC23)
 
 Endpoints do **Garçom**, exceto onde indicado:

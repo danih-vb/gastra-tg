@@ -46,4 +46,13 @@
   <data name="ItemNaoEstaPendente" xml:space="preserve"><value>This item was already delivered or cancelled.</value></data>
   <data name="ItemCardapioIndisponivel" xml:space="preserve"><value>The menu item is unavailable.</value></data>
   <data name="ComandaComItensPendentes" xml:space="preserve"><value>There are pending items: deliver or cancel each one before closing.</value></data>
+  <data name="PracaNaoEncontrada" xml:space="preserve"><value>Section not found.</value></data>
+  <data name="CodigoPracaObrigatorio" xml:space="preserve"><value>The section code is required.</value></data>
+  <data name="CodigoPracaMuitoLongo" xml:space="preserve"><value>The section code must have at most 20 characters.</value></data>
+  <data name="CodigoPracaJaCadastrado" xml:space="preserve"><value>A section with this code already exists.</value></data>
+  <data name="QuantidadeGarconsInvalida" xml:space="preserve"><value>The section needs at least one waiter.</value></data>
+  <data name="NumeroMesaObrigatorio" xml:space="preserve"><value>The table number is required.</value></data>
+  <data name="NumeroMesaMuitoLongo" xml:space="preserve"><value>The table number must have at most 10 characters.</value></data>
+  <data name="NumeroMesaJaCadastrado" xml:space="preserve"><value>A table with this number already exists.</value></data>
+  <data name="CapacidadeMesaInvalida" xml:space="preserve"><value>The table must seat at least one person.</value></data>
 </root>
