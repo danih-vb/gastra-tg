@@ -23,7 +23,7 @@ O GASTRA tem três componentes de software e um banco de dados:
 |---|---|---|---|
 | **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ estrutura inicial · 🔜 telas |
 | **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários · 🔜 comandas, alocação, BI |
-| **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ estrutura e `/health` · 🔜 algoritmos |
+| **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ recomendação e alocação; sugestão de pratos já chamada pelo backend · 🔜 leitura das views (D10) e chamada da alocação |
 | **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · 🔜 promoções e views |
 
 O princípio que organiza tudo: **o backend é o único dono das regras de negócio e o único que
@@ -112,9 +112,9 @@ disciplina: se alguém quebrar a regra, o `dotnet test` avisa.
 
 ### 4.3 Inversão de dependência
 
-O domínio **define** o que precisa (`IRepositorioUsuario`, `ICriptografiaSenha`, 🔜
+O domínio **define** o que precisa (`IRepositorioUsuario`, `ICriptografiaSenha`,
 `IServicoAnalitico`), e a infraestrutura **implementa** (`RepositorioUsuario` com EF Core,
-`CriptografiaSenha` com BCrypt, 🔜 `ServicoAnaliticoHttp`). Trocar o MySQL, o algoritmo de hash
+`CriptografiaSenha` com BCrypt, `ServicoAnaliticoHttp` com `HttpClient`). Trocar o MySQL, o algoritmo de hash
 ou o serviço Python não exige mexer em regra de negócio — e os testes podem trocar o banco real
 por um banco em memória.
 
@@ -160,22 +160,29 @@ transforma em resposta HTTP. Todos os erros saem no mesmo formato:
 ```
 data-science/src/gastra_analitica/
 ├── api/            # FastAPI: recebe a requisição, chama o algoritmo, devolve JSON
-├── recomendacao/   # 🔜 regras de associação e clusterização (mlxtend, scikit-learn, pandas)
-└── alocacao/       # 🔜 programação linear da alocação de garçons (PuLP + solver CBC)
+├── recomendacao/   # ✅ regras de associação (mlxtend, pandas)
+├── alocacao/       # ✅ programação linear da alocação de garçons (PuLP + solver CBC)
+└── dados/          # ✅ simulador de histórico, usado enquanto o banco não tem movimento real
 ```
 
 Os algoritmos **não importam o FastAPI**: são funções Python comuns, testáveis e reaproveitáveis
 nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 
-### 5.2 Integração com o backend 🔜
+### 5.2 Integração com o backend
 
 | Uso | Quem chama | O que vai na requisição | O que volta |
 |---|---|---|---|
-| Sugestão de alocação (RF06, RN03) | Backend, quando o metre pede a sugestão | Data, período, garçons e praças disponíveis no turno | Pares garçom → praça |
-| Sugestão de pratos (RF09) | Backend, quando o garçom lança itens | Itens já pedidos na comanda | Itens sugeridos |
+| Sugestão de alocação (RF06, RN03) 🔜 | Backend, quando o metre pede a sugestão | Data, período, garçons e praças disponíveis no turno | Pares garçom → praça |
+| Sugestão de pratos (RF09) ✅ | Backend, quando o garçom abre as sugestões (`GET /api/comandas/{id}/sugestoes`) | Itens já pedidos e itens permitidos (disponíveis, fora da comanda, compatíveis com a restrição) | Ids sugeridos, em ordem |
 
 - O backend chama o serviço por meio de `IServicoAnalitico` (domínio), implementado por
-  `ServicoAnaliticoHttp` (infraestrutura), com tempo limite curto.
+  `ServicoAnaliticoHttp` (infraestrutura), com tempo limite de 2 s (configurável em
+  `ServicoAnalitico:TempoLimiteMilissegundos`).
+- **Falha não derruba o atendimento (D3):** fora do ar, lento ou com resposta inválida, o
+  `ServicoAnaliticoHttp` lança `ServicoAnaliticoIndisponivelException`. O caso de uso responde a lista
+  vazia com `servicoDisponivel = false`.
+- **O backend decide, o Python ordena:** o backend manda só os itens que podem ser oferecidos e, na
+  volta, descarta qualquer id fora dessa lista.
 - **O Python nunca grava.** O resultado volta ao backend, que valida e persiste (ex.: a alocação
   confirmada pelo metre, RF07).
 - **Leitura do histórico (decisão D10):** o Python lê somente views analíticas, com um

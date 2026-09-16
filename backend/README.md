@@ -234,6 +234,7 @@ Endpoints do **Garçom**, exceto onde indicado:
 | UC14 — Fechar a comanda | `POST /api/comandas/{id}/fechamento` |
 | Consultar comanda / painel do salão *(garçom, metre, coordenador, gerente)* | `GET /api/comandas/{id}` · `GET /api/comandas` |
 | UC20 — Consulta do cliente por QR code *(sem login)* | `GET /api/comandas/consulta/{codigoAcesso}` |
+| UC18 — Sugestões de itens para oferecer na mesa | `GET /api/comandas/{id}/sugestoes` |
 
 - **Composição da mesa (RN01):** o garçom informa quantas pessoas estão na mesa e o sistema sugere
   Solo, Casal, Grupo pequeno, Família ou Grupo grande. Um item infantil numa mesa de 3 ou mais
@@ -247,6 +248,47 @@ Endpoints do **Garçom**, exceto onde indicado:
   cliente mostra itens e valores, nunca a restrição ou quem é o garçom (RN04).
 - **Código de acesso:** cada comanda recebe um código único, usado no QR code da mesa. Ele funciona
   como senha da conta, por isso nunca aparece em log.
+
+## Sugestão de pratos (UC18, RF09)
+
+`GET /api/comandas/{id}/sugestoes` devolve até 3 itens para o garçom oferecer, calculados pela camada
+analítica em Python (regras de associação). O caminho é
+`SugerirCombinacoesUseCase` → `IServicoAnalitico` (domínio) → `ServicoAnaliticoHttp` (infraestrutura) →
+`POST /recomendacao/combinacoes` no FastAPI.
+
+- **O backend decide o que pode ser oferecido; o Python só ordena.** Antes de chamar o serviço, o
+  backend monta a lista de itens permitidos: disponíveis hoje (RF21), fora da comanda e compatíveis
+  com a restrição registrada. Na volta, descarta qualquer id fora dessa lista.
+- **Restrição alimentar:** vegano, vegetariano, sem glúten e sem lactose são conferidos pelas flags do
+  cardápio. Na dúvida, o item não é sugerido: um suco sem a flag "vegano" não vai para uma mesa vegana.
+  Alergia e "outro" só existem no texto livre, então não filtram nada e a resposta vem com
+  `confirmarRestricaoComCliente = true`.
+- **Python fora do ar não para o salão (D3, RNF05):** se o serviço não responde em 2 s, dá erro ou
+  devolve algo inválido, a resposta é `200` com a lista vazia e `servicoDisponivel = false`. O motivo
+  vai para o log técnico, sem dados da comanda.
+- **Privacidade (RN05):** só os ids dos itens pedidos vão para o Python. Nenhum dado do cliente.
+
+Configuração, em `appsettings.json` (sem segredo, por isso versionada):
+
+```json
+"ServicoAnalitico": {
+  "UrlBase": "http://localhost:8000",
+  "TempoLimiteMilissegundos": 2000
+}
+```
+
+Para ver a sugestão de verdade, suba o serviço Python (`data-science/README.md`). Sem ele, a API
+funciona normalmente e só a sugestão fica vazia.
+
+**Teste de contrato com o Python.** `ContratoComPythonTests` aparece como ignorado no `dotnet test`
+comum. Com o serviço Python no ar, rode:
+
+```bash
+GASTRA_TESTES_ANALITICA=http://localhost:8000 dotnet test
+```
+
+O teste chama o FastAPI de verdade pelo `ServicoAnaliticoHttp` e confere que os dois lados usam o
+mesmo formato de requisição e de resposta.
 
 ## Configurações locais
 
