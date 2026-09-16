@@ -143,6 +143,7 @@ gastra-tg/
 - **Diagrama de Sequência — Alocação de Garçons:** [`docs/diagramas/sequencia/GASTRA_Sequencia_AlocacaoGarcons.png`](docs/diagramas/sequencia/GASTRA_Sequencia_AlocacaoGarcons.png)
 - **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
 - **Modelo físico (SQL do banco):** [`docs/modelagem/GASTRA_Schema.sql`](docs/modelagem/GASTRA_Schema.sql)
+- **Views e triggers (com a justificativa de cada um):** [`docs/modelagem/GASTRA_Objetos_Banco.md`](docs/modelagem/GASTRA_Objetos_Banco.md)
 - **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
 - **Diagrama de Classes** (por camadas):
   [pacotes](docs/diagramas/classe/GASTRA_Classe_Pacotes.png) ·
