@@ -74,7 +74,7 @@ Cada decisão com a alternativa considerada e o custo aceito.
 | D7 | **JWT + chave de sessão** | Sessão em cookie no servidor | JWT funciona igual para Angular, Swagger e testes; a chave de sessão resolve o ponto fraco do JWT (não dá para "desligar" um token) | Uma consulta ao usuário por requisição autenticada |
 | D8 | **Mapster** para converter entidade ↔ response | AutoMapper | Licença MIT; o AutoMapper passou a ter licenciamento comercial a partir da versão 15 | Menos material de referência que o AutoMapper |
 | D9 | **Mensagens de erro em arquivos `.resx`** (pt-BR e en) | Textos fixos no código | O idioma é escolhido por requisição e nenhuma mensagem fica espalhada pelo código | Toda mensagem nova precisa entrar nos dois arquivos |
-| D10 | **Python lê o histórico só por views, com usuário somente leitura** 🔜 *(proposta, a confirmar pela dupla)* | O backend enviar todo o histórico em cada chamada | As regras de associação precisam de todo o histórico de pedidos; mandar isso a cada chamada é pesado. A view entrega só colunas agregadas, sem dado pessoal, e o usuário não consegue gravar | O Python passa a conhecer o nome das views |
+| D10 | **Python lê o histórico só por views, com usuário somente leitura** 🔜 *(aprovada pela dupla em 15/09)* | O backend enviar todo o histórico em cada chamada | As regras de associação precisam de todo o histórico de pedidos; mandar isso a cada chamada é pesado. A view entrega só colunas agregadas, sem dado pessoal, e o usuário não consegue gravar | O Python passa a conhecer o nome das views |
 
 ---
 
@@ -178,7 +178,7 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
   `ServicoAnaliticoHttp` (infraestrutura), com tempo limite curto.
 - **O Python nunca grava.** O resultado volta ao backend, que valida e persiste (ex.: a alocação
   confirmada pelo metre, RF07).
-- **Leitura do histórico (decisão D10, proposta):** o Python lê somente views analíticas, com um
+- **Leitura do histórico (decisão D10):** o Python lê somente views analíticas, com um
   usuário MySQL que só tem permissão de `SELECT` nessas views. As views não expõem dado pessoal.
 - **Solver da programação linear:** `pulp.COIN_CMD(path=cbcbox.cbc_bin_path())`. O solver
   embutido antigo (`PULP_CBC_CMD`) está obsoleto e será removido no PuLP 4.0.
@@ -289,7 +289,6 @@ O OWASP Top 10 não é uma ferramenta a instalar: é a lista de riscos usada par
 
 | Tema | Situação |
 |---|---|
-| Leitura do histórico pelo Python (D10) | Proposta neste documento; confirmar pela dupla antes de criar as views |
 | Biblioteca de componentes do Angular | Escolher junto com o protótipo no Figma (ex.: Angular Material ou PrimeNG) |
 | Dockerfiles da API, do Python e do frontend | Criar antes da fase de validação, para a demonstração |
 | SonarCloud | Configurar no fim do desenvolvimento |
@@ -310,5 +309,5 @@ Pontos corrigidos para refletir o sistema real:
 | Strategy Pattern já adotado em `IEstrategiaAlocacao` e `IRecomendador` | Substituídas por `IServicoAnalitico` no diagrama de classes (#92), porque o cálculo acontece no Python |
 | Mapster com erros detectados em tempo de build | O projeto usa `Adapt` em tempo de execução; os testes de integração é que detectam mapeamentos errados |
 | *Exception Handling Middleware* e *Filters* para autorização | Erros tratados por filtro (`FiltroExcecao`); autorização por atributo `[Authorize]` com JWT |
-| O Python nunca acessa o MySQL | Mantido para escrita; para leitura do histórico, proposta D10 (views, somente leitura) |
+| O Python nunca acessa o MySQL | Mantido para escrita; para leitura do histórico, decisão D10 (views, somente leitura) |
 | Diagrama de implantação sem ligação entre API e Python e sem servidor para o Angular | Figura 1 |
