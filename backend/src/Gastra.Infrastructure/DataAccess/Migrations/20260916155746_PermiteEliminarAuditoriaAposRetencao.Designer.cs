@@ -4,6 +4,7 @@ using Gastra.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gastra.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(GastraDbContext))]
-    partial class GastraDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260916155746_PermiteEliminarAuditoriaAposRetencao")]
+    partial class PermiteEliminarAuditoriaAposRetencao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,10 +132,7 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
 
                     b.HasIndex("MesaId", "Status");
 
-                    b.ToTable("comanda", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_comanda_status_fechamento", "(status = 'Aberta' AND data_hora_fechamento IS NULL) OR (status = 'Fechada' AND data_hora_fechamento IS NOT NULL)");
-                        });
+                    b.ToTable("comanda", (string)null);
                 });
 
             modelBuilder.Entity("Gastra.Domain.Entidades.ItemDoCardapio", b =>
@@ -229,10 +229,7 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
 
                     b.HasIndex("ItemDoCardapioId");
 
-                    b.ToTable("item_pedido", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_item_pedido_motivo_cancelamento", "(status = 'Cancelado' AND motivo_cancelamento IS NOT NULL) OR (status <> 'Cancelado' AND motivo_cancelamento IS NULL)");
-                        });
+                    b.ToTable("item_pedido", (string)null);
                 });
 
             modelBuilder.Entity("Gastra.Domain.Entidades.Mesa", b =>

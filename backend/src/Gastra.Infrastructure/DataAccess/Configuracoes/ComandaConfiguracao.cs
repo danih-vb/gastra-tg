@@ -8,7 +8,11 @@ public class ComandaConfiguracao : IEntityTypeConfiguration<Comanda>
 {
     public void Configure(EntityTypeBuilder<Comanda> builder)
     {
-        builder.ToTable("comanda");
+        // status e data de fechamento dizem a mesma coisa (docs/modelagem/GASTRA_Validacao_Modelo_Fisico.md,
+        // seção 2): a coluna status fica por legibilidade no BI, e o CHECK impede que as duas se contradigam.
+        builder.ToTable("comanda", tabela => tabela.HasCheckConstraint(
+            "CK_comanda_status_fechamento",
+            "(status = 'Aberta' AND data_hora_fechamento IS NULL) OR (status = 'Fechada' AND data_hora_fechamento IS NOT NULL)"));
 
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Id).HasColumnName("id");

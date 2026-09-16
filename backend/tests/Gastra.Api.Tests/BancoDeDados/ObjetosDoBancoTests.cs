@@ -151,35 +151,84 @@ public class ObjetosDoBancoTests : IAsyncLifetime
     }
 
     [FactComMySql]
-    public async Task Registro_de_auditoria_aceita_insercao_mas_nao_alteracao_nem_exclusao()
+    public async Task Registro_de_auditoria_aceita_insercao_mas_nunca_alteracao()
     {
-        await _banco.Executar("""
-            INSERT INTO registro_auditoria (data_hora_utc, evento, resultado) VALUES (UTC_TIMESTAMP(6), 'Login', 'Sucesso');
-            """);
+        await InserirAuditoria("UTC_TIMESTAMP(6) - INTERVAL 2 YEAR");
 
         var alteracao = await Assert.ThrowsAsync<MySqlException>(() =>
             _banco.Executar("UPDATE registro_auditoria SET resultado = 'Falha'"));
-        var exclusao = await Assert.ThrowsAsync<MySqlException>(() =>
-            _banco.Executar("DELETE FROM registro_auditoria"));
 
         Assert.Equal("45000", alteracao.SqlState);
         Assert.Contains("não pode ser alterado", alteracao.Message);
-        Assert.Contains("não pode ser apagado", exclusao.Message);
         Assert.Single(await _banco.Consultar("SELECT id FROM registro_auditoria WHERE resultado = 'Sucesso'"));
     }
+
+    [FactComMySql]
+    public async Task Registro_de_auditoria_dentro_do_prazo_de_retencao_nao_pode_ser_apagado()
+    {
+        await InserirAuditoria("UTC_TIMESTAMP(6) - INTERVAL 5 MONTH");
+
+        var exclusao = await Assert.ThrowsAsync<MySqlException>(() =>
+            _banco.Executar("DELETE FROM registro_auditoria"));
+
+        Assert.Equal("45000", exclusao.SqlState);
+        Assert.Contains("prazo de retenção de 6 meses", exclusao.Message);
+        Assert.Single(await _banco.Consultar("SELECT id FROM registro_auditoria"));
+    }
+
+    [FactComMySql]
+    public async Task Eliminacao_por_prazo_apaga_so_o_que_passou_de_6_meses()
+    {
+        // Política de log, seção 7, e LGPD art. 16: depois do prazo, o registro é eliminado.
+        await InserirAuditoria("UTC_TIMESTAMP(6) - INTERVAL 7 MONTH");
+        await InserirAuditoria("UTC_TIMESTAMP(6) - INTERVAL 1 DAY");
+
+        await _banco.Executar("DELETE FROM registro_auditoria WHERE data_hora_utc < UTC_TIMESTAMP(6) - INTERVAL 6 MONTH");
+
+        var restantes = await _banco.Consultar("SELECT data_hora_utc FROM registro_auditoria");
+        var restante = Assert.Single(restantes);
+        Assert.True((DateTime)restante["data_hora_utc"]! > DateTime.UtcNow.AddDays(-2));
+    }
+
+    [FactComMySql]
+    public async Task Comanda_nao_pode_ter_status_e_data_de_fechamento_contraditorios()
+    {
+        var abertaComFechamento = await Assert.ThrowsAsync<MySqlException>(() =>
+            _banco.Executar("UPDATE comanda SET data_hora_fechamento = UTC_TIMESTAMP(6) WHERE id = 4"));
+        var fechadaSemFechamento = await Assert.ThrowsAsync<MySqlException>(() =>
+            _banco.Executar("UPDATE comanda SET data_hora_fechamento = NULL WHERE id = 1"));
+
+        Assert.Contains("CK_comanda_status_fechamento", abertaComFechamento.Message);
+        Assert.Contains("CK_comanda_status_fechamento", fechadaSemFechamento.Message);
+    }
+
+    [FactComMySql]
+    public async Task Motivo_de_cancelamento_existe_so_em_item_cancelado()
+    {
+        var canceladoSemMotivo = await Assert.ThrowsAsync<MySqlException>(() =>
+            _banco.Executar("UPDATE item_pedido SET motivo_cancelamento = NULL WHERE status = 'Cancelado'"));
+        var entregueComMotivo = await Assert.ThrowsAsync<MySqlException>(() =>
+            _banco.Executar("UPDATE item_pedido SET motivo_cancelamento = 'ItemEmFalta' WHERE status = 'Entregue'"));
+
+        Assert.Contains("CK_item_pedido_motivo_cancelamento", canceladoSemMotivo.Message);
+        Assert.Contains("CK_item_pedido_motivo_cancelamento", entregueComMotivo.Message);
+    }
+
+    private Task InserirAuditoria(string dataHoraSql) => _banco.Executar(
+        $"INSERT INTO registro_auditoria (data_hora_utc, evento, resultado) VALUES ({dataHoraSql}, 'Login', 'Sucesso');");
 
     private Task InserirComanda(int id, int mesaId, int garcomId, string aberturaUtc, string status, int pessoas,
         params (int ItemId, int Quantidade, string Status)[] itens)
     {
         var fechamento = status == "Fechada" ? $"DATE_ADD('{aberturaUtc}', INTERVAL 1 HOUR)" : "NULL";
         var valores = string.Join(",\n", itens.Select(i =>
-            $"({id}, {i.ItemId}, {i.Quantidade}, (SELECT preco FROM item_cardapio WHERE id = {i.ItemId}), '{aberturaUtc}', '{i.Status}')"));
+            $"({id}, {i.ItemId}, {i.Quantidade}, (SELECT preco FROM item_cardapio WHERE id = {i.ItemId}), '{aberturaUtc}', '{i.Status}', {(i.Status == "Cancelado" ? "'ErroDeLancamento'" : "NULL")})"));
 
         return _banco.Executar($"""
             INSERT INTO comanda (id, mesa_id, garcom_id, data_hora_abertura, data_hora_fechamento, status, quantidade_pessoas,
                                  composicao, taxa_servico_removida, composicao_ajustada_manualmente, codigo_acesso_cliente)
             VALUES ({id}, {mesaId}, {garcomId}, '{aberturaUtc}', {fechamento}, '{status}', {pessoas}, 'Casal', 0, 0, 'codigo-{id}');
-            INSERT INTO item_pedido (comanda_id, item_cardapio_id, quantidade, preco_unitario_no_momento, data_hora_registro, status)
+            INSERT INTO item_pedido (comanda_id, item_cardapio_id, quantidade, preco_unitario_no_momento, data_hora_registro, status, motivo_cancelamento)
             VALUES {valores};
             """);
     }
