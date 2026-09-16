@@ -8,7 +8,10 @@ public class ItemDoPedidoConfiguracao : IEntityTypeConfiguration<ItemDoPedido>
 {
     public void Configure(EntityTypeBuilder<ItemDoPedido> builder)
     {
-        builder.ToTable("item_pedido");
+        // RN02: motivo existe se, e somente se, o item foi cancelado.
+        builder.ToTable("item_pedido", tabela => tabela.HasCheckConstraint(
+            "CK_item_pedido_motivo_cancelamento",
+            "(status = 'Cancelado' AND motivo_cancelamento IS NOT NULL) OR (status <> 'Cancelado' AND motivo_cancelamento IS NULL)"));
 
         builder.HasKey(i => i.Id);
         builder.Property(i => i.Id).HasColumnName("id");

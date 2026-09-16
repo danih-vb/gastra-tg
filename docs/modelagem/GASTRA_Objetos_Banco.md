@@ -92,7 +92,16 @@ O documento de arquitetura previa uma view com o índice de desempenho. Ela foi 
 | Trigger | Quando | Efeito |
 |---|---|---|
 | `trg_registro_auditoria_impede_update` | antes de `UPDATE` em `registro_auditoria` | Recusa a operação (`SQLSTATE 45000`, "O registro de auditoria não pode ser alterado.") |
-| `trg_registro_auditoria_impede_delete` | antes de `DELETE` em `registro_auditoria` | Recusa a operação (`SQLSTATE 45000`, "O registro de auditoria não pode ser apagado.") |
+| `trg_registro_auditoria_impede_delete` | antes de `DELETE` em `registro_auditoria` | Recusa a exclusão de registro com **menos de 6 meses** (`SQLSTATE 45000`, "O registro de auditoria só pode ser apagado depois do prazo de retenção de 6 meses.") |
+
+**Por que a exclusão tem exceção.** A política de log (seção 7) e o MER preveem a eliminação da
+auditoria ao fim do prazo de retenção de 6 meses (LGPD, art. 16). A primeira versão do trigger
+bloqueava qualquer `DELETE`, o que tornaria essa eliminação impossível. A migration
+`PermiteEliminarAuditoriaAposRetencao` corrigiu isso: o registro fica protegido durante o prazo e
+pode ser eliminado depois dele. A alteração (`UPDATE`) continua proibida sempre.
+
+> ⚠️ O prazo de 6 meses ainda depende de validação com o orientador (política de log, seção 9).
+> Se mudar, basta uma migration que recrie o trigger com o novo intervalo.
 
 **Por que estão no banco.** A aplicação nunca altera nem apaga auditoria. Mas uma garantia só no
 código não impede quem acessa o banco direto (um script, uma ferramenta de administração, um

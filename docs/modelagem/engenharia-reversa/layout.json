@@ -1,0 +1,3 @@
+{"praca": [40, 40], "alocacao": [460, 40], "usuario": [880, 40], "registro_auditoria": [1300, 40],
+ "mesa": [40, 420], "comanda": [460, 420], "restricao_alimentar": [880, 520],
+ "item_pedido": [460, 860], "item_cardapio": [880, 860], "item_cardapio_flag": [1300, 900]}

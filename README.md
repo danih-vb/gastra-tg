@@ -144,6 +144,7 @@ gastra-tg/
 - **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
 - **Modelo físico (SQL do banco):** [`docs/modelagem/GASTRA_Schema.sql`](docs/modelagem/GASTRA_Schema.sql)
 - **Views e triggers (com a justificativa de cada um):** [`docs/modelagem/GASTRA_Objetos_Banco.md`](docs/modelagem/GASTRA_Objetos_Banco.md)
+- **Validação do modelo físico** (engenharia reversa, formas normais e LGPD): [`docs/modelagem/GASTRA_Validacao_Modelo_Fisico.md`](docs/modelagem/GASTRA_Validacao_Modelo_Fisico.md) · [modelo lógico obtido do banco](docs/modelagem/engenharia-reversa/GASTRA_Logico_Engenharia_Reversa.png)
 - **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
 - **Diagrama de Classes** (por camadas):
   [pacotes](docs/diagramas/classe/GASTRA_Classe_Pacotes.png) ·
