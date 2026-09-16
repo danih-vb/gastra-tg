@@ -83,6 +83,7 @@ gastra-tg/
 │   │   └── questionarios/         # Instrumento de coleta (Jotform)
 │   │       └── GASTRA_Instrumento_Coleta.docx
 │   ├── modelagem/
+│   │   ├── GASTRA_Schema.sql   # Modelo físico completo (gerado das migrations)
 │   │   ├── mer/                   # Modelo de Entidade-Relacionamento (linguagem natural)
 │   │   │   └── GASTRA_MER.docx
 │   │   └── der/                   # Diagrama formal (notação de Chen), a partir do MER
@@ -133,6 +134,7 @@ gastra-tg/
 - **Diagrama de Sequência — Núcleo de Comandas:** [`docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png`](docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png)
 - **Diagrama de Sequência — Recomendação de Pratos:** [`docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png`](docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png)
 - **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
+- **Modelo físico (SQL do banco):** [`docs/modelagem/GASTRA_Schema.sql`](docs/modelagem/GASTRA_Schema.sql)
 - **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
 - **Diagrama de Classes** (por camadas):
   [pacotes](docs/diagramas/classe/GASTRA_Classe_Pacotes.png) ·

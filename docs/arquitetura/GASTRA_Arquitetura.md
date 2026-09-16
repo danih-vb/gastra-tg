@@ -24,7 +24,7 @@ O GASTRA tem três componentes de software e um banco de dados:
 | **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ estrutura inicial · 🔜 telas |
 | **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários · 🔜 comandas, alocação, BI |
 | **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ estrutura e `/health` · 🔜 algoritmos |
-| **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas de cardápio e usuário · 🔜 demais tabelas e views |
+| **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · 🔜 promoções e views |
 
 O princípio que organiza tudo: **o backend é o único dono das regras de negócio e o único que
 grava no banco.** O frontend só apresenta e coleta dados; o Python só calcula e devolve o
@@ -204,10 +204,10 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 | Item | Decisão |
 |---|---|
 | SGBD | MySQL 8.4, em contêiner Docker com volume persistente |
-| Criação do schema | Migrations do EF Core (D5); o SQL completo é gerado com `dotnet ef migrations script` |
+| Criação do schema | Migrations do EF Core (D5); o SQL completo fica em `docs/modelagem/GASTRA_Schema.sql`, gerado com `dotnet ef migrations script` |
 | Convenções | Tabelas e colunas em `snake_case`; enums gravados como texto (legível em consultas de BI); valores monetários em `decimal(10,2)` |
-| Tabelas existentes ✅ | `item_cardapio`, `item_cardapio_flag` (flags dietéticas em tabela própria, 1FN), `usuario` |
-| Tabelas planejadas 🔜 | praça, mesa, comanda, item do pedido, restrição alimentar, alocação, promoção, feedback, auditoria |
+| Tabelas existentes ✅ | `item_cardapio`, `item_cardapio_flag` (flags dietéticas em tabela própria, 1FN), `usuario`, `praca`, `mesa`, `comanda`, `item_pedido`, `restricao_alimentar`, `alocacao`, `registro_auditoria` |
+| Tabelas planejadas 🔜 | promoção e a tabela associativa com o item do cardápio |
 | **Views** 🔜 | Leitura para BI e para o Python: faturamento médio por praça (atributo derivado, nunca armazenado), faturamento por garçom, índice de desempenho |
 | **Triggers** 🔜 | Só para proteger a tabela de auditoria: impedir `UPDATE` e `DELETE` |
 | **Stored procedures** | Não usadas (D6) |
