@@ -70,6 +70,59 @@ data-science/
 São funções Python puras, usadas tanto pelo FastAPI quanto pelos notebooks, sem duplicar
 código. A regra é verificada por `tests/test_arquitetura.py`.
 
+## Algoritmos
+
+### Recomendação de pratos (RF09)
+
+`src/gastra_analitica/recomendacao/regras_associacao.py` — regras de associação com o mlxtend.
+
+- **Suporte:** em que fração das comandas um conjunto de itens aparece.
+- **Confiança** da regra A → B: entre as comandas que têm A, em quantas B também aparece.
+- **Lift:** quantas vezes A e B aparecem juntos além do esperado se fossem independentes. Regras com
+  lift **menor ou igual a 1** são descartadas: significam itens que se evitam, e sugerir seria pior
+  do que não sugerir nada.
+- Entram apenas **padrões de consumo observáveis** (itens já pedidos). Nenhum atributo pessoal do
+  cliente é usado, nem pode ser (RN05).
+
+### Alocação de garçons (RF06, RN03)
+
+`src/gastra_analitica/alocacao/programacao_linear.py` — problema de designação resolvido com PuLP + CBC.
+
+Custo de colocar o garçom *i* na praça *j*, com os fatores normalizados em [0, 1]:
+
+```
+c(i,j) = w1 · (faturamento do garçom × potencial da praça)
+       + w2 · ((1 − espera do garçom) × potencial da praça)
+```
+
+- **São produtos, e não somas, de propósito:** somar "faturamento do garçom + faturamento da praça"
+  dá o mesmo total em qualquer distribuição, e o solver empataria — a regra não decidiria nada. Com o
+  produto, juntar quem mais faturou com a praça que mais fatura fica caro, e a solução ótima entrega
+  a praça boa a quem está para trás.
+- **Restrições:** cada garçom em exatamente uma praça; cada praça dentro das suas vagas; nenhuma
+  praça sem atendimento quando há garçons suficientes.
+- A matriz de um problema de designação é totalmente unimodular, então a relaxação contínua já sai
+  inteira: não é preciso solver de programação inteira.
+- Pesos `w1` e `w2` (padrão 0,6 e 0,4) ainda serão calibrados com dado simulado.
+
+### Dados simulados
+
+`src/gastra_analitica/dados/simulador.py` gera comandas e turnos **determinísticos** (mesma semente,
+mesmos dados). O restaurante colaborador não forneceu base histórica e o sistema ainda não acumulou
+movimento próprio, então é com esses dados que os algoritmos são testados e os pesos serão calibrados.
+
+## Endpoints
+
+| Método | Rota | Para quê |
+|---|---|---|
+| `GET` | `/health` | Saúde do serviço |
+| `POST` | `/recomendacao/combinacoes` | Sugere itens a partir dos já pedidos na comanda |
+| `POST` | `/alocacao/sugestao` | Distribui os garçons do turno entre as praças |
+
+Quem chama é sempre o backend em C#; o serviço **calcula e devolve**, nunca grava (decisão D2 da
+arquitetura). Enquanto o banco não tem movimento real, a recomendação usa o histórico simulado, e a
+resposta diz isso no campo `origem_do_historico`.
+
 ## Comandos
 
 Todos executados dentro de `data-science/`, com o ambiente ativado.
