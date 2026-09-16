@@ -21,10 +21,13 @@ public class Mesa : EntidadeBase
         DefinirCapacidade(capacidade);
     }
 
-    public void Atualizar(string numero, int capacidade, int pracaId)
+    /// <summary>
+    /// A praça não entra: o vínculo mesa-praça é fixo (REL01), senão o histórico de faturamento por
+    /// praça deixaria de fazer sentido.
+    /// </summary>
+    public void Atualizar(string numero, int capacidade)
     {
         Numero = numero;
-        PracaId = pracaId;
         DefinirCapacidade(capacidade);
     }
 

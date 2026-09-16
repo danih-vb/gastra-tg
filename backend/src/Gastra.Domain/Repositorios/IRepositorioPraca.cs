@@ -6,5 +6,6 @@ public interface IRepositorioPraca
 {
     Task Adicionar(Praca praca);
     Task<Praca?> ObterPorId(int id);
+    Task<Praca?> ObterPorCodigo(string codigo);
     Task<List<Praca>> ListarTodas();
 }

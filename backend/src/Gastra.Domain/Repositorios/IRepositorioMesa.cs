@@ -6,5 +6,6 @@ public interface IRepositorioMesa
 {
     Task Adicionar(Mesa mesa);
     Task<Mesa?> ObterPorId(int id);
+    Task<Mesa?> ObterPorNumero(string numero);
     Task<List<Mesa>> ListarTodas();
 }

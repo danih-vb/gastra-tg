@@ -265,3 +265,65 @@ Authorization: Bearer {{token}}
 GET {{Gastra.Api_HostAddress}}/api/comandas/consulta/COLE_O_CODIGO_DE_ACESSO_AQUI
 
 ###
+
+# ===================== Salão: praças e mesas (UC24) =====================
+
+# UC24 — Cadastrar praça (Gerente)
+POST {{Gastra.Api_HostAddress}}/api/pracas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "codigo": "Varanda",
+  "quantidadeGarcons": 2
+}
+
+###
+
+# UC24 — Editar praça
+PUT {{Gastra.Api_HostAddress}}/api/pracas/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "codigo": "Varanda",
+  "quantidadeGarcons": 3
+}
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/pracas
+Authorization: Bearer {{token}}
+
+###
+
+# UC24 — Cadastrar mesa numa praça (Gerente)
+POST {{Gastra.Api_HostAddress}}/api/mesas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "numero": "12",
+  "capacidade": 4,
+  "pracaId": 1
+}
+
+###
+
+# UC24 — Editar mesa (a praça não muda: vínculo fixo)
+PUT {{Gastra.Api_HostAddress}}/api/mesas/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "numero": "12A",
+  "capacidade": 6
+}
+
+###
+
+# Lista que o garçom usa para abrir comanda
+GET {{Gastra.Api_HostAddress}}/api/mesas
+Authorization: Bearer {{token}}
+
+###

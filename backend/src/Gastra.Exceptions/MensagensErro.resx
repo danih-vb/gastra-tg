@@ -46,4 +46,13 @@
   <data name="ItemNaoEstaPendente" xml:space="preserve"><value>Este item já foi entregue ou cancelado.</value></data>
   <data name="ItemCardapioIndisponivel" xml:space="preserve"><value>O item está indisponível no cardápio.</value></data>
   <data name="ComandaComItensPendentes" xml:space="preserve"><value>Há itens pendentes: entregue ou cancele cada um antes de fechar.</value></data>
+  <data name="PracaNaoEncontrada" xml:space="preserve"><value>Praça não encontrada.</value></data>
+  <data name="CodigoPracaObrigatorio" xml:space="preserve"><value>O código da praça é obrigatório.</value></data>
+  <data name="CodigoPracaMuitoLongo" xml:space="preserve"><value>O código da praça deve ter no máximo 20 caracteres.</value></data>
+  <data name="CodigoPracaJaCadastrado" xml:space="preserve"><value>Já existe uma praça com este código.</value></data>
+  <data name="QuantidadeGarconsInvalida" xml:space="preserve"><value>A praça precisa de pelo menos um garçom.</value></data>
+  <data name="NumeroMesaObrigatorio" xml:space="preserve"><value>O número da mesa é obrigatório.</value></data>
+  <data name="NumeroMesaMuitoLongo" xml:space="preserve"><value>O número da mesa deve ter no máximo 10 caracteres.</value></data>
+  <data name="NumeroMesaJaCadastrado" xml:space="preserve"><value>Já existe uma mesa com este número.</value></data>
+  <data name="CapacidadeMesaInvalida" xml:space="preserve"><value>A mesa precisa comportar pelo menos uma pessoa.</value></data>
 </root>
