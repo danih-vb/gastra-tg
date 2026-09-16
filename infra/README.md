@@ -23,6 +23,11 @@ Ambiente de desenvolvimento/testes via Docker Compose, com MySQL containerizado.
 ```
    O status deve aparecer como `Up`/`healthy`.
 
+> **Atualizou a branch e o `docker-compose.yml` mudou?** Rode `docker compose up -d` de novo. O
+> contêiner é recriado com a nova configuração e o volume com os dados é mantido. Desde as views
+> e triggers (issue #85), o MySQL sobe com `--log-bin-trust-function-creators=ON`. Sem isso, a
+> migration que cria os triggers falha com o erro 1419.
+
 ## Conectando via MySQL Workbench
 
 - Host: `localhost`

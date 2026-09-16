@@ -71,6 +71,20 @@ Todos executados dentro de `backend/`.
 
 Com a API rodando, `http://localhost:5019/health` deve responder `Healthy`.
 
+### Testes de views e triggers (MySQL real)
+
+Os testes em `tests/Gastra.Api.Tests/BancoDeDados/` aparecem como **ignorados** no `dotnet test`
+comum. Para rodá-los, com o contêiner do MySQL de pé, defina `GASTRA_TESTES_MYSQL` com um usuário que
+possa criar schemas (no ambiente local, o `root`, com a senha do seu `infra/.env`):
+
+```bash
+export GASTRA_TESTES_MYSQL="Server=localhost;Port=3307;User ID=root;Password=<senha do root>"
+dotnet test
+```
+
+Cada teste cria um schema descartável, aplica as migrations e o apaga no fim. Detalhes em
+[`docs/modelagem/GASTRA_Objetos_Banco.md`](../docs/modelagem/GASTRA_Objetos_Banco.md).
+
 ### Documentação interativa (Swagger)
 
 Com a API rodando em desenvolvimento, `http://localhost:5019/swagger` lista todos os endpoints,

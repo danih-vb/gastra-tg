@@ -22,9 +22,9 @@ O GASTRA tem três componentes de software e um banco de dados:
 | Componente | Tecnologia | Responsabilidade | Situação |
 |---|---|---|---|
 | **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ estrutura inicial · 🔜 telas |
-| **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários · 🔜 comandas, alocação, BI |
+| **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários, comandas, praças e mesas, sugestão de pratos · 🔜 alocação, BI, promoções |
 | **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ recomendação e alocação; sugestão de pratos já chamada pelo backend · 🔜 leitura das views (D10) e chamada da alocação |
-| **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · 🔜 promoções e views |
+| **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · ✅ views de BI e triggers de auditoria · 🔜 promoções |
 
 O princípio que organiza tudo: **o backend é o único dono das regras de negócio e o único que
 grava no banco.** O frontend só apresenta e coleta dados; o Python só calcula e devolve o
@@ -215,8 +215,8 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 | Convenções | Tabelas e colunas em `snake_case`; enums gravados como texto (legível em consultas de BI); valores monetários em `decimal(10,2)` |
 | Tabelas existentes ✅ | `item_cardapio`, `item_cardapio_flag` (flags dietéticas em tabela própria, 1FN), `usuario`, `praca`, `mesa`, `comanda`, `item_pedido`, `restricao_alimentar`, `alocacao`, `registro_auditoria` |
 | Tabelas planejadas 🔜 | promoção e a tabela associativa com o item do cardápio |
-| **Views** 🔜 | Leitura para BI e para o Python: faturamento médio por praça (atributo derivado, nunca armazenado), faturamento por garçom, índice de desempenho |
-| **Triggers** 🔜 | Só para proteger a tabela de auditoria: impedir `UPDATE` e `DELETE` |
+| **Views** ✅ | Leitura para BI e para o Python, sem dado pessoal: faturamento por comanda, por praça e turno, faturamento médio por praça (atributo derivado, nunca armazenado), bases do índice de desempenho do garçom, faturamento por item e itens por comanda. O índice em si é calculado na aplicação, porque tem pesos e depende do período escolhido. Lista e justificativas em `docs/modelagem/GASTRA_Objetos_Banco.md` |
+| **Triggers** ✅ | Só para proteger a tabela de auditoria: impedir `UPDATE` e `DELETE` |
 | **Stored procedures** | Não usadas (D6) |
 
 **Por que a auditoria é gravada pela aplicação e não por trigger:** um trigger não sabe *quem* fez
