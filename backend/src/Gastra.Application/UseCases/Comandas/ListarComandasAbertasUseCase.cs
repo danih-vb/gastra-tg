@@ -16,17 +16,19 @@ public interface IListarComandasAbertasUseCase
 
 public class ListarComandasAbertasUseCase(
     IRepositorioComanda repositorio,
-    IRepositorioItemCardapio repositorioCardapio) : IListarComandasAbertasUseCase
+    IRepositorioItemCardapio repositorioCardapio,
+    IUsuarioLogado usuarioLogado) : IListarComandasAbertasUseCase
 {
     public async Task<List<ComandaResponse>> Executar()
     {
         var comandas = await repositorio.ListarAbertas();
         var respostas = new List<ComandaResponse>();
+        var papel = usuarioLogado.ObterPapel();
 
         foreach (var comanda in comandas)
         {
             var nomes = await LeitorDeNomesDoCardapio.Obter(repositorioCardapio, comanda);
-            respostas.Add(MapeadorComanda.Montar(comanda, nomes));
+            respostas.Add(MapeadorComanda.Montar(comanda, nomes, papel));
         }
 
         return respostas;

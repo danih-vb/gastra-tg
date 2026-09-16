@@ -3,6 +3,10 @@ using System.Net.Http.Json;
 using Gastra.Api.Tests.Infraestrutura;
 using Gastra.Communication.Enums;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Entidades;
+using Gastra.Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using static Gastra.Api.Tests.Infraestrutura.GastraApiFactory;
 using FlagDietetica = Gastra.Domain.Enums.FlagDietetica;
 
@@ -238,9 +242,72 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
 
         await _cliente.PostAsync($"{Rota}/{comanda.Id}/fechamento", null);
 
+        // Depois do fechamento a API não mostra mais a restrição (RN04): a conferência é direto no banco.
+        using var escopo = factory.Services.CreateScope();
+        var guardada = await escopo.ServiceProvider.GetRequiredService<GastraDbContext>()
+            .Set<RestricaoAlimentar>().AsNoTracking().SingleAsync(r => r.ComandaId == comanda.Id);
+        Assert.Equal(Gastra.Domain.Enums.CategoriaRestricao.Alergia, guardada.Categoria);
+        Assert.Null(guardada.ObservacaoLivre);
+    }
+
+    // --- RN04: quem vê a restrição alimentar ---
+
+    private async Task<ComandaResponse> ComandaComRestricao()
+    {
+        var comanda = await AbrirComanda();
+        await _cliente.PostAsJsonAsync($"{Rota}/{comanda.Id}/restricoes",
+            new { categoria = "SemGluten", observacaoLivre = "doença celíaca" }, Json);
+        return comanda;
+    }
+
+    [Fact]
+    public async Task Restricao_GarcomVeComAComandaAberta()
+    {
+        var comanda = await ComandaComRestricao();
+
         var restricao = Assert.Single((await Obter(comanda.Id)).Restricoes);
-        Assert.Equal(CategoriaRestricao.Alergia, restricao.Categoria);
-        Assert.Null(restricao.ObservacaoLivre);
+        Assert.Equal("doença celíaca", restricao.ObservacaoLivre);
+    }
+
+    [Fact]
+    public async Task Restricao_MetreVeComAComandaAberta()
+    {
+        var comanda = await ComandaComRestricao();
+        var metre = factory.CreateClient();
+        var email = $"metre-{Guid.NewGuid():N}@gastra.test";
+        await factory.CriarUsuario(email, Gastra.Domain.Enums.PapelUsuario.Metre);
+        Autenticar(metre, await factory.Login(factory.CreateClient(), email));
+
+        var resposta = await metre.GetFromJsonAsync<ComandaResponse>($"{Rota}/{comanda.Id}", Json);
+
+        Assert.Single(resposta!.Restricoes);
+    }
+
+    [Fact]
+    public async Task Restricao_GerenteNaoVe_NemNaConsultaNemNoPainel()
+    {
+        var comanda = await ComandaComRestricao();
+        var gerente = factory.CreateClient();
+        Autenticar(gerente, await factory.TokenGerente(factory.CreateClient()));
+
+        var consulta = await gerente.GetFromJsonAsync<ComandaResponse>($"{Rota}/{comanda.Id}", Json);
+        var painel = await gerente.GetFromJsonAsync<List<ComandaResponse>>(Rota, Json);
+        var json = await gerente.GetStringAsync($"{Rota}/{comanda.Id}");
+
+        Assert.Empty(consulta!.Restricoes);
+        Assert.Empty(painel!.Single(c => c.Id == comanda.Id).Restricoes);
+        Assert.DoesNotContain("celíaca", json);
+    }
+
+    [Fact]
+    public async Task Restricao_DepoisDoFechamento_NemOGarcomVe()
+    {
+        var comanda = await ComandaComRestricao();
+
+        var fechamento = await _cliente.PostAsync($"{Rota}/{comanda.Id}/fechamento", null);
+
+        Assert.Empty((await fechamento.Content.ReadFromJsonAsync<ComandaResponse>(Json))!.Restricoes);
+        Assert.Empty((await Obter(comanda.Id)).Restricoes);
     }
 
     // --- UC20: consulta do cliente ---

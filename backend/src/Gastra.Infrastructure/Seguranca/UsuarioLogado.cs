@@ -1,4 +1,5 @@
 using Gastra.Domain.Entidades;
+using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Microsoft.AspNetCore.Http;
@@ -19,5 +20,14 @@ public class UsuarioLogado(IHttpContextAccessor httpContextAccessor, IRepositori
 
         return await repositorio.ObterPorId(idUsuario)
                ?? throw new InvalidOperationException("Usuário do token não existe.");
+    }
+
+    public PapelUsuario ObterPapel()
+    {
+        var papel = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+
+        return Enum.TryParse<PapelUsuario>(papel, out var resultado)
+            ? resultado
+            : throw new InvalidOperationException("Requisição sem papel no token.");
     }
 }

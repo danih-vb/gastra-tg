@@ -1,5 +1,6 @@
 using Gastra.Communication.Responses;
 using Gastra.Domain.Entidades;
+using Gastra.Domain.Enums;
 using Mapster;
 using ComunicacaoEnums = Gastra.Communication.Enums;
 
@@ -11,7 +12,7 @@ namespace Gastra.Application.UseCases.Comandas;
 /// </summary>
 internal static class MapeadorComanda
 {
-    public static ComandaResponse Montar(Comanda comanda, IReadOnlyDictionary<int, string> nomesDosItens) => new()
+    public static ComandaResponse Montar(Comanda comanda, IReadOnlyDictionary<int, string> nomesDosItens, PapelUsuario papel) => new()
     {
         Id = comanda.Id,
         MesaId = comanda.MesaId,
@@ -24,7 +25,7 @@ internal static class MapeadorComanda
         DataHoraAbertura = comanda.DataHoraAbertura,
         DataHoraFechamento = comanda.DataHoraFechamento,
         Itens = comanda.Itens.Select(i => MontarItem(i, nomesDosItens)).ToList(),
-        Restricoes = comanda.Restricoes.Select(r => new RestricaoAlimentarResponse
+        Restricoes = comanda.RestricoesVisiveisPara(papel).Select(r => new RestricaoAlimentarResponse
         {
             Id = r.Id,
             Categoria = r.Categoria.Adapt<ComunicacaoEnums.CategoriaRestricao>(),

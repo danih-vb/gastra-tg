@@ -35,6 +35,6 @@ public class AbrirComandaUseCase(
         await repositorio.Adicionar(comanda);
         await unitOfWork.Commit();
 
-        return MapeadorComanda.Montar(comanda, new Dictionary<int, string>());
+        return MapeadorComanda.Montar(comanda, new Dictionary<int, string>(), garcom.Papel);
     }
 }
