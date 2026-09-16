@@ -9,14 +9,13 @@ editável de cada diagrama fica aqui, com o mesmo nome-base do PNG correspondent
 | `classe/GASTRA_Classe_*.png` | `GASTRA_Classe_*.drawio` | draw.io / diagrams.net |
 | `arquitetura/GASTRA_Arquitetura_*.png` | `GASTRA_Arquitetura_*.drawio` | draw.io / diagrams.net |
 | `atividade/GASTRA_Atividade_*.png` | `GASTRA_Atividade_*.drawio` | draw.io / diagrams.net |
-| `sequencia/GASTRA_Sequencia_*.png` | `GASTRA_Sequencia_*.vsdx` | Lucidchart |
+| `sequencia/GASTRA_Sequencia_*.png` | `GASTRA_Sequencia_*.drawio` | draw.io / diagrams.net |
 | `negocio/GASTRA_Business_Model_Canvas.png` | `GASTRA_Business_Model_Canvas.drawio` | draw.io / diagrams.net |
 | `../modelagem/der/GASTRA_DER.png` | `../modelagem/der/GASTRA_DER.brM3` | brModelo 3.2 |
 
 **Regra:** todo PR que altera um diagrama tem que atualizar o PNG **e** o arquivo-fonte, no
 mesmo commit. PNG sem fonte é diagrama que ninguém consegue mais corrigir.
 
-> **Nota (migração em andamento):** a migração de Lucidchart para draw.io começou pelos
-> diagramas de Casos de Uso, Atividade, Business Model Canvas e Classe. Sequência
-> ainda tem fonte em `.vsdx` (Lucidchart) — migrar quando houver tempo dedicado a isso,
-> não como efeito colateral de outro PR.
+> **Migração concluída (16/09/2026):** todos os diagramas (casos de uso, atividade, sequência, classe e
+> Business Model Canvas) têm fonte em draw.io. O DER continua no brModelo, que é a ferramenta
+> combinada com o orientador para modelagem conceitual.

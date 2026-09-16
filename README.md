@@ -129,10 +129,18 @@ gastra-tg/
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
 - **Business Model Canvas:** [`docs/negocio/GASTRA_Business_Model_Canvas.png`](docs/negocio/GASTRA_Business_Model_Canvas.png)
 - **Casos de Uso:** [`docs/requisitos/GASTRA_Casos_de_Uso.docx`](docs/requisitos/GASTRA_Casos_de_Uso.docx)
+- **Diagramas de Casos de Uso:**
+  [autenticação](docs/diagramas/casos-de-uso/GASTRA_UC_Autenticacao.png) ·
+  [gestão de cardápio](docs/diagramas/casos-de-uso/GASTRA_UC_GestaoCardapio.png) ·
+  [núcleo de comandas](docs/diagramas/casos-de-uso/GASTRA_UC_NucleoComandas.png) ·
+  [blocos analíticos](docs/diagramas/casos-de-uso/GASTRA_UC_BlocosAnaliticos.png) ·
+  [cliente](docs/diagramas/casos-de-uso/GASTRA_UC_Cliente.png) ·
+  [configuração do salão](docs/diagramas/casos-de-uso/GASTRA_UC_ConfiguracaoSalao.png)
 - **Diagrama de Atividade — Núcleo de Comandas:** [`docs/diagramas/atividade/GASTRA_Atividade_NucleoComandas.png`](docs/diagramas/atividade/GASTRA_Atividade_NucleoComandas.png)
 - **Diagrama de Atividade — Alocação de Garçons:** [`docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png`](docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png)
 - **Diagrama de Sequência — Núcleo de Comandas:** [`docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png`](docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png)
 - **Diagrama de Sequência — Recomendação de Pratos:** [`docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png`](docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png)
+- **Diagrama de Sequência — Alocação de Garçons:** [`docs/diagramas/sequencia/GASTRA_Sequencia_AlocacaoGarcons.png`](docs/diagramas/sequencia/GASTRA_Sequencia_AlocacaoGarcons.png)
 - **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
 - **Modelo físico (SQL do banco):** [`docs/modelagem/GASTRA_Schema.sql`](docs/modelagem/GASTRA_Schema.sql)
 - **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
