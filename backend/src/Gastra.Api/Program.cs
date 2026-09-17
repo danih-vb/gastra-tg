@@ -25,6 +25,9 @@ builder.Services
 builder.Services.AddDocumentacaoOpenApi();
 builder.Services.AddHealthChecks();
 
+if (builder.Configuration.GetValue("Auditoria:EliminacaoAutomatica", true))
+    builder.Services.AddHostedService<EliminacaoAuditoriaPorPrazo>();
+
 var app = builder.Build();
 
 // Swagger em /swagger (só em desenvolvimento).
@@ -46,6 +49,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
+await AplicadorDeMigrations.Executar(app);
 await InicializadorAdministrador.Executar(app);
 
 app.Run();

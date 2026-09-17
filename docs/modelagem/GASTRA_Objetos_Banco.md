@@ -48,7 +48,7 @@ teste automatizado verifica que nenhuma coluna de view se chama `nome`, `email`,
 
 | View | Uma linha por | Colunas | Quem usa | Requisito |
 |---|---|---|---|---|
-| `vw_comanda_faturamento` | comanda fechada | comanda, garçom, mesa, praça, data, período, dia da semana, hora, pessoas, composição, faturamento | Base das demais; BI por hora do dia e por dia da semana | RF10 |
+| `vw_comanda_faturamento` | comanda fechada | comanda, garçom, mesa, praça, data, período, dia da semana, hora, pessoas, composição, faturamento, minutos de atendimento (abertura → fechamento; incluído na migration `AdicionaTempoDeAtendimentoNaView`) | Base das demais; BI por garçom, por hora do dia e por dia da semana; tempo médio de atendimento | RF10 |
 | `vw_faturamento_praca_turno` | praça × data × período | comandas, pessoas atendidas, faturamento | BI por praça e alocação por turno | RF08, RF10 |
 | `vw_faturamento_medio_praca` | praça (inclusive as sem movimento) | turnos com movimento, faturamento total, **faturamento médio por turno** | Programação linear (potencial da praça) | RN03, RF06 |
 | `vw_desempenho_garcom_turno` | garçom × data × período | comandas atendidas, **mesas atendidas**, pessoas atendidas, faturamento | BI por garçom e índice de desempenho | RF10, RF11 |

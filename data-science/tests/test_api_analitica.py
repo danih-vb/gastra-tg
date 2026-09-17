@@ -72,8 +72,8 @@ def test_alocacao_devolve_uma_praca_para_cada_garcom(cliente):
         "/alocacao/sugestao",
         json={
             "garcons": [
-                {"id": 1, "faturamento_acumulado": 9000, "turnos_desde_praca_de_alto_potencial": 0},
-                {"id": 2, "faturamento_acumulado": 3000, "turnos_desde_praca_de_alto_potencial": 4},
+                {"id": 1, "faturamento_por_turno": 9000, "turnos_desde_praca_de_alto_potencial": 0},
+                {"id": 2, "faturamento_por_turno": 3000, "turnos_desde_praca_de_alto_potencial": 4},
             ],
             "pracas": [
                 {"id": 1, "vagas": 1, "faturamento_medio_historico": 1800},
@@ -94,8 +94,8 @@ def test_alocacao_sem_vagas_suficientes_retorna_422(cliente):
         "/alocacao/sugestao",
         json={
             "garcons": [
-                {"id": 1, "faturamento_acumulado": 1000, "turnos_desde_praca_de_alto_potencial": 0},
-                {"id": 2, "faturamento_acumulado": 1000, "turnos_desde_praca_de_alto_potencial": 0},
+                {"id": 1, "faturamento_por_turno": 1000, "turnos_desde_praca_de_alto_potencial": 0},
+                {"id": 2, "faturamento_por_turno": 1000, "turnos_desde_praca_de_alto_potencial": 0},
             ],
             "pracas": [{"id": 1, "vagas": 1, "faturamento_medio_historico": 1000}],
         },
@@ -109,7 +109,7 @@ def test_alocacao_com_pesos_que_nao_somam_um_retorna_422(cliente):
     resposta = cliente.post(
         "/alocacao/sugestao",
         json={
-            "garcons": [{"id": 1, "faturamento_acumulado": 1000, "turnos_desde_praca_de_alto_potencial": 0}],
+            "garcons": [{"id": 1, "faturamento_por_turno": 1000, "turnos_desde_praca_de_alto_potencial": 0}],
             "pracas": [{"id": 1, "vagas": 1, "faturamento_medio_historico": 1000}],
             "peso_desequilibrio": 0.9,
             "peso_espera": 0.4,

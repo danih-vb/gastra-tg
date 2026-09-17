@@ -9,7 +9,11 @@ Este documento verifica o banco implementado em três frentes:
 | [3. LGPD na modelagem](#3-lgpd-na-modelagem) | Quais colunas guardam dado pessoal e como cada uma é protegida? | #40 |
 
 Base analisada: o schema `gastra_dev` depois de todas as migrations até
-`GaranteConsistenciaDeStatus` (10 tabelas, 64 colunas, 10 chaves estrangeiras).
+`CriaPromocoes` (12 tabelas, 73 colunas, 12 chaves estrangeiras).
+
+> **Atualização (#124):** a primeira versão desta validação foi feita antes das promoções. Com as tabelas `promocao` e
+> `promocao_item_cardapio`, a engenharia reversa foi rodada de novo: a entidade que faltava agora confere, inclusive
+> a relação N:N (seções 1.2 e 1.3).
 
 ## Resumo do que a validação encontrou e corrigiu
 
@@ -52,11 +56,10 @@ obrigatória e (0,1) quando aceita vazio.*
 
 ### 1.2 O que confere
 
-**Entidades.** 9 das 10 entidades do DER viraram tabela. A que falta é `Promocao` (item 5 da
-tabela abaixo).
+**Entidades.** As 10 entidades do DER viraram tabela, com os mesmos atributos.
 
-**Relacionamentos.** Os 9 relacionamentos 1:N implementados conferem com as chaves estrangeiras,
-inclusive na obrigatoriedade:
+**Relacionamentos.** Os 9 relacionamentos 1:N conferem com as chaves estrangeiras, inclusive na
+obrigatoriedade, e o N:N confere com a tabela associativa:
 
 | Relacionamento no DER | Chave estrangeira | Confere |
 |---|---|---|
@@ -69,6 +72,7 @@ inclusive na obrigatoriedade:
 | Alocacao (1,1) refere-se a Praca (0,n) | `alocacao.praca_id` NOT NULL | ✅ |
 | RestricaoAlimentar (1,1) possui Comanda (0,n) | `restricao_alimentar.comanda_id` NOT NULL | ✅ |
 | RegistroAuditoria (0,1) é gerado por Usuario (0,n) | `registro_auditoria.usuario_id` **NULL** | ✅ |
+| ItemDoCardapio (0,n) refere-se a Promocao (0,n) | tabela associativa `promocao_item_cardapio`: as duas chaves estrangeiras formam a chave primária | ✅ |
 
 **Atributos.** Todos os atributos simples do DER existem como coluna, com o mesmo nome.
 
@@ -80,7 +84,7 @@ inclusive na obrigatoriedade:
 | 2 | Colunas `*_id` que não aparecem como atributo no DER | Mapeamento padrão | Relacionamento 1:N vira chave estrangeira no lado N. Nenhuma chave estrangeira existe sem o relacionamento correspondente (seção 1.2) |
 | 3 | `flags_dieteticas` virou a tabela `item_cardapio_flag` | Mapeamento padrão | Atributo multivalorado não cabe numa coluna sem ferir a 1FN. A chave primária é composta (`item_cardapio_id`, `flag`) e impede a mesma flag duas vezes no mesmo item |
 | 4 | `faturamento_medio_historico` não é coluna | Atributo derivado | É calculado a cada leitura pela view `vw_faturamento_medio_praca` (`GASTRA_Objetos_Banco.md`). Gravado, ficaria desatualizado a cada comanda fechada |
-| 5 | `Promocao` e o relacionamento N:N com `ItemDoCardapio` não têm tabela | **Pendência de implementação** | Os casos de uso de promoção (UC08, UC09) ainda não foram implementados. Quando forem, entram as tabelas `promocao` e `promocao_item_cardapio` (a N:N vira tabela associativa) |
+| 5 | O relacionamento N:N entre `Promocao` e `ItemDoCardapio` virou a tabela `promocao_item_cardapio` | Mapeamento padrão | N:N não cabe em chave estrangeira de um lado só. A chave primária composta (`promocao_id`, `item_cardapio_id`) impede o mesmo item duas vezes na mesma promoção. *(Até o #124, esta linha era uma pendência: as promoções ainda não existiam.)* |
 | 6 | 11 colunas aceitam vazio, mas o DER não marcava o atributo como opcional | **Divergência corrigida no DER** | Ver 1.4 |
 | 7 | Restrições que existem só no banco | Detalhe físico | O DER conceitual não tem notação para elas. Ver 1.5 |
 | 8 | `comanda.garcom_id` e `alocacao.garcom_id` apontam para `usuario`, e não para uma entidade Garçom | Regra fora do alcance do banco | Uma chave estrangeira não consegue exigir que o usuário tenha papel Garçom. A regra é garantida na aplicação: só o Garçom abre comanda (autorização por papel, RNF04) |
@@ -119,7 +123,8 @@ descrevia 4 deles como opcionais, mas o desenho do DER não refletia isso.
 | Valor único | `praca.codigo`, `mesa.numero` | Duas praças ou mesas com o mesmo código confundiriam o salão e a alocação |
 | Valor único | `comanda.codigo_acesso_cliente` | Dois códigos iguais dariam ao cliente acesso à conta de outra mesa (UC20) |
 | Valor único composto | `alocacao (data, periodo, garcom_id)` | Um garçom fica em uma única praça por turno |
-| `ON DELETE CASCADE` | `item_pedido`, `restricao_alimentar`, `item_cardapio_flag` | São partes do todo: não existem sem a comanda ou o item |
+| `ON DELETE CASCADE` | `item_pedido`, `restricao_alimentar`, `item_cardapio_flag`, `promocao_item_cardapio` (lado da promoção) | São partes do todo: não existem sem a comanda, o item ou a promoção |
+| `CHECK` | `promocao` | Fim não antes do início; desconto positivo e, em percentual, menor que 100 (`CK_promocao_periodo_e_desconto`) |
 | `ON DELETE RESTRICT` | Demais chaves estrangeiras | Protege o histórico: não se apaga mesa, praça, item do cardápio ou usuário com comanda, alocação ou auditoria ligada (usuário é inativado, e não apagado) |
 | `CHECK` | `comanda`, `item_pedido` | Seção 2.3 |
 | Tipos | Todas | Valores em dinheiro em `decimal(10,2)`, que não arredonda como ponto flutuante; datas em UTC com microssegundos; enums gravados como texto, legíveis no BI |
@@ -157,6 +162,8 @@ Também conferimos a FNBC: todo determinante precisa ser chave candidata.
 | `restricao_alimentar` | `id` | — | ✅ | ✅ | ✅ | |
 | `alocacao` | `id` | (`data`, `periodo`, `garcom_id`) | ✅ | ✅ | ✅ | |
 | `registro_auditoria` | `id` | — | ✅ | ✅ | ✅ | O papel gravado é histórico (2.4) |
+| `promocao` | `id` | — | ✅ | ✅ | ✅ | O preço com desconto não é gravado: é calculado do preço atual do item |
+| `promocao_item_cardapio` | (`promocao_id`, `item_cardapio_id`) | — | ✅ | ✅ | ✅ | Tabela associativa sem atributo fora da chave |
 
 **2FN.** Todas as tabelas, menos `item_cardapio_flag`, têm chave primária de uma coluna só, então
 não há como um atributo depender de parte da chave. Em `item_cardapio_flag`, todas as colunas
@@ -242,6 +249,7 @@ Legenda:
 | `comanda.codigo_acesso_cliente` | Credencial | Cliente | Dá acesso à conta da mesa (UC20). Único, nunca vai para log |
 | `comanda.quantidade_pessoas`, `comanda.composicao` | Não pessoal | — | Informação observável da mesa (RN01), sem identidade. Não é usada para inferir atributo sensível (RN05) |
 | `item_pedido.*` | Não pessoal | — | Consumo de uma comanda anônima. As views de BI e das regras de associação só usam ids |
+| `promocao.*`, `promocao_item_cardapio.*` | Não pessoal | — | Dado do cardápio |
 | Views `vw_*` | Não pessoal | — | Teste automático garante que nenhuma coluna de view é nome, e-mail, observação livre ou código de acesso |
 
 ### 3.3 Achado: acesso à restrição alimentar fora da RN04

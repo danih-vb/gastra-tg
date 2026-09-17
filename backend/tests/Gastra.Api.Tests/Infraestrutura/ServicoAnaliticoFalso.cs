@@ -16,11 +16,40 @@ public class ServicoAnaliticoFalso : IServicoAnalitico
     /// <summary>Resposta do "Python". Por padrão, os primeiros permitidos, na ordem recebida.</summary>
     public Func<Chamada, IReadOnlyList<int>>? Responder { get; set; }
 
+    public record ChamadaAlocacao(
+        IReadOnlyCollection<GarcomParaAlocacao> Garcons, IReadOnlyCollection<PracaParaAlocacao> Pracas, double PesoDesequilibrio, double PesoEspera);
+
+    public List<ChamadaAlocacao> ChamadasAlocacao { get; } = [];
+
+    /// <summary>Resposta da alocação. Por padrão, distribui os garçons pelas praças em rodízio.</summary>
+    public Func<ChamadaAlocacao, IReadOnlyList<DesignacaoSugerida>>? ResponderAlocacao { get; set; }
+
     public void Reiniciar()
     {
         Chamadas.Clear();
+        ChamadasAlocacao.Clear();
         Indisponivel = false;
         Responder = null;
+        ResponderAlocacao = null;
+    }
+
+    public Task<IReadOnlyList<DesignacaoSugerida>> SugerirAlocacao(
+        IReadOnlyCollection<GarcomParaAlocacao> garcons,
+        IReadOnlyCollection<PracaParaAlocacao> pracas,
+        double pesoDesequilibrio,
+        double pesoEspera,
+        CancellationToken cancellationToken = default)
+    {
+        var chamada = new ChamadaAlocacao(garcons.ToList(), pracas.ToList(), pesoDesequilibrio, pesoEspera);
+        ChamadasAlocacao.Add(chamada);
+
+        if (Indisponivel)
+            throw new ServicoAnaliticoIndisponivelException("simulado no teste");
+
+        var listaPracas = chamada.Pracas.ToList();
+        var resposta = ResponderAlocacao?.Invoke(chamada)
+                       ?? chamada.Garcons.Select((g, i) => new DesignacaoSugerida(g.GarcomId, listaPracas[i % listaPracas.Count].PracaId)).ToList();
+        return Task.FromResult(resposta);
     }
 
     public Task<IReadOnlyList<int>> SugerirCombinacoes(

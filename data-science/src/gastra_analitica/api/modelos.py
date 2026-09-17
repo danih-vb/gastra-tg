@@ -33,7 +33,7 @@ class RespostaDeRecomendacao(BaseModel):
 
 class GarcomDoTurno(BaseModel):
     id: int
-    faturamento_acumulado: float = Field(ge=0)
+    faturamento_por_turno: float = Field(ge=0)
     turnos_desde_praca_de_alto_potencial: int = Field(default=0, ge=0)
 
 

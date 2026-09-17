@@ -48,3 +48,6 @@ config.chc
 docs/modelagem/engenharia-reversa/schema.tsv
 docs/modelagem/engenharia-reversa/fisico.json
 docs/modelagem/engenharia-reversa/*.xml
+
+# Resultados temporários de execução de testes (docs/testes/README.md)
+resultados/

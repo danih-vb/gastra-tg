@@ -1,3 +1,4 @@
+using Gastra.Domain.Servicos;
 using Gastra.Infrastructure.ServicoAnalitico;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -17,6 +18,25 @@ public sealed class FactComPythonAttribute : FactAttribute
 
 public class ContratoComPythonTests
 {
+    private static ServicoAnaliticoHttp Servico()
+    {
+        var url = Environment.GetEnvironmentVariable(FactComPythonAttribute.VariavelDeAmbiente)!;
+        var http = new HttpClient { BaseAddress = new Uri(url.TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(30) };
+        return new ServicoAnaliticoHttp(http, NullLogger<ServicoAnaliticoHttp>.Instance);
+    }
+
+    [FactComPython]
+    public async Task ServicoReal_DaAPracaBoaParaQuemFaturouMenos()
+    {
+        var designacoes = await Servico().SugerirAlocacao(
+            [new GarcomParaAlocacao(1, 10_000m, 0), new GarcomParaAlocacao(2, 2_000m, 0)],
+            [new PracaParaAlocacao(10, 1, 2_000m), new PracaParaAlocacao(20, 1, 500m)],
+            0.6, 0.4);
+
+        Assert.Equal(10, designacoes.Single(d => d.GarcomId == 2).PracaId);
+        Assert.Equal(20, designacoes.Single(d => d.GarcomId == 1).PracaId);
+    }
+
     [FactComPython]
     public async Task ServicoReal_SugereOArrozDeCocoParaQuemPediuMoqueca()
     {

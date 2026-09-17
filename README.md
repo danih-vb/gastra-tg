@@ -4,6 +4,8 @@
 **Autores:** Daniel Velluto Bento e Pedro Luis Otrente de Campos
 **Orientador:** Prof. Me. Leonardo José de Lima Ferrucci
 
+[![CI](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml)
+
 ---
 
 ## Sobre o projeto
@@ -153,7 +155,7 @@ gastra-tg/
   [fatia vertical — abrir comanda](docs/diagramas/classe/GASTRA_Classe_AbrirComanda.png)
 - **Arquitetura do sistema:** [`docs/arquitetura/GASTRA_Arquitetura.md`](docs/arquitetura/GASTRA_Arquitetura.md) (versão para a monografia: [`.docx`](docs/arquitetura/GASTRA_Arquitetura.docx))
 - **Política de Log e Auditoria (LGPD):** [`docs/arquitetura/GASTRA_Politica_Log_Auditoria.md`](docs/arquitetura/GASTRA_Politica_Log_Auditoria.md)
-- **Diagrama de Classes por Camadas (especificação):** [`docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md) *(planejamento de 15/09; sincronização com o código prevista ao fim do módulo de alocação)*
+- **Diagrama de Classes por Camadas (especificação):** [`docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md) *(planejamento de 15/09)* · **gerado do código:** [`docs/arquitetura/GASTRA_Diagrama_Classes_Codigo.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Codigo.md)
 
 - *A criar:* protótipo UX/UI, cenários de teste, manual do usuário.
 

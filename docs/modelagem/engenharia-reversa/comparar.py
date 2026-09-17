@@ -16,11 +16,11 @@ from collections import OrderedDict
 
 TSV, XML = sys.argv[1], sys.argv[2]
 
-# Entidade do DER -> tabela do banco. Promoção ainda não foi implementada (UC08/UC09).
+# Entidade do DER -> tabela do banco.
 MAPA = {"Praca": "praca", "Mesa": "mesa", "Usuario": "usuario", "Comanda": "comanda",
         "ItemDoPedido": "item_pedido", "ItemDoCardapio": "item_cardapio", "Alocacao": "alocacao",
         "RestricaoAlimentar": "restricao_alimentar", "RegistroAuditoria": "registro_auditoria",
-        "Promocao": None}
+        "Promocao": "promocao"}
 CARD = {"0": "(1,1)", "1": "(0,1)", "2": "(1,n)", "3": "(0,n)"}  # códigos do brModelo
 
 
@@ -107,6 +107,14 @@ for r in relacionamentos:
                 situacao = "confere" if card_filho == esperado else f"DIVERGE (físico indica {esperado})"
                 print(f"- {filho} {card_filho} — {r['nome']} — {pai} {card_pai}: {k['tabela']}.{k['coluna']} "
                       f"{'NULL' if nulo else 'NOT NULL'} -> {situacao}")
+                achou = True
+    if not achou and c1.endswith("n)") and c2.endswith("n)"):
+        # N:N vira tabela associativa: duas chaves estrangeiras que, juntas, são a chave primária.
+        t1, t2 = MAPA[e1], MAPA[e2]
+        for t in fisico["tabelas"]:
+            refs = {k["ref"]: k["coluna"] for k in fisico["fks"] if k["tabela"] == t["nome"]}
+            if {t1, t2} <= set(refs) and set(t["pk"]) == {refs[t1], refs[t2]}:
+                print(f"- {e1} {c1} — {r['nome']} — {e2} {c2}: N:N na tabela associativa {t['nome']} -> confere")
                 achou = True
     if not achou:
         print(f"- {e1} {c1} — {r['nome']} — {e2} {c2}: sem chave estrangeira")
