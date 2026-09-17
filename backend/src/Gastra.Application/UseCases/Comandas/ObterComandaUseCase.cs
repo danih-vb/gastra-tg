@@ -17,6 +17,7 @@ public interface IObterComandaUseCase
 public class ObterComandaUseCase(
     IRepositorioComanda repositorio,
     IRepositorioItemCardapio repositorioCardapio,
+    IRepositorioUsuario repositorioUsuario,
     IUsuarioLogado usuarioLogado)
     : IObterComandaUseCase
 {
@@ -26,6 +27,7 @@ public class ObterComandaUseCase(
                       ?? throw new NaoEncontradoException(MensagensErro.ComandaNaoEncontrada);
 
         var nomes = await LeitorDeNomesDoCardapio.Obter(repositorioCardapio, comanda);
-        return MapeadorComanda.Montar(comanda, nomes, usuarioLogado.ObterPapel());
+        var garcom = await LeitorDeNomesDeGarcons.Obter(repositorioUsuario, comanda);
+        return MapeadorComanda.Montar(comanda, nomes, usuarioLogado.ObterPapel(), garcom);
     }
 }

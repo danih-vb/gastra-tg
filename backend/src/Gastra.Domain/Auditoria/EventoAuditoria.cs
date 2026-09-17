@@ -17,11 +17,14 @@ public static class EventoAuditoria
     public const string ContaEditada = "CONTA_EDITADA";
     public const string ContaInativada = "CONTA_INATIVADA";
     public const string ContaReativada = "CONTA_REATIVADA";
+    public const string SenhaRedefinida = "SENHA_REDEFINIDA";
+    public const string SegundoFatorReiniciado = "SEGUNDO_FATOR_REINICIADO";
 
     // 4.2 Cardápio e salão
     public const string ItemCardapioCadastrado = "ITEM_CARDAPIO_CADASTRADO";
     public const string PrecoAlterado = "PRECO_ALTERADO";
     public const string DisponibilidadeAlterada = "DISPONIBILIDADE_ALTERADA";
+    public const string ImagemItemAlterada = "IMAGEM_ITEM_ALTERADA";
     public const string PracaCadastrada = "PRACA_CADASTRADA";
     public const string PracaEditada = "PRACA_EDITADA";
     public const string MesaCadastrada = "MESA_CADASTRADA";

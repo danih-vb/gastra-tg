@@ -43,6 +43,6 @@ public class AbrirComandaUseCase(
             detalhes: new { comanda.MesaId, comanda.QuantidadePessoas });
         await unitOfWork.Commit();
 
-        return MapeadorComanda.Montar(comanda, new Dictionary<int, string>(), garcom.Papel);
+        return MapeadorComanda.Montar(comanda, new Dictionary<int, string>(), garcom.Papel, garcom.Nome);
     }
 }

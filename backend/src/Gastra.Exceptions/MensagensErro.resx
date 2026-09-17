@@ -9,6 +9,7 @@
   <data name="DescricaoMuitoLonga" xml:space="preserve"><value>A descrição deve ter no máximo 500 caracteres.</value></data>
   <data name="PrecoInvalido" xml:space="preserve"><value>O preço deve ser maior que zero.</value></data>
   <data name="CategoriaInvalida" xml:space="preserve"><value>Categoria inválida.</value></data>
+  <data name="ImagemInvalida" xml:space="preserve"><value>A imagem deve ser um endereço http(s) ou um caminho começando com barra, com até 300 caracteres.</value></data>
   <data name="FlagDieteticaInvalida" xml:space="preserve"><value>Flag dietética inválida.</value></data>
   <data name="ItemCardapioNaoEncontrado" xml:space="preserve"><value>Item do cardápio não encontrado.</value></data>
   <data name="RequisicaoInvalida" xml:space="preserve"><value>Requisição inválida.</value></data>
@@ -31,6 +32,9 @@
   <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>Usuário não encontrado.</value></data>
   <data name="AlterarProprioPapel" xml:space="preserve"><value>Você não pode alterar o próprio papel.</value></data>
   <data name="InativarPropriaConta" xml:space="preserve"><value>Você não pode inativar a própria conta.</value></data>
+  <data name="RedefinirPropriaSenha" xml:space="preserve"><value>Você não pode redefinir a própria senha por aqui.</value></data>
+  <data name="ReiniciarProprioSegundoFator" xml:space="preserve"><value>Você não pode zerar a própria verificação em duas etapas. Peça a outro gerente.</value></data>
+  <data name="PapelSemSegundoFator" xml:space="preserve"><value>Este papel não usa verificação em duas etapas.</value></data>
   <data name="ComandaNaoEncontrada" xml:space="preserve"><value>Comanda não encontrada.</value></data>
   <data name="MesaNaoEncontrada" xml:space="preserve"><value>Mesa não encontrada.</value></data>
   <data name="ItemPedidoNaoEncontrado" xml:space="preserve"><value>Item do pedido não encontrado nesta comanda.</value></data>
