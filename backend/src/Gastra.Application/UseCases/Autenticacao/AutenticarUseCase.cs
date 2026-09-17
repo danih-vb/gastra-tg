@@ -1,5 +1,8 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
+using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Gastra.Exceptions;
@@ -15,7 +18,9 @@ public interface IAutenticarUseCase
 public class AutenticarUseCase(
     IRepositorioUsuario repositorio,
     ICriptografiaSenha criptografia,
-    IGeradorToken geradorToken) : IAutenticarUseCase
+    IGeradorToken geradorToken,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork) : IAutenticarUseCase
 {
     // Hash de uma senha aleatória, gerado uma única vez: usado quando o e-mail não existe (ver abaixo).
     private static string? _hashFicticio;
@@ -32,7 +37,20 @@ public class AutenticarUseCase(
         var senhaConfere = criptografia.Verificar(request.Senha, usuario?.SenhaHash ?? _hashFicticio);
 
         if (usuario is null || !usuario.Ativo || !senhaConfere)
+        {
+            // Política de log, 4.1: o e-mail digitado nunca vai para a auditoria. Sem conta, só o motivo.
+            var motivo = usuario is null ? "conta_nao_encontrada" : !usuario.Ativo ? "conta_inativa" : "senha_incorreta";
+            await auditoria.Registrar(EventoAuditoria.LoginFalha, ResultadoAuditoria.Falha,
+                detalhes: new { Motivo = motivo }, ator: usuario, comIp: true);
+            await unitOfWork.Commit();
+
             throw new NaoAutenticadoException(MensagensErro.CredenciaisInvalidas);
+        }
+
+        await auditoria.Registrar(EventoAuditoria.LoginSucesso,
+            detalhes: usuario.ExigeSegundoFator() ? new { SegundoFatorPendente = true } : null,
+            ator: usuario, comIp: true);
+        await unitOfWork.Commit();
 
         if (usuario.ExigeSegundoFator())
         {

@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Exceptions;
@@ -12,7 +14,10 @@ public interface IEditarMesaUseCase
     Task Executar(int id, EditarMesaRequest request);
 }
 
-public class EditarMesaUseCase(IRepositorioMesa repositorio, IUnitOfWork unitOfWork) : IEditarMesaUseCase
+public class EditarMesaUseCase(
+    IRepositorioMesa repositorio,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork) : IEditarMesaUseCase
 {
     public async Task Executar(int id, EditarMesaRequest request)
     {
@@ -26,6 +31,9 @@ public class EditarMesaUseCase(IRepositorioMesa repositorio, IUnitOfWork unitOfW
             throw new RegraDeNegocioException(MensagensErro.NumeroMesaJaCadastrado);
 
         mesa.Atualizar(request.Numero.Trim(), request.Capacidade);
+
+        await auditoria.Registrar(EventoAuditoria.MesaEditada, alvo: (nameof(Mesa), mesa.Id),
+            detalhes: new { mesa.Numero, mesa.Capacidade });
         await unitOfWork.Commit();
     }
 }

@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
@@ -17,6 +19,7 @@ public interface IRegistrarItemPedidoUseCase
 public class RegistrarItemPedidoUseCase(
     IRepositorioComanda repositorio,
     IRepositorioItemCardapio repositorioCardapio,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IRegistrarItemPedidoUseCase
 {
     public async Task<ItemPedidoResponse> Executar(int comandaId, ItemPedidoRequest request)
@@ -32,6 +35,9 @@ public class RegistrarItemPedidoUseCase(
             throw new RegraDeNegocioException(MensagensErro.ItemCardapioIndisponivel);
 
         var pedido = comanda.AdicionarItem(item, request.Quantidade);
+
+        await auditoria.Registrar(EventoAuditoria.ItemRegistrado, alvo: (nameof(Comanda), comanda.Id),
+            detalhes: new { ItemCardapioId = item.Id, pedido.Quantidade });
         await unitOfWork.Commit();
 
         return MapeadorComanda.MontarItem(pedido, new Dictionary<int, string> { [item.Id] = item.Nome });

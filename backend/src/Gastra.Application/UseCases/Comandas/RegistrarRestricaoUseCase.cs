@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
@@ -15,7 +17,10 @@ public interface IRegistrarRestricaoUseCase
     Task<RestricaoAlimentarResponse> Executar(int comandaId, RestricaoAlimentarRequest request);
 }
 
-public class RegistrarRestricaoUseCase(IRepositorioComanda repositorio, IUnitOfWork unitOfWork)
+public class RegistrarRestricaoUseCase(
+    IRepositorioComanda repositorio,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork)
     : IRegistrarRestricaoUseCase
 {
     public async Task<RestricaoAlimentarResponse> Executar(int comandaId, RestricaoAlimentarRequest request)
@@ -28,6 +33,8 @@ public class RegistrarRestricaoUseCase(IRepositorioComanda repositorio, IUnitOfW
             request.Categoria.Adapt<CategoriaRestricao>(),
             request.ObservacaoLivre);
 
+        // Só o fato de que houve registro: categoria e observação são possível dado de saúde (política, 4.3).
+        await auditoria.Registrar(EventoAuditoria.RestricaoRegistrada, alvo: (nameof(Comanda), comanda.Id));
         await unitOfWork.Commit();
 
         return new RestricaoAlimentarResponse

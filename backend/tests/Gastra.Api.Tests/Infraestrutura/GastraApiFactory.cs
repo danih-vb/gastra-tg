@@ -9,6 +9,7 @@ using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Gastra.Domain.Servicos;
 using Gastra.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,7 @@ public class GastraApiFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Testes");
         builder.UseSetting("Jwt:ChaveAssinatura", "chave-exclusiva-dos-testes-de-integracao-do-gastra");
+        builder.UseSetting("Auditoria:EliminacaoAutomatica", "false");
 
         builder.ConfigureServices(services =>
         {
@@ -57,6 +59,9 @@ public class GastraApiFactory : WebApplicationFactory<Program>
                 services.Remove(servico);
 
             services.AddDbContext<GastraDbContext>(opcoes => opcoes.UseInMemoryDatabase(_nomeBanco));
+
+            // O servidor de testes não tem conexão de rede: um IP fixo permite conferir a auditoria de login.
+            services.AddSingleton<IStartupFilter, IpDeTesteStartupFilter>();
 
             // Nenhum teste da API depende do serviço Python estar no ar.
             services.RemoveAll<IServicoAnalitico>();
@@ -148,6 +153,29 @@ public class GastraApiFactory : WebApplicationFactory<Program>
 
         _tokenGerente = (await confirmacao.Content.ReadFromJsonAsync<LoginResponse>(Json))!.TokenAcesso!;
         return _tokenGerente;
+    }
+
+    public const string IpDeTeste = "203.0.113.7";
+
+    /// <summary>Registros de auditoria de um evento, do mais antigo para o mais novo.</summary>
+    public async Task<List<RegistroAuditoria>> Auditoria(string evento)
+    {
+        using var escopo = Services.CreateScope();
+        return await escopo.ServiceProvider.GetRequiredService<GastraDbContext>().RegistrosAuditoria
+            .AsNoTracking().Where(r => r.Evento == evento).OrderBy(r => r.Id).ToListAsync();
+    }
+
+    private sealed class IpDeTesteStartupFilter : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+        {
+            app.Use((contexto, proximo) =>
+            {
+                contexto.Connection.RemoteIpAddress = System.Net.IPAddress.Parse(IpDeTeste);
+                return proximo(contexto);
+            });
+            next(app);
+        };
     }
 
     public static string CodigoTotp(string chaveBase32) => new Totp(Base32Encoding.ToBytes(chaveBase32)).ComputeTotp();

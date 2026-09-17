@@ -1,4 +1,8 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
+using Gastra.Domain.Auditoria;
+using Gastra.Domain.Entidades;
+using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Gastra.Exceptions;
@@ -16,6 +20,7 @@ public interface IEditarUsuarioUseCase
 public class EditarUsuarioUseCase(
     IRepositorioUsuario repositorio,
     IUsuarioLogado usuarioLogado,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IEditarUsuarioUseCase
 {
     public async Task Executar(int id, EditarUsuarioRequest request)
@@ -36,7 +41,26 @@ public class EditarUsuarioUseCase(
         if (donoDoEmail is not null && donoDoEmail.Id != usuario.Id)
             throw new RegraDeNegocioException(MensagensErro.EmailJaCadastrado);
 
+        // Política de log, 4.1: só os nomes dos campos alterados. O papel vai com valor antigo e novo.
+        var nomeAnterior = usuario.Nome;
+        var emailAnterior = usuario.Email;
+        var papelAnterior = usuario.Papel;
+
         usuario.AtualizarDados(request.Nome.Trim(), request.Email, papel);
+
+        var camposAlterados = new List<string>();
+        if (usuario.Nome != nomeAnterior) camposAlterados.Add("nome");
+        if (usuario.Email != emailAnterior) camposAlterados.Add("email");
+        var papelMudou = usuario.Papel != papelAnterior;
+        if (papelMudou) camposAlterados.Add("papel");
+
+        await auditoria.Registrar(EventoAuditoria.ContaEditada, alvo: (nameof(Usuario), usuario.Id),
+            detalhes: new
+            {
+                CamposAlterados = camposAlterados,
+                PapelAnterior = papelMudou ? papelAnterior : (PapelUsuario?)null,
+                PapelNovo = papelMudou ? usuario.Papel : (PapelUsuario?)null,
+            });
         await unitOfWork.Commit();
     }
 }

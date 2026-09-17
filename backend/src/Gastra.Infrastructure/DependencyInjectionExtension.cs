@@ -46,6 +46,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IRepositorioComanda, RepositorioComanda>();
         services.AddScoped<IRepositorioMesa, RepositorioMesa>();
         services.AddScoped<IRepositorioPraca, RepositorioPraca>();
+        services.AddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
     }
 
     private static void AddSeguranca(IServiceCollection services, IConfiguration configuration)
@@ -59,6 +60,7 @@ public static class DependencyInjectionExtension
 
         services.AddHttpContextAccessor();
         services.AddScoped<IUsuarioLogado, UsuarioLogado>();
+        services.AddScoped<IContextoRequisicao, ContextoRequisicao>();
     }
 
     private static void AddServicoAnalitico(IServiceCollection services, IConfiguration configuration)
