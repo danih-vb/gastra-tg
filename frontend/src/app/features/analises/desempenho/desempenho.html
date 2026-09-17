@@ -1,0 +1,82 @@
+<header class="topo">
+  <div>
+    <h1>Seu desempenho</h1>
+    @if (ranking(); as ranking) {
+      <div class="sub">
+        {{ ranking.periodo.inicio | date: 'dd/MM' }} a {{ ranking.periodo.fim | date: 'dd/MM' }}
+      </div>
+    }
+  </div>
+</header>
+
+@if (carregando()) {
+  <p class="carregando">Carregando seu desempenho…</p>
+} @else if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+      <button class="botao compacto secundario" style="margin-top: 8px" type="button" (click)="carregar()">
+        Tentar de novo
+      </button>
+    </div>
+  </div>
+} @else if (minhaPosicao(); as minha) {
+  <section class="cartao pad destaque">
+    <p class="suave pequeno">Sua posição</p>
+    <div class="posicao">
+      <strong>{{ minha.posicao }}º</strong>
+      <span class="suave">de {{ ranking()!.totalNoRanking }} {{ ranking()!.totalNoRanking === 1 ? 'garçom' : 'garçons' }}</span>
+    </div>
+    <div>
+      <div class="linha-indice pequeno">
+        <span>Índice de desempenho</span>
+        <strong class="num">{{ minha.indice | number: '1.1-1' }} / 100</strong>
+      </div>
+      <div class="barra" role="img" [attr.aria-label]="'Índice ' + (minha.indice | number: '1.1-1') + ' de 100'">
+        <div [style.width.%]="minha.indice"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cartao" aria-labelledby="t-composicao">
+    <header><h2 id="t-composicao">O que entra no índice</h2></header>
+    <ul class="lista">
+      <li>
+        <div class="principal-item">
+          <strong>Faturamento por turno</strong>
+          <span class="pequeno suave">vale {{ ranking()!.pesoFaturamento * 100 | number: '1.0-0' }}% do índice</span>
+        </div>
+        <span class="num">{{ minha.faturamentoPorTurno | currency: 'BRL' }}</span>
+      </li>
+      <li>
+        <div class="principal-item">
+          <strong>Mesas atendidas por turno</strong>
+          <span class="pequeno suave">vale {{ ranking()!.pesoMesasAtendidas * 100 | number: '1.0-0' }}% do índice</span>
+        </div>
+        <span class="num">{{ minha.mesasPorTurno | number: '1.1-1' }}</span>
+      </li>
+      <li>
+        <div class="principal-item">
+          <strong>Turnos trabalhados</strong>
+          <span class="pequeno suave">usados na média</span>
+        </div>
+        <span class="num">{{ minha.turnos }}</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="alerta">
+    <app-icone nome="info" />
+    <div class="pequeno">
+      O índice é por turno: quem trabalhou menos dias não fica atrás só por isso. As posições dos colegas não são exibidas.
+    </div>
+  </div>
+} @else {
+  <div class="cartao pad vazio">
+    <p><strong>Ainda sem turnos no período.</strong></p>
+    <p class="suave">O índice aparece depois do seu primeiro turno com mesas atendidas.</p>
+  </div>
+}

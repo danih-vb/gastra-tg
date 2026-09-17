@@ -1,0 +1,49 @@
+<header class="topo">
+  <div>
+    <h1>A entregar</h1>
+    <div class="sub">Suas mesas, do pedido mais antigo para o mais novo</div>
+  </div>
+</header>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+    </div>
+  </div>
+}
+
+@if (carregando()) {
+  <p class="carregando">Carregando as pendências…</p>
+} @else if (pendencias().length) {
+  <section class="cartao">
+    <ul class="lista">
+      @for (pendencia of pendencias(); track pendencia.item.id) {
+        <li>
+          <a class="etiqueta" [routerLink]="['/comandas', pendencia.comanda.id]">Mesa {{ pendencia.mesa }}</a>
+          <div class="principal-item">
+            <strong>{{ pendencia.item.quantidade }} × {{ pendencia.item.nome }}</strong>
+            <span class="pequeno suave">{{ tempo(pendencia.item.dataHoraRegistro) }}</span>
+          </div>
+          <button
+            class="botao compacto"
+            type="button"
+            [attr.aria-label]="'Marcar ' + pendencia.item.nome + ' da mesa ' + pendencia.mesa + ' como entregue'"
+            [disabled]="salvando()"
+            (click)="entregar(pendencia)"
+          >
+            <app-icone nome="check" /> Entregue
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+} @else {
+  <div class="cartao pad vazio">
+    <p><strong>Tudo entregue.</strong></p>
+    <p class="suave">Quando lançar um item, ele aparece aqui até ser entregue.</p>
+  </div>
+}

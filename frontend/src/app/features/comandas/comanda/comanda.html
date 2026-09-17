@@ -1,0 +1,359 @@
+@if (comanda(); as comanda) {
+  <header class="topo">
+    <a class="botao-icone" routerLink="/comandas" aria-label="Voltar para as mesas"><app-icone nome="voltar" /></a>
+    <div>
+      <h1>Mesa {{ mesa()?.numero ?? comanda.mesaId }}</h1>
+      <div class="sub">
+        {{ COMPOSICOES[comanda.composicao] }}{{ comanda.composicaoAjustadaManualmente ? ' (ajustada)' : '' }} ·
+        {{ comanda.quantidadePessoas }} {{ comanda.quantidadePessoas === 1 ? 'pessoa' : 'pessoas' }} ·
+        aberta {{ tempo(comanda.dataHoraAbertura) }}
+      </div>
+    </div>
+    <div class="acoes">
+      <button class="botao-icone" type="button" aria-label="Ajustar composição da mesa" (click)="abrirAjusteDeComposicao()">
+        <app-icone nome="pessoas" />
+      </button>
+      <button class="botao-icone" type="button" aria-label="Registrar restrição alimentar" (click)="registrandoRestricao.set(true)">
+        <app-icone nome="escudo" />
+      </button>
+    </div>
+  </header>
+
+  @if (erros().length) {
+    <div class="alerta erro" role="alert">
+      <app-icone nome="alerta" />
+      <div>
+        @for (erro of erros(); track erro) {
+          <div>{{ erro }}</div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (comanda.restricoes.length) {
+    <section class="alerta aviso" aria-label="Restrições alimentares da mesa">
+      <app-icone nome="escudo" />
+      <div>
+        <strong>Restrições desta mesa</strong>
+        @for (restricao of comanda.restricoes; track restricao.id) {
+          <div>{{ RESTRICOES[restricao.categoria] }}{{ restricao.observacaoLivre ? ': ' + restricao.observacaoLivre : '' }}</div>
+        }
+        <div class="pequeno" style="margin-top: 4px">Visível só enquanto a mesa está aberta. Apagada no fechamento.</div>
+      </div>
+    </section>
+  }
+
+  <section class="cartao" aria-labelledby="t-pendentes">
+    <header>
+      <h2 id="t-pendentes">A entregar</h2>
+      <span class="etiqueta" [class.aviso]="pendentes().length" [class.sucesso]="!pendentes().length">
+        {{ pendentes().length }}
+      </span>
+    </header>
+    @if (pendentes().length) {
+      <ul class="lista">
+        @for (item of pendentes(); track item.id) {
+          <li class="linha-item">
+            <span class="qtd">{{ item.quantidade }}×</span>
+            <span class="nome">
+              <strong>{{ item.nome }}</strong>
+              <small>lançado {{ tempo(item.dataHoraRegistro) }}</small>
+            </span>
+            <span class="acoes-item">
+              <button
+                class="botao compacto secundario"
+                type="button"
+                [attr.aria-label]="'Cancelar ' + item.nome"
+                [disabled]="salvando()"
+                (click)="itemParaCancelar.set(item); motivo.set(null)"
+              >
+                Cancelar
+              </button>
+              <button
+                class="botao compacto"
+                type="button"
+                [attr.aria-label]="'Marcar ' + item.nome + ' como entregue'"
+                [disabled]="salvando()"
+                (click)="entregar(item)"
+              >
+                <app-icone nome="check" /> Entregue
+              </button>
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="corpo suave">
+        {{ comanda.itens.length ? 'Nada a entregar.' : 'Nada pendente. Lance o primeiro item abaixo.' }}
+      </div>
+    }
+  </section>
+
+  <section class="cartao" aria-labelledby="t-sugestoes">
+    <header><app-icone nome="faisca" /><h2 id="t-sugestoes">Sugestões para oferecer</h2></header>
+    <div class="corpo" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 4px">
+      @if (sugestoes(); as sugestoes) {
+        @if (!sugestoes.servicoDisponivel) {
+          <div class="alerta">
+            <app-icone nome="info" />
+            <div>Sugestões indisponíveis agora. O atendimento segue normalmente.</div>
+          </div>
+        } @else {
+          @if (sugestoes.confirmarRestricaoComCliente) {
+            <div class="alerta aviso">
+              <app-icone nome="alerta" />
+              <div>A mesa tem restrição que o cardápio não confere sozinho: confirme os ingredientes com o cliente antes de oferecer.</div>
+            </div>
+          }
+          @if (sugestoes.itens.length) {
+            <p class="suave pequeno">Costumam ser pedidos junto com o que já está na mesa.</p>
+          } @else {
+            <p class="suave pequeno">Sem sugestão para esta mesa por enquanto.</p>
+          }
+        }
+      }
+    </div>
+    @if (sugestoes()?.servicoDisponivel) {
+      <ul class="lista cardapio">
+        @for (sugestao of sugestoes()!.itens; track sugestao.itemDoCardapioId) {
+          <li>
+              <div class="principal-item">
+                <strong>{{ sugestao.nome }}</strong>
+                <span class="pequeno suave">sugestão</span>
+              </div>
+              <div class="preco">{{ sugestao.preco | currency: 'BRL' }}</div>
+              <button
+                class="botao compacto"
+                type="button"
+                [attr.aria-label]="'Lançar ' + sugestao.nome"
+                (click)="abrirLancamento(cardapio().find(i => i.id === sugestao.itemDoCardapioId))"
+              >
+                <app-icone nome="mais" /> Lançar
+              </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="cartao" aria-labelledby="t-lancar">
+    <header><h2 id="t-lancar">Lançar item</h2></header>
+    <div class="corpo" style="padding-bottom: 0">
+      <div class="chips rolagem" role="tablist" aria-label="Categorias do cardápio">
+        @for (item of CATEGORIAS; track item.chave) {
+          <button
+            class="chip"
+            type="button"
+            role="tab"
+            [attr.aria-selected]="categoria() === item.chave"
+            (click)="categoria.set(item.chave)"
+          >
+            {{ item.nome }}
+          </button>
+        }
+      </div>
+    </div>
+    <ul class="lista cardapio" style="margin-top: 8px">
+      @for (item of itensDaCategoria(); track item.id) {
+        <li [attr.aria-disabled]="item.disponivel ? null : 'true'">
+          <div class="principal-item">
+            <strong>{{ item.nome }}</strong>
+            <span class="pequeno suave">
+              @if (item.disponivel) {
+                @for (flag of item.flagsDieteticas; track flag) {
+                  {{ FLAGS[flag] }}{{ $last ? '' : ' · ' }}
+                }
+              } @else {
+                Indisponível agora
+              }
+            </span>
+          </div>
+          @if (item.disponivel) {
+            <div class="preco">
+              @if (item.precoPromocional !== null) {
+                <s>{{ item.preco | currency: 'BRL' }}</s>
+                {{ item.precoPromocional | currency: 'BRL' }}
+              } @else {
+                {{ item.preco | currency: 'BRL' }}
+              }
+            </div>
+            <button class="botao compacto" type="button" [attr.aria-label]="'Lançar ' + item.nome" (click)="abrirLancamento(item)">
+              <app-icone nome="mais" /> Lançar
+            </button>
+          } @else {
+            <span class="etiqueta">Indisponível</span>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+
+  @if (resolvidos().length) {
+    <details class="cartao">
+      <summary><strong>Entregues e cancelados ({{ resolvidos().length }})</strong></summary>
+      <ul class="lista">
+        @for (item of resolvidos(); track item.id) {
+          <li class="linha-item" [class.cancelado]="item.status === 'Cancelado'">
+            <span class="qtd">{{ item.quantidade }}×</span>
+            <span class="nome">
+              <strong>{{ item.nome }}</strong>
+              <small>
+                {{ item.status === 'Cancelado' ? 'Cancelado: ' + MOTIVOS[item.motivoCancelamento!] : 'Entregue' }}
+              </small>
+            </span>
+            <span class="preco">{{ item.valor | currency: 'BRL' }}</span>
+          </li>
+        }
+      </ul>
+    </details>
+  }
+
+  <p class="suave pequeno">
+    <app-icone nome="qr" /> Código para o cliente acompanhar a conta: <strong>{{ comanda.codigoAcessoCliente }}</strong>
+  </p>
+
+  <div class="rodape-fixo">
+    <div class="total">
+      <span class="pequeno suave">Subtotal</span>
+      <strong>{{ comanda.subtotal | currency: 'BRL' }}</strong>
+    </div>
+    <button class="botao" type="button" (click)="irParaFechamento()">Fechar conta</button>
+  </div>
+} @else if (carregando()) {
+  <p class="carregando">Carregando a comanda…</p>
+} @else {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+      <a class="botao compacto secundario" style="margin-top: 8px" routerLink="/comandas">Voltar às mesas</a>
+    </div>
+  </div>
+}
+
+@if (itemParaLancar(); as item) {
+  <app-folha [titulo]="item.nome" [subtitulo]="item.descricao" (fechar)="itemParaLancar.set(null)">
+    @if (item.flagsDieteticas.length) {
+      <div class="chips">
+        @for (flag of item.flagsDieteticas; track flag) {
+          <span class="etiqueta">{{ FLAGS[flag] }}</span>
+        }
+      </div>
+    }
+    @if (item.precoPromocional !== null) {
+      <p class="etiqueta marca" style="margin-top: 8px"><app-icone nome="etiqueta" /> Em promoção hoje</p>
+    }
+    <div class="seletor-qtd" role="group" aria-label="Quantidade">
+      <button
+        class="botao-icone"
+        type="button"
+        aria-label="Diminuir"
+        [disabled]="quantidade() === 1"
+        (click)="quantidade.set(quantidade() - 1)"
+      >
+        <app-icone nome="menos" />
+      </button>
+      <output aria-live="polite">{{ quantidade() }}</output>
+      <button class="botao-icone" type="button" aria-label="Aumentar" (click)="quantidade.set(quantidade() + 1)">
+        <app-icone nome="mais" />
+      </button>
+    </div>
+    <div class="rodape-folha">
+      <button class="botao" type="button" [disabled]="salvando()" (click)="lancar()">
+        Lançar {{ quantidade() }} × · {{ totalDoLancamento() | currency: 'BRL' }}
+      </button>
+    </div>
+  </app-folha>
+}
+
+@if (itemParaCancelar(); as item) {
+  <app-folha titulo="Cancelar item" [subtitulo]="item.quantidade + ' × ' + item.nome" (fechar)="itemParaCancelar.set(null)">
+    <p id="rotulo-motivo"><strong>Qual o motivo?</strong></p>
+    <p class="suave pequeno" style="margin-bottom: 10px">
+      Obrigatório: o item cancelado sai da conta, mas fica registrado.
+    </p>
+    <div class="chips" role="radiogroup" aria-labelledby="rotulo-motivo">
+      @for (opcao of motivosPossiveis; track opcao) {
+        <button class="chip" type="button" role="radio" [attr.aria-checked]="motivo() === opcao" (click)="motivo.set(opcao)">
+          {{ MOTIVOS[opcao] }}
+        </button>
+      }
+    </div>
+    <div class="rodape-folha">
+      <button class="botao secundario" type="button" (click)="itemParaCancelar.set(null)">Manter item</button>
+      <button class="botao perigo" type="button" [disabled]="!motivo() || salvando()" (click)="confirmarCancelamento()">
+        Cancelar item
+      </button>
+    </div>
+  </app-folha>
+}
+
+@if (registrandoRestricao()) {
+  <app-folha
+    titulo="Restrição ou preferência"
+    subtitulo="Só o que o cliente informar por vontade própria."
+    (fechar)="registrandoRestricao.set(false)"
+  >
+    <p id="rotulo-categoria"><strong>Categoria</strong></p>
+    <div class="chips" role="radiogroup" aria-labelledby="rotulo-categoria" style="margin: 8px 0 16px">
+      @for (opcao of restricoesPossiveis; track opcao) {
+        <button
+          class="chip"
+          type="button"
+          role="radio"
+          [attr.aria-checked]="categoriaDaRestricao() === opcao"
+          (click)="categoriaDaRestricao.set(opcao)"
+        >
+          {{ RESTRICOES[opcao] }}
+        </button>
+      }
+    </div>
+    <div class="campo">
+      <label for="observacao">Detalhe (opcional)</label>
+      <textarea class="entrada" id="observacao" maxlength="200" [(ngModel)]="observacaoDaRestricao" placeholder="Ex.: alergia a camarão"></textarea>
+      <span class="ajuda">
+        <app-icone nome="cadeado" /> Não anote nome, saúde ou outro dado pessoal. O detalhe é apagado quando a conta fecha.
+      </span>
+    </div>
+    <div class="rodape-folha">
+      <button class="botao" type="button" [disabled]="!categoriaDaRestricao() || salvando()" (click)="registrarRestricao()">
+        Registrar
+      </button>
+    </div>
+  </app-folha>
+}
+
+@if (ajustandoComposicao()) {
+  <app-folha
+    titulo="Composição da mesa"
+    subtitulo="Confirme ou ajuste o que o sistema sugeriu."
+    (fechar)="ajustandoComposicao.set(false)"
+  >
+    <p><strong>Pessoas</strong></p>
+    <div class="seletor-qtd" role="group" aria-label="Pessoas">
+      <button
+        class="botao-icone"
+        type="button"
+        aria-label="Diminuir"
+        [disabled]="pessoasNoAjuste() === 1"
+        (click)="pessoasNoAjuste.set(pessoasNoAjuste() - 1)"
+      >
+        <app-icone nome="menos" />
+      </button>
+      <output aria-live="polite">{{ pessoasNoAjuste() }}</output>
+      <button class="botao-icone" type="button" aria-label="Aumentar" (click)="pessoasNoAjuste.set(pessoasNoAjuste() + 1)">
+        <app-icone nome="mais" />
+      </button>
+    </div>
+    <p><strong>Composição</strong></p>
+    <div class="chips" role="group" aria-label="Composição" style="margin-top: 8px">
+      @for (opcao of composicoesPossiveis; track opcao) {
+        <button class="chip" type="button" [disabled]="salvando()" (click)="salvarComposicao(opcao)">
+          {{ COMPOSICOES[opcao] }}{{ opcao === composicaoDoAjuste() ? ' · sugerida' : '' }}
+        </button>
+      }
+    </div>
+  </app-folha>
+}

@@ -3,6 +3,8 @@ import { Papel } from './sessao/modelos';
 export interface ItemDeMenu {
   rotulo: string;
   rota: string;
+  /** Nome do ícone em shared/icone. */
+  icone: string;
   papeis: Papel[];
 }
 
@@ -11,12 +13,14 @@ export interface ItemDeMenu {
  * protegem as rotas em app.routes.ts, e a API confere de novo em cada endpoint.
  */
 export const MENU: ItemDeMenu[] = [
-  { rotulo: 'Comandas', rota: '/comandas', papeis: ['Garcom', 'Metre', 'Coordenador', 'Gerente'] },
-  { rotulo: 'Alocação', rota: '/alocacao', papeis: ['Metre'] },
-  { rotulo: 'Cardápio', rota: '/cardapio', papeis: ['Gerente', 'Coordenador'] },
-  { rotulo: 'Análises', rota: '/analises', papeis: ['Gerente', 'Garcom'] },
-  { rotulo: 'Salão', rota: '/salao', papeis: ['Gerente'] },
-  { rotulo: 'Usuários', rota: '/usuarios', papeis: ['Gerente'] },
+  { rotulo: 'Comandas', icone: 'mesa', rota: '/comandas', papeis: ['Garcom', 'Metre', 'Coordenador', 'Gerente'] },
+  { rotulo: 'A entregar', icone: 'relogio', rota: '/a-entregar', papeis: ['Garcom'] },
+  { rotulo: 'Desempenho', icone: 'trofeu', rota: '/desempenho', papeis: ['Garcom'] },
+  { rotulo: 'Alocação', icone: 'pessoas', rota: '/alocacao', papeis: ['Metre'] },
+  { rotulo: 'Cardápio', icone: 'etiqueta', rota: '/cardapio', papeis: ['Gerente', 'Coordenador'] },
+  { rotulo: 'Análises', icone: 'faisca', rota: '/analises', papeis: ['Gerente'] },
+  { rotulo: 'Salão', icone: 'mesa', rota: '/salao', papeis: ['Gerente'] },
+  { rotulo: 'Usuários', icone: 'pessoas', rota: '/usuarios', papeis: ['Gerente'] },
 ];
 
 export const NOME_DO_PAPEL: Record<Papel, string> = {

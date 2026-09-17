@@ -1,0 +1,124 @@
+@if (fechada()) {
+  <header class="topo"><div><h1>Conta fechada</h1></div></header>
+  <div class="cartao pad fim" role="status">
+    <span class="selo"><app-icone nome="check" /></span>
+    <h2>Mesa {{ mesa()?.numero ?? comanda()?.mesaId }} liberada</h2>
+    <p class="num total-final">{{ comanda()!.total | currency: 'BRL' }}</p>
+    <p class="suave">As restrições alimentares e observações desta mesa foram apagadas.</p>
+    <button class="botao largo" type="button" (click)="voltarAoSalao()">Voltar às mesas</button>
+  </div>
+} @else if (comanda(); as comanda) {
+  <header class="topo">
+    <a class="botao-icone" [routerLink]="['/comandas', comanda.id]" aria-label="Voltar para a comanda">
+      <app-icone nome="voltar" />
+    </a>
+    <div>
+      <h1>Fechar conta · Mesa {{ mesa()?.numero ?? comanda.mesaId }}</h1>
+      <div class="sub">
+        {{ comanda.quantidadePessoas }} {{ comanda.quantidadePessoas === 1 ? 'pessoa' : 'pessoas' }} ·
+        aberta {{ tempo(comanda.dataHoraAbertura) }}
+      </div>
+    </div>
+  </header>
+
+  @if (erros().length) {
+    <div class="alerta erro" role="alert">
+      <app-icone nome="alerta" />
+      <div>
+        @for (erro of erros(); track erro) {
+          <div>{{ erro }}</div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (pendentes().length) {
+    <div class="alerta erro" role="alert">
+      <app-icone nome="alerta" />
+      <div>
+        <strong>Ainda não dá para fechar</strong>
+        {{ pendentes().length === 1 ? 'Há 1 item a entregar.' : 'Há ' + pendentes().length + ' itens a entregar.' }}
+        Marque como entregue ou cancele com o motivo.
+        <ul style="margin: 6px 0 0; padding-left: 18px">
+          @for (item of pendentes(); track item.id) {
+            <li>{{ item.quantidade }} × {{ item.nome }}</li>
+          }
+        </ul>
+        <a class="botao compacto secundario" style="margin-top: 8px" [routerLink]="['/comandas', comanda.id]">
+          Resolver pendências
+        </a>
+      </div>
+    </div>
+  }
+
+  <section class="cartao" aria-labelledby="t-itens">
+    <header><h2 id="t-itens">Itens</h2></header>
+    <ul class="lista">
+      @for (item of cobrados(); track item.id) {
+        <li>
+          <span class="qtd">{{ item.quantidade }}×</span>
+          <span class="principal-item">{{ item.nome }}</span>
+          <span class="preco">{{ item.valor | currency: 'BRL' }}</span>
+        </li>
+      } @empty {
+        <li class="suave">Nenhum item lançado.</li>
+      }
+    </ul>
+  </section>
+
+  <section class="cartao pad" aria-label="Total">
+    <div class="linha-total"><span>Subtotal</span><span>{{ comanda.subtotal | currency: 'BRL' }}</span></div>
+    <div class="linha-total">
+      <label class="interruptor">
+        <input
+          type="checkbox"
+          [checked]="!comanda.taxaServicoRemovida"
+          [disabled]="comanda.taxaServicoRemovida || salvando()"
+          (change)="removerTaxa()"
+        />
+        Taxa de serviço (10%)
+      </label>
+      <span>{{ comanda.taxaServico | currency: 'BRL' }}</span>
+    </div>
+    <p class="suave pequeno">
+      A taxa é cobrada por padrão. Retire só se o cliente pedir; depois de retirada, não dá para colocar de volta.
+    </p>
+    <div class="linha-total grande"><span>Total</span><span>{{ comanda.total | currency: 'BRL' }}</span></div>
+  </section>
+
+  <div class="rodape-fixo">
+    <button
+      class="botao largo"
+      type="button"
+      [disabled]="pendentes().length > 0 || !cobrados().length || salvando()"
+      (click)="confirmando.set(true)"
+    >
+      Fechar conta · {{ comanda.total | currency: 'BRL' }}
+    </button>
+  </div>
+
+  @if (confirmando()) {
+    <app-folha [titulo]="'Fechar a conta da mesa ' + (mesa()?.numero ?? comanda.mesaId) + '?'" (fechar)="confirmando.set(false)">
+      <p>
+        Total de <strong>{{ comanda.total | currency: 'BRL' }}</strong>{{ comanda.taxaServicoRemovida ? ' (sem taxa de serviço)' : '' }}.
+        Depois de fechada, a conta não aceita novos itens.
+      </p>
+      <div class="rodape-folha">
+        <button class="botao secundario" type="button" (click)="confirmando.set(false)">Voltar</button>
+        <button class="botao" type="button" [disabled]="salvando()" (click)="fechar()">Fechar conta</button>
+      </div>
+    </app-folha>
+  }
+} @else if (carregando()) {
+  <p class="carregando">Carregando a conta…</p>
+} @else {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+      <a class="botao compacto secundario" style="margin-top: 8px" routerLink="/comandas">Voltar às mesas</a>
+    </div>
+  </div>
+}
