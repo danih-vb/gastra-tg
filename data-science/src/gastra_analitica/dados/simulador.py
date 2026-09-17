@@ -75,7 +75,7 @@ def gerar_historico(quantidade: int = 400, semente: int = 42) -> HistoricoSimula
 @dataclass
 class GarcomSimulado:
     id: int
-    faturamento_acumulado: float
+    faturamento_por_turno: float
     turnos_desde_praca_de_alto_potencial: int
 
 
@@ -96,7 +96,7 @@ def gerar_quadro_do_turno(
     garcons = [
         GarcomSimulado(
             id=numero,
-            faturamento_acumulado=round(sorteio.uniform(3_000, 12_000), 2),
+            faturamento_por_turno=round(sorteio.uniform(3_000, 12_000), 2),
             turnos_desde_praca_de_alto_potencial=sorteio.randint(0, 10),
         )
         for numero in range(1, quantidade_garcons + 1)

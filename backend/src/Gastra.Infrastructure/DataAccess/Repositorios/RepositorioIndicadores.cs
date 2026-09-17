@@ -12,10 +12,10 @@ public class RepositorioIndicadores(GastraDbContext contexto) : IRepositorioIndi
             .ToListAsync())
         .ToDictionary(l => l.Id, l => l.Valor);
 
-    public async Task<Dictionary<int, decimal>> ObterFaturamentoPorGarcom(DateOnly inicio, DateOnly fim) =>
+    public async Task<Dictionary<int, decimal>> ObterFaturamentoMedioPorTurnoDoGarcom(DateOnly inicio, DateOnly fim) =>
         (await contexto.Database
             .SqlQuery<ValorPorId>($"""
-                SELECT garcom_id AS Id, SUM(faturamento) AS Valor
+                SELECT garcom_id AS Id, AVG(faturamento) AS Valor
                 FROM vw_desempenho_garcom_turno
                 WHERE data >= {inicio} AND data < {fim}
                 GROUP BY garcom_id

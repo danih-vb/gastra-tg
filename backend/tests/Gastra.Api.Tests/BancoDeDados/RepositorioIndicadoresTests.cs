@@ -46,17 +46,17 @@ public class RepositorioIndicadoresTests : IAsyncLifetime
     }
 
     [FactComMySql]
-    public async Task Faturamento_por_garcom_respeita_o_intervalo_com_fim_exclusivo()
+    public async Task Faturamento_por_turno_do_garcom_e_a_media_dos_turnos_no_intervalo_com_fim_exclusivo()
     {
         await using var contexto = _banco.CriarContexto();
         var repositorio = new RepositorioIndicadores(contexto);
 
-        var ate20 = await repositorio.ObterFaturamentoPorGarcom(new DateOnly(2026, 9, 1), new DateOnly(2026, 9, 20));
-        var tudo = await repositorio.ObterFaturamentoPorGarcom(new DateOnly(2026, 9, 1), new DateOnly(2026, 9, 21));
+        var ate20 = await repositorio.ObterFaturamentoMedioPorTurnoDoGarcom(new DateOnly(2026, 9, 1), new DateOnly(2026, 9, 20));
+        var tudo = await repositorio.ObterFaturamentoMedioPorTurnoDoGarcom(new DateOnly(2026, 9, 1), new DateOnly(2026, 9, 21));
 
         Assert.Equal(100m, ate20[1]);
         Assert.False(ate20.ContainsKey(2));
-        Assert.Equal(400m, tudo[1]);
+        Assert.Equal(200m, tudo[1]); // média de 100 e 300
         Assert.Equal(50m, tudo[2]);
     }
 }
