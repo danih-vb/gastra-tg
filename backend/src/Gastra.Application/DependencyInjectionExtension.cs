@@ -50,6 +50,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IObterItemCardapioUseCase, ObterItemCardapioUseCase>();
         services.AddScoped<IAtualizarPrecoItemUseCase, AtualizarPrecoItemUseCase>();
         services.AddScoped<IAlterarDisponibilidadeItemUseCase, AlterarDisponibilidadeItemUseCase>();
+        services.AddScoped<IAlterarImagemItemUseCase, AlterarImagemItemUseCase>();
 
         services.AddScoped<IAutenticarUseCase, AutenticarUseCase>();
         services.AddScoped<IConfigurarSegundoFatorUseCase, ConfigurarSegundoFatorUseCase>();
@@ -61,6 +62,8 @@ public static class DependencyInjectionExtension
         services.AddScoped<IObterUsuarioUseCase, ObterUsuarioUseCase>();
         services.AddScoped<IEditarUsuarioUseCase, EditarUsuarioUseCase>();
         services.AddScoped<IAlterarSituacaoUsuarioUseCase, AlterarSituacaoUsuarioUseCase>();
+        services.AddScoped<IRedefinirSenhaUsuarioUseCase, RedefinirSenhaUsuarioUseCase>();
+        services.AddScoped<IReiniciarSegundoFatorUseCase, ReiniciarSegundoFatorUseCase>();
 
         services.AddScoped<IAbrirComandaUseCase, AbrirComandaUseCase>();
         services.AddScoped<IConfirmarComposicaoUseCase, ConfirmarComposicaoUseCase>();

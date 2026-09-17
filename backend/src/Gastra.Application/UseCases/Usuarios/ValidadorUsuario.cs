@@ -33,6 +33,20 @@ public static class ValidadorUsuario
         LancarSeHouverErros(erros);
     }
 
+    public static void ValidarSenha(string senha)
+    {
+        var erros = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(senha))
+            erros.Add(MensagensErro.SenhaObrigatoria);
+        else if (senha.Length < TamanhoMinimoSenha)
+            erros.Add(MensagensErro.SenhaCurta);
+        else if (Encoding.UTF8.GetByteCount(senha) > BytesMaximosSenha)
+            erros.Add(MensagensErro.SenhaLonga);
+
+        LancarSeHouverErros(erros);
+    }
+
     private static List<string> ErrosDosDados(string nome, string email, PapelUsuario papel)
     {
         var erros = new List<string>();

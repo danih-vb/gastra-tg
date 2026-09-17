@@ -52,6 +52,29 @@ public class Usuario : EntidadeBase
     public void EncerrarSessoes() => ChaveSessao = Guid.NewGuid();
 
     /// <summary>
+    /// UC04: o Gerente define uma senha nova para quem perdeu a sua (#141). As sessões abertas caem junto, para o
+    /// acesso antigo não continuar valendo.
+    /// </summary>
+    public void RedefinirSenha(string senhaHash)
+    {
+        SenhaHash = senhaHash;
+        EncerrarSessoes();
+    }
+
+    /// <summary>
+    /// UC04: desfaz a vinculação do app autenticador de quem perdeu o celular (#141). O próximo login volta a pedir a
+    /// configuração, com um segredo novo — o antigo nunca é reexibido (RN07).
+    /// </summary>
+    public void ReiniciarSegundoFator()
+    {
+        if (!ExigeSegundoFator())
+            throw new InvalidOperationException("Este papel não usa segundo fator.");
+
+        SegredoTotp = null;
+        EncerrarSessoes();
+    }
+
+    /// <summary>
     /// RF18: edição da conta. O papel vai dentro do token; se ele muda, os tokens antigos deixam de
     /// valer para ninguém continuar com as permissões anteriores.
     /// </summary>

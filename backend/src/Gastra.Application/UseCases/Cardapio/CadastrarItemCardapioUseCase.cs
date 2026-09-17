@@ -30,7 +30,8 @@ public class CadastrarItemCardapioUseCase(
             request.Categoria.Adapt<DominioEnums.CategoriaItemCardapio>(),
             request.Preco,
             request.Descricao?.Trim() ?? string.Empty,
-            request.FlagsDieteticas.Adapt<List<DominioEnums.FlagDietetica>>());
+            request.FlagsDieteticas.Adapt<List<DominioEnums.FlagDietetica>>(),
+            request.Imagem?.Trim());
 
         await repositorio.Adicionar(item);
         await unitOfWork.Commit();

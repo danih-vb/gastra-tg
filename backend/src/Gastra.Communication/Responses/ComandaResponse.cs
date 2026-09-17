@@ -6,6 +6,11 @@ public class ComandaResponse
 {
     public int Id { get; set; }
     public int MesaId { get; set; }
+
+    /// <summary>Garçom que abriu a comanda: é o que separa "minhas mesas" das dos colegas no salão.</summary>
+    public int GarcomId { get; set; }
+
+    public string GarcomNome { get; set; } = string.Empty;
     public StatusComanda Status { get; set; }
     public int QuantidadePessoas { get; set; }
     public ComposicaoMesa Composicao { get; set; }

@@ -364,4 +364,21 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
 
         Assert.Equal(HttpStatusCode.Unauthorized, resposta.StatusCode);
     }
+
+    // #141: o salão precisa saber quem atende cada mesa.
+    [Fact]
+    public async Task Comanda_TrazOGarcomQueAbriu_NaAberturaNaConsultaENaLista()
+    {
+        var aberta = await AbrirComanda();
+
+        Assert.NotEqual(0, aberta.GarcomId);
+        Assert.NotEmpty(aberta.GarcomNome);
+
+        var consultada = await Obter(aberta.Id);
+        Assert.Equal((aberta.GarcomId, aberta.GarcomNome), (consultada.GarcomId, consultada.GarcomNome));
+
+        var abertas = await _cliente.GetFromJsonAsync<List<ComandaResponse>>(Rota, Json);
+        var naLista = abertas!.Single(c => c.Id == aberta.Id);
+        Assert.Equal((aberta.GarcomId, aberta.GarcomNome), (naLista.GarcomId, naLista.GarcomNome));
+    }
 }

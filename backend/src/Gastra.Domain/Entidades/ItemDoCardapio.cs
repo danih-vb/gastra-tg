@@ -43,6 +43,9 @@ public class ItemDoCardapio : EntidadeBase
     /// <summary>RF21.</summary>
     public void MarcarDisponibilidade(bool disponivel) => Disponivel = disponivel;
 
+    /// <summary>RF05: foto mostrada no cardápio digital. Nulo tira a foto do item.</summary>
+    public void DefinirImagem(string? imagem) => Imagem = string.IsNullOrWhiteSpace(imagem) ? null : imagem.Trim();
+
     /// <summary>
     /// Diz se o item pode ser sugerido a uma mesa com essa restrição. Na dúvida, não: só atende quem tem a
     /// flag no cardápio. Alergia e "outro" dependem do texto livre e não filtram nada; ficam com o garçom.

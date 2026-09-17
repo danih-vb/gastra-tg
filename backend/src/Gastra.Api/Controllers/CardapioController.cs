@@ -66,6 +66,20 @@ public class CardapioController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>RF05 — Definir ou tirar a foto do item mostrada no cardápio digital.</summary>
+    [HttpPatch("{id:int}/imagem")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AlterarImagem(
+        int id,
+        [FromBody] ImagemItemRequest request,
+        [FromServices] IAlterarImagemItemUseCase useCase)
+    {
+        await useCase.Executar(id, request);
+        return NoContent();
+    }
+
     /// <summary>UC07 — Marcar item disponível/indisponível.</summary>
     [HttpPatch("{id:int}/disponibilidade")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

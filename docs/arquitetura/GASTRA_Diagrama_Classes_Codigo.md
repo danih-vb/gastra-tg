@@ -38,7 +38,7 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 
 | Atributos | Métodos |
 |---|---|
-| `+Nome: string`<br>`+Categoria: CategoriaItemCardapio`<br>`+Preco: decimal`<br>`+Descricao: string`<br>`+Disponivel: bool`<br>`+Imagem: string?`<br>`+FlagsDieteticas: IReadOnlyCollection<FlagDietetica>` | `+AtendeRestricao(restricao: CategoriaRestricao): bool`<br>`+AtualizarPreco(novoPreco: decimal): void`<br>`+MarcarDisponibilidade(disponivel: bool): void` |
+| `+Nome: string`<br>`+Categoria: CategoriaItemCardapio`<br>`+Preco: decimal`<br>`+Descricao: string`<br>`+Disponivel: bool`<br>`+Imagem: string?`<br>`+FlagsDieteticas: IReadOnlyCollection<FlagDietetica>` | `+AtendeRestricao(restricao: CategoriaRestricao): bool`<br>`+AtualizarPreco(novoPreco: decimal): void`<br>`+DefinirImagem(imagem: string?): void`<br>`+MarcarDisponibilidade(disponivel: bool): void` |
 
 ### ItemDoPedido
 
@@ -86,7 +86,7 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 
 | Atributos | Métodos |
 |---|---|
-| `+Nome: string`<br>`+Email: string`<br>`+SenhaHash: string`<br>`+Papel: PapelUsuario`<br>`+Ativo: bool`<br>`+SegredoTotp: string?`<br>`+ChaveSessao: Guid`<br>`+SegundoFatorConfigurado: bool` | `+AtualizarDados(nome: string, email: string, papel: PapelUsuario): void`<br>`+DefinirSegredoTotp(segredoProtegido: string): void`<br>`+EncerrarSessoes(): void`<br>`+ExigeSegundoFator(): bool`<br>`+Inativar(): void`<br>`+NormalizarEmail(email: string): string «static»`<br>`+Reativar(): void` |
+| `+Nome: string`<br>`+Email: string`<br>`+SenhaHash: string`<br>`+Papel: PapelUsuario`<br>`+Ativo: bool`<br>`+SegredoTotp: string?`<br>`+ChaveSessao: Guid`<br>`+SegundoFatorConfigurado: bool` | `+AtualizarDados(nome: string, email: string, papel: PapelUsuario): void`<br>`+DefinirSegredoTotp(segredoProtegido: string): void`<br>`+EncerrarSessoes(): void`<br>`+ExigeSegundoFator(): bool`<br>`+Inativar(): void`<br>`+NormalizarEmail(email: string): string «static»`<br>`+Reativar(): void`<br>`+RedefinirSenha(senhaHash: string): void`<br>`+ReiniciarSegundoFator(): void` |
 
 ## 2. Enumerações (`Gastra.Domain.Enums`)
 

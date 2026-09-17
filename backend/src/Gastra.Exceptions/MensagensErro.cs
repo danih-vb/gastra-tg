@@ -18,6 +18,7 @@ public static class MensagensErro
     public static string DescricaoMuitoLonga => Obter(nameof(DescricaoMuitoLonga));
     public static string PrecoInvalido => Obter(nameof(PrecoInvalido));
     public static string CategoriaInvalida => Obter(nameof(CategoriaInvalida));
+    public static string ImagemInvalida => Obter(nameof(ImagemInvalida));
     public static string FlagDieteticaInvalida => Obter(nameof(FlagDieteticaInvalida));
     public static string ItemCardapioNaoEncontrado => Obter(nameof(ItemCardapioNaoEncontrado));
     public static string RequisicaoInvalida => Obter(nameof(RequisicaoInvalida));
@@ -40,6 +41,9 @@ public static class MensagensErro
     public static string UsuarioNaoEncontrado => Obter(nameof(UsuarioNaoEncontrado));
     public static string AlterarProprioPapel => Obter(nameof(AlterarProprioPapel));
     public static string InativarPropriaConta => Obter(nameof(InativarPropriaConta));
+    public static string RedefinirPropriaSenha => Obter(nameof(RedefinirPropriaSenha));
+    public static string ReiniciarProprioSegundoFator => Obter(nameof(ReiniciarProprioSegundoFator));
+    public static string PapelSemSegundoFator => Obter(nameof(PapelSemSegundoFator));
     public static string ComandaNaoEncontrada => Obter(nameof(ComandaNaoEncontrada));
     public static string MesaNaoEncontrada => Obter(nameof(MesaNaoEncontrada));
     public static string ItemPedidoNaoEncontrado => Obter(nameof(ItemPedidoNaoEncontrado));
