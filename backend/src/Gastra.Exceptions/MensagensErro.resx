@@ -66,4 +66,13 @@
   <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Informe a data do turno.</value></data>
   <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>A data inicial do relatório não pode ser depois da final.</value></data>
   <data name="PeriodoRelatorioLongoDemais" xml:space="preserve"><value>O período do relatório pode ter no máximo 366 dias.</value></data>
+  <data name="DescricaoPromocaoObrigatoria" xml:space="preserve"><value>A descrição da promoção é obrigatória.</value></data>
+  <data name="DescricaoPromocaoMuitoLonga" xml:space="preserve"><value>A descrição da promoção deve ter no máximo 200 caracteres.</value></data>
+  <data name="TipoDescontoInvalido" xml:space="preserve"><value>Tipo de desconto inválido: use Percentual ou ValorFixo.</value></data>
+  <data name="ValorDescontoInvalido" xml:space="preserve"><value>O desconto precisa ser maior que zero e, em percentual, menor que 100.</value></data>
+  <data name="PeriodoPromocaoInvalido" xml:space="preserve"><value>Informe as datas de início e fim da promoção, com o fim igual ou depois do início.</value></data>
+  <data name="PromocaoSemItens" xml:space="preserve"><value>A promoção precisa de pelo menos um item do cardápio.</value></data>
+  <data name="DescontoFixoMaiorQuePreco" xml:space="preserve"><value>O desconto fixo precisa ser menor que o preço de cada item da promoção.</value></data>
+  <data name="PromocaoNaoEncontrada" xml:space="preserve"><value>Promoção não encontrada.</value></data>
+  <data name="PromocaoJaDesativada" xml:space="preserve"><value>A promoção já foi removida.</value></data>
 </root>

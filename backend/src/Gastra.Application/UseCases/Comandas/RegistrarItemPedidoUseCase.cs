@@ -1,4 +1,5 @@
 using Gastra.Application.Auditoria;
+using Gastra.Application.UseCases.Promocoes;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
 using Gastra.Domain.Auditoria;
@@ -19,6 +20,7 @@ public interface IRegistrarItemPedidoUseCase
 public class RegistrarItemPedidoUseCase(
     IRepositorioComanda repositorio,
     IRepositorioItemCardapio repositorioCardapio,
+    IRepositorioPromocao repositorioPromocao,
     IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IRegistrarItemPedidoUseCase
 {
@@ -34,7 +36,11 @@ public class RegistrarItemPedidoUseCase(
         if (!item.Disponivel)
             throw new RegraDeNegocioException(MensagensErro.ItemCardapioIndisponivel);
 
-        var pedido = comanda.AdicionarItem(item, request.Quantidade);
+        // RF03 + RF22: o preço congelado no pedido já é o promocional, se houver promoção valendo hoje.
+        var hoje = HojeNoRestaurante.Data();
+        var precoPromocional = Promocao.PrecoPromocional(item, await repositorioPromocao.ListarVigentes(hoje), hoje);
+
+        var pedido = comanda.AdicionarItem(item, request.Quantidade, precoPromocional);
 
         await auditoria.Registrar(EventoAuditoria.ItemRegistrado, alvo: (nameof(Comanda), comanda.Id),
             detalhes: new { ItemCardapioId = item.Id, pedido.Quantidade });

@@ -214,6 +214,18 @@ public class ObjetosDoBancoTests : IAsyncLifetime
         Assert.Contains("CK_item_pedido_motivo_cancelamento", entregueComMotivo.Message);
     }
 
+    [FactComMySql]
+    public async Task Promocao_nao_aceita_periodo_invertido_nem_percentual_de_100()
+    {
+        var periodoInvertido = await Assert.ThrowsAsync<MySqlException>(() => _banco.Executar(
+            "INSERT INTO promocao (descricao, tipo_desconto, valor_desconto, data_inicio, data_fim, ativa) VALUES ('X', 'Percentual', 10, '2026-09-20', '2026-09-10', 1)"));
+        var cemPorCento = await Assert.ThrowsAsync<MySqlException>(() => _banco.Executar(
+            "INSERT INTO promocao (descricao, tipo_desconto, valor_desconto, data_inicio, data_fim, ativa) VALUES ('X', 'Percentual', 100, '2026-09-10', '2026-09-20', 1)"));
+
+        Assert.Contains("CK_promocao_periodo_e_desconto", periodoInvertido.Message);
+        Assert.Contains("CK_promocao_periodo_e_desconto", cemPorCento.Message);
+    }
+
     private Task InserirAuditoria(string dataHoraSql) => _banco.Executar(
         $"INSERT INTO registro_auditoria (data_hora_utc, evento, resultado) VALUES ({dataHoraSql}, 'Login', 'Sucesso');");
 

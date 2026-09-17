@@ -66,4 +66,13 @@
   <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Provide the shift date.</value></data>
   <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>The report start date cannot be after the end date.</value></data>
   <data name="PeriodoRelatorioLongoDemais" xml:space="preserve"><value>The report period can have at most 366 days.</value></data>
+  <data name="DescricaoPromocaoObrigatoria" xml:space="preserve"><value>The promotion description is required.</value></data>
+  <data name="DescricaoPromocaoMuitoLonga" xml:space="preserve"><value>The promotion description must have at most 200 characters.</value></data>
+  <data name="TipoDescontoInvalido" xml:space="preserve"><value>Invalid discount type: use Percentual or ValorFixo.</value></data>
+  <data name="ValorDescontoInvalido" xml:space="preserve"><value>The discount must be greater than zero and, as a percentage, less than 100.</value></data>
+  <data name="PeriodoPromocaoInvalido" xml:space="preserve"><value>Provide the promotion start and end dates, with the end on or after the start.</value></data>
+  <data name="PromocaoSemItens" xml:space="preserve"><value>The promotion needs at least one menu item.</value></data>
+  <data name="DescontoFixoMaiorQuePreco" xml:space="preserve"><value>The fixed discount must be less than the price of each item in the promotion.</value></data>
+  <data name="PromocaoNaoEncontrada" xml:space="preserve"><value>Promotion not found.</value></data>
+  <data name="PromocaoJaDesativada" xml:space="preserve"><value>The promotion has already been removed.</value></data>
 </root>

@@ -372,6 +372,33 @@ Authorization: Bearer {{token}}
 
 ###
 
+# ===================== Promoções (UC08, UC09) — token de Gerente ou Coordenador =====================
+
+POST {{Gastra.Api_HostAddress}}/api/promocoes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "descricao": "Semana da moqueca",
+  "tipoDesconto": "Percentual",
+  "valorDesconto": 15,
+  "dataInicio": "2026-09-17",
+  "dataFim": "2026-09-24",
+  "itemCardapioIds": [1, 2]
+}
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/promocoes?todas=true
+Authorization: Bearer {{token}}
+
+###
+
+DELETE {{Gastra.Api_HostAddress}}/api/promocoes/1
+Authorization: Bearer {{token}}
+
+###
+
 # ===================== BI (UC16) e índice de desempenho (UC17) — token de Gerente =====================
 
 # Relatório por garçom (sem filtro: últimos 30 dias)

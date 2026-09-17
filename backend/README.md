@@ -336,6 +336,26 @@ Endpoints do **Metre**, exceto a consulta:
 - **Auditoria (política de log, 4.5):** sugestão gerada (com os pesos), ajuste (praça sugerida → escolhida) e
   confirmação.
 
+## Promoções (UC08, UC09)
+
+Endpoints do **Gerente e do Coordenador** (mesma permissão da gestão do cardápio):
+
+| Ação | Endpoint |
+|---|---|
+| UC08 — Criar promoção | `POST /api/promocoes` com `descricao`, `tipoDesconto` (`Percentual` ou `ValorFixo`), `valorDesconto`, `dataInicio`, `dataFim` e `itemCardapioIds` |
+| Listar (ativas; `?todas=true` inclui as removidas) | `GET /api/promocoes` |
+| UC09 — Remover promoção | `DELETE /api/promocoes/{id}` |
+
+- **Remover é desativar:** a promoção fica no banco, porque há comandas antigas vendidas com o preço dela.
+- **Vigência:** vale do primeiro ao último dia, inclusive, pela data de Brasília.
+- **Desconto:** o percentual precisa ser menor que 100. O valor fixo precisa ser menor que o preço de cada
+  item. O preço promocional nunca fica abaixo de R$ 0,01 e é arredondado em centavos.
+- **Duas promoções para o mesmo item:** vale a de maior desconto.
+- **Onde aparece:**
+  - `precoPromocional` no cardápio, inclusive no cardápio digital do cliente;
+  - o item lançado na comanda já sai com o preço promocional, que fica congelado no pedido (RF03).
+- **Auditoria (política de log, 4.2):** criação, com os itens vinculados, e remoção.
+
 ## Relatórios de BI e índice de desempenho (UC16, UC17)
 
 Filtro por `inicio` e `fim` na query string (datas inclusivas, `aaaa-mm-dd`). Sem filtro, o relatório usa os

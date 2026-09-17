@@ -88,7 +88,7 @@ Justificativas:
 | Item cadastrado | UC05 | ator, alvo | — |
 | Preço alterado | UC06 | ator, alvo, preço anterior → novo | — |
 | Disponibilidade alterada | UC07 | ator, alvo, novo estado | — |
-| Promoção criada / removida | UC08, UC09 | ator, alvo, itens vinculados | — |
+| Promoção criada / removida | UC08, UC09 | ator, alvo, itens vinculados (implementado no #124) | — |
 | Praça cadastrada / editada | UC24 | ator, alvo, código e quantidade de garçons | — |
 | Mesa cadastrada / editada | UC24 | ator, alvo, número, capacidade e praça | — |
 
