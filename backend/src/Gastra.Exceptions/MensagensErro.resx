@@ -61,7 +61,10 @@
   <data name="AlocacaoSemVagas" xml:space="preserve"><value>As praças não têm vagas para todos os garçons informados.</value></data>
   <data name="AlocacaoJaConfirmada" xml:space="preserve"><value>A alocação deste turno já foi confirmada e não pode mais mudar.</value></data>
   <data name="AlocacaoNaoEncontrada" xml:space="preserve"><value>Não há alocação para este turno.</value></data>
-  <data name="PracaSemVaga" xml:space="preserve"><value>A praça escolhida já está com todas as vagas ocupadas neste turno.</value></data>
+  <data name="PracaSemVaga" xml:space="preserve"><value>A praça escolhida já está com todas as vagas ocupadas neste turno. Para ajustar, troque com um garçom dela.</value></data>
+  <data name="TrocaComOProprioGarcom" xml:space="preserve"><value>Escolha outro garçom para a troca.</value></data>
+  <data name="GarcomDaTrocaForaDaPraca" xml:space="preserve"><value>O garçom escolhido para a troca não está na praça de destino neste turno.</value></data>
+  <data name="TrocaNaMesmaPraca" xml:space="preserve"><value>Os dois garçons já estão na mesma praça.</value></data>
   <data name="PeriodoInvalido" xml:space="preserve"><value>Período inválido: use Almoco ou Jantar.</value></data>
   <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Informe a data do turno.</value></data>
   <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>A data inicial do relatório não pode ser depois da final.</value></data>
