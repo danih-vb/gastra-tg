@@ -351,6 +351,38 @@ public class AlocacaoControllerTests(GastraApiFactory factory) : IClassFixture<G
         Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
     }
 
+    // --- UC15: quem está no turno (#147) ---
+
+    [Fact]
+    public async Task Garcons_ParaOMetre_TrazSoOsAtivosComIdENome()
+    {
+        var ativo = await CriarGarcom();
+        var inativo = await factory.CriarUsuario($"inativo-{Guid.NewGuid():N}@gastra.test", PapelUsuario.Garcom, ativo: false);
+
+        var resposta = await _metre.GetAsync($"{Rota}/garcons");
+
+        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        var garcons = (await resposta.Content.ReadFromJsonAsync<List<GarcomDoTurnoResponse>>(Json))!;
+        Assert.Contains(garcons, g => g.Id == ativo.Id && g.Nome == ativo.Nome);
+        Assert.DoesNotContain(garcons, g => g.Id == inativo.Id);
+
+        // RNF03: a lista do turno não carrega e-mail nem situação do segundo fator.
+        var json = await resposta.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("@gastra.test", json);
+        Assert.DoesNotContain("segundoFator", json, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Garcons_ComoGarcom_Retorna403()
+    {
+        var cliente = factory.CreateClient();
+        Autenticar(cliente, await factory.TokenGarcom(factory.CreateClient()));
+
+        var resposta = await cliente.GetAsync($"{Rota}/garcons");
+
+        Assert.Equal(HttpStatusCode.Forbidden, resposta.StatusCode);
+    }
+
     // --- UC21: confirmação ---
 
     [Fact]
