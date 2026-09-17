@@ -46,6 +46,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
+await AplicadorDeMigrations.Executar(app);
 await InicializadorAdministrador.Executar(app);
 
 app.Run();

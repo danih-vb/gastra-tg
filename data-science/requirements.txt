@@ -1,33 +1,14 @@
 # GASTRA — dependências da camada analítica (Python 3.13)
 # Instalação: ver data-science/README.md
 
-# Manipulação de dados (todos os blocos)
-pandas==3.0.5
-
-# Ciência de Dados — clusterização (RF09)
-scikit-learn==1.9.1
-
-# Ciência de Dados — regras de associação / Apriori (RF09)
-mlxtend==0.25.0
-
-# Programação Linear — alocação de garçons (RF06, RN03)
-# O extra [cbc] instala o solver CBC (pacote cbcbox). O solver embutido antigo
-# (PULP_CBC_CMD) será removido no PuLP 4.0 — ver README, seção "Solver".
-pulp[cbc]==3.3.2
+# Serviço HTTP e algoritmos (o mesmo conjunto que vai para o contêiner)
+-r requirements-servico.txt
 
 # Gráficos para BI e para o texto do TG
 matplotlib==3.11.2
 
-# Leitura direta do MySQL (infra/docker-compose.yml)
-sqlalchemy==2.0.52
-pymysql==1.2.0
-
 # Notebooks de exploração (data-science/notebooks/)
 jupyterlab==4.6.3
-
-# Serviço HTTP consumido pelo backend em C# (src/gastra_analitica/api/)
-fastapi==0.141.1
-uvicorn==0.53.0
 
 # Testes (pytest + TestClient do FastAPI)
 # httpx2 no lugar de httpx: o TestClient do Starlette marca o uso do httpx como obsoleto.
