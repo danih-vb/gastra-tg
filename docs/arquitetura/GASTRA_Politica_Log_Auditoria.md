@@ -192,9 +192,9 @@ Justificativas:
 
 ## 8. Diretrizes de implementação
 
-> **Situação (#120):** todos os eventos das seções 4.1 a 4.3 e os do salão estão implementados, com testes
-> que conferem o que é registrado e o que nunca pode aparecer (`AuditoriaTests`). Os eventos de 4.5 entram
-> junto com os casos de uso de alocação e BI. Os códigos dos eventos ficam em
+> **Situação:** todos os eventos das seções 4.1 a 4.3 e os do salão estão implementados (#120), com testes
+> que conferem o que é registrado e o que nunca pode aparecer (`AuditoriaTests`). Da seção 4.5, os de
+> alocação entraram com a #122; os de BI entram com a #123. Os códigos dos eventos ficam em
 > `Gastra.Domain/Auditoria/EventoAuditoria.cs`.
 
 1. **A auditoria é gravada pela aplicação, não por trigger do banco.** Um trigger não sabe *qual

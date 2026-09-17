@@ -8,5 +8,6 @@ public interface IRepositorioUsuario
     Task<Usuario?> ObterPorId(int id);
     Task<Usuario?> ObterPorEmail(string email);
     Task<List<Usuario>> ListarTodos();
+    Task<List<Usuario>> ListarPorIds(IEnumerable<int> ids);
     Task<bool> ExisteAlgum();
 }

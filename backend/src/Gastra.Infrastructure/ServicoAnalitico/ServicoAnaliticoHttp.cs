@@ -31,6 +31,24 @@ public class ServicoAnaliticoHttp(HttpClient http, ILogger<ServicoAnaliticoHttp>
         return resposta.Sugestoes.Select(s => s.ItemId).ToList();
     }
 
+    public async Task<IReadOnlyList<DesignacaoSugerida>> SugerirAlocacao(
+        IReadOnlyCollection<GarcomParaAlocacao> garcons,
+        IReadOnlyCollection<PracaParaAlocacao> pracas,
+        double pesoDesequilibrio,
+        double pesoEspera,
+        CancellationToken cancellationToken = default)
+    {
+        var pedido = new PedidoDeAlocacao(
+            garcons.Select(g => new GarcomDoTurno(g.GarcomId, g.FaturamentoAcumulado, g.TurnosDesdePracaDeAltoPotencial)).ToList(),
+            pracas.Select(p => new PracaDoTurno(p.PracaId, p.Vagas, p.FaturamentoMedioHistorico)).ToList(),
+            pesoDesequilibrio,
+            pesoEspera);
+
+        var resposta = await Enviar<RespostaDeAlocacao>("alocacao/sugestao", pedido, cancellationToken);
+
+        return resposta.Designacoes.Select(d => new DesignacaoSugerida(d.GarcomId, d.PracaId)).ToList();
+    }
+
     private async Task<TResposta> Enviar<TResposta>(string rota, object corpo, CancellationToken cancellationToken)
     {
         try
@@ -65,4 +83,14 @@ public class ServicoAnaliticoHttp(HttpClient http, ILogger<ServicoAnaliticoHttp>
     private record RespostaDeRecomendacao(List<ItemSugerido> Sugestoes);
 
     private record ItemSugerido(int ItemId);
+
+    private record PedidoDeAlocacao(List<GarcomDoTurno> Garcons, List<PracaDoTurno> Pracas, double PesoDesequilibrio, double PesoEspera);
+
+    private record GarcomDoTurno(int Id, decimal FaturamentoAcumulado, int TurnosDesdePracaDeAltoPotencial);
+
+    private record PracaDoTurno(int Id, int Vagas, decimal FaturamentoMedioHistorico);
+
+    private record RespostaDeAlocacao(List<DesignacaoDoPython> Designacoes);
+
+    private record DesignacaoDoPython(int GarcomId, int PracaId);
 }

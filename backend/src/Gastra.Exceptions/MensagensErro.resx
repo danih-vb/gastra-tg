@@ -55,4 +55,13 @@
   <data name="NumeroMesaMuitoLongo" xml:space="preserve"><value>O número da mesa deve ter no máximo 10 caracteres.</value></data>
   <data name="NumeroMesaJaCadastrado" xml:space="preserve"><value>Já existe uma mesa com este número.</value></data>
   <data name="CapacidadeMesaInvalida" xml:space="preserve"><value>A mesa precisa comportar pelo menos uma pessoa.</value></data>
+  <data name="AlocacaoSemGarcons" xml:space="preserve"><value>Informe ao menos um garçom presente no turno.</value></data>
+  <data name="AlocacaoGarcomInvalido" xml:space="preserve"><value>Um dos garçons informados não existe, está inativo ou não tem o papel Garçom.</value></data>
+  <data name="AlocacaoSemPracas" xml:space="preserve"><value>Cadastre ao menos uma praça antes de alocar os garçons.</value></data>
+  <data name="AlocacaoSemVagas" xml:space="preserve"><value>As praças não têm vagas para todos os garçons informados.</value></data>
+  <data name="AlocacaoJaConfirmada" xml:space="preserve"><value>A alocação deste turno já foi confirmada e não pode mais mudar.</value></data>
+  <data name="AlocacaoNaoEncontrada" xml:space="preserve"><value>Não há alocação para este turno.</value></data>
+  <data name="PracaSemVaga" xml:space="preserve"><value>A praça escolhida já está com todas as vagas ocupadas neste turno.</value></data>
+  <data name="PeriodoInvalido" xml:space="preserve"><value>Período inválido: use Almoco ou Jantar.</value></data>
+  <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Informe a data do turno.</value></data>
 </root>

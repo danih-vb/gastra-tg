@@ -64,6 +64,15 @@ public static class MensagensErro
     public static string NumeroMesaMuitoLongo => Obter(nameof(NumeroMesaMuitoLongo));
     public static string NumeroMesaJaCadastrado => Obter(nameof(NumeroMesaJaCadastrado));
     public static string CapacidadeMesaInvalida => Obter(nameof(CapacidadeMesaInvalida));
+    public static string AlocacaoSemGarcons => Obter(nameof(AlocacaoSemGarcons));
+    public static string AlocacaoGarcomInvalido => Obter(nameof(AlocacaoGarcomInvalido));
+    public static string AlocacaoSemPracas => Obter(nameof(AlocacaoSemPracas));
+    public static string AlocacaoSemVagas => Obter(nameof(AlocacaoSemVagas));
+    public static string AlocacaoJaConfirmada => Obter(nameof(AlocacaoJaConfirmada));
+    public static string AlocacaoNaoEncontrada => Obter(nameof(AlocacaoNaoEncontrada));
+    public static string PracaSemVaga => Obter(nameof(PracaSemVaga));
+    public static string PeriodoInvalido => Obter(nameof(PeriodoInvalido));
+    public static string DataAlocacaoObrigatoria => Obter(nameof(DataAlocacaoObrigatoria));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;

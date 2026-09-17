@@ -18,4 +18,15 @@ public interface IServicoAnalitico
         IReadOnlyCollection<int> itensPermitidos,
         int limite,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// RF06 e RN03 — distribui os garçons do turno entre as praças por programação linear.
+    /// </summary>
+    /// <exception cref="ServicoAnaliticoIndisponivelException">Serviço fora do ar, lento ou com resposta inválida.</exception>
+    Task<IReadOnlyList<DesignacaoSugerida>> SugerirAlocacao(
+        IReadOnlyCollection<GarcomParaAlocacao> garcons,
+        IReadOnlyCollection<PracaParaAlocacao> pracas,
+        double pesoDesequilibrio,
+        double pesoEspera,
+        CancellationToken cancellationToken = default);
 }

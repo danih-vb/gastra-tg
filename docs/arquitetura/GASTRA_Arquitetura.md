@@ -172,7 +172,7 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 
 | Uso | Quem chama | O que vai na requisição | O que volta |
 |---|---|---|---|
-| Sugestão de alocação (RF06, RN03) 🔜 | Backend, quando o metre pede a sugestão | Data, período, garçons e praças disponíveis no turno | Pares garçom → praça |
+| Sugestão de alocação (RF06, RN03) ✅ | Backend, quando o metre pede a sugestão (`POST /api/alocacoes/sugestao`) | Garçons presentes com faturamento acumulado e turnos desde a praça de alto potencial; praças com vagas e faturamento médio; pesos w1 e w2 | Pares garçom → praça, conferidos pelo backend antes de gravar |
 | Sugestão de pratos (RF09) ✅ | Backend, quando o garçom abre as sugestões (`GET /api/comandas/{id}/sugestoes`) | Itens já pedidos e itens permitidos (disponíveis, fora da comanda, compatíveis com a restrição) | Ids sugeridos, em ordem |
 
 - O backend chama o serviço por meio de `IServicoAnalitico` (domínio), implementado por

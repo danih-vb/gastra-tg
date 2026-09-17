@@ -39,6 +39,9 @@ public class GastraApiFactory : WebApplicationFactory<Program>
     /// <summary>O "Python" desta fábrica: os testes dizem o que ele responde e conferem o que recebeu.</summary>
     public ServicoAnaliticoFalso ServicoAnalitico { get; } = new();
 
+    /// <summary>Valores das views analíticas nesta fábrica.</summary>
+    public IndicadoresFalsos Indicadores { get; } = new();
+
     /// <summary>Id do Gerente dono do token de <see cref="TokenGerente"/>.</summary>
     public int IdGerente { get; private set; }
 
@@ -66,6 +69,10 @@ public class GastraApiFactory : WebApplicationFactory<Program>
             // Nenhum teste da API depende do serviço Python estar no ar.
             services.RemoveAll<IServicoAnalitico>();
             services.AddSingleton<IServicoAnalitico>(ServicoAnalitico);
+
+            // O banco em memória não tem as views analíticas.
+            services.RemoveAll<IRepositorioIndicadores>();
+            services.AddSingleton<IRepositorioIndicadores>(Indicadores);
         });
     }
 

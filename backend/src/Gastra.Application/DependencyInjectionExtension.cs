@@ -1,5 +1,6 @@
 using Gastra.Application.Auditoria;
 using Gastra.Application.Mapeamento;
+using Gastra.Application.UseCases.Alocacoes;
 using Gastra.Application.UseCases.Auditoria;
 using Gastra.Application.UseCases.Autenticacao;
 using Gastra.Application.UseCases.Cardapio;
@@ -21,6 +22,11 @@ public static class DependencyInjectionExtension
         AddCasosDeUso(services);
         services.AddScoped<IRegistradorAuditoria, RegistradorAuditoria>();
         services.AddScoped<IEliminarAuditoriaVencidaUseCase, EliminarAuditoriaVencidaUseCase>();
+
+        services.AddScoped<IGerarSugestaoAlocacaoUseCase, GerarSugestaoAlocacaoUseCase>();
+        services.AddScoped<IAjustarAlocacaoUseCase, AjustarAlocacaoUseCase>();
+        services.AddScoped<IConfirmarAlocacaoUseCase, ConfirmarAlocacaoUseCase>();
+        services.AddScoped<IObterAlocacaoTurnoUseCase, ObterAlocacaoTurnoUseCase>();
 
         return services;
     }

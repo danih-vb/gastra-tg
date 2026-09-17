@@ -333,3 +333,41 @@ GET {{Gastra.Api_HostAddress}}/api/mesas
 Authorization: Bearer {{token}}
 
 ###
+
+# ===================== Alocação de garçons (UC15, UC21, UC22) — token de Metre =====================
+
+# UC15 — Sugestão do turno para os garçons presentes (suba o serviço Python)
+POST {{Gastra.Api_HostAddress}}/api/alocacoes/sugestao
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "data": "2026-09-17",
+  "periodo": "Jantar",
+  "garcomIds": [2, 3, 4]
+}
+
+###
+
+# UC22 — Ajustar: garçom 3 vai para a praça 1
+PUT {{Gastra.Api_HostAddress}}/api/alocacoes/2026-09-17/Jantar/garcons/3
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "pracaId": 1
+}
+
+###
+
+# UC21 — Confirmar o turno
+POST {{Gastra.Api_HostAddress}}/api/alocacoes/2026-09-17/Jantar/confirmacao
+Authorization: Bearer {{token}}
+
+###
+
+# Quem está em qual praça
+GET {{Gastra.Api_HostAddress}}/api/alocacoes/2026-09-17/Jantar
+Authorization: Bearer {{token}}
+
+###
