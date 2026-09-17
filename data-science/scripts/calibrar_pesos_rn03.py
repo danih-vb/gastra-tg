@@ -1,6 +1,7 @@
 """Roda a calibração dos pesos da RN03 (issue #55) e grava os resultados em docs/analises/.
 
-    python scripts/calibrar_pesos_rn03.py
+    python scripts/calibrar_pesos_rn03.py            # simula tudo de novo (~20 minutos)
+    python scripts/calibrar_pesos_rn03.py --reusar   # só refaz a escolha e o gráfico a partir do CSV
 
 Demora alguns minutos: cada peso é simulado em 20 sementes de 120 turnos, e cada turno resolve a
 programação linear de verdade.
@@ -19,7 +20,12 @@ import matplotlib  # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from gastra_analitica.alocacao.calibracao import CenarioSimulado, calibrar, escolher_peso  # noqa: E402
+from gastra_analitica.alocacao.calibracao import (  # noqa: E402
+    CenarioSimulado,
+    ResultadoDaPolitica,
+    calibrar,
+    escolher_peso,
+)
 
 SAIDA = RAIZ.parent / "docs" / "analises"
 
@@ -28,17 +34,27 @@ def main() -> None:
     SAIDA.mkdir(parents=True, exist_ok=True)
     cenario = CenarioSimulado()
 
-    inicio = time.time()
-    resultados = calibrar(cenario=cenario)
-    escolhido = escolher_peso(resultados)
-    print(f"Calibração em {time.time() - inicio:.0f} s")
+    arquivo_csv = SAIDA / "calibracao_rn03.csv"
+    if "--reusar" in sys.argv and arquivo_csv.exists():
+        # Refaz só a escolha e o gráfico a partir da simulação já gravada (a simulação leva ~20 minutos).
+        with open(arquivo_csv, encoding="utf-8") as arquivo:
+            resultados = [
+                ResultadoDaPolitica(linha["politica"], float(linha["peso_desequilibrio"]) if linha["peso_desequilibrio"] else None,
+                                    float(linha["gini_medio"]), float(linha["espera_maxima_media"]))
+                for linha in csv.DictReader(arquivo)
+            ]
+    else:
+        inicio = time.time()
+        resultados = calibrar(cenario=cenario)
+        print(f"Calibração em {time.time() - inicio:.0f} s")
+        with open(arquivo_csv, "w", newline="", encoding="utf-8") as arquivo:
+            escritor = csv.writer(arquivo)
+            escritor.writerow(["politica", "peso_desequilibrio", "gini_medio", "espera_maxima_media"])
+            for r in resultados:
+                escritor.writerow([r.nome, r.peso_desequilibrio if r.peso_desequilibrio is not None else "",
+                                   f"{r.gini_medio:.4f}", f"{r.espera_maxima_media:.2f}"])
 
-    with open(SAIDA / "calibracao_rn03.csv", "w", newline="", encoding="utf-8") as arquivo:
-        escritor = csv.writer(arquivo)
-        escritor.writerow(["politica", "peso_desequilibrio", "gini_medio", "espera_maxima_media"])
-        for r in resultados:
-            escritor.writerow([r.nome, r.peso_desequilibrio if r.peso_desequilibrio is not None else "",
-                               f"{r.gini_medio:.4f}", f"{r.espera_maxima_media:.2f}"])
+    escolhido = escolher_peso(resultados)
 
     pesos = [r for r in resultados if r.peso_desequilibrio is not None]
     referencias = {r.nome: r for r in resultados if r.peso_desequilibrio is None}

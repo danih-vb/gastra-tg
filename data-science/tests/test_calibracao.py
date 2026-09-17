@@ -66,13 +66,15 @@ def test_peso_todo_na_espera_reduz_a_espera_maxima():
     assert media(so_espera, "espera_maxima") < media(so_faturamento, "espera_maxima")
 
 
-def test_escolhe_o_peso_que_equilibra_as_duas_metricas():
+def test_escolhe_o_menor_peso_com_desigualdade_proxima_da_menor():
     resultados = [
         ResultadoDaPolitica("w1 = 0.0", 0.0, gini_medio=0.050, espera_maxima_media=4),
-        ResultadoDaPolitica("w1 = 0.5", 0.5, gini_medio=0.030, espera_maxima_media=6),
-        ResultadoDaPolitica("w1 = 1.0", 1.0, gini_medio=0.010, espera_maxima_media=12),
+        ResultadoDaPolitica("w1 = 0.5", 0.5, gini_medio=0.016, espera_maxima_media=8),
+        ResultadoDaPolitica("w1 = 0.6", 0.6, gini_medio=0.007, espera_maxima_media=9),
+        ResultadoDaPolitica("w1 = 1.0", 1.0, gini_medio=0.005, espera_maxima_media=11),
         ResultadoDaPolitica("fixa (sem regra)", None, gini_medio=0.001, espera_maxima_media=1),
     ]
 
-    # Normalizados: w1=0 → (1 + 0)/2; w1=0,5 → (0,5 + 0,25)/2; w1=1 → (0 + 1)/2. A referência não concorre.
-    assert escolher_peso(resultados).peso_desequilibrio == 0.5
+    # Menor Gini entre os pesos: 0,005. Aceitáveis até 0,0075: w1 = 0,6 e 1,0. Vale o menor w1.
+    # A política de referência não concorre, mesmo com números melhores.
+    assert escolher_peso(resultados).peso_desequilibrio == 0.6

@@ -6,7 +6,10 @@ namespace Gastra.Domain.Alocacoes;
 /// </summary>
 public static class RegraDeDistribuicao
 {
-    /// <summary>Peso do equilíbrio de faturamento (w1). O da espera é o complemento (w2 = 1 − w1). Calibração: #55.</summary>
+    /// <summary>
+    /// Peso do equilíbrio de faturamento (w1). O da espera é o complemento (w2 = 1 − w1). Calibrado por simulação na #55:
+    /// menor peso com desigualdade até 50% acima da menor (docs/analises/GASTRA_Calibracao_Pesos_RN03.md).
+    /// </summary>
     public const double PesoDesequilibrio = 0.6;
 
     public static double PesoEspera => Math.Round(1 - PesoDesequilibrio, 10);
