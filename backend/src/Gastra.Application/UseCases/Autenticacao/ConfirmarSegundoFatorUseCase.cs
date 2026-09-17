@@ -1,5 +1,8 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
+using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Gastra.Exceptions;
@@ -15,7 +18,9 @@ public interface IConfirmarSegundoFatorUseCase
 public class ConfirmarSegundoFatorUseCase(
     IGeradorToken geradorToken,
     IRepositorioUsuario repositorio,
-    IValidadorTotp validadorTotp) : IConfirmarSegundoFatorUseCase
+    IValidadorTotp validadorTotp,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork) : IConfirmarSegundoFatorUseCase
 {
     public async Task<LoginResponse> Executar(SegundoFatorRequest request)
     {
@@ -24,8 +29,17 @@ public class ConfirmarSegundoFatorUseCase(
         if (!usuario.SegundoFatorConfigurado)
             throw new RegraDeNegocioException(MensagensErro.SegundoFatorNaoConfigurado);
 
+        // O código digitado nunca vai para a auditoria (RN07).
         if (!validadorTotp.Validar(usuario.SegredoTotp!, request.Codigo))
+        {
+            await auditoria.Registrar(EventoAuditoria.SegundoFatorRecusado, ResultadoAuditoria.Falha, ator: usuario, comIp: true);
+            await unitOfWork.Commit();
+
             throw new NaoAutenticadoException(MensagensErro.CodigoSegundoFatorInvalido);
+        }
+
+        await auditoria.Registrar(EventoAuditoria.SegundoFatorConfirmado, ator: usuario, comIp: true);
+        await unitOfWork.Commit();
 
         return RespostaComAcesso.Criar(usuario, geradorToken);
     }

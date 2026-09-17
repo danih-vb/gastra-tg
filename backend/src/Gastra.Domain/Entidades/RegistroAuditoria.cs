@@ -10,6 +10,18 @@ namespace Gastra.Domain.Entidades;
 /// </summary>
 public class RegistroAuditoria : EntidadeBase
 {
+    /// <summary>
+    /// Prazo de retenção (política de log, seção 7). O trigger <c>trg_registro_auditoria_impede_delete</c>
+    /// usa o mesmo prazo: se um mudar, o outro precisa mudar junto.
+    /// </summary>
+    public const int MesesDeRetencao = 6;
+
+    /// <summary>
+    /// Registros anteriores a esta data podem ser eliminados. Um dia de folga em relação ao trigger: o relógio
+    /// da API e o do MySQL podem divergir, e um único registro recusado pelo trigger desfaria a exclusão inteira.
+    /// </summary>
+    public static DateTime LimiteDeRetencao(DateTime agoraUtc) => agoraUtc.AddMonths(-MesesDeRetencao).AddDays(-1);
+
     public DateTime DataHoraUtc { get; private set; }
     public string Evento { get; private set; } = string.Empty;
     public ResultadoAuditoria Resultado { get; private set; }

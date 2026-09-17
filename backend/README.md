@@ -308,6 +308,21 @@ GASTRA_TESTES_ANALITICA=http://localhost:8000 dotnet test
 O teste chama o FastAPI de verdade pelo `ServicoAnaliticoHttp` e confere que os dois lados usam o
 mesmo formato de requisição e de resposta.
 
+## Auditoria (política de log, #120)
+
+Os casos de uso chamam `IRegistradorAuditoria.Registrar(evento, ...)`. O registro entra no **mesmo
+Commit** da operação auditada: se a operação não é gravada, a auditoria também não é.
+
+- **Quem agiu:** vem do token. No login, que ainda não tem token, o caso de uso informa a conta.
+- **IP:** só em eventos de autenticação.
+- **O que nunca vai para a auditoria:** senha, código ou segredo do autenticador, e-mail digitado sem conta
+  correspondente, nome e e-mail de funcionário, código de acesso da comanda, categoria e observação da
+  restrição alimentar. Os testes em `AuditoriaTests` conferem cada um.
+- **Criações** (conta, item, praça, mesa, comanda) gravam em dois Commits, porque o id do registro só existe
+  depois do primeiro.
+- **Eliminação por prazo:** um serviço em segundo plano roda ao subir a API e uma vez por dia. Desligue com
+  `"Auditoria": { "EliminacaoAutomatica": false }`.
+
 ## Configurações locais
 
 `appsettings.Development.json` está no `.gitignore` de propósito: é onde ficam valores da sua

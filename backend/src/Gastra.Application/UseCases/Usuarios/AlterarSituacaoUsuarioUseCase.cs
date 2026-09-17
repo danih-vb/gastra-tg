@@ -1,4 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
+using Gastra.Domain.Auditoria;
+using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Gastra.Exceptions;
@@ -14,6 +17,7 @@ public interface IAlterarSituacaoUsuarioUseCase
 public class AlterarSituacaoUsuarioUseCase(
     IRepositorioUsuario repositorio,
     IUsuarioLogado usuarioLogado,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IAlterarSituacaoUsuarioUseCase
 {
     public async Task Executar(int id, SituacaoUsuarioRequest request)
@@ -36,6 +40,8 @@ public class AlterarSituacaoUsuarioUseCase(
             usuario.Inativar();
         }
 
+        await auditoria.Registrar(request.Ativo ? EventoAuditoria.ContaReativada : EventoAuditoria.ContaInativada,
+            alvo: (nameof(Usuario), usuario.Id));
         await unitOfWork.Commit();
     }
 }

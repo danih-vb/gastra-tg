@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
@@ -16,7 +18,10 @@ public interface IAtualizarSituacaoItemUseCase
     Task Executar(int comandaId, int itemId, SituacaoItemRequest request);
 }
 
-public class AtualizarSituacaoItemUseCase(IRepositorioComanda repositorio, IUnitOfWork unitOfWork)
+public class AtualizarSituacaoItemUseCase(
+    IRepositorioComanda repositorio,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork)
     : IAtualizarSituacaoItemUseCase
 {
     public async Task Executar(int comandaId, int itemId, SituacaoItemRequest request)
@@ -34,7 +39,12 @@ public class AtualizarSituacaoItemUseCase(IRepositorioComanda repositorio, IUnit
         if (request.Situacao == ComunicacaoEnums.StatusItemPedido.Entregue)
             item.MarcarEntregue();
         else
+        {
             item.Cancelar(request.MotivoCancelamento!.Value.Adapt<MotivoCancelamento>());
+
+            await auditoria.Registrar(EventoAuditoria.ItemCancelado, alvo: (nameof(ItemDoPedido), item.Id),
+                detalhes: new { ComandaId = comanda.Id, Motivo = item.MotivoCancelamento });
+        }
 
         await unitOfWork.Commit();
     }

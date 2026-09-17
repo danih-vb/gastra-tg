@@ -1,4 +1,6 @@
+using Gastra.Application.Auditoria;
 using Gastra.Application.Mapeamento;
+using Gastra.Application.UseCases.Auditoria;
 using Gastra.Application.UseCases.Autenticacao;
 using Gastra.Application.UseCases.Cardapio;
 using Gastra.Application.UseCases.Comandas;
@@ -17,6 +19,8 @@ public static class DependencyInjectionExtension
     {
         MapeamentoConfig.Registrar();
         AddCasosDeUso(services);
+        services.AddScoped<IRegistradorAuditoria, RegistradorAuditoria>();
+        services.AddScoped<IEliminarAuditoriaVencidaUseCase, EliminarAuditoriaVencidaUseCase>();
 
         return services;
     }

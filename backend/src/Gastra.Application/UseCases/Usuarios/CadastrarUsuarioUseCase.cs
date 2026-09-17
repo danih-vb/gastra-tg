@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
@@ -18,6 +20,7 @@ public interface ICadastrarUsuarioUseCase
 public class CadastrarUsuarioUseCase(
     IRepositorioUsuario repositorio,
     ICriptografiaSenha criptografia,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : ICadastrarUsuarioUseCase
 {
     public async Task<UsuarioResponse> Executar(CadastrarUsuarioRequest request)
@@ -35,6 +38,11 @@ public class CadastrarUsuarioUseCase(
             request.Papel.Adapt<DominioEnums.PapelUsuario>());
 
         await repositorio.Adicionar(usuario);
+        await unitOfWork.Commit();
+
+        // Segundo Commit: o id da conta só existe depois de gravada. Nome e e-mail não vão (política, 4.1).
+        await auditoria.Registrar(EventoAuditoria.ContaCriada, alvo: (nameof(Usuario), usuario.Id),
+            detalhes: new { usuario.Papel });
         await unitOfWork.Commit();
 
         return usuario.Adapt<UsuarioResponse>();

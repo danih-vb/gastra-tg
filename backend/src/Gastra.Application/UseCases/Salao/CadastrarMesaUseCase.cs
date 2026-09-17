@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Exceptions;
@@ -15,6 +17,7 @@ public interface ICadastrarMesaUseCase
 public class CadastrarMesaUseCase(
     IRepositorioMesa repositorio,
     IRepositorioPraca repositorioPraca,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : ICadastrarMesaUseCase
 {
     public async Task<MesaResponse> Executar(CadastrarMesaRequest request)
@@ -30,6 +33,10 @@ public class CadastrarMesaUseCase(
         var mesa = new Mesa(request.Numero.Trim(), request.Capacidade, praca.Id);
 
         await repositorio.Adicionar(mesa);
+        await unitOfWork.Commit();
+
+        await auditoria.Registrar(EventoAuditoria.MesaCadastrada, alvo: (nameof(Mesa), mesa.Id),
+            detalhes: new { mesa.Numero, mesa.Capacidade, mesa.PracaId });
         await unitOfWork.Commit();
 
         return new MesaResponse

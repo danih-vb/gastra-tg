@@ -25,6 +25,9 @@ builder.Services
 builder.Services.AddDocumentacaoOpenApi();
 builder.Services.AddHealthChecks();
 
+if (builder.Configuration.GetValue("Auditoria:EliminacaoAutomatica", true))
+    builder.Services.AddHostedService<EliminacaoAuditoriaPorPrazo>();
+
 var app = builder.Build();
 
 // Swagger em /swagger (só em desenvolvimento).

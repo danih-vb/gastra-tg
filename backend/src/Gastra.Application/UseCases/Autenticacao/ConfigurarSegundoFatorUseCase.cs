@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
@@ -17,6 +19,7 @@ public class ConfigurarSegundoFatorUseCase(
     IGeradorToken geradorToken,
     IRepositorioUsuario repositorio,
     IValidadorTotp validadorTotp,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IConfigurarSegundoFatorUseCase
 {
     public async Task<ConfiguracaoSegundoFatorResponse> Executar(SegundoFatorRequest request)
@@ -29,6 +32,7 @@ public class ConfigurarSegundoFatorUseCase(
 
         var segredo = validadorTotp.GerarSegredo(usuario.Email);
         usuario.DefinirSegredoTotp(segredo.SegredoProtegido);
+        await auditoria.Registrar(EventoAuditoria.AutenticadorVinculado, ator: usuario, comIp: true);
         await unitOfWork.Commit();
 
         return new ConfiguracaoSegundoFatorResponse

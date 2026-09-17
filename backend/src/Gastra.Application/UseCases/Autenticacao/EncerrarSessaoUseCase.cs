@@ -1,3 +1,5 @@
+using Gastra.Application.Auditoria;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 
@@ -9,7 +11,10 @@ public interface IEncerrarSessaoUseCase
     Task Executar();
 }
 
-public class EncerrarSessaoUseCase(IUsuarioLogado usuarioLogado, IUnitOfWork unitOfWork) : IEncerrarSessaoUseCase
+public class EncerrarSessaoUseCase(
+    IUsuarioLogado usuarioLogado,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork) : IEncerrarSessaoUseCase
 {
     public async Task Executar()
     {
@@ -17,6 +22,7 @@ public class EncerrarSessaoUseCase(IUsuarioLogado usuarioLogado, IUnitOfWork uni
 
         // Troca a chave de sessão: o token usado nesta requisição (e qualquer outro) deixa de valer.
         usuario.EncerrarSessoes();
+        await auditoria.Registrar(EventoAuditoria.Logoff, ator: usuario, comIp: true);
         await unitOfWork.Commit();
     }
 }
