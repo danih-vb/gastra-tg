@@ -41,6 +41,10 @@ public static class EventoAuditoria
     public const string AlocacaoAjustada = "ALOCACAO_AJUSTADA";
     public const string AlocacaoConfirmada = "ALOCACAO_CONFIRMADA";
 
+    // 4.5 Análises
+    public const string RelatorioBiConsultado = "RELATORIO_BI_CONSULTADO";
+    public const string IndiceDesempenhoConsultado = "INDICE_DESEMPENHO_CONSULTADO";
+
     // Seção 7: retenção
     public const string AuditoriaEliminadaPorPrazo = "AUDITORIA_ELIMINADA_POR_PRAZO";
 }

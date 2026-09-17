@@ -194,7 +194,8 @@ Justificativas:
 
 > **Situação:** todos os eventos das seções 4.1 a 4.3 e os do salão estão implementados (#120), com testes
 > que conferem o que é registrado e o que nunca pode aparecer (`AuditoriaTests`). Da seção 4.5, os de
-> alocação entraram com a #122; os de BI entram com a #123. Os códigos dos eventos ficam em
+> alocação entraram com a #122 e os de BI com a #123: toda consulta de relatório registra qual relatório e o período, e a
+> consulta do índice registra de quem foi o índice consultado ("todos", para o Gerente, ou o próprio id, para o Garçom). Os códigos dos eventos ficam em
 > `Gastra.Domain/Auditoria/EventoAuditoria.cs`.
 
 1. **A auditoria é gravada pela aplicação, não por trigger do banco.** Um trigger não sabe *qual

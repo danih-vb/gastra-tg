@@ -64,4 +64,6 @@
   <data name="PracaSemVaga" xml:space="preserve"><value>A praça escolhida já está com todas as vagas ocupadas neste turno.</value></data>
   <data name="PeriodoInvalido" xml:space="preserve"><value>Período inválido: use Almoco ou Jantar.</value></data>
   <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Informe a data do turno.</value></data>
+  <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>A data inicial do relatório não pode ser depois da final.</value></data>
+  <data name="PeriodoRelatorioLongoDemais" xml:space="preserve"><value>O período do relatório pode ter no máximo 366 dias.</value></data>
 </root>
