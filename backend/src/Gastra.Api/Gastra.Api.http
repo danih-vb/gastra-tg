@@ -371,3 +371,32 @@ GET {{Gastra.Api_HostAddress}}/api/alocacoes/2026-09-17/Jantar
 Authorization: Bearer {{token}}
 
 ###
+
+# ===================== BI (UC16) e índice de desempenho (UC17) — token de Gerente =====================
+
+# Relatório por garçom (sem filtro: últimos 30 dias)
+GET {{Gastra.Api_HostAddress}}/api/indicadores/garcons?inicio=2026-09-01&fim=2026-09-30
+Authorization: Bearer {{token}}
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/indicadores/pracas
+Authorization: Bearer {{token}}
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/indicadores/cardapio
+Authorization: Bearer {{token}}
+
+###
+
+GET {{Gastra.Api_HostAddress}}/api/indicadores/horarios
+Authorization: Bearer {{token}}
+
+###
+
+# Ranking: o Gerente vê todos; com token de Garçom, só a própria posição
+GET {{Gastra.Api_HostAddress}}/api/indicadores/desempenho
+Authorization: Bearer {{token}}
+
+###

@@ -334,6 +334,32 @@ Endpoints do **Metre**, exceto a consulta:
 - **Auditoria (política de log, 4.5):** sugestão gerada (com os pesos), ajuste (praça sugerida → escolhida) e
   confirmação.
 
+## Relatórios de BI e índice de desempenho (UC16, UC17)
+
+Filtro por `inicio` e `fim` na query string (datas inclusivas, `aaaa-mm-dd`). Sem filtro, o relatório usa os
+últimos 30 dias no horário de Brasília. O período pode ter no máximo 366 dias.
+
+| Relatório | Endpoint | Quem |
+|---|---|---|
+| Por garçom: faturamento total e por turno, comandas, mesas atendidas, ticket médio, tempo médio de atendimento | `GET /api/indicadores/garcons` | Gerente |
+| Por praça: faturamento, ticket médio, faturamento por turno e média histórica | `GET /api/indicadores/pracas` | Gerente |
+| Por item e por categoria do cardápio, com participação no faturamento | `GET /api/indicadores/cardapio` | Gerente |
+| Por praça, por hora do dia e por dia da semana | `GET /api/indicadores/horarios` | Gerente |
+| Ranking pelo índice de desempenho | `GET /api/indicadores/desempenho` | Gerente (todos) · Garçom (só a própria posição) |
+
+- **Origem dos dados:** views analíticas, por `SqlQuery` em `RepositorioIndicadores`. Nada é gravado; o banco
+  calcula a cada consulta.
+- **Índice de desempenho (RF11, `IndiceDeDesempenho` no domínio):**
+  - combina **faturamento por turno** e **mesas atendidas por turno**, cada um dividido pelo maior valor do
+    período (0 a 100), com peso 50/50;
+  - é **por turno**, e não total: senão, quem trabalha mais turnos ganharia só por isso (a mesma lição da
+    calibração da RN03);
+  - empate divide a posição (1, 1, 3).
+- **Privacidade:** o índice é avaliação de desempenho, dado pessoal do funcionário. O Garçom vê só a própria
+  posição e o total de garçons no ranking, sem nomes nem números dos colegas.
+- **Auditoria (política de log, 4.5):** registra cada consulta de relatório (qual relatório e o período) e cada
+  consulta do índice (de quem).
+
 ## Auditoria (política de log, #120)
 
 Os casos de uso chamam `IRegistradorAuditoria.Registrar(evento, ...)`. O registro entra no **mesmo

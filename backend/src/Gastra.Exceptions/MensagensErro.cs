@@ -73,6 +73,8 @@ public static class MensagensErro
     public static string PracaSemVaga => Obter(nameof(PracaSemVaga));
     public static string PeriodoInvalido => Obter(nameof(PeriodoInvalido));
     public static string DataAlocacaoObrigatoria => Obter(nameof(DataAlocacaoObrigatoria));
+    public static string PeriodoRelatorioInvalido => Obter(nameof(PeriodoRelatorioInvalido));
+    public static string PeriodoRelatorioLongoDemais => Obter(nameof(PeriodoRelatorioLongoDemais));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;

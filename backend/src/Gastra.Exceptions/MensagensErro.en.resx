@@ -64,4 +64,6 @@
   <data name="PracaSemVaga" xml:space="preserve"><value>The chosen section is already full in this shift.</value></data>
   <data name="PeriodoInvalido" xml:space="preserve"><value>Invalid period: use Almoco or Jantar.</value></data>
   <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Provide the shift date.</value></data>
+  <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>The report start date cannot be after the end date.</value></data>
+  <data name="PeriodoRelatorioLongoDemais" xml:space="preserve"><value>The report period can have at most 366 days.</value></data>
 </root>

@@ -22,7 +22,7 @@ O GASTRA tem três componentes de software e um banco de dados:
 | Componente | Tecnologia | Responsabilidade | Situação |
 |---|---|---|---|
 | **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ estrutura inicial · 🔜 telas |
-| **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários, comandas, praças e mesas, sugestão de pratos · 🔜 alocação, BI, promoções |
+| **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários, comandas, praças e mesas, sugestão de pratos, auditoria, alocação de garçons, relatórios de BI e índice de desempenho · 🔜 promoções |
 | **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ recomendação e alocação; sugestão de pratos já chamada pelo backend · 🔜 leitura das views (D10) e chamada da alocação |
 | **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · ✅ views de BI e triggers de auditoria · 🔜 promoções |
 

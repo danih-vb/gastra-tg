@@ -1,8 +1,9 @@
+using Gastra.Domain.Indicadores;
 using Gastra.Infrastructure.DataAccess.Repositorios;
 
 namespace Gastra.Api.Tests.BancoDeDados;
 
-/// <summary>As consultas às views usadas pela alocação (RN03), contra o MySQL real.</summary>
+/// <summary>As consultas às views usadas pela alocação (RN03) e pelos relatórios de BI, contra o MySQL real.</summary>
 public class RepositorioIndicadoresTests : IAsyncLifetime
 {
     private readonly BancoMySqlDeTeste _banco = new();
@@ -58,5 +59,55 @@ public class RepositorioIndicadoresTests : IAsyncLifetime
         Assert.False(ate20.ContainsKey(2));
         Assert.Equal(200m, tudo[1]); // média de 100 e 300
         Assert.Equal(50m, tudo[2]);
+    }
+
+    private static readonly DateOnly Inicio = new(2026, 9, 1);
+    private static readonly DateOnly Fim = new(2026, 9, 21);
+
+    [FactComMySql]
+    public async Task Indicadores_por_garcom_contam_turnos_mesas_e_minutos_de_atendimento()
+    {
+        await using var contexto = _banco.CriarContexto();
+
+        var linhas = (await new RepositorioIndicadores(contexto).ObterIndicadoresPorGarcom(Inicio, Fim)).OrderBy(l => l.GarcomId).ToList();
+
+        // Garçom 1: comandas de 60 min em 10/09 e 20/09. Garçom 2: uma de 30 min em 20/09.
+        Assert.Equal(new IndicadorGarcom(1, 400m, Comandas: 2, Turnos: 2, MesasAtendidas: 2, SomaMinutosAtendimento: 120), linhas[0]);
+        Assert.Equal(new IndicadorGarcom(2, 50m, Comandas: 1, Turnos: 1, MesasAtendidas: 1, SomaMinutosAtendimento: 30), linhas[1]);
+    }
+
+    [FactComMySql]
+    public async Task Indicadores_por_praca_somam_comandas_e_turnos_com_movimento()
+    {
+        await using var contexto = _banco.CriarContexto();
+
+        var linha = Assert.Single(await new RepositorioIndicadores(contexto).ObterIndicadoresPorPraca(Inicio, Fim));
+
+        Assert.Equal(new IndicadorPraca(1, 450m, Comandas: 3, Turnos: 2), linha);
+    }
+
+    [FactComMySql]
+    public async Task Indicadores_por_item_trazem_categoria_quantidade_e_faturamento()
+    {
+        await using var contexto = _banco.CriarContexto();
+
+        var linha = Assert.Single(await new RepositorioIndicadores(contexto).ObterIndicadoresPorItem(Inicio, Fim));
+
+        Assert.Equal(new IndicadorItemCardapio(1, "PratoPrincipal", 5m, 450m), linha);
+    }
+
+    [FactComMySql]
+    public async Task Faturamento_por_hora_e_por_dia_da_semana_usam_o_horario_de_brasilia()
+    {
+        await using var contexto = _banco.CriarContexto();
+        var repositorio = new RepositorioIndicadores(contexto);
+
+        var porHora = Assert.Single(await repositorio.ObterFaturamentoPorPracaEHora(Inicio, Fim));
+        var porDia = (await repositorio.ObterFaturamentoPorPracaEDiaDaSemana(Inicio, Fim)).OrderBy(l => l.Fatia).ToList();
+
+        // 15:00 e 15:30 em UTC são 12h em Brasília.
+        Assert.Equal(new IndicadorPracaNoTempo(1, 12, 450m, 3), porHora);
+        // 20/09/2026 é domingo (1) e 10/09/2026 é quinta-feira (5).
+        Assert.Equal([new IndicadorPracaNoTempo(1, 1, 350m, 2), new IndicadorPracaNoTempo(1, 5, 100m, 1)], porDia);
     }
 }

@@ -5,6 +5,7 @@ using Gastra.Application.UseCases.Auditoria;
 using Gastra.Application.UseCases.Autenticacao;
 using Gastra.Application.UseCases.Cardapio;
 using Gastra.Application.UseCases.Comandas;
+using Gastra.Application.UseCases.Indicadores;
 using Gastra.Application.UseCases.Salao;
 using Gastra.Application.UseCases.Usuarios;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,12 @@ public static class DependencyInjectionExtension
         services.AddScoped<IAjustarAlocacaoUseCase, AjustarAlocacaoUseCase>();
         services.AddScoped<IConfirmarAlocacaoUseCase, ConfirmarAlocacaoUseCase>();
         services.AddScoped<IObterAlocacaoTurnoUseCase, ObterAlocacaoTurnoUseCase>();
+
+        services.AddScoped<IRelatorioGarconsUseCase, RelatorioGarconsUseCase>();
+        services.AddScoped<IRelatorioPracasUseCase, RelatorioPracasUseCase>();
+        services.AddScoped<IRelatorioCardapioUseCase, RelatorioCardapioUseCase>();
+        services.AddScoped<IRelatorioHorariosUseCase, RelatorioHorariosUseCase>();
+        services.AddScoped<IRankingDesempenhoUseCase, RankingDesempenhoUseCase>();
 
         return services;
     }
