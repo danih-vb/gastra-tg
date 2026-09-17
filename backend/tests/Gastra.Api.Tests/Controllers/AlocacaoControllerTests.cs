@@ -249,6 +249,108 @@ public class AlocacaoControllerTests(GastraApiFactory factory) : IClassFixture<G
         Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
     }
 
+    // --- UC22: troca entre garçons (#140) ---
+
+    [Fact]
+    public async Task Ajuste_ComTroca_ComAsPracasCheias_TrocaOsDoisLados_ERegistraAsDuasMudancas()
+    {
+        // Turno com um garçom para cada vaga: sem troca, nenhum ajuste seria possível.
+        var primeira = await CriarPraca(vagas: 1);
+        var segunda = await CriarPraca(vagas: 1);
+        var a = await CriarGarcom();
+        var b = await CriarGarcom();
+        var dia = NovoDia();
+        factory.ServicoAnalitico.ResponderAlocacao = _ => [new DesignacaoSugerida(a.Id, primeira.Id), new DesignacaoSugerida(b.Id, segunda.Id)];
+        await Ler(await PedirSugestao(dia, a.Id, b.Id));
+
+        var turno = await Ler(await _metre.PutAsJsonAsync(
+            $"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{a.Id}", new { pracaId = segunda.Id, trocarComGarcomId = b.Id }, Json));
+
+        Assert.Equal(segunda.Id, turno.Designacoes.Single(d => d.GarcomId == a.Id).PracaId);
+        Assert.Equal(primeira.Id, turno.Designacoes.Single(d => d.GarcomId == b.Id).PracaId);
+
+        var gravado = await _metre.GetFromJsonAsync<AlocacaoTurnoResponse>($"{Rota}/{dia:yyyy-MM-dd}/Jantar", Json);
+        Assert.Equal(primeira.Id, gravado!.Designacoes.Single(d => d.GarcomId == b.Id).PracaId);
+
+        var ajustes = (await factory.Auditoria(EventoAuditoria.AlocacaoAjustada)).TakeLast(2).ToList();
+        Assert.Contains(ajustes, x => x.Detalhes.Contains($"\"garcom_id\":{a.Id}")
+                                      && x.Detalhes.Contains($"\"praca_escolhida\":{segunda.Id}")
+                                      && x.Detalhes.Contains($"\"troca_com_garcom_id\":{b.Id}"));
+        Assert.Contains(ajustes, x => x.Detalhes.Contains($"\"garcom_id\":{b.Id}")
+                                      && x.Detalhes.Contains($"\"praca_escolhida\":{primeira.Id}")
+                                      && x.Detalhes.Contains($"\"troca_com_garcom_id\":{a.Id}"));
+    }
+
+    [Fact]
+    public async Task Ajuste_ComTroca_DeQuemAindaNaoTemPraca_DeixaOOutroSemPraca()
+    {
+        var praca = await CriarPraca(vagas: 1);
+        var comPraca = await CriarGarcom();
+        var semPraca = await CriarGarcom();
+        var dia = NovoDia();
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{comPraca.Id}", new { pracaId = praca.Id }, Json));
+
+        var turno = await Ler(await _metre.PutAsJsonAsync(
+            $"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{semPraca.Id}", new { pracaId = praca.Id, trocarComGarcomId = comPraca.Id }, Json));
+
+        Assert.Equal([semPraca.Id], turno.Designacoes.Select(d => d.GarcomId));
+        var gravado = await _metre.GetFromJsonAsync<AlocacaoTurnoResponse>($"{Rota}/{dia:yyyy-MM-dd}/Jantar", Json);
+        Assert.Equal([semPraca.Id], gravado!.Designacoes.Select(d => d.GarcomId));
+    }
+
+    [Fact]
+    public async Task Ajuste_ComTroca_ComGarcomDeOutraPraca_Retorna422_ENaoMudaNada()
+    {
+        var destino = await CriarPraca(vagas: 1);
+        var outra = await CriarPraca(vagas: 1);
+        var a = await CriarGarcom();
+        var b = await CriarGarcom();
+        var dia = NovoDia();
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{a.Id}", new { pracaId = outra.Id }, Json));
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{b.Id}", new { pracaId = destino.Id }, Json));
+
+        // b está na praça de destino; a troca pede o próprio a, que está na outra praça.
+        var resposta = await _metre.PutAsJsonAsync(
+            $"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{b.Id}", new { pracaId = outra.Id, trocarComGarcomId = b.Id }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+        var gravado = await _metre.GetFromJsonAsync<AlocacaoTurnoResponse>($"{Rota}/{dia:yyyy-MM-dd}/Jantar", Json);
+        Assert.Equal(destino.Id, gravado!.Designacoes.Single(d => d.GarcomId == b.Id).PracaId);
+    }
+
+    [Fact]
+    public async Task Ajuste_ComTroca_ComQuemNaoEstaNaPracaDeDestino_Retorna422()
+    {
+        var destino = await CriarPraca(vagas: 1);
+        var outra = await CriarPraca(vagas: 2);
+        var a = await CriarGarcom();
+        var b = await CriarGarcom();
+        var dia = NovoDia();
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{a.Id}", new { pracaId = outra.Id }, Json));
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{b.Id}", new { pracaId = outra.Id }, Json));
+
+        var resposta = await _metre.PutAsJsonAsync(
+            $"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{a.Id}", new { pracaId = destino.Id, trocarComGarcomId = b.Id }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task Ajuste_ComTroca_NaMesmaPraca_Retorna422()
+    {
+        var praca = await CriarPraca(vagas: 2);
+        var a = await CriarGarcom();
+        var b = await CriarGarcom();
+        var dia = NovoDia();
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{a.Id}", new { pracaId = praca.Id }, Json));
+        await Ler(await _metre.PutAsJsonAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{b.Id}", new { pracaId = praca.Id }, Json));
+
+        var resposta = await _metre.PutAsJsonAsync(
+            $"{Rota}/{dia:yyyy-MM-dd}/Jantar/garcons/{a.Id}", new { pracaId = praca.Id, trocarComGarcomId = b.Id }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
     // --- UC21: confirmação ---
 
     [Fact]

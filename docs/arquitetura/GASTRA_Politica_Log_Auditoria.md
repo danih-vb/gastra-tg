@@ -122,7 +122,7 @@ correlacionar tentativas, registrar apenas os 4 últimos caracteres.
 |---|---|---|---|
 | Sugestão de alocação gerada | UC15 | ator (metre), data, período, pesos `w1`/`w2` usados | — |
 | Alocação confirmada | UC21 | ator, data, período | — |
-| Alocação ajustada manualmente | UC22 | ator, garçom, praça sugerida → praça escolhida | — |
+| Alocação ajustada manualmente | UC22 | ator, garçom, praça sugerida → praça escolhida e, na troca, o garçom trocado (uma linha por garçom movido) | — |
 | Relatório de BI consultado | UC16 | ator, relatório, filtros de período | — |
 | Índice de desempenho consultado | UC17 | ator, garçom consultado | — |
 
@@ -162,7 +162,7 @@ Justificativas:
 | `id_usuario` | `12` | ator; nulo apenas em falha de login sem conta |
 | `papel` | `Metre` | papel no momento da ação |
 | `entidade` / `id_entidade` | `Alocacao` / `87` | alvo |
-| `detalhes` | `{"praca_sugerida": 2, "praca_escolhida": 4}` | JSON **somente com os campos permitidos na seção 4** |
+| `detalhes` | `{"praca_sugerida": 2, "praca_escolhida": 4, "troca_com_garcom_id": 9}` | JSON **somente com os campos permitidos na seção 4** |
 | `ip` | `192.168.0.15` | **somente em eventos de autenticação** (4.1) |
 | `id_correlacao` | `0HN6...` | liga o evento ao log técnico da mesma requisição |
 

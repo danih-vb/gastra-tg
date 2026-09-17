@@ -1,4 +1,4 @@
-using Gastra.Application.UseCases.Alocacoes;
+﻿using Gastra.Application.UseCases.Alocacoes;
 using Gastra.Communication.Enums;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
@@ -29,7 +29,10 @@ public class AlocacaoController : ControllerBase
         return Ok(await useCase.Executar(request));
     }
 
-    /// <summary>UC22 — Colocar um garçom numa praça: ajuste da sugestão ou alocação manual.</summary>
+    /// <summary>
+    /// UC22 — Colocar um garçom numa praça: ajuste da sugestão ou alocação manual. Com a praça cheia, informe
+    /// <c>trocarComGarcomId</c> para trocar os dois de lugar (#140).
+    /// </summary>
     [Authorize(Roles = Metre)]
     [HttpPut("{data}/{periodo}/garcons/{garcomId:int}")]
     [ProducesResponseType(typeof(AlocacaoTurnoResponse), StatusCodes.Status200OK)]

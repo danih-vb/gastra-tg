@@ -38,12 +38,20 @@ public class AjustarAlocacaoUseCase(
         var praca = await repositorioPraca.ObterPorId(request.PracaId)
                     ?? throw new NaoEncontradoException(MensagensErro.PracaNaoEncontrada);
 
-        var ocupadas = turno.Count(a => a.PracaId == praca.Id && a.GarcomId != garcomId);
-        if (ocupadas >= praca.QuantidadeGarcons)
-            throw new RegraDeNegocioException(MensagensErro.PracaSemVaga);
-
         var alocacao = turno.FirstOrDefault(a => a.GarcomId == garcomId);
-        int? pracaSugerida = alocacao?.PracaId;
+        int? pracaDeOrigem = alocacao?.PracaId;
+
+        // UC22 com troca (#140): no turno em que há um garçom para cada vaga, todas as praças ficam cheias, e mover
+        // um garçom sozinho seria sempre recusado. Na troca, a ocupação das praças não muda, por isso não há
+        // verificação de vaga.
+        var trocado = request.TrocarComGarcomId is null ? null : Trocar(turno, garcomId, praca.Id, pracaDeOrigem, request.TrocarComGarcomId.Value);
+
+        if (trocado is null)
+        {
+            var ocupadas = turno.Count(a => a.PracaId == praca.Id && a.GarcomId != garcomId);
+            if (ocupadas >= praca.QuantidadeGarcons)
+                throw new RegraDeNegocioException(MensagensErro.PracaSemVaga);
+        }
 
         if (alocacao is null)
         {
@@ -62,11 +70,55 @@ public class AjustarAlocacaoUseCase(
             Data = data,
             Periodo = periodo,
             GarcomId = garcomId,
-            PracaSugerida = pracaSugerida,
+            PracaSugerida = pracaDeOrigem,
             PracaEscolhida = praca.Id,
+            TrocaComGarcomId = trocado?.GarcomId,
         });
+
+        // A troca move duas pessoas: as duas mudanças ficam registradas, no mesmo commit.
+        if (trocado is not null)
+        {
+            await auditoria.Registrar(EventoAuditoria.AlocacaoAjustada, detalhes: new
+            {
+                Data = data,
+                Periodo = periodo,
+                GarcomId = trocado.GarcomId,
+                PracaSugerida = praca.Id,
+                PracaEscolhida = pracaDeOrigem,
+                TrocaComGarcomId = garcomId,
+            });
+        }
+
         await unitOfWork.Commit();
 
         return await LeitorDoTurno.Montar(data, periodo, turno, repositorioUsuario, repositorioPraca);
+    }
+
+    /// <summary>
+    /// Põe o outro garçom no lugar deixado por este: a praça de origem dele ou, quando ele ainda não tinha praça,
+    /// nenhuma. Devolve a alocação do outro garçom, já ajustada.
+    /// </summary>
+    private Alocacao Trocar(List<Alocacao> turno, int garcomId, int pracaDeDestino, int? pracaDeOrigem, int outroGarcomId)
+    {
+        if (outroGarcomId == garcomId)
+            throw new RegraDeNegocioException(MensagensErro.TrocaComOProprioGarcom);
+
+        if (pracaDeOrigem == pracaDeDestino)
+            throw new RegraDeNegocioException(MensagensErro.TrocaNaMesmaPraca);
+
+        var outro = turno.FirstOrDefault(a => a.GarcomId == outroGarcomId && a.PracaId == pracaDeDestino)
+                    ?? throw new RegraDeNegocioException(MensagensErro.GarcomDaTrocaForaDaPraca);
+
+        if (pracaDeOrigem is { } origem)
+        {
+            outro.Ajustar(origem);
+        }
+        else
+        {
+            repositorio.Remover([outro]);
+            turno.Remove(outro);
+        }
+
+        return outro;
     }
 }
