@@ -36,6 +36,11 @@ public static class EventoAuditoria
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";
     public const string ComandaFechada = "COMANDA_FECHADA";
 
+    // 4.5 Alocação de garçons
+    public const string SugestaoAlocacaoGerada = "SUGESTAO_ALOCACAO_GERADA";
+    public const string AlocacaoAjustada = "ALOCACAO_AJUSTADA";
+    public const string AlocacaoConfirmada = "ALOCACAO_CONFIRMADA";
+
     // Seção 7: retenção
     public const string AuditoriaEliminadaPorPrazo = "AUDITORIA_ELIMINADA_POR_PRAZO";
 }

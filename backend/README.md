@@ -308,6 +308,32 @@ GASTRA_TESTES_ANALITICA=http://localhost:8000 dotnet test
 O teste chama o FastAPI de verdade pelo `ServicoAnaliticoHttp` e confere que os dois lados usam o
 mesmo formato de requisição e de resposta.
 
+## Alocação de garçons (UC15, UC21, UC22)
+
+Endpoints do **Metre**, exceto a consulta:
+
+| Ação | Endpoint |
+|---|---|
+| UC15 — Gerar a sugestão do turno | `POST /api/alocacoes/sugestao` com `data`, `periodo` (`Almoco` ou `Jantar`) e `garcomIds` |
+| UC22 — Pôr um garçom numa praça (ajuste ou alocação manual) | `PUT /api/alocacoes/{data}/{periodo}/garcons/{garcomId}` com `pracaId` |
+| UC21 — Confirmar o turno | `POST /api/alocacoes/{data}/{periodo}/confirmacao` |
+| Quem está em qual praça *(qualquer usuário logado)* | `GET /api/alocacoes/{data}/{periodo}` |
+
+- **Fatores da RN03 (`RegraDeDistribuicao`, no domínio):**
+  - **faturamento acumulado do garçom:** soma dos 30 dias anteriores ao turno (`vw_desempenho_garcom_turno`);
+  - **potencial da praça:** faturamento médio por turno (`vw_faturamento_medio_praca`);
+  - **praça de alto potencial:** a que fatura acima da média das praças que já tiveram movimento;
+  - **espera:** quantos turnos confirmados o garçom trabalhou desde a última vez numa praça de alto potencial.
+- **Pesos:** w1 = 0,6 (desequilíbrio) e w2 = 0,4 (espera), até a calibração da #55.
+- **Quem calcula:** o Python (`POST /alocacao/sugestao`). O backend confere a resposta antes de gravar:
+  todos os garçons, praças existentes e vagas respeitadas. Resposta incoerente é tratada como serviço fora do ar.
+- **Python fora do ar (D3):** a sugestão responde `200` com `servicoDisponivel = false` e não grava nada. O Metre
+  aloca garçom por garçom pelo `PUT`.
+- **Sugestão gerada de novo:** substitui a anterior, desde que o turno não tenha sido confirmado.
+- **Depois de confirmado:** nenhum ajuste nem sugestão nova (`422`). O turno confirmado entra no histórico da RN03.
+- **Auditoria (política de log, 4.5):** sugestão gerada (com os pesos), ajuste (praça sugerida → escolhida) e
+  confirmação.
+
 ## Auditoria (política de log, #120)
 
 Os casos de uso chamam `IRegistradorAuditoria.Registrar(evento, ...)`. O registro entra no **mesmo
