@@ -320,11 +320,13 @@ Endpoints do **Metre**, exceto a consulta:
 | Quem está em qual praça *(qualquer usuário logado)* | `GET /api/alocacoes/{data}/{periodo}` |
 
 - **Fatores da RN03 (`RegraDeDistribuicao`, no domínio):**
-  - **faturamento acumulado do garçom:** soma dos 30 dias anteriores ao turno (`vw_desempenho_garcom_turno`);
+  - **faturamento do garçom:** média por turno trabalhado nos 30 dias anteriores ao turno (`vw_desempenho_garcom_turno`).
+    É média, e não soma: com a soma, quem faltou mais parecia estar para trás e ganhava praça boa por isso (#55);
   - **potencial da praça:** faturamento médio por turno (`vw_faturamento_medio_praca`);
   - **praça de alto potencial:** a que fatura acima da média das praças que já tiveram movimento;
   - **espera:** quantos turnos confirmados o garçom trabalhou desde a última vez numa praça de alto potencial.
-- **Pesos:** w1 = 0,6 (desequilíbrio) e w2 = 0,4 (espera), até a calibração da #55.
+- **Pesos:** w1 = 0,6 (desequilíbrio) e w2 = 0,4 (espera), calibrados por simulação na #55
+  (`docs/analises/GASTRA_Calibracao_Pesos_RN03.md`).
 - **Quem calcula:** o Python (`POST /alocacao/sugestao`). O backend confere a resposta antes de gravar:
   todos os garçons, praças existentes e vagas respeitadas. Resposta incoerente é tratada como serviço fora do ar.
 - **Python fora do ar (D3):** a sugestão responde `200` com `servicoDisponivel = false` e não grava nada. O Metre

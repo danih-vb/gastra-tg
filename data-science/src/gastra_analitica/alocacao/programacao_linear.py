@@ -31,6 +31,7 @@ from dataclasses import dataclass
 import cbcbox
 import pulp
 
+# Calibrados por simulação na issue #55 (docs/analises/GASTRA_Calibracao_Pesos_RN03.md).
 PESO_DESEQUILIBRIO_PADRAO = 0.6
 PESO_ESPERA_PADRAO = 0.4
 

@@ -219,24 +219,25 @@ def calibrar(
     return resultados
 
 
-def escolher_peso(resultados: Sequence[ResultadoDaPolitica]) -> ResultadoDaPolitica:
+# Até quanto acima do menor Gini um peso ainda é considerado "tão justo quanto o melhor".
+TOLERANCIA_DE_GINI = 0.5
+
+
+def escolher_peso(resultados: Sequence[ResultadoDaPolitica], tolerancia: float = TOLERANCIA_DE_GINI) -> ResultadoDaPolitica:
     """
-    Critério: as duas métricas têm o mesmo peso. Cada uma é normalizada entre o melhor e o pior valor dos
-    pesos testados, e escolhe-se o peso com a menor média das duas. Em empate, o mais próximo de 0,5.
+    Critério de escolha:
+
+    1. A **desigualdade** (Gini) é a métrica principal: é a dor relatada na entrevista e no questionário.
+    2. A **espera** é a secundária: é a recorrência pedida pelo orientador.
+    3. Entre os pesos cujo Gini fica até `tolerancia` (50%) acima do menor Gini obtido, escolhe-se o
+       **menor w1**, isto é, o que dá mais peso à espera. A partir dele, aumentar w1 quase não reduz a
+       desigualdade e só faz a espera crescer.
+
+    Um critério de média das duas métricas normalizadas foi descartado: a normalização entre o melhor e o
+    pior valor é dominada pelo extremo w1 = 0, e o peso escolhido perdia para o rodízio simples justamente
+    em desigualdade (ver GASTRA_Calibracao_Pesos_RN03.md).
     """
     candidatos = [r for r in resultados if r.peso_desequilibrio is not None]
-
-    def normalizar(valor: float, valores: list[float]) -> float:
-        menor, maior = min(valores), max(valores)
-        return 0.0 if maior == menor else (valor - menor) / (maior - menor)
-
-    ginis = [r.gini_medio for r in candidatos]
-    esperas = [r.espera_maxima_media for r in candidatos]
-
-    return min(
-        candidatos,
-        key=lambda r: (
-            round((normalizar(r.gini_medio, ginis) + normalizar(r.espera_maxima_media, esperas)) / 2, 6),
-            abs(r.peso_desequilibrio - 0.5),
-        ),
-    )
+    menor_gini = min(r.gini_medio for r in candidatos)
+    aceitaveis = [r for r in candidatos if r.gini_medio <= menor_gini * (1 + tolerancia)]
+    return min(aceitaveis, key=lambda r: r.peso_desequilibrio)
