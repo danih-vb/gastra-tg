@@ -15,6 +15,14 @@ public class AlocacaoController : ControllerBase
 {
     // UC15, UC21 e UC22 são do Metre; a consulta do turno é de todo o salão.
     private const string Metre = nameof(PapelUsuario.Metre);
+    private const string MetreOuGerente = nameof(PapelUsuario.Metre) + "," + nameof(PapelUsuario.Gerente);
+
+    /// <summary>UC15 — Garçons ativos que o Metre pode marcar como presentes no turno.</summary>
+    [Authorize(Roles = MetreOuGerente)]
+    [HttpGet("garcons")]
+    [ProducesResponseType(typeof(List<GarcomDoTurnoResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Garcons([FromServices] IListarGarconsDoTurnoUseCase useCase) =>
+        Ok(await useCase.Executar());
 
     /// <summary>UC15 — Gerar a sugestão do turno a partir dos garçons presentes.</summary>
     [Authorize(Roles = Metre)]
