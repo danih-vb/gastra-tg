@@ -63,6 +63,31 @@ public class ServicoAnaliticoHttpTests
     }
 
     [Fact]
+    public async Task Alocacao_EnviaGarconsPracasEPesosEmSnakeCase_ELeAsDesignacoes()
+    {
+        var (servico, handler) = Criar((_, _) => Json("""
+            {"designacoes": [{"garcom_id": 5, "praca_id": 2, "custo": 0.1}, {"garcom_id": 6, "praca_id": 1, "custo": 0.3}],
+             "custo_total": 0.4, "peso_desequilibrio": 0.6, "peso_espera": 0.4}
+            """));
+
+        var designacoes = await servico.SugerirAlocacao(
+            [new GarcomParaAlocacao(5, 9000.50m, 3), new GarcomParaAlocacao(6, 1200m, 0)],
+            [new PracaParaAlocacao(1, 2, 1800m), new PracaParaAlocacao(2, 1, 600m)],
+            0.6, 0.4);
+
+        Assert.Equal([new DesignacaoSugerida(5, 2), new DesignacaoSugerida(6, 1)], designacoes);
+        Assert.Equal("http://analitica.test/alocacao/sugestao", handler.UrlRecebida!.ToString());
+        using var corpo = JsonDocument.Parse(handler.CorpoRecebido!);
+        var garcom = corpo.RootElement.GetProperty("garcons")[0];
+        Assert.Equal(5, garcom.GetProperty("id").GetInt32());
+        Assert.Equal(9000.50m, garcom.GetProperty("faturamento_por_turno").GetDecimal());
+        Assert.Equal(3, garcom.GetProperty("turnos_desde_praca_de_alto_potencial").GetInt32());
+        var praca = corpo.RootElement.GetProperty("pracas")[1];
+        Assert.Equal((2, 1, 600m), (praca.GetProperty("id").GetInt32(), praca.GetProperty("vagas").GetInt32(), praca.GetProperty("faturamento_medio_historico").GetDecimal()));
+        Assert.Equal(0.6, corpo.RootElement.GetProperty("peso_desequilibrio").GetDouble());
+    }
+
+    [Fact]
     public async Task StatusDeErro_ViraServicoIndisponivel()
     {
         var (servico, _) = Criar((_, _) => Json("""{"detail": "falhou"}""", HttpStatusCode.InternalServerError));

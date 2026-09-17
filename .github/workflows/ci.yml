@@ -1,0 +1,162 @@
+# Integração contínua do GASTRA (issue #134): cada PR e cada push na dev passam por backend, camada analítica,
+# frontend e varredura de segredos. Os jobs rodam em paralelo e aparecem separados no PR.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+# Um push novo no mesmo PR cancela a execução anterior, que ficou desatualizada.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (.NET + MySQL)
+    runs-on: ubuntu-latest
+
+    services:
+      # MySQL de verdade: os testes de views, triggers e CHECK não rodam no banco em memória.
+      # A senha só existe neste contêiner descartável do CI; não é segredo de nenhum ambiente real.
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: senha-descartavel-do-ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -psenha-descartavel-do-ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+
+    env:
+      GASTRA_TESTES_MYSQL: Server=127.0.0.1;Port=3306;User ID=root;Password=senha-descartavel-do-ci
+      GASTRA_TESTES_ANALITICA: http://127.0.0.1:8000
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: backend/global.json
+
+      # O serviço Python sobe só para o teste de contrato entre o backend e a camada analítica.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: data-science/requirements.txt
+
+      - name: Dependências do serviço Python
+        working-directory: data-science
+        run: pip install -r requirements.txt
+
+      - name: Subir o serviço Python
+        working-directory: data-science
+        run: |
+          nohup python -m uvicorn gastra_analitica.api.main:app --app-dir src --port 8000 > uvicorn.log 2>&1 &
+          for _ in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/health && exit 0
+            sleep 2
+          done
+          cat uvicorn.log
+          exit 1
+
+      - name: Build
+        working-directory: backend
+        run: dotnet build --configuration Release
+
+      - name: Testes
+        working-directory: backend
+        run: dotnet test --configuration Release --no-build --logger "trx" --results-directory resultados
+
+      # Um teste ignorado aqui significa ambiente faltando no CI (MySQL ou Python), e não um teste que passou.
+      - name: Nenhum teste ignorado
+        working-directory: backend
+        run: |
+          if grep -l 'outcome="NotExecuted"' resultados/*.trx; then
+            echo "::error::Há testes ignorados: o ambiente do CI está incompleto."
+            grep -h -o 'testName="[^"]*" [^>]*outcome="NotExecuted"' resultados/*.trx
+            exit 1
+          fi
+
+      - name: Guardar resultados dos testes
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: resultados-backend
+          path: backend/resultados/*.trx
+
+  analitica:
+    name: Camada analítica (Python)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: data-science/requirements.txt
+
+      - name: Dependências
+        working-directory: data-science
+        run: pip install -r requirements.txt
+
+      - name: Testes
+        working-directory: data-science
+        run: python -m pytest -q --junitxml=resultados/pytest.xml
+
+      - name: Guardar resultados dos testes
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: resultados-analitica
+          path: data-science/resultados/pytest.xml
+
+  frontend:
+    name: Frontend (Angular)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Dependências
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Testes
+        working-directory: frontend
+        run: npx ng test --watch=false
+
+  segredos:
+    name: Varredura de segredos
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Procura chaves, senhas e tokens em todo o histórico do repositório, não só no último commit.
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

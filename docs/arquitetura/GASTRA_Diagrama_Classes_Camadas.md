@@ -1,23 +1,12 @@
 # GASTRA — Diagrama de Classes por Camadas
 
-> ⚠️ **Situação em 16/09/2026: especificação, ainda não sincronizada com o código.**
-> Este documento e os diagramas em `docs/diagramas/classe/` foram escritos **antes** da implementação
-> (#92) e descrevem o planejado. Partes já implementadas mudaram de assinatura. Alguns exemplos:
->
-> - `Praca.Atualizar` e `Mesa.Atualizar` existem no código e não aparecem aqui.
-> - Os repositórios de mesa, praça e comanda têm outros métodos: por exemplo, `ListarAbertas` e
->   `ExisteAbertaNaMesa` no lugar de `ListarAbertasPorMesa` e `ListarAbertasPorGarcom`.
-> - Métodos novos, como `Comanda.RestricoesVisiveisPara`, `ItemDoCardapio.AtendeRestricao` e
->   `IUsuarioLogado.ObterPapel`, ainda não aparecem. A exceção é `IServicoAnalitico.SugerirCombinacoes`,
->   que já foi atualizado no #116.
->
-> Os repositórios de alocação, promoção e indicadores ainda não foram implementados; neles, o
-> documento continua sendo o plano.
->
-> **Quando será sincronizado:** ao fim do módulo de alocação de garçons (UC15), depois de BI e
-> promoções, e antes de cada entrega ao orientador. A sincronização vai gerar o diagrama a partir do
-> código compilado, por script, para não depender de redesenho à mão. Até lá, a referência do que
-> está implementado é o próprio código em `backend/src/`.
+> ✅ **Situação em 17/09/2026: sincronizado com o código (#125).** Este documento é a **especificação** escrita antes da
+> implementação (#92) e fica como registro do planejamento. A referência do que está implementado é agora
+> [`GASTRA_Diagrama_Classes_Codigo.md`](GASTRA_Diagrama_Classes_Codigo.md), com os diagramas
+> [`GASTRA_Classe_Dominio.png`](../diagramas/classe/GASTRA_Classe_Dominio.png) e
+> [`GASTRA_Classe_Contratos.png`](../diagramas/classe/GASTRA_Classe_Contratos.png). Os dois são **gerados a partir do
+> código compilado** por `backend/tools/GeradorDiagramaClasses`, e por isso não divergem do que está implementado.
+> Para sincronizar de novo, rode a ferramenta (ver o README dela) ao fim de cada módulo.
 
 Especificação do diagrama de classes separado por responsabilidades, conforme a arquitetura em
 camadas do backend (issue #79). Serve de referência para redesenhar o diagrama no draw.io: cada

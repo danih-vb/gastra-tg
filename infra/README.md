@@ -28,6 +28,38 @@ Ambiente de desenvolvimento/testes via Docker Compose, com MySQL containerizado.
 > e triggers (issue #85), o MySQL sobe com `--log-bin-trust-function-creators=ON`. Sem isso, a
 > migration que cria os triggers falha com o erro 1419.
 
+## Sistema inteiro em Docker (MySQL + API + serviço analítico)
+
+Para apresentar ou avaliar o GASTRA sem instalar .NET nem Python:
+
+1. **No `.env`**, além das variáveis do MySQL, defina (ver `.env.example`):
+   - `JWT_CHAVE_ASSINATURA`: 32 caracteres aleatórios ou mais;
+   - `ADMIN_EMAIL` e `ADMIN_SENHA`: o primeiro Gerente, criado se o banco ainda não tiver usuário;
+   - `API_AMBIENTE=Development`, só se quiser o Swagger.
+2. **Suba tudo:**
+   ```bash
+   docker compose --profile app up -d --build
+   ```
+3. **Confira:** `docker compose --profile app ps` deve mostrar os três serviços `healthy`.
+   - API: `http://localhost:5019/health` (Swagger em `/swagger`, se o ambiente for `Development`);
+   - serviço analítico: `http://localhost:8000/health` e `http://localhost:8000/docs`.
+
+O que acontece na subida:
+- **Migrations:** a API aplica as pendentes sozinha (`Banco__AplicarMigrationsAoIniciar`). Se alguma falhar, a API
+  não sobe.
+- **Ordem:** a API só sobe depois do MySQL e do serviço analítico estarem saudáveis.
+- **Imagens:** rodam com usuário sem privilégio de root, e nenhum segredo entra nelas; tudo vem do `.env`.
+- **Sem o perfil `app`:** `docker compose up -d` continua subindo só o MySQL, como antes.
+
+Para desligar só a API e o serviço analítico, mantendo o MySQL:
+
+```bash
+docker compose --profile app rm -sf api analitica
+```
+
+> A API avisa no log "Failed to determine the https port for redirect": no contêiner ela atende só HTTP, e o
+> redirecionamento para HTTPS fica a cargo de um proxy na frente, num ambiente de produção.
+
 ## Conectando via MySQL Workbench
 
 - Host: `localhost`

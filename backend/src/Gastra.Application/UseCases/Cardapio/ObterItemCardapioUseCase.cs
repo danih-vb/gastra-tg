@@ -1,4 +1,6 @@
+using Gastra.Application.UseCases.Promocoes;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Exceptions;
 using Mapster;
@@ -10,13 +12,17 @@ public interface IObterItemCardapioUseCase
     Task<ItemCardapioResponse> Executar(int id);
 }
 
-public class ObterItemCardapioUseCase(IRepositorioItemCardapio repositorio) : IObterItemCardapioUseCase
+public class ObterItemCardapioUseCase(IRepositorioItemCardapio repositorio, IRepositorioPromocao repositorioPromocao)
+    : IObterItemCardapioUseCase
 {
     public async Task<ItemCardapioResponse> Executar(int id)
     {
         var item = await repositorio.ObterPorId(id)
                    ?? throw new NaoEncontradoException(MensagensErro.ItemCardapioNaoEncontrado);
 
-        return item.Adapt<ItemCardapioResponse>();
+        var hoje = HojeNoRestaurante.Data();
+        var resposta = item.Adapt<ItemCardapioResponse>();
+        resposta.PrecoPromocional = Promocao.PrecoPromocional(item, await repositorioPromocao.ListarVigentes(hoje), hoje);
+        return resposta;
     }
 }

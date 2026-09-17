@@ -1,5 +1,7 @@
+using Gastra.Application.Auditoria;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Enums;
 using Gastra.Domain.Repositorios;
@@ -18,6 +20,7 @@ public class AbrirComandaUseCase(
     IRepositorioComanda repositorio,
     IRepositorioMesa repositorioMesa,
     IUsuarioLogado usuarioLogado,
+    IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IAbrirComandaUseCase
 {
     public async Task<ComandaResponse> Executar(AbrirComandaRequest request)
@@ -33,6 +36,11 @@ public class AbrirComandaUseCase(
         var comanda = new Comanda(request.MesaId, garcom.Id, request.QuantidadePessoas);
 
         await repositorio.Adicionar(comanda);
+        await unitOfWork.Commit();
+
+        // O código de acesso do cliente nunca vai para a auditoria (política de log, 4.3).
+        await auditoria.Registrar(EventoAuditoria.ComandaAberta, alvo: (nameof(Comanda), comanda.Id),
+            detalhes: new { comanda.MesaId, comanda.QuantidadePessoas });
         await unitOfWork.Commit();
 
         return MapeadorComanda.Montar(comanda, new Dictionary<int, string>(), garcom.Papel);

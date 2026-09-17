@@ -68,6 +68,7 @@ identificador do registro afetado.
 |---|---|---|---|
 | Login com sucesso | UC01 | ator, data/hora, IP | senha, token de sessão |
 | Login com falha | UC01 | `id_usuario` **se a conta existir**; motivo (senha incorreta / conta inativa); data/hora; IP | senha digitada; **e-mail digitado quando a conta não existe** |
+| Autenticador vinculado | RN07 | ator, data/hora, IP | segredo TOTP, chave manual |
 | Segundo fator confirmado / recusado | UC02 | ator, resultado, data/hora | código TOTP digitado, segredo TOTP |
 | Logoff | UC03 | ator, data/hora | token de sessão |
 | Conta criada / editada / inativada | UC04 | ator, alvo, **nomes** dos campos alterados; papel anterior → novo | senha, hash, segredo TOTP, valores de nome e e-mail |
@@ -87,9 +88,11 @@ Justificativas:
 | Item cadastrado | UC05 | ator, alvo | — |
 | Preço alterado | UC06 | ator, alvo, preço anterior → novo | — |
 | Disponibilidade alterada | UC07 | ator, alvo, novo estado | — |
-| Promoção criada / removida | UC08, UC09 | ator, alvo, itens vinculados | — |
+| Promoção criada / removida | UC08, UC09 | ator, alvo, itens vinculados (implementado no #124) | — |
+| Praça cadastrada / editada | UC24 | ator, alvo, código e quantidade de garçons | — |
+| Mesa cadastrada / editada | UC24 | ator, alvo, número, capacidade e praça | — |
 
-Dados do cardápio não são pessoais: podem ser registrados com os valores.
+Dados do cardápio e do salão não são pessoais: podem ser registrados com os valores.
 
 ### 4.3 Comandas
 
@@ -167,6 +170,11 @@ Justificativas:
 
 ## 7. Retenção e eliminação
 
+> **Implementado (#120).** A API roda a eliminação ao subir e depois uma vez por dia
+> (`EliminarAuditoriaVencidaUseCase`). O corte usa 6 meses e mais um dia de folga, para o relógio da API
+> nunca pedir a exclusão de um registro que o trigger do banco ainda protege. A própria eliminação vira um
+> registro `AUDITORIA_ELIMINADA_POR_PRAZO`, com a quantidade apagada e sem o conteúdo.
+
 | Tipo | Retenção proposta | Após o prazo |
 |---|---|---|
 | Log técnico | 30 dias | eliminação |
@@ -183,6 +191,12 @@ Justificativas:
 ---
 
 ## 8. Diretrizes de implementação
+
+> **Situação:** todos os eventos das seções 4.1 a 4.3 e os do salão estão implementados (#120), com testes
+> que conferem o que é registrado e o que nunca pode aparecer (`AuditoriaTests`). Da seção 4.5, os de
+> alocação entraram com a #122 e os de BI com a #123: toda consulta de relatório registra qual relatório e o período, e a
+> consulta do índice registra de quem foi o índice consultado ("todos", para o Gerente, ou o próprio id, para o Garçom). Os códigos dos eventos ficam em
+> `Gastra.Domain/Auditoria/EventoAuditoria.cs`.
 
 1. **A auditoria é gravada pela aplicação, não por trigger do banco.** Um trigger não sabe *qual
    usuário* executou a ação — essa informação existe na API (usuário autenticado), não no MySQL.

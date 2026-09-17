@@ -308,6 +308,95 @@ GASTRA_TESTES_ANALITICA=http://localhost:8000 dotnet test
 O teste chama o FastAPI de verdade pelo `ServicoAnaliticoHttp` e confere que os dois lados usam o
 mesmo formato de requisição e de resposta.
 
+## Alocação de garçons (UC15, UC21, UC22)
+
+Endpoints do **Metre**, exceto a consulta:
+
+| Ação | Endpoint |
+|---|---|
+| UC15 — Gerar a sugestão do turno | `POST /api/alocacoes/sugestao` com `data`, `periodo` (`Almoco` ou `Jantar`) e `garcomIds` |
+| UC22 — Pôr um garçom numa praça (ajuste ou alocação manual) | `PUT /api/alocacoes/{data}/{periodo}/garcons/{garcomId}` com `pracaId` |
+| UC21 — Confirmar o turno | `POST /api/alocacoes/{data}/{periodo}/confirmacao` |
+| Quem está em qual praça *(qualquer usuário logado)* | `GET /api/alocacoes/{data}/{periodo}` |
+
+- **Fatores da RN03 (`RegraDeDistribuicao`, no domínio):**
+  - **faturamento do garçom:** média por turno trabalhado nos 30 dias anteriores ao turno (`vw_desempenho_garcom_turno`).
+    É média, e não soma: com a soma, quem faltou mais parecia estar para trás e ganhava praça boa por isso (#55);
+  - **potencial da praça:** faturamento médio por turno (`vw_faturamento_medio_praca`);
+  - **praça de alto potencial:** a que fatura acima da média das praças que já tiveram movimento;
+  - **espera:** quantos turnos confirmados o garçom trabalhou desde a última vez numa praça de alto potencial.
+- **Pesos:** w1 = 0,6 (desequilíbrio) e w2 = 0,4 (espera), calibrados por simulação na #55
+  (`docs/analises/GASTRA_Calibracao_Pesos_RN03.md`).
+- **Quem calcula:** o Python (`POST /alocacao/sugestao`). O backend confere a resposta antes de gravar:
+  todos os garçons, praças existentes e vagas respeitadas. Resposta incoerente é tratada como serviço fora do ar.
+- **Python fora do ar (D3):** a sugestão responde `200` com `servicoDisponivel = false` e não grava nada. O Metre
+  aloca garçom por garçom pelo `PUT`.
+- **Sugestão gerada de novo:** substitui a anterior, desde que o turno não tenha sido confirmado.
+- **Depois de confirmado:** nenhum ajuste nem sugestão nova (`422`). O turno confirmado entra no histórico da RN03.
+- **Auditoria (política de log, 4.5):** sugestão gerada (com os pesos), ajuste (praça sugerida → escolhida) e
+  confirmação.
+
+## Promoções (UC08, UC09)
+
+Endpoints do **Gerente e do Coordenador** (mesma permissão da gestão do cardápio):
+
+| Ação | Endpoint |
+|---|---|
+| UC08 — Criar promoção | `POST /api/promocoes` com `descricao`, `tipoDesconto` (`Percentual` ou `ValorFixo`), `valorDesconto`, `dataInicio`, `dataFim` e `itemCardapioIds` |
+| Listar (ativas; `?todas=true` inclui as removidas) | `GET /api/promocoes` |
+| UC09 — Remover promoção | `DELETE /api/promocoes/{id}` |
+
+- **Remover é desativar:** a promoção fica no banco, porque há comandas antigas vendidas com o preço dela.
+- **Vigência:** vale do primeiro ao último dia, inclusive, pela data de Brasília.
+- **Desconto:** o percentual precisa ser menor que 100. O valor fixo precisa ser menor que o preço de cada
+  item. O preço promocional nunca fica abaixo de R$ 0,01 e é arredondado em centavos.
+- **Duas promoções para o mesmo item:** vale a de maior desconto.
+- **Onde aparece:**
+  - `precoPromocional` no cardápio, inclusive no cardápio digital do cliente;
+  - o item lançado na comanda já sai com o preço promocional, que fica congelado no pedido (RF03).
+- **Auditoria (política de log, 4.2):** criação, com os itens vinculados, e remoção.
+
+## Relatórios de BI e índice de desempenho (UC16, UC17)
+
+Filtro por `inicio` e `fim` na query string (datas inclusivas, `aaaa-mm-dd`). Sem filtro, o relatório usa os
+últimos 30 dias no horário de Brasília. O período pode ter no máximo 366 dias.
+
+| Relatório | Endpoint | Quem |
+|---|---|---|
+| Por garçom: faturamento total e por turno, comandas, mesas atendidas, ticket médio, tempo médio de atendimento | `GET /api/indicadores/garcons` | Gerente |
+| Por praça: faturamento, ticket médio, faturamento por turno e média histórica | `GET /api/indicadores/pracas` | Gerente |
+| Por item e por categoria do cardápio, com participação no faturamento | `GET /api/indicadores/cardapio` | Gerente |
+| Por praça, por hora do dia e por dia da semana | `GET /api/indicadores/horarios` | Gerente |
+| Ranking pelo índice de desempenho | `GET /api/indicadores/desempenho` | Gerente (todos) · Garçom (só a própria posição) |
+
+- **Origem dos dados:** views analíticas, por `SqlQuery` em `RepositorioIndicadores`. Nada é gravado; o banco
+  calcula a cada consulta.
+- **Índice de desempenho (RF11, `IndiceDeDesempenho` no domínio):**
+  - combina **faturamento por turno** e **mesas atendidas por turno**, cada um dividido pelo maior valor do
+    período (0 a 100), com peso 50/50;
+  - é **por turno**, e não total: senão, quem trabalha mais turnos ganharia só por isso (a mesma lição da
+    calibração da RN03);
+  - empate divide a posição (1, 1, 3).
+- **Privacidade:** o índice é avaliação de desempenho, dado pessoal do funcionário. O Garçom vê só a própria
+  posição e o total de garçons no ranking, sem nomes nem números dos colegas.
+- **Auditoria (política de log, 4.5):** registra cada consulta de relatório (qual relatório e o período) e cada
+  consulta do índice (de quem).
+
+## Auditoria (política de log, #120)
+
+Os casos de uso chamam `IRegistradorAuditoria.Registrar(evento, ...)`. O registro entra no **mesmo
+Commit** da operação auditada: se a operação não é gravada, a auditoria também não é.
+
+- **Quem agiu:** vem do token. No login, que ainda não tem token, o caso de uso informa a conta.
+- **IP:** só em eventos de autenticação.
+- **O que nunca vai para a auditoria:** senha, código ou segredo do autenticador, e-mail digitado sem conta
+  correspondente, nome e e-mail de funcionário, código de acesso da comanda, categoria e observação da
+  restrição alimentar. Os testes em `AuditoriaTests` conferem cada um.
+- **Criações** (conta, item, praça, mesa, comanda) gravam em dois Commits, porque o id do registro só existe
+  depois do primeiro.
+- **Eliminação por prazo:** um serviço em segundo plano roda ao subir a API e uma vez por dia. Desligue com
+  `"Auditoria": { "EliminacaoAutomatica": false }`.
+
 ## Configurações locais
 
 `appsettings.Development.json` está no `.gitignore` de propósito: é onde ficam valores da sua

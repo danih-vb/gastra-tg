@@ -295,6 +295,54 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                     b.ToTable("praca", (string)null);
                 });
 
+            modelBuilder.Entity("Gastra.Domain.Entidades.Promocao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativa")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("ativa");
+
+                    b.Property<DateOnly>("DataFim")
+                        .HasColumnType("date")
+                        .HasColumnName("data_fim");
+
+                    b.Property<DateOnly>("DataInicio")
+                        .HasColumnType("date")
+                        .HasColumnName("data_inicio");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("descricao");
+
+                    b.Property<string>("TipoDesconto")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("tipo_desconto");
+
+                    b.Property<decimal>("ValorDesconto")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("valor_desconto");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Ativa", "DataInicio", "DataFim");
+
+                    b.ToTable("promocao", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_promocao_periodo_e_desconto", "data_fim >= data_inicio AND valor_desconto > 0 AND (tipo_desconto <> 'Percentual' OR valor_desconto < 100)");
+                        });
+                });
+
             modelBuilder.Entity("Gastra.Domain.Entidades.RegistroAuditoria", b =>
                 {
                     b.Property<int>("Id")
@@ -523,6 +571,37 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasForeignKey("PracaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Gastra.Domain.Entidades.Promocao", b =>
+                {
+                    b.OwnsMany("Gastra.Domain.Entidades.PromocaoItem", "_itens", b1 =>
+                        {
+                            b1.Property<int>("PromocaoId")
+                                .HasColumnType("int")
+                                .HasColumnName("promocao_id");
+
+                            b1.Property<int>("ItemCardapioId")
+                                .HasColumnType("int")
+                                .HasColumnName("item_cardapio_id");
+
+                            b1.HasKey("PromocaoId", "ItemCardapioId");
+
+                            b1.HasIndex("ItemCardapioId");
+
+                            b1.ToTable("promocao_item_cardapio", (string)null);
+
+                            b1.HasOne("Gastra.Domain.Entidades.ItemDoCardapio", null)
+                                .WithMany()
+                                .HasForeignKey("ItemCardapioId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
+
+                            b1.WithOwner()
+                                .HasForeignKey("PromocaoId");
+                        });
+
+                    b.Navigation("_itens");
                 });
 
             modelBuilder.Entity("Gastra.Domain.Entidades.RegistroAuditoria", b =>

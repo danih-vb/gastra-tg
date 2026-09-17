@@ -76,7 +76,7 @@ def sugerir_alocacao_do_turno(pedido: PedidoDeAlocacao) -> RespostaDeAlocacao:
         raise HTTPException(status_code=422, detail="Os pesos precisam somar 1.")
 
     garcons = [
-        GarcomDisponivel(g.id, g.faturamento_acumulado, g.turnos_desde_praca_de_alto_potencial)
+        GarcomDisponivel(g.id, g.faturamento_por_turno, g.turnos_desde_praca_de_alto_potencial)
         for g in pedido.garcons
     ]
     pracas = [PracaDoTurno(p.id, p.vagas, p.faturamento_medio_historico) for p in pedido.pracas]

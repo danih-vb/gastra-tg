@@ -64,6 +64,26 @@ public static class MensagensErro
     public static string NumeroMesaMuitoLongo => Obter(nameof(NumeroMesaMuitoLongo));
     public static string NumeroMesaJaCadastrado => Obter(nameof(NumeroMesaJaCadastrado));
     public static string CapacidadeMesaInvalida => Obter(nameof(CapacidadeMesaInvalida));
+    public static string AlocacaoSemGarcons => Obter(nameof(AlocacaoSemGarcons));
+    public static string AlocacaoGarcomInvalido => Obter(nameof(AlocacaoGarcomInvalido));
+    public static string AlocacaoSemPracas => Obter(nameof(AlocacaoSemPracas));
+    public static string AlocacaoSemVagas => Obter(nameof(AlocacaoSemVagas));
+    public static string AlocacaoJaConfirmada => Obter(nameof(AlocacaoJaConfirmada));
+    public static string AlocacaoNaoEncontrada => Obter(nameof(AlocacaoNaoEncontrada));
+    public static string PracaSemVaga => Obter(nameof(PracaSemVaga));
+    public static string PeriodoInvalido => Obter(nameof(PeriodoInvalido));
+    public static string DataAlocacaoObrigatoria => Obter(nameof(DataAlocacaoObrigatoria));
+    public static string PeriodoRelatorioInvalido => Obter(nameof(PeriodoRelatorioInvalido));
+    public static string PeriodoRelatorioLongoDemais => Obter(nameof(PeriodoRelatorioLongoDemais));
+    public static string DescricaoPromocaoObrigatoria => Obter(nameof(DescricaoPromocaoObrigatoria));
+    public static string DescricaoPromocaoMuitoLonga => Obter(nameof(DescricaoPromocaoMuitoLonga));
+    public static string TipoDescontoInvalido => Obter(nameof(TipoDescontoInvalido));
+    public static string ValorDescontoInvalido => Obter(nameof(ValorDescontoInvalido));
+    public static string PeriodoPromocaoInvalido => Obter(nameof(PeriodoPromocaoInvalido));
+    public static string PromocaoSemItens => Obter(nameof(PromocaoSemItens));
+    public static string DescontoFixoMaiorQuePreco => Obter(nameof(DescontoFixoMaiorQuePreco));
+    public static string PromocaoNaoEncontrada => Obter(nameof(PromocaoNaoEncontrada));
+    public static string PromocaoJaDesativada => Obter(nameof(PromocaoJaDesativada));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;
