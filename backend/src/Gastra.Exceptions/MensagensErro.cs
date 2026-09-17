@@ -75,6 +75,15 @@ public static class MensagensErro
     public static string DataAlocacaoObrigatoria => Obter(nameof(DataAlocacaoObrigatoria));
     public static string PeriodoRelatorioInvalido => Obter(nameof(PeriodoRelatorioInvalido));
     public static string PeriodoRelatorioLongoDemais => Obter(nameof(PeriodoRelatorioLongoDemais));
+    public static string DescricaoPromocaoObrigatoria => Obter(nameof(DescricaoPromocaoObrigatoria));
+    public static string DescricaoPromocaoMuitoLonga => Obter(nameof(DescricaoPromocaoMuitoLonga));
+    public static string TipoDescontoInvalido => Obter(nameof(TipoDescontoInvalido));
+    public static string ValorDescontoInvalido => Obter(nameof(ValorDescontoInvalido));
+    public static string PeriodoPromocaoInvalido => Obter(nameof(PeriodoPromocaoInvalido));
+    public static string PromocaoSemItens => Obter(nameof(PromocaoSemItens));
+    public static string DescontoFixoMaiorQuePreco => Obter(nameof(DescontoFixoMaiorQuePreco));
+    public static string PromocaoNaoEncontrada => Obter(nameof(PromocaoNaoEncontrada));
+    public static string PromocaoJaDesativada => Obter(nameof(PromocaoJaDesativada));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;

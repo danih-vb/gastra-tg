@@ -91,14 +91,18 @@ public class Comanda : EntidadeBase
     }
 
     /// <summary>RF03: lança um item, copiando o preço vigente no cardápio.</summary>
-    public ItemDoPedido AdicionarItem(ItemDoCardapio item, int quantidade)
+    /// <param name="precoPromocional">Preço com promoção vigente (RF22). Nunca acima do preço do cardápio.</param>
+    public ItemDoPedido AdicionarItem(ItemDoCardapio item, int quantidade, decimal? precoPromocional = null)
     {
         GarantirAberta();
 
         if (!item.Disponivel)
             throw new InvalidOperationException($"O item \"{item.Nome}\" está indisponível.");
 
-        var pedido = new ItemDoPedido(item.Id, quantidade, item.Preco);
+        if (precoPromocional is not null && (precoPromocional <= 0 || precoPromocional > item.Preco))
+            throw new ArgumentOutOfRangeException(nameof(precoPromocional), "O preço promocional precisa ser positivo e não maior que o do cardápio.");
+
+        var pedido = new ItemDoPedido(item.Id, quantidade, precoPromocional ?? item.Preco);
         _itens.Add(pedido);
 
         // RN01: item infantil em mesa de 3 ou mais pessoas reclassifica a composição — a não ser que

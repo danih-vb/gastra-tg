@@ -9,7 +9,6 @@
 - alocacao.garcom_id: só no físico (chave estrangeira)
 - alocacao.praca_id: só no físico (chave estrangeira)
 - restricao_alimentar.comanda_id: só no físico (chave estrangeira)
-- Promocao: sem tabela
 - registro_auditoria.usuario_id: só no físico (chave estrangeira)
 
 ## Relacionamentos x chaves estrangeiras
@@ -21,7 +20,9 @@
 - Alocacao (1,1) — refere-se — Usuario (0,n): alocacao.garcom_id NOT NULL -> confere
 - Alocacao (1,1) — refere-se — Praca (0,n): alocacao.praca_id NOT NULL -> confere
 - RestricaoAlimentar (1,1) — possui — Comanda (0,n): restricao_alimentar.comanda_id NOT NULL -> confere
-- ItemDoCardapio (0,n) — refere-se — Promocao (0,n): sem chave estrangeira
+- ItemDoCardapio (0,n) — refere-se — Promocao (0,n): N:N na tabela associativa promocao_item_cardapio -> confere
 - RegistroAuditoria (0,1) — é gerado por — Usuario (0,n): registro_auditoria.usuario_id NULL -> confere
 
 - tabela item_cardapio_flag: sem entidade correspondente
+
+- tabela promocao_item_cardapio: sem entidade correspondente

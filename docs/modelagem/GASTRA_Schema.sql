@@ -301,5 +301,32 @@ WHERE c.status = 'Fechada';
 INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
 VALUES ('20260917041929_AdicionaTempoDeAtendimentoNaView', '9.0.20');
 
+CREATE TABLE `promocao` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `descricao` varchar(200) CHARACTER SET utf8mb4 NOT NULL,
+    `tipo_desconto` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+    `valor_desconto` decimal(10,2) NOT NULL,
+    `data_inicio` date NOT NULL,
+    `data_fim` date NOT NULL,
+    `ativa` tinyint(1) NOT NULL,
+    CONSTRAINT `PK_promocao` PRIMARY KEY (`id`),
+    CONSTRAINT `CK_promocao_periodo_e_desconto` CHECK (data_fim >= data_inicio AND valor_desconto > 0 AND (tipo_desconto <> 'Percentual' OR valor_desconto < 100))
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `promocao_item_cardapio` (
+    `item_cardapio_id` int NOT NULL,
+    `promocao_id` int NOT NULL,
+    CONSTRAINT `PK_promocao_item_cardapio` PRIMARY KEY (`promocao_id`, `item_cardapio_id`),
+    CONSTRAINT `FK_promocao_item_cardapio_item_cardapio_item_cardapio_id` FOREIGN KEY (`item_cardapio_id`) REFERENCES `item_cardapio` (`id`) ON DELETE RESTRICT,
+    CONSTRAINT `FK_promocao_item_cardapio_promocao_promocao_id` FOREIGN KEY (`promocao_id`) REFERENCES `promocao` (`id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+
+CREATE INDEX `IX_promocao_ativa_data_inicio_data_fim` ON `promocao` (`ativa`, `data_inicio`, `data_fim`);
+
+CREATE INDEX `IX_promocao_item_cardapio_item_cardapio_id` ON `promocao_item_cardapio` (`item_cardapio_id`);
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20260917042940_CriaPromocoes', '9.0.20');
+
 COMMIT;
 

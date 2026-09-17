@@ -49,6 +49,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
         services.AddScoped<IRepositorioAlocacao, RepositorioAlocacao>();
         services.AddScoped<IRepositorioIndicadores, RepositorioIndicadores>();
+        services.AddScoped<IRepositorioPromocao, RepositorioPromocao>();
     }
 
     private static void AddSeguranca(IServiceCollection services, IConfiguration configuration)
