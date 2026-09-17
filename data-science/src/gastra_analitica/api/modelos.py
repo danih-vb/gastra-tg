@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field
 class PedidoDeRecomendacao(BaseModel):
     """
     `itens` são os ids do cardápio já lançados na comanda. `historico` é o conjunto de comandas
-    anteriores; quando não vem, o serviço usa o histórico simulado (o banco ainda não tem movimento).
+    anteriores; quando não vem, o serviço lê o histórico real do banco (D10) ou, sem movimento suficiente,
+    usa o simulado.
     """
 
     itens: list[int] = Field(default_factory=list)
@@ -26,7 +27,8 @@ class ItemSugerido(BaseModel):
 class RespostaDeRecomendacao(BaseModel):
     sugestoes: list[ItemSugerido]
     regras_consideradas: int
-    origem_do_historico: str
+    origem_do_historico: str  # "banco", "simulado" ou "informado"
+    motivo_do_simulado: str | None = None
 
 
 class GarcomDoTurno(BaseModel):

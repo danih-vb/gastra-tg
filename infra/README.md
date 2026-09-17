@@ -28,6 +28,16 @@ Ambiente de desenvolvimento/testes via Docker Compose, com MySQL containerizado.
 > e triggers (issue #85), o MySQL sobe com `--log-bin-trust-function-creators=ON`. Sem isso, a
 > migration que cria os triggers falha com o erro 1419.
 
+## Usuário somente leitura da camada analítica (D10)
+
+O serviço Python lê o histórico pelas views com um usuário que só tem `SELECT` nelas:
+
+1. Defina `MYSQL_ANALITICA_PASSWORD` no `.env`.
+2. Com o contêiner de pé e as migrations aplicadas, rode `./criar-usuario-analitico.sh`.
+
+O script pode ser rodado de novo sem problema: ele atualiza a senha e dá acesso às views que forem
+criadas depois. A senha vai para o MySQL pela entrada padrão, e não pela linha de comando.
+
 ## Conectando via MySQL Workbench
 
 - Host: `localhost`

@@ -3,11 +3,16 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from gastra_analitica.api.main import app
+from gastra_analitica.api.main import app, provedor_de_modelo
+from gastra_analitica.recomendacao.provedor_modelo import ModeloComOrigem
+from gastra_analitica.recomendacao.regras_associacao import treinar
 
 
 @pytest.fixture
-def cliente():
+def cliente(monkeypatch):
+    # Os testes da API nunca dependem de um banco configurado na máquina de quem roda.
+    monkeypatch.delenv("GASTRA_ANALITICA_BANCO_SENHA", raising=False)
+    provedor_de_modelo.invalidar()
     return TestClient(app)
 
 
@@ -19,6 +24,24 @@ def test_recomendacao_usa_o_historico_simulado_quando_nenhum_e_informado(cliente
     assert corpo["origem_do_historico"] == "simulado"
     assert corpo["sugestoes"], "deveria sugerir algo para a moqueca"
     assert corpo["sugestoes"][0]["lift"] > 1
+
+
+def test_recomendacao_informa_o_motivo_de_usar_o_simulado(cliente):
+    corpo = cliente.post("/recomendacao/combinacoes", json={"itens": [1]}).json()
+
+    assert corpo["motivo_do_simulado"] == "banco não configurado"
+
+
+def test_recomendacao_usa_o_historico_do_banco_quando_disponivel(cliente, monkeypatch):
+    # Com todo pedido igual, o lift seria 1 e a regra descartada: o histórico precisa ter contraste.
+    modelo_real = treinar([[10, 11]] * 40 + [[12, 13]] * 40)
+    monkeypatch.setattr(provedor_de_modelo, "obter", lambda: ModeloComOrigem(modelo_real, "banco", comandas_usadas=60))
+
+    corpo = cliente.post("/recomendacao/combinacoes", json={"itens": [10]}).json()
+
+    assert corpo["origem_do_historico"] == "banco"
+    assert corpo["motivo_do_simulado"] is None
+    assert corpo["sugestoes"][0]["item_id"] == 11
 
 
 def test_recomendacao_aceita_historico_informado_pelo_backend(cliente):

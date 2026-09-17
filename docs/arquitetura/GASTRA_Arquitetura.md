@@ -23,7 +23,7 @@ O GASTRA tem três componentes de software e um banco de dados:
 |---|---|---|---|
 | **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ estrutura inicial · 🔜 telas |
 | **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários, comandas, praças e mesas, sugestão de pratos · 🔜 alocação, BI, promoções |
-| **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ recomendação e alocação; sugestão de pratos já chamada pelo backend · 🔜 leitura das views (D10) e chamada da alocação |
+| **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ recomendação e alocação; sugestão de pratos já chamada pelo backend · ✅ leitura do histórico real pelas views (D10) · 🔜 chamada da alocação |
 | **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · ✅ views de BI e triggers de auditoria · 🔜 promoções |
 
 O princípio que organiza tudo: **o backend é o único dono das regras de negócio e o único que
@@ -74,7 +74,7 @@ Cada decisão com a alternativa considerada e o custo aceito.
 | D7 | **JWT + chave de sessão** | Sessão em cookie no servidor | JWT funciona igual para Angular, Swagger e testes; a chave de sessão resolve o ponto fraco do JWT (não dá para "desligar" um token) | Uma consulta ao usuário por requisição autenticada |
 | D8 | **Mapster** para converter entidade ↔ response | AutoMapper | Licença MIT; o AutoMapper passou a ter licenciamento comercial a partir da versão 15 | Menos material de referência que o AutoMapper |
 | D9 | **Mensagens de erro em arquivos `.resx`** (pt-BR e en) | Textos fixos no código | O idioma é escolhido por requisição e nenhuma mensagem fica espalhada pelo código | Toda mensagem nova precisa entrar nos dois arquivos |
-| D10 | **Python lê o histórico só por views, com usuário somente leitura** 🔜 *(aprovada pela dupla em 15/09)* | O backend enviar todo o histórico em cada chamada | As regras de associação precisam de todo o histórico de pedidos; mandar isso a cada chamada é pesado. A view entrega só colunas agregadas, sem dado pessoal, e o usuário não consegue gravar | O Python passa a conhecer o nome das views |
+| D10 | **Python lê o histórico só por views, com usuário somente leitura** ✅ *(aprovada pela dupla em 15/09; implementada no #121)* | O backend enviar todo o histórico em cada chamada | As regras de associação precisam de todo o histórico de pedidos; mandar isso a cada chamada é pesado. A view entrega só colunas agregadas, sem dado pessoal, e o usuário não consegue gravar | O Python passa a conhecer o nome das views |
 
 ---
 
@@ -187,6 +187,8 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
   confirmada pelo metre, RF07).
 - **Leitura do histórico (decisão D10):** o Python lê somente views analíticas, com um
   usuário MySQL que só tem permissão de `SELECT` nessas views. As views não expõem dado pessoal.
+  O usuário é criado por `infra/criar-usuario-analitico.sh`. Sem banco, fora do ar ou com menos de 50
+  comandas no último ano, a recomendação volta ao histórico simulado e diz o motivo na resposta.
 - **Solver da programação linear:** `pulp.COIN_CMD(path=cbcbox.cbc_bin_path())`. O solver
   embutido antigo (`PULP_CBC_CMD`) está obsoleto e será removido no PuLP 4.0.
 

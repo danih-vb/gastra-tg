@@ -4,7 +4,10 @@ Recebe os dados do backend em C#, calcula e devolve o resultado. Não grava nada
 sempre a API ASP.NET Core (decisão D2 da arquitetura).
 """
 
+from datetime import date, timedelta
+
 from fastapi import FastAPI, HTTPException
+from sqlalchemy.engine import Engine
 
 from gastra_analitica.alocacao.programacao_linear import (
     AlocacaoInviavelError,
@@ -20,8 +23,9 @@ from gastra_analitica.api.modelos import (
     RespostaDeAlocacao,
     RespostaDeRecomendacao,
 )
-from gastra_analitica.dados.simulador import gerar_historico
-from gastra_analitica.recomendacao.regras_associacao import ModeloRecomendacao, treinar
+from gastra_analitica.dados.historico_banco import ConfiguracaoBanco, ler_transacoes
+from gastra_analitica.recomendacao.provedor_modelo import ProvedorDeModelo
+from gastra_analitica.recomendacao.regras_associacao import treinar
 
 app = FastAPI(
     title="GASTRA — Camada Analítica",
@@ -29,15 +33,24 @@ app = FastAPI(
     version="0.2.0",
 )
 
-# Modelo de apoio enquanto o banco não tem movimento real: treinado uma vez, no primeiro uso.
-_modelo_simulado: ModeloRecomendacao | None = None
+# Janela do histórico real: um ano acompanha a sazonalidade sem carregar mudanças antigas de cardápio.
+JANELA_DO_HISTORICO = timedelta(days=365)
+
+_engine: Engine | None = None
 
 
-def _modelo_do_historico_simulado() -> ModeloRecomendacao:
-    global _modelo_simulado
-    if _modelo_simulado is None:
-        _modelo_simulado = treinar(gerar_historico().transacoes)
-    return _modelo_simulado
+def _ler_historico_do_banco() -> list[list[int]] | None:
+    """D10: lê a view de itens por comanda com o usuário somente leitura. Sem configuração, devolve None."""
+    global _engine
+    configuracao = ConfiguracaoBanco.do_ambiente()
+    if configuracao is None:
+        return None
+    if _engine is None:
+        _engine = configuracao.criar_engine()
+    return ler_transacoes(_engine, desde=date.today() - JANELA_DO_HISTORICO)
+
+
+provedor_de_modelo = ProvedorDeModelo(_ler_historico_do_banco)
 
 
 @app.get("/health", tags=["Saúde"])
@@ -54,11 +67,10 @@ def sugerir_combinacoes(pedido: PedidoDeRecomendacao) -> RespostaDeRecomendacao:
     Usa só padrão de consumo observável: nenhum atributo pessoal do cliente entra no cálculo (RN05).
     """
     if pedido.historico is None:
-        modelo = _modelo_do_historico_simulado()
-        origem = "simulado"
+        atual = provedor_de_modelo.obter()
+        modelo, origem, motivo = atual.modelo, atual.origem, atual.motivo
     else:
-        modelo = treinar(pedido.historico)
-        origem = "informado"
+        modelo, origem, motivo = treinar(pedido.historico), "informado", None
 
     sugestoes = modelo.sugerir(pedido.itens, pedido.limite, pedido.itens_disponiveis)
 
@@ -66,6 +78,7 @@ def sugerir_combinacoes(pedido: PedidoDeRecomendacao) -> RespostaDeRecomendacao:
         sugestoes=[ItemSugerido(item_id=s.item_id, confianca=s.confianca, lift=s.lift) for s in sugestoes],
         regras_consideradas=len(modelo),
         origem_do_historico=origem,
+        motivo_do_simulado=motivo,
     )
 
 
