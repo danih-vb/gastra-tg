@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutenticacaoJwt(builder.Configuration);
+builder.Services.AddPoliticaCors(builder.Configuration);
 
 builder.Services
     .AddControllers(opcoes => opcoes.Filters.Add<FiltroExcecao>())
@@ -42,6 +43,9 @@ app.UseRequestLocalization(opcoes => opcoes
     .AddSupportedUICultures(culturas));
 
 app.UseHttpsRedirection();
+
+// CORS antes da autenticação: a requisição de verificação (OPTIONS) do navegador não leva token.
+app.UseCors(PoliticaCors.Nome);
 
 app.UseAuthentication();
 app.UseAuthorization();

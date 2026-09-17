@@ -1,0 +1,69 @@
+// Layout provisório das telas de acesso: legível e acessível, sem antecipar o visual do protótipo (#47).
+
+.cartao {
+  max-width: 24rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.5rem;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+label {
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+input {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: 0.35rem;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.7rem;
+  font-size: 1rem;
+  color: #fff;
+  background: var(--cor-primaria);
+  border: none;
+  border-radius: 0.35rem;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.erro,
+.erro-campo {
+  margin: 0.25rem 0 0;
+  color: var(--cor-erro);
+}
+
+.aviso {
+  padding: 0.5rem 0.75rem;
+  background: var(--cor-aviso-fundo);
+  border-radius: 0.35rem;
+}
+
+.chave code {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  word-break: break-all;
+  background: var(--cor-fundo-codigo);
+}

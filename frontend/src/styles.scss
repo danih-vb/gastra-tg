@@ -1,12 +1,27 @@
-/* Estilos globais do GASTRA */
+/* Estilos globais do GASTRA. As cores ficam em variáveis para o tema do protótipo (#47) trocar num lugar só. */
 
 :root {
   color-scheme: light;
+
+  --cor-primaria: #1f5f99;
+  --cor-texto: #1f1f1f;
+  --cor-texto-suave: #555555;
+  --cor-borda: #dddddd;
+  --cor-borda-forte: #9a9a9a;
+  --cor-erro: #b3261e;
+  --cor-aviso-fundo: #fff4d6;
+  --cor-fundo-destaque: #e8f0f8;
+  --cor-fundo-codigo: #f2f2f2;
 }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   background: #ffffff;
-  color: #1f1f1f;
+  color: var(--cor-texto);
+}
+
+:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
 }

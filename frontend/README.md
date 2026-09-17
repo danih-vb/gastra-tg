@@ -73,3 +73,39 @@ a sessão do usuário).
 **Por que `cliente` é separado de `cardapio`:** as telas do cliente são públicas e pensadas para
 celular; as do cardápio são de gestão e exigem login de Gerente ou Coordenador. Separar evita que a
 área pública carregue código e rotas da área administrativa.
+
+## Sessão e comunicação com a API
+
+A API roda em `http://localhost:5019` (valor padrão do token `URL_DA_API`, em `core/configuracao.ts`).
+Ela só aceita chamadas do navegador vindas das origens listadas em `Cors:OrigensPermitidas` no
+`appsettings.json` do backend (por padrão, `http://localhost:4200`).
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `core/sessao/sessao.service.ts` | Login, segundo fator (configurar e confirmar), logoff e o usuário logado (nome, papel, validade do token) |
+| `core/sessao/autenticacao.interceptor.ts` | Envia o token **só** para a API; num 401 fora do login, encerra a sessão e volta ao login |
+| `core/sessao/guardas.ts` | `exigePapel(...)` em cada rota e a página inicial de cada papel |
+| `core/navegacao.ts` | Menu: quais telas cada papel vê |
+
+### Fluxo de login (UC01–UC03)
+
+1. `/acesso/login` envia e-mail e senha.
+2. Garçom e Metre recebem o token e vão para a página inicial do papel.
+3. Gerente e Coordenador (RF16) recebem um token temporário e vão para `/acesso/segundo-fator`:
+   no primeiro acesso a tela mostra a chave para cadastrar no aplicativo autenticador
+   (exibida uma única vez); nos seguintes, pede só o código de 6 dígitos.
+4. **Sair** chama `POST /api/autenticacao/logoff` (a API invalida o token) e limpa a sessão no
+   navegador mesmo que a chamada falhe.
+
+### Decisões
+
+- **`sessionStorage`, não `localStorage`:** a sessão acaba ao fechar a aba, o que combina com
+  tablets e computadores compartilhados do salão. O token também não vai para cookie, e o
+  interceptador nunca o anexa a outros endereços.
+- **O menu esconde, a API bloqueia:** as guardas e o menu só evitam telas inúteis para o papel.
+  Quem garante a permissão é a API (`[Authorize(Roles = ...)]`); o frontend nunca é a barreira de
+  segurança.
+- **Parâmetro `voltar` do login:** só aceita caminhos internos (começando com `/` e não com `//`),
+  para o login não servir de redirecionamento para sites externos.
+- As telas dos módulos ainda são marcadores (`shared/em-construcao`) e serão feitas a partir do
+  protótipo (#47).
