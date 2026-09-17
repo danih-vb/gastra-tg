@@ -4,6 +4,8 @@
 **Autores:** Daniel Velluto Bento e Pedro Luis Otrente de Campos
 **Orientador:** Prof. Me. Leonardo José de Lima Ferrucci
 
+[![CI](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml)
+
 ---
 
 ## Sobre o projeto
