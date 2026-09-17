@@ -12,10 +12,13 @@ namespace Gastra.Application.UseCases.Comandas;
 /// </summary>
 internal static class MapeadorComanda
 {
-    public static ComandaResponse Montar(Comanda comanda, IReadOnlyDictionary<int, string> nomesDosItens, PapelUsuario papel) => new()
+    public static ComandaResponse Montar(
+        Comanda comanda, IReadOnlyDictionary<int, string> nomesDosItens, PapelUsuario papel, string garcomNome) => new()
     {
         Id = comanda.Id,
         MesaId = comanda.MesaId,
+        GarcomId = comanda.GarcomId,
+        GarcomNome = garcomNome,
         Status = comanda.Status.Adapt<ComunicacaoEnums.StatusComanda>(),
         QuantidadePessoas = comanda.QuantidadePessoas,
         Composicao = comanda.Composicao.Adapt<ComunicacaoEnums.ComposicaoMesa>(),

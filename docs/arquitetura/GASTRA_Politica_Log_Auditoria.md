@@ -72,6 +72,8 @@ identificador do registro afetado.
 | Segundo fator confirmado / recusado | UC02 | ator, resultado, data/hora | código TOTP digitado, segredo TOTP |
 | Logoff | UC03 | ator, data/hora | token de sessão |
 | Conta criada / editada / inativada | UC04 | ator, alvo, **nomes** dos campos alterados; papel anterior → novo | senha, hash, segredo TOTP, valores de nome e e-mail |
+| Senha redefinida pelo Gerente | UC04 | ator, alvo, data/hora | senha nova, hash |
+| Segundo fator zerado pelo Gerente | UC04 | ator, alvo, data/hora | segredo TOTP antigo ou novo |
 
 Justificativas:
 
@@ -80,6 +82,9 @@ Justificativas:
   repetidas.
 - **Mudança de papel com valor antigo e novo:** é a informação que prova quem concedeu acesso
   administrativo a quem — o objetivo central da auditoria. Não é dado sensível.
+- **Redefinição de senha e do segundo fator (#141):** as duas ações dão acesso à conta de outra pessoa, então
+  precisam de dono. Nenhuma pode ser feita na própria conta, e as duas derrubam as sessões abertas daquela conta.
+  Quem redefine nunca fica sabendo a senha anterior: só o hash é guardado (RN06).
 
 ### 4.2 Cardápio
 
@@ -88,6 +93,7 @@ Justificativas:
 | Item cadastrado | UC05 | ator, alvo | — |
 | Preço alterado | UC06 | ator, alvo, preço anterior → novo | — |
 | Disponibilidade alterada | UC07 | ator, alvo, novo estado | — |
+| Foto do item alterada | RF05 | ator, alvo, se o item ficou com ou sem foto | — |
 | Promoção criada / removida | UC08, UC09 | ator, alvo, itens vinculados (implementado no #124) | — |
 | Praça cadastrada / editada | UC24 | ator, alvo, código e quantidade de garçons | — |
 | Mesa cadastrada / editada | UC24 | ator, alvo, número, capacidade e praça | — |
@@ -122,7 +128,7 @@ correlacionar tentativas, registrar apenas os 4 últimos caracteres.
 |---|---|---|---|
 | Sugestão de alocação gerada | UC15 | ator (metre), data, período, pesos `w1`/`w2` usados | — |
 | Alocação confirmada | UC21 | ator, data, período | — |
-| Alocação ajustada manualmente | UC22 | ator, garçom, praça sugerida → praça escolhida | — |
+| Alocação ajustada manualmente | UC22 | ator, garçom, praça sugerida → praça escolhida e, na troca, o garçom trocado (uma linha por garçom movido) | — |
 | Relatório de BI consultado | UC16 | ator, relatório, filtros de período | — |
 | Índice de desempenho consultado | UC17 | ator, garçom consultado | — |
 
@@ -162,7 +168,7 @@ Justificativas:
 | `id_usuario` | `12` | ator; nulo apenas em falha de login sem conta |
 | `papel` | `Metre` | papel no momento da ação |
 | `entidade` / `id_entidade` | `Alocacao` / `87` | alvo |
-| `detalhes` | `{"praca_sugerida": 2, "praca_escolhida": 4}` | JSON **somente com os campos permitidos na seção 4** |
+| `detalhes` | `{"praca_sugerida": 2, "praca_escolhida": 4, "troca_com_garcom_id": 9}` | JSON **somente com os campos permitidos na seção 4** |
 | `ip` | `192.168.0.15` | **somente em eventos de autenticação** (4.1) |
 | `id_correlacao` | `0HN6...` | liga o evento ao log técnico da mesma requisição |
 

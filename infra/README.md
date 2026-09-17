@@ -28,6 +28,16 @@ Ambiente de desenvolvimento/testes via Docker Compose, com MySQL containerizado.
 > e triggers (issue #85), o MySQL sobe com `--log-bin-trust-function-creators=ON`. Sem isso, a
 > migration que cria os triggers falha com o erro 1419.
 
+## Usuário somente leitura da camada analítica (D10)
+
+O serviço Python lê o histórico pelas views com um usuário que só tem `SELECT` nelas:
+
+1. Defina `MYSQL_ANALITICA_PASSWORD` no `.env`.
+2. Com o contêiner de pé e as migrations aplicadas, rode `./criar-usuario-analitico.sh`.
+
+O script pode ser rodado de novo sem problema: ele atualiza a senha e dá acesso às views que forem
+criadas depois. A senha vai para o MySQL pela entrada padrão, e não pela linha de comando.
+
 ## Sistema inteiro em Docker (MySQL + API + serviço analítico)
 
 Para apresentar ou avaliar o GASTRA sem instalar .NET nem Python:
@@ -48,6 +58,8 @@ O que acontece na subida:
 - **Migrations:** a API aplica as pendentes sozinha (`Banco__AplicarMigrationsAoIniciar`). Se alguma falhar, a API
   não sobe.
 - **Ordem:** a API só sobe depois do MySQL e do serviço analítico estarem saudáveis.
+- **Histórico real (D10):** com `MYSQL_ANALITICA_PASSWORD` no `.env` e o usuário criado (seção acima), o serviço
+  analítico lê as views; sem isso, usa o histórico simulado.
 - **Imagens:** rodam com usuário sem privilégio de root, e nenhum segredo entra nelas; tudo vem do `.env`.
 - **Sem o perfil `app`:** `docker compose up -d` continua subindo só o MySQL, como antes.
 

@@ -71,4 +71,38 @@ public class UsuarioController : ControllerBase
         await useCase.Executar(id, request);
         return NoContent();
     }
+
+    /// <summary>
+    /// UC04 — Definir uma senha nova para quem esqueceu a sua. A senha antiga deixa de valer, e as sessões abertas
+    /// daquela conta caem na hora.
+    /// </summary>
+    [HttpPost("{id:int}/senha")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> RedefinirSenha(
+        int id,
+        [FromBody] RedefinirSenhaRequest request,
+        [FromServices] IRedefinirSenhaUsuarioUseCase useCase)
+    {
+        await useCase.Executar(id, request);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// UC04 — Desfazer a vinculação do app autenticador de um Gerente ou Coordenador que perdeu o celular. O próximo
+    /// login volta a pedir a configuração, com um segredo novo (RN07).
+    /// </summary>
+    [HttpDelete("{id:int}/segundo-fator")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> ReiniciarSegundoFator(
+        int id,
+        [FromServices] IReiniciarSegundoFatorUseCase useCase)
+    {
+        await useCase.Executar(id);
+        return NoContent();
+    }
 }

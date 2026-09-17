@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Gastra.Api.Tests.Infraestrutura;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Auditoria;
 using Gastra.Domain.Enums;
 using static Gastra.Api.Tests.Infraestrutura.GastraApiFactory;
 
@@ -216,5 +217,130 @@ public class UsuarioControllerTests(GastraApiFactory factory) : IClassFixture<Ga
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
         Assert.Equal(["Você não pode inativar a própria conta."], await LerErros(resposta));
+    }
+
+    // --- Redefinir senha e zerar o segundo fator (UC04, #141) ---
+
+    private const string SenhaNova = "Senha-nova-do-gerente-9";
+
+    [Fact]
+    public async Task RedefinirSenha_TrocaASenha_EDerrubaAsSessoesAbertas()
+    {
+        var email = NovoEmail("garcom");
+        var usuario = await Cadastrar(email);
+        var tokenAntigo = await factory.Login(factory.CreateClient(), email);
+
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{usuario.Id}/senha", new { senha = SenhaNova }, Json);
+
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, await StatusComToken(tokenAntigo));
+        Assert.Equal(HttpStatusCode.Unauthorized, (await TentarLogin(email)).StatusCode);
+
+        var comSenhaNova = await factory.CreateClient().PostAsJsonAsync("/api/autenticacao/login",
+            new { email, senha = SenhaNova }, Json);
+        Assert.Equal(HttpStatusCode.OK, comSenhaNova.StatusCode);
+
+        // RN06: a senha nunca aparece no registro de auditoria.
+        var registro = (await factory.Auditoria(EventoAuditoria.SenhaRedefinida)).Last();
+        Assert.Equal(usuario.Id, registro.IdEntidade);
+        Assert.DoesNotContain(SenhaNova, registro.Detalhes ?? string.Empty);
+    }
+
+    [Fact]
+    public async Task RedefinirSenha_ComSenhaCurta_Retorna400_ESenhaAntigaContinuaValendo()
+    {
+        var email = NovoEmail("garcom");
+        var usuario = await Cadastrar(email);
+
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{usuario.Id}/senha", new { senha = "1234" }, Json);
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+        Assert.Contains(await LerErros(resposta), e => e.Contains("8 caracteres"));
+        Assert.Equal(HttpStatusCode.OK, (await TentarLogin(email)).StatusCode);
+    }
+
+    [Fact]
+    public async Task RedefinirSenha_DaPropriaConta_Retorna422()
+    {
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{factory.IdGerente}/senha", new { senha = SenhaNova }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task RedefinirSenha_DeContaInexistente_Retorna404()
+    {
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/999999/senha", new { senha = SenhaNova }, Json);
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReiniciarSegundoFator_FazOProximoLoginPedirAConfiguracaoDeNovo()
+    {
+        var email = NovoEmail("coordenador");
+        var usuario = await Cadastrar(email, "Coordenador");
+        var cliente = factory.CreateClient();
+        var token = await VincularAutenticador(cliente, email);
+        Assert.True((await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{usuario.Id}", Json))!.SegundoFatorConfigurado);
+
+        var resposta = await _cliente.DeleteAsync($"{Rota}/{usuario.Id}/segundo-fator");
+
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, await StatusComToken(token));
+        Assert.False((await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{usuario.Id}", Json))!.SegundoFatorConfigurado);
+
+        var login = await (await factory.CreateClient().PostAsJsonAsync("/api/autenticacao/login",
+            new { email, senha = SenhaPadrao }, Json)).Content.ReadFromJsonAsync<LoginResponse>(Json);
+        Assert.True(login!.RequerConfiguracaoSegundoFator);
+    }
+
+    [Fact]
+    public async Task ReiniciarSegundoFator_DeQuemNaoUsaSegundoFator_Retorna422()
+    {
+        var usuario = await Cadastrar(NovoEmail("garcom"));
+
+        var resposta = await _cliente.DeleteAsync($"{Rota}/{usuario.Id}/segundo-fator");
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReiniciarSegundoFator_DaPropriaConta_Retorna422()
+    {
+        var resposta = await _cliente.DeleteAsync($"{Rota}/{factory.IdGerente}/segundo-fator");
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task RedefinirSenhaEZerarSegundoFator_ComoGarcom_Retorna403()
+    {
+        var alvo = await Cadastrar(NovoEmail("alvo"));
+        var email = NovoEmail("garcom");
+        await factory.CriarUsuario(email, PapelUsuario.Garcom);
+        var garcom = factory.CreateClient();
+        Autenticar(garcom, await factory.Login(garcom, email));
+
+        var senha = await garcom.PostAsJsonAsync($"{Rota}/{alvo.Id}/senha", new { senha = SenhaNova }, Json);
+        var segundoFator = await garcom.DeleteAsync($"{Rota}/{alvo.Id}/segundo-fator");
+
+        Assert.Equal(HttpStatusCode.Forbidden, senha.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, segundoFator.StatusCode);
+    }
+
+    /// <summary>Primeiro acesso de Gerente ou Coordenador: vincula o autenticador e devolve o token de acesso.</summary>
+    private async Task<string> VincularAutenticador(HttpClient cliente, string email)
+    {
+        var login = await (await cliente.PostAsJsonAsync("/api/autenticacao/login", new { email, senha = SenhaPadrao }, Json))
+            .Content.ReadFromJsonAsync<LoginResponse>(Json);
+
+        var configuracao = await (await cliente.PostAsJsonAsync("/api/autenticacao/segundo-fator/configurar",
+            new { tokenSegundoFator = login!.TokenSegundoFator }, Json)).Content.ReadFromJsonAsync<ConfiguracaoSegundoFatorResponse>(Json);
+
+        var confirmacao = await cliente.PostAsJsonAsync("/api/autenticacao/segundo-fator/confirmar",
+            new { tokenSegundoFator = login.TokenSegundoFator, codigo = CodigoTotp(configuracao!.ChaveManual) }, Json);
+        confirmacao.EnsureSuccessStatusCode();
+        return (await confirmacao.Content.ReadFromJsonAsync<LoginResponse>(Json))!.TokenAcesso!;
     }
 }

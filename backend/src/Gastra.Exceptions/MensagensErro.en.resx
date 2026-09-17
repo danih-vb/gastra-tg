@@ -9,6 +9,7 @@
   <data name="DescricaoMuitoLonga" xml:space="preserve"><value>Description must be at most 500 characters.</value></data>
   <data name="PrecoInvalido" xml:space="preserve"><value>Price must be greater than zero.</value></data>
   <data name="CategoriaInvalida" xml:space="preserve"><value>Invalid category.</value></data>
+  <data name="ImagemInvalida" xml:space="preserve"><value>The image must be an http(s) address or a path starting with a slash, up to 300 characters.</value></data>
   <data name="FlagDieteticaInvalida" xml:space="preserve"><value>Invalid dietary flag.</value></data>
   <data name="ItemCardapioNaoEncontrado" xml:space="preserve"><value>Menu item not found.</value></data>
   <data name="RequisicaoInvalida" xml:space="preserve"><value>Invalid request.</value></data>
@@ -31,6 +32,9 @@
   <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>User not found.</value></data>
   <data name="AlterarProprioPapel" xml:space="preserve"><value>You cannot change your own role.</value></data>
   <data name="InativarPropriaConta" xml:space="preserve"><value>You cannot deactivate your own account.</value></data>
+  <data name="RedefinirPropriaSenha" xml:space="preserve"><value>You cannot reset your own password here.</value></data>
+  <data name="ReiniciarProprioSegundoFator" xml:space="preserve"><value>You cannot reset your own two-step verification. Ask another manager.</value></data>
+  <data name="PapelSemSegundoFator" xml:space="preserve"><value>This role does not use two-step verification.</value></data>
   <data name="ComandaNaoEncontrada" xml:space="preserve"><value>Order not found.</value></data>
   <data name="MesaNaoEncontrada" xml:space="preserve"><value>Table not found.</value></data>
   <data name="ItemPedidoNaoEncontrado" xml:space="preserve"><value>Order item not found in this tab.</value></data>
@@ -61,7 +65,10 @@
   <data name="AlocacaoSemVagas" xml:space="preserve"><value>The sections do not have room for all the waiters provided.</value></data>
   <data name="AlocacaoJaConfirmada" xml:space="preserve"><value>This shift's allocation has already been confirmed and can no longer change.</value></data>
   <data name="AlocacaoNaoEncontrada" xml:space="preserve"><value>There is no allocation for this shift.</value></data>
-  <data name="PracaSemVaga" xml:space="preserve"><value>The chosen section is already full in this shift.</value></data>
+  <data name="PracaSemVaga" xml:space="preserve"><value>The chosen section is already full in this shift. To adjust, swap with one of its waiters.</value></data>
+  <data name="TrocaComOProprioGarcom" xml:space="preserve"><value>Choose another waiter for the swap.</value></data>
+  <data name="GarcomDaTrocaForaDaPraca" xml:space="preserve"><value>The waiter chosen for the swap is not in the destination section in this shift.</value></data>
+  <data name="TrocaNaMesmaPraca" xml:space="preserve"><value>Both waiters are already in the same section.</value></data>
   <data name="PeriodoInvalido" xml:space="preserve"><value>Invalid period: use Almoco or Jantar.</value></data>
   <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Provide the shift date.</value></data>
   <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>The report start date cannot be after the end date.</value></data>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GASTRA · Acesso (protótipo)</title>
+  <link rel="stylesheet" href="assets/prototipo.css">
+  <style>
+    body { min-height: 100vh; background: linear-gradient(180deg, var(--marinho) 0 260px, var(--fundo) 260px); }
+    .area { max-width: 420px; margin: 0 auto; padding: 40px 16px 120px; display: flex; flex-direction: column; gap: 16px; }
+    .marca-acesso { display: flex; align-items: center; gap: 12px; color: #fff; }
+    .marca-acesso img { width: 48px; height: 48px; background: #fff; border-radius: 12px; padding: 4px; }
+    .marca-acesso strong { display: block; font-size: 1.5rem; letter-spacing: 0.04em; }
+    .marca-acesso span { color: #c9d3df; font-size: 0.875rem; }
+    .cartao-acesso { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .campo-senha { position: relative; }
+    .campo-senha .entrada { padding-right: 52px; }
+    .campo-senha .botao-icone { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); }
+    .digitos { letter-spacing: 0.5em; font-size: 1.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+    .qr { display: grid; place-items: center; padding: 12px; background: #fff; border: 1px solid var(--borda); border-radius: var(--raio); }
+    .chave { padding: 10px 12px; font-family: ui-monospace, Consolas, monospace; font-size: 1.0625rem; letter-spacing: 0.08em; text-align: center; background: var(--marinho-suave); border-radius: var(--raio-pequeno); user-select: all; }
+    .passos { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+    .perfis { border: 2px dashed #6b4fa0; background: #f4effb; }
+    .perfis header { color: #3b2a55; }
+    .perfis button { text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="area" id="app"></div>
+
+  <script src="assets/base.js"></script>
+  <script src="assets/cenas.js"></script>
+  <script src="assets/dados.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { icone, escapar, rota, navegar, avisar } = G;
+    const D = DADOS;
+    const app = document.getElementById('app');
+    let pendente = null;
+
+    const DESTINO = {
+      Garcom: 'garcom.html#/mesas',
+      Metre: 'metre.html#/alocacao',
+      Gerente: 'gerente.html#/analises',
+      Coordenador: 'gerente.html?papel=Coordenador#/cardapio',
+    };
+
+    const marca = `<div class="marca-acesso"><img src="assets/logo.png" alt=""><div><strong>GASTRA</strong><span>Gestão analítica do restaurante</span></div></div>`;
+
+    // ---------------- UC01 — Login ----------------
+    rota('/login', ({ consulta }) => {
+      const encerrada = consulta.get('sessao') === 'encerrada';
+      app.innerHTML = `
+        ${marca}
+        <form class="cartao cartao-acesso" novalidate>
+          <h1>Entrar</h1>
+          ${encerrada ? `<div class="alerta" role="status">${icone('info')}<div>Você saiu do sistema. Entre de novo para continuar.</div></div>` : ''}
+          <div data-erro-geral></div>
+          <div class="campo">
+            <label for="email">E-mail</label>
+            <input class="entrada" id="email" type="email" autocomplete="username" inputmode="email" autofocus>
+            <span class="erro-campo" id="erro-email"></span>
+          </div>
+          <div class="campo">
+            <label for="senha">Senha</label>
+            <div class="campo-senha">
+              <input class="entrada" id="senha" type="password" autocomplete="current-password">
+              <button class="botao-icone" type="button" data-ver-senha aria-label="Mostrar senha" aria-pressed="false">${icone('olho')}</button>
+            </div>
+            <span class="erro-campo" id="erro-senha"></span>
+          </div>
+          <button class="botao largo" type="submit" data-toque>Entrar</button>
+          <p class="suave pequeno">Esqueceu a senha? Fale com o gerente.</p>
+        </form>
+
+        <section class="cartao perfis" aria-labelledby="t-perfis">
+          <header style="padding:12px 16px;border-bottom:1px solid #d9cdef"><h2 id="t-perfis" style="font-size:0.9375rem;color:#3b2a55">Só no protótipo: entrar como</h2></header>
+          <ul class="lista">${['carla@restaurante.com.br', 'sergio@restaurante.com.br', 'roberta@restaurante.com.br', 'marcos@restaurante.com.br'].map((e) => {
+            const u = D.usuarios.find((x) => x.email === e);
+            return `<li><div class="principal-item"><strong>${escapar(u.nome)}</strong><span class="pequeno suave">${D.PAPEIS[u.papel]}${u.papel === 'Gerente' ? ' · autenticador já configurado' : u.papel === 'Coordenador' ? ' · primeiro acesso' : ''}</span></div>
+              <button class="botao compacto secundario" type="button" data-perfil="${e}">Preencher</button></li>`;
+          }).join('')}</ul>
+          <p class="corpo pequeno suave" style="padding-top:0">Qualquer senha funciona, menos <strong>errada</strong> (mostra o erro). No segundo fator, qualquer código de 6 dígitos funciona, menos 000000.</p>
+        </section>`;
+
+      const form = app.querySelector('form');
+      app.querySelector('[data-ver-senha]').addEventListener('click', (e) => {
+        const campo = app.querySelector('#senha');
+        const mostrar = campo.type === 'password';
+        campo.type = mostrar ? 'text' : 'password';
+        e.currentTarget.setAttribute('aria-pressed', mostrar);
+        e.currentTarget.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+      });
+      app.querySelectorAll('[data-perfil]').forEach((b) => b.addEventListener('click', () => {
+        app.querySelector('#email').value = b.dataset.perfil;
+        app.querySelector('#senha').value = 'senha-de-teste';
+        app.querySelector('#senha').focus();
+      }));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = app.querySelector('#email').value.trim();
+        const senha = app.querySelector('#senha').value;
+        app.querySelector('#erro-email').textContent = email ? '' : 'O e-mail é obrigatório.';
+        app.querySelector('#erro-senha').textContent = senha ? '' : 'A senha é obrigatória.';
+        app.querySelector('#email').toggleAttribute('aria-invalid', !email);
+        app.querySelector('#senha').toggleAttribute('aria-invalid', !senha);
+        const geral = app.querySelector('[data-erro-geral]');
+        geral.innerHTML = '';
+        if (!email || !senha) return;
+        const u = D.usuarios.find((x) => x.email.toLowerCase() === email.toLowerCase() && x.ativo);
+        if (!u || senha === 'errada') {
+          // Mesma mensagem para e-mail inexistente, conta inativa e senha errada: não revela quem tem conta.
+          geral.innerHTML = `<div class="alerta erro" role="alert">${icone('alerta')}<div>E-mail ou senha inválidos.</div></div>`;
+          app.querySelector('#senha').value = '';
+          app.querySelector('#senha').focus();
+          return;
+        }
+        if (u.papel === 'Gerente' || u.papel === 'Coordenador') {
+          pendente = u;
+          navegar(u.segundoFator ? '/segundo-fator' : '/segundo-fator/configurar');
+          return;
+        }
+        location.href = DESTINO[u.papel];
+      });
+    });
+
+    // ---------------- UC02 — Primeiro acesso: vincular o autenticador ----------------
+    rota('/segundo-fator/configurar', () => {
+      if (!pendente) return navegar('/login');
+      app.innerHTML = `
+        ${marca}
+        <section class="cartao cartao-acesso" aria-labelledby="t-conf">
+          <div><h1 id="t-conf">Proteja sua conta</h1><p class="suave" style="margin-top:4px">Olá, ${escapar(pendente.nome.split(' ')[0])}. Como ${D.PAPEIS[pendente.papel].toLowerCase()}, seu acesso usa uma segunda etapa com um aplicativo autenticador.</p></div>
+          <ol class="passos">
+            <li>Instale um aplicativo autenticador (Google Authenticator, Microsoft Authenticator ou similar).</li>
+            <li>No aplicativo, adicione uma conta e leia o QR code abaixo.</li>
+            <li>Digite o código de 6 dígitos que aparecer.</li>
+          </ol>
+          <div class="qr">${qrIlustrativo()}<span class="pequeno suave">QR code ilustrativo</span></div>
+          <div class="campo"><span class="rotulo">Não consegue ler? Digite esta chave</span><div class="chave">JBSW Y3DP EHPK 3PXP</div></div>
+          <div class="alerta aviso">${icone('alerta')}<div><strong>A chave aparece só agora.</strong>Por segurança, ela não será mostrada de novo. Se perder o celular, fale com o gerente.</div></div>
+          <button class="botao largo" type="button" data-proximo data-toque>Já adicionei, digitar o código</button>
+        </section>`;
+      app.querySelector('[data-proximo]').addEventListener('click', () => navegar('/segundo-fator'));
+    });
+
+    // ---------------- UC02 — Confirmar o código ----------------
+    rota('/segundo-fator', () => {
+      if (!pendente) return navegar('/login');
+      app.innerHTML = `
+        ${marca}
+        <form class="cartao cartao-acesso" novalidate>
+          <div><h1>Verificação em duas etapas</h1><p class="suave" style="margin-top:4px">Abra o aplicativo autenticador e digite o código de 6 dígitos da conta GASTRA.</p></div>
+          <div data-erro></div>
+          <div class="campo">
+            <label for="codigo">Código</label>
+            <input class="entrada digitos" id="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" autofocus>
+            <span class="ajuda">${icone('relogio')} O código muda a cada 30 segundos. Se expirar, use o próximo.</span>
+          </div>
+          <button class="botao largo" type="submit" data-toque>Confirmar</button>
+          <a class="botao fantasma" href="#/login" data-toque>Voltar e entrar com outra conta</a>
+        </form>`;
+      const campo = app.querySelector('#codigo');
+      campo.addEventListener('input', () => {
+        campo.value = campo.value.replace(/\D/g, '').slice(0, 6);
+        if (campo.value.length === 6) app.querySelector('form').requestSubmit();
+      });
+      app.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const erro = app.querySelector('[data-erro]');
+        if (!/^\d{6}$/.test(campo.value)) {
+          erro.innerHTML = `<div class="alerta erro" role="alert">${icone('alerta')}<div>Digite os 6 dígitos do código.</div></div>`;
+          return;
+        }
+        if (campo.value === '000000') {
+          erro.innerHTML = `<div class="alerta erro" role="alert">${icone('alerta')}<div>Código de verificação inválido. Confira o horário do celular e tente o código atual.</div></div>`;
+          campo.value = '';
+          campo.focus();
+          return;
+        }
+        pendente.segundoFator = true;
+        location.href = DESTINO[pendente.papel];
+      });
+    });
+
+    // ---------------- Sem permissão ----------------
+    rota('/sem-permissao', () => {
+      app.innerHTML = `
+        ${marca}
+        <section class="cartao cartao-acesso" style="text-align:center;align-items:center">
+          ${icone('cadeado')}
+          <h1>Sem permissão</h1>
+          <p class="suave">Seu perfil não tem acesso a esta tela. Se precisar dela, fale com o gerente.</p>
+          <a class="botao" href="#/login">Voltar ao início</a>
+        </section>`;
+    });
+
+    /** Padrão com cara de QR code (não é lido por câmera): só para o protótipo. */
+    function qrIlustrativo() {
+      const n = 25;
+      let semente = 7;
+      const aleatorio = () => ((semente = (semente * 9301 + 49297) % 233280) / 233280);
+      const quadrados = [];
+      const olho = (x, y) => quadrados.push(`<rect x="${x}" y="${y}" width="7" height="7" fill="none" stroke="#1e2530" stroke-width="1"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3"/>`);
+      for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+        const noOlho = (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+        if (!noOlho && aleatorio() > 0.55) quadrados.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`);
+      }
+      olho(0.5, 0.5); olho(n - 7.5, 0.5); olho(0.5, n - 7.5);
+      return `<svg viewBox="-1 -1 ${n + 2} ${n + 2}" width="176" height="176" fill="#1e2530" role="img" aria-label="QR code para vincular o aplicativo autenticador">${quadrados.join('')}</svg>`;
+    }
+
+    G.iniciar({});
+  })();
+  </script>
+</body>
+</html>

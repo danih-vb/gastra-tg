@@ -160,4 +160,55 @@ public class CardapioControllerTests(GastraApiFactory factory) : IClassFixture<G
 
         Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
     }
+
+    // --- RF05: foto do item no cardápio digital (#141) ---
+
+    [Fact]
+    public async Task Cadastrar_ComEnderecoDeFoto_GuardaAImagem()
+    {
+        var resposta = await _cliente.PostAsJsonAsync(Rota,
+            new { nome = "Pudim com foto", categoria = "Sobremesa", preco = 19m, descricao = "", flagsDieteticas = Array.Empty<string>(), imagem = "https://cdn.exemplo.com/pudim.jpg" }, Json);
+
+        resposta.EnsureSuccessStatusCode();
+        var item = await resposta.Content.ReadFromJsonAsync<ItemCardapioResponse>(Json);
+        Assert.Equal("https://cdn.exemplo.com/pudim.jpg", item!.Imagem);
+    }
+
+    [Theory]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("//cdn.exemplo.com/pudim.jpg")]
+    [InlineData("pudim.jpg")]
+    public async Task Cadastrar_ComEnderecoDeFotoInvalido_Retorna400(string imagem)
+    {
+        var resposta = await _cliente.PostAsJsonAsync(Rota,
+            new { nome = "Pudim", categoria = "Sobremesa", preco = 19m, descricao = "", flagsDieteticas = Array.Empty<string>(), imagem }, Json);
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+        Assert.Contains(await LerErros(resposta), e => e.Contains("imagem", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task AlterarImagem_TrocaEDepoisRemoveAFoto()
+    {
+        var item = await Cadastrar("Petit gâteau");
+
+        var troca = await _cliente.PatchAsJsonAsync($"{Rota}/{item.Id}/imagem", new { imagem = "/fotos/petit-gateau.jpg" }, Json);
+
+        Assert.Equal(HttpStatusCode.NoContent, troca.StatusCode);
+        var comFoto = await _cliente.GetFromJsonAsync<ItemCardapioResponse>($"{Rota}/{item.Id}", Json);
+        Assert.Equal("/fotos/petit-gateau.jpg", comFoto!.Imagem);
+
+        await _cliente.PatchAsJsonAsync($"{Rota}/{item.Id}/imagem", new { imagem = (string?)null }, Json);
+
+        var semFoto = await _cliente.GetFromJsonAsync<ItemCardapioResponse>($"{Rota}/{item.Id}", Json);
+        Assert.Null(semFoto!.Imagem);
+    }
+
+    [Fact]
+    public async Task AlterarImagem_DeItemInexistente_Retorna404()
+    {
+        var resposta = await _cliente.PatchAsJsonAsync($"{Rota}/999999/imagem", new { imagem = "https://cdn.exemplo.com/x.jpg" }, Json);
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+    }
 }

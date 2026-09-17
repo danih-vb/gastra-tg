@@ -17,6 +17,7 @@ public interface IListarComandasAbertasUseCase
 public class ListarComandasAbertasUseCase(
     IRepositorioComanda repositorio,
     IRepositorioItemCardapio repositorioCardapio,
+    IRepositorioUsuario repositorioUsuario,
     IUsuarioLogado usuarioLogado) : IListarComandasAbertasUseCase
 {
     public async Task<List<ComandaResponse>> Executar()
@@ -24,11 +25,13 @@ public class ListarComandasAbertasUseCase(
         var comandas = await repositorio.ListarAbertas();
         var respostas = new List<ComandaResponse>();
         var papel = usuarioLogado.ObterPapel();
+        var garcons = await LeitorDeNomesDeGarcons.Obter(repositorioUsuario, comandas);
 
         foreach (var comanda in comandas)
         {
             var nomes = await LeitorDeNomesDoCardapio.Obter(repositorioCardapio, comanda);
-            respostas.Add(MapeadorComanda.Montar(comanda, nomes, papel));
+            respostas.Add(MapeadorComanda.Montar(
+                comanda, nomes, papel, garcons.TryGetValue(comanda.GarcomId, out var nome) ? nome : string.Empty));
         }
 
         return respostas;

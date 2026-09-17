@@ -19,6 +19,7 @@ public interface IFecharComandaUseCase
 public class FecharComandaUseCase(
     IRepositorioComanda repositorio,
     IRepositorioItemCardapio repositorioCardapio,
+    IRepositorioUsuario repositorioUsuario,
     IUsuarioLogado usuarioLogado,
     IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IFecharComandaUseCase
@@ -38,6 +39,7 @@ public class FecharComandaUseCase(
         await unitOfWork.Commit();
 
         var nomes = await LeitorDeNomesDoCardapio.Obter(repositorioCardapio, comanda);
-        return MapeadorComanda.Montar(comanda, nomes, usuarioLogado.ObterPapel());
+        var garcom = await LeitorDeNomesDeGarcons.Obter(repositorioUsuario, comanda);
+        return MapeadorComanda.Montar(comanda, nomes, usuarioLogado.ObterPapel(), garcom);
     }
 }
