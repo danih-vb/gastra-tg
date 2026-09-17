@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GASTRA · Protótipo navegável</title>
+  <link rel="stylesheet" href="assets/prototipo.css">
+  <style>
+    .capa { color: #fff; background: var(--marinho); }
+    .capa .interno { max-width: 1080px; margin: 0 auto; padding: 40px 24px 48px; display: flex; flex-direction: column; gap: 12px; }
+    .capa .marca { display: flex; align-items: center; gap: 14px; }
+    .capa img { width: 56px; height: 56px; background: #fff; border-radius: 14px; padding: 5px; }
+    .capa h1 { color: #fff; font-size: 2rem; }
+    .capa p { max-width: 720px; color: #d5dde7; }
+    .conteudo-indice { max-width: 1080px; margin: -24px auto 64px; padding: 0 24px; display: flex; flex-direction: column; gap: 24px; }
+    .personas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .persona { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+    .persona .topo-persona { display: flex; align-items: center; gap: 10px; }
+    .persona .topo-persona .icone { width: 28px; height: 28px; color: var(--laranja-forte); }
+    .persona ul { margin: 0; padding-left: 18px; font-size: 0.9375rem; display: flex; flex-direction: column; gap: 4px; }
+    .persona .acoes-persona { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+    .dicas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .dicas .cartao { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+    kbd { padding: 1px 6px; font-family: inherit; font-size: 0.8125rem; background: var(--marinho-suave); border: 1px solid var(--borda); border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header class="capa">
+    <div class="interno">
+      <div class="marca"><img src="assets/logo.png" alt=""><div><p style="color:#ffc6ad;font-weight:600">Protótipo navegável · issues #47, #99 e #100</p><h1>GASTRA</h1></div></div>
+      <p>Telas das quatro personas com dados fictícios. As regras, listas fechadas e mensagens de erro seguem a API já implementada, para a avaliação de Nielsen (#101, #102) e para o frontend em Angular.</p>
+    </div>
+  </header>
+
+  <main class="conteudo-indice" id="indice"></main>
+
+  <script src="assets/base.js"></script>
+  <script>
+    const { icone } = G;
+    const PERSONAS = [
+      { nome: 'Garçom', icone: 'mesa', aparelho: 'Celular', link: 'garcom.html#/mesas', ucs: 'UC10–UC14, UC17, UC18, UC23',
+        telas: ['Mesas do turno (sua praça)', 'Abrir mesa em 1 toque na quantidade de pessoas', 'Comanda: pendências, sugestões, lançar item', 'Restrição alimentar e cancelamento com motivo', 'Fechar conta com taxa de serviço', 'A entregar e desempenho próprio'] },
+      { nome: 'Metre', icone: 'alocacao', aparelho: 'Tablet ou computador', link: 'metre.html#/alocacao', ucs: 'UC15, UC21, UC22',
+        telas: ['Presença do turno', 'Sugestão de alocação por praça (RN03)', 'Mudar ou trocar garçom de praça', 'Confirmar a alocação', 'Salão agora: comandas abertas'] },
+      { nome: 'Gerente', icone: 'grafico', aparelho: 'Computador', link: 'gerente.html#/analises', ucs: 'UC04–UC09, UC16, UC17, UC24',
+        telas: ['Análises: KPIs, praças, horários, ranking', 'Cardápio: itens, preço, disponibilidade', 'Promoções com prévia dos preços', 'Salão: praças e mesas', 'Usuários: papel, 2FA e inativação'] },
+      { nome: 'Coordenador', icone: 'cardapio', aparelho: 'Computador', link: 'gerente.html?papel=Coordenador#/cardapio', ucs: 'UC05–UC09',
+        telas: ['Mesma área do Gerente, só com Cardápio e Promoções', 'Menu mostra apenas o que o papel pode usar'] },
+      { nome: 'Cliente', icone: 'celular', aparelho: 'Celular (QR code na mesa)', link: 'cliente.html#/', ucs: 'UC19, UC20',
+        telas: ['Início pelo QR code', 'Cardápio digital com filtros dietéticos', 'Conta da mesa em tempo real', 'Código digitado e conta não encontrada'] },
+      { nome: 'Acesso', icone: 'cadeado', aparelho: 'Todos', link: 'acesso.html#/login', ucs: 'UC01–UC03',
+        telas: ['Login com e-mail e senha', 'Primeiro acesso: vincular autenticador', 'Código de 6 dígitos (Gerente e Coordenador)', 'Saída e sessão encerrada'] },
+    ];
+
+    document.getElementById('indice').innerHTML = `
+      <section class="personas" aria-label="Personas">
+        ${PERSONAS.map((p) => `
+          <article class="cartao persona">
+            <div class="topo-persona">${icone(p.icone)}<div><h2>${p.nome}</h2><p class="suave pequeno">${p.aparelho} · ${p.ucs}</p></div></div>
+            <ul>${p.telas.map((t) => `<li>${t}</li>`).join('')}</ul>
+            <div class="acoes-persona"><a class="botao" href="${p.link}">Abrir</a></div>
+          </article>`).join('')}
+      </section>
+
+      <section class="dicas" aria-label="Como usar">
+        <div class="cartao">
+          <h2>${icone('mao')} Contador de toques</h2>
+          <p>O botão roxo no canto conta cada ação nas telas. No Garçom, <strong>Medir RNF02</strong> mede abrir mesa + lançar item e mostra se fica em até 5 toques.</p>
+        </div>
+        <div class="cartao">
+          <h2>${icone('alerta')} Estados alternativos</h2>
+          <p>No mesmo painel roxo dá para simular falhas e listas vazias: serviço de sugestões fora do ar, período sem movimento, conta já fechada. Servem para avaliar as heurísticas 1 e 9 de Nielsen.</p>
+        </div>
+        <div class="cartao">
+          <h2>${icone('info')} O que não é produto</h2>
+          <p>Painel roxo e caixa “Só no protótipo” no login. Com <kbd>?captura</kbd> na URL o painel some (usado nas imagens da documentação).</p>
+        </div>
+      </section>`;
+  </script>
+</body>
+</html>
