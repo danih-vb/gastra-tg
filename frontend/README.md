@@ -90,8 +90,8 @@ Ela só aceita chamadas do navegador vindas das origens listadas em `Cors:Origen
 ### Fluxo de login (UC01–UC03)
 
 1. `/acesso/login` envia e-mail e senha.
-2. Garçom, Metre e Coordenador recebem o token e vão para a página inicial do papel.
-3. O Gerente recebe um token temporário e vai para `/acesso/segundo-fator`:
+2. Garçom e Metre recebem o token e vão para a página inicial do papel.
+3. Gerente e Coordenador (RF16) recebem um token temporário e vão para `/acesso/segundo-fator`:
    no primeiro acesso a tela mostra a chave para cadastrar no aplicativo autenticador
    (exibida uma única vez); nos seguintes, pede só o código de 6 dígitos.
 4. **Sair** chama `POST /api/autenticacao/logoff` (a API invalida o token) e limpa a sessão no
