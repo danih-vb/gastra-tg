@@ -1,0 +1,27 @@
+<section class="cartao" aria-labelledby="titulo-login">
+  <h2 id="titulo-login">Entrar</h2>
+
+  @if (sessaoEncerrada) {
+    <p class="aviso" role="status">Sua sessão foi encerrada. Entre de novo para continuar.</p>
+  }
+
+  <form [formGroup]="formulario" (ngSubmit)="entrar()" novalidate>
+    <label for="email">E-mail</label>
+    <input id="email" type="email" formControlName="email" autocomplete="username" required />
+    @if (formulario.controls.email.touched && formulario.controls.email.invalid) {
+      <span class="erro-campo">Informe um e-mail válido.</span>
+    }
+
+    <label for="senha">Senha</label>
+    <input id="senha" type="password" formControlName="senha" autocomplete="current-password" required />
+    @if (formulario.controls.senha.touched && formulario.controls.senha.invalid) {
+      <span class="erro-campo">Informe a senha.</span>
+    }
+
+    @for (erro of erros(); track erro) {
+      <p class="erro" role="alert">{{ erro }}</p>
+    }
+
+    <button type="submit" [disabled]="enviando()">{{ enviando() ? 'Entrando…' : 'Entrar' }}</button>
+  </form>
+</section>

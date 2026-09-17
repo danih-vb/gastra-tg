@@ -1,6 +1,25 @@
 <header class="topo">
-  <h1>{{ title() }}</h1>
-  <p>Gestão Analítica de Restaurantes</p>
+  <div class="marca">
+    <h1>GASTRA</h1>
+    <p>Gestão Analítica de Restaurantes</p>
+  </div>
+
+  @if (usuario(); as usuarioLogado) {
+    <nav aria-label="Menu principal">
+      <ul>
+        @for (item of menu(); track item.rota) {
+          <li>
+            <a [routerLink]="item.rota" routerLinkActive="ativo" ariaCurrentWhenActive="page">{{ item.rotulo }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <div class="usuario">
+      <span>{{ usuarioLogado.nome }} · {{ nomeDoPapel[usuarioLogado.papel] }}</span>
+      <button type="button" (click)="sair()">Sair</button>
+    </div>
+  }
 </header>
 
 <main>

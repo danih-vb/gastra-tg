@@ -1,0 +1,50 @@
+<section class="cartao" aria-labelledby="titulo-segundo-fator">
+  <h2 id="titulo-segundo-fator">Verificação em duas etapas</h2>
+
+  @if (configurando) {
+    <div class="configuracao">
+      <p>
+        Primeiro acesso: vincule um app autenticador (Google Authenticator, Microsoft Authenticator ou similar) à sua
+        conta.
+      </p>
+      @if (configuracao(); as dados) {
+        <ol>
+          <li>No app, escolha adicionar conta e digite a chave abaixo (ou abra o link no celular).</li>
+          <li>Digite o código de 6 dígitos que o app mostrar.</li>
+        </ol>
+        <p class="chave">
+          <span>Chave:</span>
+          <code>{{ dados.chaveManual }}</code>
+        </p>
+        <p><a [href]="dados.uriConfiguracao">Abrir no app autenticador</a></p>
+        <p class="aviso" role="note">Esta chave aparece só agora. Depois de confirmar, ela não é exibida de novo.</p>
+      } @else if (erros().length === 0) {
+        <p role="status">Gerando a chave…</p>
+      }
+    </div>
+  } @else {
+    <p>Digite o código de 6 dígitos do seu app autenticador.</p>
+  }
+
+  <form [formGroup]="formulario" (ngSubmit)="confirmar()" novalidate>
+    <label for="codigo">Código</label>
+    <input
+      id="codigo"
+      type="text"
+      inputmode="numeric"
+      maxlength="6"
+      autocomplete="one-time-code"
+      formControlName="codigo"
+      required
+    />
+    @if (formulario.controls.codigo.touched && formulario.controls.codigo.invalid) {
+      <span class="erro-campo">O código tem 6 números.</span>
+    }
+
+    @for (erro of erros(); track erro) {
+      <p class="erro" role="alert">{{ erro }}</p>
+    }
+
+    <button type="submit" [disabled]="enviando()">{{ enviando() ? 'Confirmando…' : 'Confirmar' }}</button>
+  </form>
+</section>

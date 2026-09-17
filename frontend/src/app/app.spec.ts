@@ -1,24 +1,63 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
+import { ARMAZENAMENTO_DA_SESSAO } from './core/configuracao';
+import { Papel } from './core/sessao/modelos';
+import { ArmazenamentoEmMemoria } from './core/sessao/testes';
 
 describe('App', () => {
-  beforeEach(async () => {
+  async function renderizar(papel: Papel | null): Promise<HTMLElement> {
+    const armazenamento = new ArmazenamentoEmMemoria();
+    if (papel) {
+      armazenamento.setItem(
+        'gastra.sessao',
+        JSON.stringify({ token: 't', nome: 'Ana', papel, expiraEm: Date.now() + 60_000 }),
+      );
+    }
     await TestBed.configureTestingModule({
       imports: [App],
-    })
-      .compileComponents();
-  });
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ARMAZENAMENTO_DA_SESSAO, useValue: armazenamento },
+      ],
+    }).compileComponents();
 
-  it('cria o componente principal', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('exibe o nome do sistema no cabeçalho', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('GASTRA');
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  function itensDoMenu(pagina: HTMLElement): string[] {
+    return [...pagina.querySelectorAll('nav a')].map((a) => a.textContent?.trim() ?? '');
+  }
+
+  it('exibe o nome do sistema no cabeçalho', async () => {
+    const pagina = await renderizar(null);
+
+    expect(pagina.querySelector('h1')?.textContent).toContain('GASTRA');
+  });
+
+  it('sem login, não mostra menu nem botão de sair', async () => {
+    const pagina = await renderizar(null);
+
+    expect(pagina.querySelector('nav')).toBeNull();
+    expect(pagina.querySelector('.usuario button')).toBeNull();
+  });
+
+  it('o garçom vê só as telas dele', async () => {
+    const pagina = await renderizar('Garcom');
+
+    expect(itensDoMenu(pagina)).toEqual(['Comandas', 'Análises']);
+    expect(pagina.querySelector('.usuario')?.textContent).toContain('Ana · Garçom');
+  });
+
+  it('o gerente vê a gestão, mas não a alocação do metre', async () => {
+    const pagina = await renderizar('Gerente');
+
+    expect(itensDoMenu(pagina)).toEqual(['Comandas', 'Cardápio', 'Análises', 'Salão', 'Usuários']);
   });
 });
