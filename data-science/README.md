@@ -111,6 +111,40 @@ c(i,j) = w1 · (faturamento do garçom × potencial da praça)
 mesmos dados). O restaurante colaborador não forneceu base histórica e o sistema ainda não acumulou
 movimento próprio, então é com esses dados que os algoritmos são testados e os pesos serão calibrados.
 
+### Histórico real (decisão D10)
+
+A recomendação treina com o **histórico real** quando ele existe. A leitura é pela view
+`vw_itens_por_comanda`, com um usuário MySQL que só tem `SELECT` nas views. Esse usuário não lê
+tabelas nem grava, e os testes conferem isso.
+
+| Situação | Histórico usado | `origem_do_historico` | `motivo_do_simulado` |
+|---|---|---|---|
+| Banco configurado, com 50 ou mais comandas de 2 ou mais itens no último ano | real | `banco` | — |
+| Banco configurado, com menos que isso | simulado | `simulado` | `histórico real insuficiente (N de 50 ...)` |
+| Banco fora do ar | simulado | `simulado` | `banco indisponível` |
+| Sem configuração | simulado | `simulado` | `banco não configurado` |
+
+- **Cache:** o modelo fica em cache por 5 minutos. Treinar a cada chamada deixaria a sugestão lenta, e o
+  histórico muda pouco nesse intervalo.
+- **Mínimo de 50 comandas:** com menos que isso, as regras aparecem por acaso.
+
+**Para ligar a leitura do banco:**
+
+1. Em `infra/.env`, defina `MYSQL_ANALITICA_PASSWORD`.
+2. Depois das migrations, rode `./criar-usuario-analitico.sh` dentro de `infra/`.
+3. Antes de subir o serviço, exporte as variáveis de conexão (só a senha é obrigatória):
+
+   | Variável | Padrão |
+   |---|---|
+   | `GASTRA_ANALITICA_BANCO_SENHA` | *(obrigatória; sem ela, fica o simulado)* |
+   | `GASTRA_ANALITICA_BANCO_HOST` | `localhost` |
+   | `GASTRA_ANALITICA_BANCO_PORTA` | `3307` |
+   | `GASTRA_ANALITICA_BANCO_NOME` | `gastra_dev` |
+   | `GASTRA_ANALITICA_BANCO_USUARIO` | `gastra_analitica` |
+
+Os testes do usuário somente leitura (`tests/test_historico_banco.py`) só rodam com
+`GASTRA_ANALITICA_BANCO_SENHA` definida. Sem ela, aparecem como ignorados.
+
 ## Endpoints
 
 | Método | Rota | Para quê |
@@ -120,8 +154,8 @@ movimento próprio, então é com esses dados que os algoritmos são testados e 
 | `POST` | `/alocacao/sugestao` | Distribui os garçons do turno entre as praças |
 
 Quem chama é sempre o backend em C#; o serviço **calcula e devolve**, nunca grava (decisão D2 da
-arquitetura). Enquanto o banco não tem movimento real, a recomendação usa o histórico simulado, e a
-resposta diz isso no campo `origem_do_historico`.
+arquitetura). A resposta da recomendação diz de onde veio o histórico (`origem_do_historico`) e, quando
+usou o simulado, por quê (`motivo_do_simulado`).
 
 ## Comandos
 
