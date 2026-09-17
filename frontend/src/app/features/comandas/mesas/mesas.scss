@@ -1,0 +1,104 @@
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  .cartao { padding: 10px 12px; }
+
+  strong {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--marinho-forte);
+    font-variant-numeric: tabular-nums;
+  }
+
+  span { font-size: 0.75rem; color: var(--texto-suave); }
+}
+
+.titulo-praca {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+
+.grade-mesas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.mesa {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 92px;
+  padding: 10px;
+  text-align: left;
+  color: inherit;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  cursor: pointer;
+
+  .numero {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--marinho-forte);
+    line-height: 1.1;
+  }
+
+  .estado { font-size: 0.75rem; color: var(--texto-suave); }
+
+  .valor {
+    margin-top: auto;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pendentes { position: absolute; top: 8px; right: 8px; }
+
+  &.livre { border-style: dashed; border-color: var(--borda-forte); background: transparent; }
+  &.minha { border: 2px solid var(--marinho); }
+
+  &.outro {
+    background: #eceae6;
+
+    .numero { color: var(--texto-suave); }
+  }
+}
+
+.pessoas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 72px;
+    padding: 6px;
+    background: var(--superficie);
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio);
+    cursor: pointer;
+
+    strong { font-size: 1.375rem; color: var(--marinho-forte); }
+
+    span {
+      font-size: 0.6875rem;
+      color: var(--texto-suave);
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    &.sugerido { border: 2px solid var(--laranja); background: var(--laranja-suave); }
+    &:disabled { opacity: 0.6; cursor: wait; }
+  }
+}

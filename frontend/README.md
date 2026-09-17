@@ -109,3 +109,34 @@ Ela só aceita chamadas do navegador vindas das origens listadas em `Cors:Origen
   para o login não servir de redirecionamento para sites externos.
 - As telas dos módulos ainda são marcadores (`shared/em-construcao`) e serão feitas a partir do
   protótipo (#47).
+
+## Telas do Garçom (#145)
+
+Primeiro módulo de telas, feito a partir do protótipo (`docs/ux-ui/prototipo/garcom.html`).
+
+| Rota | Tela | Casos de uso |
+|---|---|---|
+| `/comandas` | Mesas do turno, por praça | UC10 |
+| `/comandas/:id` | Comanda: pendências, sugestões, lançamento, restrição, cancelamento | UC11–UC13, UC18, UC23 |
+| `/comandas/:id/fechar` | Fechamento com taxa de serviço | UC14 |
+| `/a-entregar` | Pendências de todas as mesas do garçom | RF03 |
+| `/desempenho` | Posição e índice do próprio garçom | UC17 |
+
+- **`core/api/`:** `GastraApiService` concentra as chamadas, e `modelos.ts` traz os tipos das respostas, com os mesmos nomes do backend.
+- **`shared/`:** `app-folha` (painel que sobe de baixo), `AvisoService` + `app-avisos` (aviso curto com "Desfazer"), `app-icone` e `rotulos.ts` (nomes em português das listas fechadas).
+- **Estado:** cada ação chama a API e recarrega a comanda. A tela não recalcula total, taxa nem composição: quem decide é o servidor.
+
+### Decisões
+
+- **Desfazer em vez de confirmar** nas ações do dia a dia. Lançar um item mostra "Desfazer", que **cancela o item com o motivo "erro de lançamento"** — é o caminho que a API oferece. Entregar não tem volta na API, então o aviso aparece sem "Desfazer". Confirmação em painel fica só para fechar a conta.
+- **Dois toques para abrir a mesa (RNF02):** tocar no número de pessoas já confirma a composição sugerida (RN01). Lançar um item leva outros três: categoria, item e "Lançar".
+- **Minha praça** vem da alocação confirmada do turno (`GET /api/alocacoes/{data}/{periodo}`). Sem alocação, a tela mostra todas as praças e explica o motivo, em vez de ficar vazia.
+- **Falha do serviço de análise (D3):** as sugestões somem com um aviso e o resto da comanda continua.
+
+### Rodar contra a API
+
+```bash
+npm start
+```
+
+Com a API em `http://localhost:5019` (`dotnet run --project backend/src/Gastra.Api`) e um Gerente que já tenha cadastrado praças, mesas, cardápio e o garçom.

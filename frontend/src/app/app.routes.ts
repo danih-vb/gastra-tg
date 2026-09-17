@@ -18,12 +18,36 @@ export const routes: Routes = [
     loadComponent: () => import('./features/acesso/segundo-fator/segundo-fator').then((m) => m.SegundoFator),
   },
 
+  // UC10–UC14, UC18, UC23 — telas do Garçom.
   {
     path: 'comandas',
-    title: 'Comandas — GASTRA',
-    canActivate: [exigePapel('Garcom', 'Metre', 'Coordenador', 'Gerente')],
-    loadComponent: emConstrucao,
-    data: { titulo: 'Comandas', casosDeUso: 'UC10–UC14, UC18, UC23' },
+    title: 'Mesas — GASTRA',
+    canActivate: [exigePapel('Garcom')],
+    loadComponent: () => import('./features/comandas/mesas/mesas').then((m) => m.Mesas),
+  },
+  {
+    path: 'comandas/:id',
+    title: 'Comanda — GASTRA',
+    canActivate: [exigePapel('Garcom')],
+    loadComponent: () => import('./features/comandas/comanda/comanda').then((m) => m.Comanda),
+  },
+  {
+    path: 'comandas/:id/fechar',
+    title: 'Fechar conta — GASTRA',
+    canActivate: [exigePapel('Garcom')],
+    loadComponent: () => import('./features/comandas/fechar/fechar-conta').then((m) => m.FecharConta),
+  },
+  {
+    path: 'a-entregar',
+    title: 'A entregar — GASTRA',
+    canActivate: [exigePapel('Garcom')],
+    loadComponent: () => import('./features/comandas/pendencias/pendencias').then((m) => m.Pendencias),
+  },
+  {
+    path: 'desempenho',
+    title: 'Seu desempenho — GASTRA',
+    canActivate: [exigePapel('Garcom')],
+    loadComponent: () => import('./features/analises/desempenho/desempenho').then((m) => m.Desempenho),
   },
   {
     path: 'alocacao',
@@ -42,7 +66,7 @@ export const routes: Routes = [
   {
     path: 'analises',
     title: 'Análises — GASTRA',
-    canActivate: [exigePapel('Gerente', 'Garcom')],
+    canActivate: [exigePapel('Gerente')],
     loadComponent: emConstrucao,
     data: { titulo: 'Relatórios e desempenho', casosDeUso: 'UC16, UC17' },
   },

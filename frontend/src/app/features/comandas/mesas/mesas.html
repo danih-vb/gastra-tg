@@ -1,0 +1,127 @@
+<header class="topo">
+  <div>
+    <h1>Olá, {{ nome() }}</h1>
+    <div class="sub">
+      {{ periodo === 'Almoco' ? 'Almoço' : 'Jantar' }}
+      @if (minhaPraca(); as praca) {
+        · sua praça: {{ praca.codigo }}
+      }
+    </div>
+  </div>
+</header>
+
+@if (carregando()) {
+  <p class="carregando">Carregando o salão…</p>
+} @else {
+  @if (erros().length) {
+    <div class="alerta erro" role="alert">
+      <app-icone nome="alerta" />
+      <div>
+        @for (erro of erros(); track erro) {
+          <div>{{ erro }}</div>
+        }
+        <button class="botao compacto secundario" type="button" (click)="carregar()">Tentar de novo</button>
+      </div>
+    </div>
+  }
+
+  <section class="resumo" aria-label="Resumo do turno">
+    <div class="cartao">
+      <strong>{{ minhasComandas().length }}</strong><span>mesas abertas</span>
+    </div>
+    <div class="cartao">
+      <strong>{{ pendentesDoTurno() }}</strong><span>itens a entregar</span>
+    </div>
+    <div class="cartao">
+      <strong>{{ emConsumo() | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong><span>em consumo</span>
+    </div>
+  </section>
+
+  @if (minhaPraca(); as praca) {
+    <div class="chips" role="group" aria-label="Filtrar mesas">
+      <button class="chip" type="button" [attr.aria-pressed]="filtro() === 'minha'" (click)="filtro.set('minha')">
+        Minha praça ({{ praca.codigo }})
+      </button>
+      <button class="chip" type="button" [attr.aria-pressed]="filtro() === 'todas'" (click)="filtro.set('todas')">
+        Todas as praças
+      </button>
+    </div>
+  } @else {
+    <div class="alerta">
+      <app-icone nome="info" />
+      <div class="pequeno">A alocação deste turno ainda não foi confirmada pelo metre. Todas as praças estão à mostra.</div>
+    </div>
+  }
+
+  @for (praca of pracasVisiveis(); track praca.id) {
+    <section [attr.aria-labelledby]="'praca-' + praca.id">
+      <div class="titulo-praca">
+        <h2 [id]="'praca-' + praca.id">Praça {{ praca.codigo }}</h2>
+        <span class="suave pequeno">{{ livresDaPraca(praca) }} livres</span>
+      </div>
+      <div class="grade-mesas">
+        @for (linha of mesasDaPraca(praca); track linha.mesa.id) {
+          <button
+            type="button"
+            class="mesa"
+            [class.livre]="!linha.comanda"
+            [class.minha]="linha.minha"
+            [class.outro]="linha.comanda && !linha.minha"
+            [attr.aria-label]="
+              !linha.comanda
+                ? 'Mesa ' + linha.mesa.numero + ', livre, ' + linha.mesa.capacidade + ' lugares'
+                : linha.minha
+                  ? 'Mesa ' + linha.mesa.numero + ', sua, ' + linha.pendentes + ' itens a entregar'
+                  : 'Mesa ' + linha.mesa.numero + ', atendida por ' + linha.comanda.garcomNome
+            "
+            (click)="selecionar(linha)"
+          >
+            @if (linha.minha && linha.pendentes) {
+              <span class="etiqueta aviso pendentes">{{ linha.pendentes }} a entregar</span>
+            }
+            <span class="numero">{{ linha.mesa.numero }}</span>
+            @if (!linha.comanda) {
+              <span class="estado">Livre · {{ linha.mesa.capacidade }} lugares</span>
+            } @else if (linha.minha) {
+              <span class="estado">{{ COMPOSICOES[linha.comanda.composicao] }} · {{ linha.minutos }} min</span>
+              <span class="valor">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
+            } @else {
+              <span class="estado">{{ linha.comanda.garcomNome.split(' ')[0] }}</span>
+            }
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  <p class="suave pequeno"><app-icone nome="info" /> Mesa tracejada está livre: toque para abrir a comanda.</p>
+}
+
+@if (mesaParaAbrir(); as mesa) {
+  <app-folha
+    [titulo]="'Abrir mesa ' + mesa.numero"
+    [subtitulo]="'Praça ' + mesa.pracaCodigo + ' · ' + mesa.capacidade + ' lugares'"
+    (fechar)="mesaParaAbrir.set(null)"
+  >
+    <p class="rotulo" id="rotulo-pessoas"><strong>Quantas pessoas?</strong></p>
+    <p class="suave pequeno" style="margin-bottom: 10px">
+      O sistema sugere a composição da mesa. Tocar no número abre a comanda.
+    </p>
+    <div class="pessoas" role="group" aria-labelledby="rotulo-pessoas">
+      @for (pessoas of pessoasPossiveis; track pessoas) {
+        <button
+          type="button"
+          [class.sugerido]="pessoas === mesa.capacidade"
+          [disabled]="abrindo()"
+          (click)="abrir(pessoas)"
+        >
+          <strong>{{ pessoas }}{{ pessoas === 8 ? '+' : '' }}</strong>
+          <span>{{ composicaoDe(pessoas) }}</span>
+        </button>
+      }
+    </div>
+    <p class="suave pequeno" style="margin-top: 12px">
+      <app-icone nome="info" /> “Família” é reconhecida sozinha quando um prato infantil for lançado.
+    </p>
+  </app-folha>
+}

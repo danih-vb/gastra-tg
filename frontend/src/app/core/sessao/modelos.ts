@@ -25,6 +25,8 @@ export interface RespostaDeErro {
 /** Quem está logado neste navegador. */
 export interface UsuarioDaSessao {
   token: string;
+  /** Id do usuário, lido do token: é o que separa as mesas do próprio garçom das dos colegas. */
+  id: number;
   nome: string;
   papel: Papel;
   /** Instante, em milissegundos, em que o token deixa de valer. */

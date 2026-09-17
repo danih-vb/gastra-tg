@@ -1,11 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MENU, NOME_DO_PAPEL } from './core/navegacao';
+import { Avisos } from './shared/aviso/avisos';
+import { Icone } from './shared/icone/icone';
 import { SessaoService } from './core/sessao/sessao.service';
 
 /** Casca da aplicação: cabeçalho, menu conforme o papel e área das telas. */
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Avisos, Icone],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',

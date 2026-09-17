@@ -108,6 +108,7 @@ export class SessaoService {
       token: resposta.tokenAcesso,
       nome: resposta.nome,
       papel: resposta.papel,
+      id: idDoToken(resposta.tokenAcesso),
       expiraEm: expiracaoDoToken(resposta.tokenAcesso),
     };
     this.armazenamento.setItem(CHAVE, JSON.stringify(usuario));
@@ -133,15 +134,25 @@ export class SessaoService {
 }
 
 /**
- * Lê o "exp" do JWT (segundos) e devolve em milissegundos. Só decodifica, não valida a assinatura: quem valida é a API.
- * Serve para o navegador não insistir com um token que já venceu.
+ * Lê o conteúdo do JWT. Só decodifica, não valida a assinatura: quem valida é a API. Serve para o navegador saber
+ * quando o token vence e quem é o dono dele, sem uma chamada a mais.
  */
-export function expiracaoDoToken(token: string): number {
+function conteudoDoToken(token: string): { exp?: number; sub?: string } {
   try {
     const conteudo = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    const { exp } = JSON.parse(atob(conteudo)) as { exp?: number };
-    return typeof exp === 'number' ? exp * 1000 : 0;
+    return JSON.parse(atob(conteudo)) as { exp?: number; sub?: string };
   } catch {
-    return 0;
+    return {};
   }
+}
+
+/** Instante, em milissegundos, em que o token deixa de valer. Zero quando não dá para ler. */
+export function expiracaoDoToken(token: string): number {
+  const { exp } = conteudoDoToken(token);
+  return typeof exp === 'number' ? exp * 1000 : 0;
+}
+
+/** Id do usuário dono do token (claim "sub"). É o que identifica as mesas do próprio garçom. */
+export function idDoToken(token: string): number {
+  return Number(conteudoDoToken(token).sub) || 0;
 }

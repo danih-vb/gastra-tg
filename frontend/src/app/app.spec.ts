@@ -32,27 +32,27 @@ describe('App', () => {
   }
 
   function itensDoMenu(pagina: HTMLElement): string[] {
-    return [...pagina.querySelectorAll('nav a')].map((a) => a.textContent?.trim() ?? '');
+    return [...pagina.querySelectorAll('nav a')].map((a) => (a.textContent ?? '').trim());
   }
 
   it('exibe o nome do sistema no cabeçalho', async () => {
     const pagina = await renderizar(null);
 
-    expect(pagina.querySelector('h1')?.textContent).toContain('GASTRA');
+    expect(pagina.querySelector('.barra')?.textContent).toContain('GASTRA');
   });
 
   it('sem login, não mostra menu nem botão de sair', async () => {
     const pagina = await renderizar(null);
 
     expect(pagina.querySelector('nav')).toBeNull();
-    expect(pagina.querySelector('.usuario button')).toBeNull();
+    expect(pagina.querySelector('.sair')).toBeNull();
   });
 
   it('o garçom vê só as telas dele', async () => {
     const pagina = await renderizar('Garcom');
 
-    expect(itensDoMenu(pagina)).toEqual(['Comandas', 'Análises']);
-    expect(pagina.querySelector('.usuario')?.textContent).toContain('Ana · Garçom');
+    expect(itensDoMenu(pagina)).toEqual(['Comandas', 'A entregar', 'Desempenho']);
+    expect(pagina.querySelector('.barra')?.textContent).toContain('Ana · Garçom');
   });
 
   it('o gerente vê a gestão, mas não a alocação do metre', async () => {
