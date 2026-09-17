@@ -39,7 +39,7 @@ public class ServicoAnaliticoHttp(HttpClient http, ILogger<ServicoAnaliticoHttp>
         CancellationToken cancellationToken = default)
     {
         var pedido = new PedidoDeAlocacao(
-            garcons.Select(g => new GarcomDoTurno(g.GarcomId, g.FaturamentoAcumulado, g.TurnosDesdePracaDeAltoPotencial)).ToList(),
+            garcons.Select(g => new GarcomDoTurno(g.GarcomId, g.FaturamentoPorTurno, g.TurnosDesdePracaDeAltoPotencial)).ToList(),
             pracas.Select(p => new PracaDoTurno(p.PracaId, p.Vagas, p.FaturamentoMedioHistorico)).ToList(),
             pesoDesequilibrio,
             pesoEspera);
@@ -86,7 +86,7 @@ public class ServicoAnaliticoHttp(HttpClient http, ILogger<ServicoAnaliticoHttp>
 
     private record PedidoDeAlocacao(List<GarcomDoTurno> Garcons, List<PracaDoTurno> Pracas, double PesoDesequilibrio, double PesoEspera);
 
-    private record GarcomDoTurno(int Id, decimal FaturamentoAcumulado, int TurnosDesdePracaDeAltoPotencial);
+    private record GarcomDoTurno(int Id, decimal FaturamentoPorTurno, int TurnosDesdePracaDeAltoPotencial);
 
     private record PracaDoTurno(int Id, int Vagas, decimal FaturamentoMedioHistorico);
 

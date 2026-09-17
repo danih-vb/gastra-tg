@@ -6,13 +6,20 @@ namespace Gastra.Domain.Alocacoes;
 /// </summary>
 public static class RegraDeDistribuicao
 {
-    /// <summary>Peso do equilíbrio de faturamento (w1). O da espera é o complemento (w2 = 1 − w1). Calibração: #55.</summary>
+    /// <summary>
+    /// Peso do equilíbrio de faturamento (w1). O da espera é o complemento (w2 = 1 − w1). Calibrado por simulação na #55:
+    /// menor peso com desigualdade até 50% acima da menor (docs/analises/GASTRA_Calibracao_Pesos_RN03.md).
+    /// </summary>
     public const double PesoDesequilibrio = 0.6;
 
     public static double PesoEspera => Math.Round(1 - PesoDesequilibrio, 10);
 
-    /// <summary>Janela do "faturamento acumulado" de cada garçom, contada para trás a partir do turno.</summary>
-    public const int DiasDeFaturamentoAcumulado = 30;
+    /// <summary>
+    /// Janela do faturamento de cada garçom, contada para trás a partir do turno. O fator é a média por turno
+    /// trabalhado nessa janela, e não a soma: com a soma, quem faltou mais parece ter faturado menos e ganha
+    /// praça boa por isso (calibração #55, docs/analises/GASTRA_Calibracao_Pesos_RN03.md).
+    /// </summary>
+    public const int DiasDaJanelaDeFaturamento = 30;
 
     /// <summary>
     /// Praças de alto potencial: faturamento médio por turno acima da média das praças que já tiveram

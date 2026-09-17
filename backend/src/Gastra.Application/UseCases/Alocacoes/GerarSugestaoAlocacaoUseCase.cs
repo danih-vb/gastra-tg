@@ -90,19 +90,19 @@ public class GerarSugestaoAlocacaoUseCase(
         return await LeitorDoTurno.Montar(request.Data, periodo, novas, repositorioUsuario, repositorioPraca, servicoDisponivel: true);
     }
 
-    /// <summary>RN03: faturamento acumulado e espera de cada garçom; potencial e vagas de cada praça.</summary>
+    /// <summary>RN03: faturamento por turno e espera de cada garçom; potencial e vagas de cada praça.</summary>
     private async Task<(List<GarcomParaAlocacao>, List<PracaParaAlocacao>)> MontarFatores(
         DateOnly data, List<int> garcomIds, List<Praca> pracas)
     {
         var faturamentoMedio = await indicadores.ObterFaturamentoMedioPorPraca();
-        var faturamentoAcumulado = await indicadores.ObterFaturamentoPorGarcom(
-            data.AddDays(-RegraDeDistribuicao.DiasDeFaturamentoAcumulado), data);
+        var faturamentoPorTurno = await indicadores.ObterFaturamentoMedioPorTurnoDoGarcom(
+            data.AddDays(-RegraDeDistribuicao.DiasDaJanelaDeFaturamento), data);
         var altoPotencial = RegraDeDistribuicao.PracasDeAltoPotencial(faturamentoMedio);
         var historico = await repositorio.ListarPracasConfirmadasAntesDe(garcomIds, data);
 
         var garcons = garcomIds.Select(id => new GarcomParaAlocacao(
             id,
-            faturamentoAcumulado.GetValueOrDefault(id),
+            faturamentoPorTurno.GetValueOrDefault(id),
             RegraDeDistribuicao.TurnosDesdePracaDeAltoPotencial(historico.GetValueOrDefault(id, []), altoPotencial))).ToList();
 
         var pracasDoTurno = pracas.Select(p => new PracaParaAlocacao(

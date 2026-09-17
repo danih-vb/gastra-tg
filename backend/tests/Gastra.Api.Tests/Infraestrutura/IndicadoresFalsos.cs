@@ -9,14 +9,14 @@ namespace Gastra.Api.Tests.Infraestrutura;
 public class IndicadoresFalsos : IRepositorioIndicadores
 {
     public Dictionary<int, decimal> FaturamentoMedioPorPraca { get; } = [];
-    public Dictionary<int, decimal> FaturamentoPorGarcom { get; } = [];
+    public Dictionary<int, decimal> FaturamentoPorTurnoDoGarcom { get; } = [];
     public List<(DateOnly Inicio, DateOnly Fim)> PeriodosConsultados { get; } = [];
 
     public Task<Dictionary<int, decimal>> ObterFaturamentoMedioPorPraca() => Task.FromResult(new Dictionary<int, decimal>(FaturamentoMedioPorPraca));
 
-    public Task<Dictionary<int, decimal>> ObterFaturamentoPorGarcom(DateOnly inicio, DateOnly fim)
+    public Task<Dictionary<int, decimal>> ObterFaturamentoMedioPorTurnoDoGarcom(DateOnly inicio, DateOnly fim)
     {
         PeriodosConsultados.Add((inicio, fim));
-        return Task.FromResult(new Dictionary<int, decimal>(FaturamentoPorGarcom));
+        return Task.FromResult(new Dictionary<int, decimal>(FaturamentoPorTurnoDoGarcom));
     }
 }

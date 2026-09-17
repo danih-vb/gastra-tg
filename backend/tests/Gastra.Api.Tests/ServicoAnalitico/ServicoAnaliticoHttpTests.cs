@@ -80,7 +80,7 @@ public class ServicoAnaliticoHttpTests
         using var corpo = JsonDocument.Parse(handler.CorpoRecebido!);
         var garcom = corpo.RootElement.GetProperty("garcons")[0];
         Assert.Equal(5, garcom.GetProperty("id").GetInt32());
-        Assert.Equal(9000.50m, garcom.GetProperty("faturamento_acumulado").GetDecimal());
+        Assert.Equal(9000.50m, garcom.GetProperty("faturamento_por_turno").GetDecimal());
         Assert.Equal(3, garcom.GetProperty("turnos_desde_praca_de_alto_potencial").GetInt32());
         var praca = corpo.RootElement.GetProperty("pracas")[1];
         Assert.Equal((2, 1, 600m), (praca.GetProperty("id").GetInt32(), praca.GetProperty("vagas").GetInt32(), praca.GetProperty("faturamento_medio_historico").GetDecimal()));

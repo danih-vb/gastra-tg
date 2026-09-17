@@ -69,8 +69,8 @@ public class AlocacaoControllerTests(GastraApiFactory factory) : IClassFixture<G
         var b = await CriarGarcom();
         factory.Indicadores.FaturamentoMedioPorPraca[boa.Id] = 1_000_000m; // muito acima da média: alto potencial
         factory.Indicadores.FaturamentoMedioPorPraca[fraca.Id] = 1m;
-        factory.Indicadores.FaturamentoPorGarcom[a.Id] = 9_000m;
-        factory.Indicadores.FaturamentoPorGarcom[b.Id] = 3_000m;
+        factory.Indicadores.FaturamentoPorTurnoDoGarcom[a.Id] = 900m;
+        factory.Indicadores.FaturamentoPorTurnoDoGarcom[b.Id] = 300m;
 
         // Histórico: b trabalhou dois turnos confirmados na praça fraca; a esteve na boa no último turno.
         var dia = NovoDia();
@@ -87,11 +87,11 @@ public class AlocacaoControllerTests(GastraApiFactory factory) : IClassFixture<G
         var chamada = Assert.Single(factory.ServicoAnalitico.ChamadasAlocacao);
         var fatorA = chamada.Garcons.Single(g => g.GarcomId == a.Id);
         var fatorB = chamada.Garcons.Single(g => g.GarcomId == b.Id);
-        Assert.Equal((9_000m, 0), (fatorA.FaturamentoAcumulado, fatorA.TurnosDesdePracaDeAltoPotencial));
-        Assert.Equal((3_000m, 2), (fatorB.FaturamentoAcumulado, fatorB.TurnosDesdePracaDeAltoPotencial));
+        Assert.Equal((900m, 0), (fatorA.FaturamentoPorTurno, fatorA.TurnosDesdePracaDeAltoPotencial));
+        Assert.Equal((300m, 2), (fatorB.FaturamentoPorTurno, fatorB.TurnosDesdePracaDeAltoPotencial));
         Assert.Contains(new PracaParaAlocacao(boa.Id, 1, 1_000_000m), chamada.Pracas);
         Assert.Equal(RegraDeDistribuicao.PesoDesequilibrio, chamada.PesoDesequilibrio);
-        Assert.Contains((dia.AddDays(-RegraDeDistribuicao.DiasDeFaturamentoAcumulado), dia), factory.Indicadores.PeriodosConsultados);
+        Assert.Contains((dia.AddDays(-RegraDeDistribuicao.DiasDaJanelaDeFaturamento), dia), factory.Indicadores.PeriodosConsultados);
 
         Assert.True(turno.ServicoDisponivel);
         Assert.False(turno.Confirmada);

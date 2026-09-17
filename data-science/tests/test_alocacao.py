@@ -15,8 +15,8 @@ PRACA_FRACA = PracaDoTurno(id=2, vagas=1, faturamento_medio_historico=500)
 
 
 def test_praca_de_alto_potencial_vai_para_quem_faturou_menos():
-    quem_faturou_muito = GarcomDisponivel(id=1, faturamento_acumulado=10_000, turnos_desde_praca_de_alto_potencial=0)
-    quem_faturou_pouco = GarcomDisponivel(id=2, faturamento_acumulado=2_000, turnos_desde_praca_de_alto_potencial=0)
+    quem_faturou_muito = GarcomDisponivel(id=1, faturamento_por_turno=10_000, turnos_desde_praca_de_alto_potencial=0)
+    quem_faturou_pouco = GarcomDisponivel(id=2, faturamento_por_turno=2_000, turnos_desde_praca_de_alto_potencial=0)
 
     resultado = sugerir_alocacao([quem_faturou_muito, quem_faturou_pouco], [PRACA_BOA, PRACA_FRACA])
 
@@ -25,8 +25,8 @@ def test_praca_de_alto_potencial_vai_para_quem_faturou_menos():
 
 
 def test_quem_espera_ha_mais_turnos_ganha_a_praca_boa_no_empate_de_faturamento():
-    esperando = GarcomDisponivel(id=1, faturamento_acumulado=5_000, turnos_desde_praca_de_alto_potencial=8)
-    recente = GarcomDisponivel(id=2, faturamento_acumulado=5_000, turnos_desde_praca_de_alto_potencial=0)
+    esperando = GarcomDisponivel(id=1, faturamento_por_turno=5_000, turnos_desde_praca_de_alto_potencial=8)
+    recente = GarcomDisponivel(id=2, faturamento_por_turno=5_000, turnos_desde_praca_de_alto_potencial=0)
 
     resultado = sugerir_alocacao([esperando, recente], [PRACA_BOA, PRACA_FRACA])
 
@@ -73,8 +73,8 @@ def test_custos_ficam_entre_zero_e_um():
 def test_so_o_peso_da_espera_inverte_a_escolha():
     # Mesmo par de garçons: com peso todo no faturamento, ganha quem faturou menos;
     # com peso todo na espera, ganha quem está esperando há mais tempo.
-    faturou_menos_sem_espera = GarcomDisponivel(id=1, faturamento_acumulado=2_000, turnos_desde_praca_de_alto_potencial=0)
-    faturou_mais_esperando = GarcomDisponivel(id=2, faturamento_acumulado=9_000, turnos_desde_praca_de_alto_potencial=9)
+    faturou_menos_sem_espera = GarcomDisponivel(id=1, faturamento_por_turno=2_000, turnos_desde_praca_de_alto_potencial=0)
+    faturou_mais_esperando = GarcomDisponivel(id=2, faturamento_por_turno=9_000, turnos_desde_praca_de_alto_potencial=9)
     garcons = [faturou_menos_sem_espera, faturou_mais_esperando]
 
     por_faturamento = sugerir_alocacao(garcons, [PRACA_BOA, PRACA_FRACA], 1.0, 0.0)

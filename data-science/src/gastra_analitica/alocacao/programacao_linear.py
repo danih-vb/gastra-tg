@@ -8,7 +8,9 @@ em [0, 1] antes de somar — senão reais e turnos, que têm grandezas diferente
 
     c(i,j) = w1 · desequilíbrio(i,j) + w2 · espera(i,j),  com w1 + w2 = 1
 
-- **desequilíbrio:** faturamento acumulado do garçom × potencial da praça, ambos normalizados.
+- **desequilíbrio:** faturamento médio por turno do garçom (últimos 30 dias) × potencial da praça, ambos
+  normalizados. É média, e não soma: com a soma, quem faltou mais parece ter faturado menos e recebe praça
+  boa por isso (calibração #55).
   Juntar "quem mais faturou" com "a praça que mais fatura" fica caro, então a solução de menor custo
   entrega a praça boa a quem está para trás.
 - **espera:** (1 − espera do garçom) × potencial da praça. Quem está há mais turnos sem pegar praça
@@ -29,6 +31,7 @@ from dataclasses import dataclass
 import cbcbox
 import pulp
 
+# Calibrados por simulação na issue #55 (docs/analises/GASTRA_Calibracao_Pesos_RN03.md).
 PESO_DESEQUILIBRIO_PADRAO = 0.6
 PESO_ESPERA_PADRAO = 0.4
 
@@ -36,7 +39,7 @@ PESO_ESPERA_PADRAO = 0.4
 @dataclass(frozen=True)
 class GarcomDisponivel:
     id: int
-    faturamento_acumulado: float
+    faturamento_por_turno: float
     turnos_desde_praca_de_alto_potencial: int
 
 
@@ -88,7 +91,7 @@ def montar_matriz_de_custo(
     if abs(peso_desequilibrio + peso_espera - 1) > 1e-9:
         raise ValueError("Os pesos w1 e w2 precisam somar 1.")
 
-    faturamento_do_garcom = _normalizar_por_chave({g.id: g.faturamento_acumulado for g in garcons})
+    faturamento_do_garcom = _normalizar_por_chave({g.id: g.faturamento_por_turno for g in garcons})
     espera_do_garcom = _normalizar_por_chave({g.id: g.turnos_desde_praca_de_alto_potencial for g in garcons})
     potencial_da_praca = _normalizar_por_chave({p.id: p.faturamento_medio_historico for p in pracas})
 
