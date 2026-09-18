@@ -153,3 +153,19 @@ Com a API em `http://localhost:5019` (`dotnet run --project backend/src/Gastra.A
 - **Sem o serviço de análise (D3):** a API responde `servicoDisponivel: false` com a lista vazia; todos aparecem em "Sem praça" e o Metre distribui à mão.
 - **Sem números de faturamento:** a tela explica o critério da RN03 em palavras. Os valores por praça e por garçom são do Gerente (RNF04), e o Metre não tem acesso a eles.
 - **Menu:** em tela larga ele sobe para junto da barra; no celular fica no rodapé.
+
+## Telas do Cliente (#151)
+
+Públicas: o cliente chega pelo QR code da mesa e **não faz login**.
+
+| Rota | Tela | Casos de uso |
+|---|---|---|
+| `/cliente` | Início: cardápio ou conta pelo código da mesa | — |
+| `/cliente/cardapio` | Cardápio digital com filtros dietéticos | UC19, RF05 |
+| `/cliente/conta/:codigo` | Conta da mesa em tempo real | UC20, RF13 |
+
+- **Rotas sem guarda e sem token:** o interceptador só manda o token quando existe sessão, então estas telas funcionam com o navegador limpo.
+- **Filtros combinam entre si:** "vegetariano e sem glúten" mostra só o que atende aos dois, com estado vazio explicando o que fazer.
+- **A conta se atualiza sozinha** a cada 15 segundos enquanto a mesa está aberta, e para quando ela fecha. Também dá para atualizar na mão.
+- **Código inexistente não é erro de sistema:** a tela diz para conferir o código na mesa ou chamar o garçom.
+- **Sem dado pessoal:** a resposta do cliente já não traz garçom nem restrição alimentar (RN04), e a tela diz isso ao cliente.

@@ -107,6 +107,17 @@ export interface AlocacaoDoTurno {
   designacoes: DesignacaoDoTurno[];
 }
 
+/** UC20 — o que o cliente vê da própria conta: nada de garçom, restrição ou outra mesa (RN04). */
+export interface ComandaDoCliente {
+  mesa: string;
+  dataHoraAbertura: string;
+  fechada: boolean;
+  itens: { nome: string; quantidade: number; valor: number; situacao: StatusItemPedido }[];
+  subtotal: number;
+  taxaServico: number;
+  total: number;
+}
+
 /** UC15 — garçom que pode entrar no turno (só id e nome, RNF03). */
 export interface GarcomDoTurno {
   id: number;

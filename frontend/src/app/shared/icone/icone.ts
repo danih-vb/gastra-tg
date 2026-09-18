@@ -24,6 +24,8 @@ const CAMINHOS: Record<string, string> = {
   qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
   etiqueta: '<path d="M3 12V3h9l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
   atualizar: '<path d="M20 12a8 8 0 11-2.3-5.7M20 4v5h-5"/>',
+  cardapio: '<path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+  avancar: '<path d="M9 5l7 7-7 7"/>',
 };
 
 @Component({

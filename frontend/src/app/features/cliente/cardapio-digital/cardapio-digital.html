@@ -1,0 +1,96 @@
+<header class="topo">
+  <a class="botao-icone" routerLink="/cliente" aria-label="Voltar"><app-icone nome="voltar" /></a>
+  <div>
+    <h1>Cardápio</h1>
+    <div class="sub">Preços e opções da casa</div>
+  </div>
+</header>
+
+@if (carregando()) {
+  <p class="carregando">Carregando o cardápio…</p>
+} @else if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+      <button class="botao compacto secundario" style="margin-top: 8px" type="button" (click)="carregar()">
+        Tentar de novo
+      </button>
+    </div>
+  </div>
+} @else {
+  <section aria-labelledby="t-filtros">
+    <h2 id="t-filtros" class="sr">Filtros</h2>
+    <div class="chips rolagem" role="group" aria-label="Mostrar só opções">
+      @for (flag of flagsPossiveis; track flag) {
+        <button class="chip" type="button" [attr.aria-pressed]="filtros().includes(flag)" (click)="alternarFiltro(flag)">
+          @if (filtros().includes(flag)) {
+            <app-icone nome="check" />
+          }
+          {{ FLAGS[flag] }}
+        </button>
+      }
+    </div>
+    @if (filtros().length) {
+      <p class="suave pequeno" style="margin-top: 8px">
+        {{ filtrados().length }} {{ filtrados().length === 1 ? 'opção' : 'opções' }}
+        {{ filtros().length > 1 ? 'com todos os filtros' : '' }} ·
+        <button class="botao fantasma compacto" type="button" (click)="limparFiltros()">Limpar filtros</button>
+      </p>
+    }
+  </section>
+
+  @for (grupo of grupos(); track grupo.chave) {
+    <section class="cartao" [attr.aria-labelledby]="'grupo-' + grupo.chave">
+      <header><h2 [id]="'grupo-' + grupo.chave">{{ grupo.nome }}</h2></header>
+      @for (item of grupo.itens; track item.id) {
+        <article class="prato" [attr.aria-labelledby]="'item-' + item.id">
+          <div>
+            <h3 [id]="'item-' + item.id">{{ item.nome }}</h3>
+            @if (item.descricao) {
+              <p>{{ item.descricao }}</p>
+            }
+            <div class="rodape-prato">
+              <span class="valor">
+                @if (item.precoPromocional !== null) {
+                  <s>{{ item.preco | currency: 'BRL' }}</s>
+                  {{ item.precoPromocional | currency: 'BRL' }}
+                } @else {
+                  {{ item.preco | currency: 'BRL' }}
+                }
+              </span>
+              @if (item.precoPromocional !== null) {
+                <span class="etiqueta marca"><app-icone nome="etiqueta" /> Promoção</span>
+              }
+              @for (flag of item.flagsDieteticas; track flag) {
+                <span class="etiqueta">{{ FLAGS[flag] }}</span>
+              }
+            </div>
+          </div>
+          <div class="foto" [class]="item.categoria" aria-hidden="true">
+            @if (item.imagem) {
+              <img [src]="item.imagem" alt="" loading="lazy" />
+            }
+          </div>
+        </article>
+      }
+    </section>
+  } @empty {
+    <div class="cartao pad vazio">
+      <p><strong>Nenhum prato com todos esses filtros</strong></p>
+      <p class="suave">Tente tirar um dos filtros ou pergunte ao garçom: a cozinha pode adaptar alguns pratos.</p>
+      @if (filtros().length) {
+        <button class="botao secundario" type="button" (click)="limparFiltros()">Limpar filtros</button>
+      }
+    </div>
+  }
+
+  <div class="alerta">
+    <app-icone nome="info" />
+    <div class="pequeno">
+      Para pedir, chame o garçom. Alergia? Avise antes do pedido: as etiquetas não substituem a confirmação com a cozinha.
+    </div>
+  </div>
+}

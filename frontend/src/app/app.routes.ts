@@ -91,14 +91,22 @@ export const routes: Routes = [
     data: { titulo: 'Contas de usuário', casosDeUso: 'UC04' },
   },
 
-  // UC19, UC20 — o cliente não faz login.
+  // UC19, UC20 — telas públicas: o cliente chega pelo QR code da mesa e não faz login.
   {
     path: 'cliente',
-    title: 'Cardápio — GASTRA',
-    loadComponent: emConstrucao,
-    data: { titulo: 'Cardápio digital e conta da mesa', casosDeUso: 'UC19, UC20' },
+    title: 'GASTRA',
+    loadComponent: () => import('./features/cliente/inicio/inicio-do-cliente').then((m) => m.InicioDoCliente),
   },
-
+  {
+    path: 'cliente/cardapio',
+    title: 'Cardápio — GASTRA',
+    loadComponent: () => import('./features/cliente/cardapio-digital/cardapio-digital').then((m) => m.CardapioDigital),
+  },
+  {
+    path: 'cliente/conta/:codigo',
+    title: 'Sua conta — GASTRA',
+    loadComponent: () => import('./features/cliente/conta/conta-do-cliente').then((m) => m.ContaDoCliente),
+  },
   { path: 'sem-permissao', title: 'Sem permissão — GASTRA', loadComponent: () => import('./shared/acesso-negado/acesso-negado').then((m) => m.AcessoNegado) },
   { path: '**', redirectTo: '' },
 ];

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { URL_DA_API } from '../configuracao';
 import {
   AlocacaoDoTurno,
+  ComandaDoCliente,
   GarcomDoTurno,
   CategoriaRestricao,
   Comanda,
@@ -38,6 +39,19 @@ export class GastraApiService {
 
   listarCardapio(): Observable<ItemCardapio[]> {
     return this.http.get<ItemCardapio[]>(`${this.api}/api/cardapio`);
+  }
+
+  /** UC19 — cardápio digital do cliente: só itens disponíveis, sem login (RF05). */
+  listarCardapioDigital(): Observable<ItemCardapio[]> {
+    return this.http.get<ItemCardapio[]>(`${this.api}/api/cardapio/digital`);
+  }
+
+  /**
+   * UC20 — conta da mesa pelo código do QR code, sem login (RF13). O código funciona como senha da comanda, por isso
+   * não aparece em log nem em tela além da própria conta.
+   */
+  consultarComandaDoCliente(codigoAcesso: string): Observable<ComandaDoCliente> {
+    return this.http.get<ComandaDoCliente>(`${this.api}/api/comandas/consulta/${encodeURIComponent(codigoAcesso)}`);
   }
 
   // --- Comandas ---
