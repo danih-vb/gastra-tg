@@ -140,3 +140,16 @@ npm start
 ```
 
 Com a API em `http://localhost:5019` (`dotnet run --project backend/src/Gastra.Api`) e um Gerente que já tenha cadastrado praças, mesas, cardápio e o garçom.
+
+## Telas do Metre (#149)
+
+| Rota | Tela | Casos de uso |
+|---|---|---|
+| `/alocacao` | Presença do turno → sugestão por praça → confirmação | UC15, UC21, UC22 |
+| `/salao-agora` | Comandas abertas por praça, somente leitura | RN04 |
+
+- **Três etapas visíveis:** quem está no turno, revisar e confirmada. A tela guarda a sugestão que veio da API para marcar o que o Metre mudou depois ("Ajustado", com a praça sugerida).
+- **Troca de praça (#140):** quando a praça de destino está cheia — o caso comum, com um garçom para cada vaga — a tela pede com quem trocar e manda `trocarComGarcomId`.
+- **Sem o serviço de análise (D3):** a API responde `servicoDisponivel: false` com a lista vazia; todos aparecem em "Sem praça" e o Metre distribui à mão.
+- **Sem números de faturamento:** a tela explica o critério da RN03 em palavras. Os valores por praça e por garçom são do Gerente (RNF04), e o Metre não tem acesso a eles.
+- **Menu:** em tela larga ele sobe para junto da barra; no celular fica no rodapé.

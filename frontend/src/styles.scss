@@ -366,6 +366,32 @@ textarea.entrada { min-height: 88px; resize: vertical; }
   .acoes { margin-left: auto; display: flex; gap: 4px; }
 }
 
+/*
+ * Cada tela é um componente e vira a coluna de conteúdo. As telas de celular (garçom) ficam numa coluna estreita
+ * mesmo em tela grande; as de tablet/computador (metre) ocupam a largura toda.
+ */
+app-mesas,
+app-comanda,
+app-fechar-conta,
+app-pendencias,
+app-desempenho,
+app-alocacao,
+app-salao-agora {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+app-mesas,
+app-comanda,
+app-fechar-conta,
+app-pendencias,
+app-desempenho {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
 .carregando {
   display: flex;
   align-items: center;

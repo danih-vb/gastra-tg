@@ -107,6 +107,12 @@ export interface AlocacaoDoTurno {
   designacoes: DesignacaoDoTurno[];
 }
 
+/** UC15 — garçom que pode entrar no turno (só id e nome, RNF03). */
+export interface GarcomDoTurno {
+  id: number;
+  nome: string;
+}
+
 export interface PosicaoNoRanking {
   posicao: number;
   garcomId: number;
