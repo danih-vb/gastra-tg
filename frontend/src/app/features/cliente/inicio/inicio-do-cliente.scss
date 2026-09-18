@@ -1,0 +1,53 @@
+.boas-vindas {
+  padding: 24px 0 8px;
+  text-align: center;
+
+  h1 {
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+  }
+
+  p {
+    margin-top: 6px;
+  }
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 16px;
+  color: inherit;
+  text-decoration: none;
+
+  .marca-opcao {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    color: var(--laranja-forte);
+    background: var(--laranja-suave);
+    border-radius: 12px;
+
+    .icone {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .texto {
+    flex: 1;
+
+    strong {
+      display: block;
+      font-size: 1.0625rem;
+    }
+  }
+}
+
+.codigo {
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  text-align: center;
+}

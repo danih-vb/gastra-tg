@@ -1,0 +1,39 @@
+<div class="boas-vindas">
+  <h1>GASTRA</h1>
+  <p class="suave">Veja o cardápio ou acompanhe o que já foi lançado na sua conta.</p>
+</div>
+
+<a class="cartao opcao" routerLink="/cliente/cardapio">
+  <span class="marca-opcao"><app-icone nome="cardapio" /></span>
+  <span class="texto">
+    <strong>Ver o cardápio</strong>
+    <span class="suave pequeno">Pratos, preços e opções vegetarianas, sem glúten e mais</span>
+  </span>
+  <app-icone nome="avancar" />
+</a>
+
+<form class="cartao pad" novalidate (ngSubmit)="verConta()">
+  <div class="campo">
+    <label for="codigo">Acompanhar minha conta</label>
+    <input
+      class="entrada codigo"
+      id="codigo"
+      name="codigo"
+      maxlength="6"
+      autocomplete="off"
+      autocapitalize="characters"
+      placeholder="ABC123"
+      [(ngModel)]="codigo"
+      [attr.aria-invalid]="erro() ? 'true' : null"
+    />
+    <span class="ajuda">São 6 letras e números, impressos na mesa. O QR code da mesa já abre a conta direto.</span>
+    @if (erro()) {
+      <span class="erro-campo" aria-live="polite">{{ erro() }}</span>
+    }
+  </div>
+  <button class="botao largo" style="margin-top: 14px" type="submit">Ver minha conta</button>
+</form>
+
+<p class="suave pequeno" style="text-align: center">
+  <app-icone nome="info" /> Pedidos são feitos com o garçom.
+</p>

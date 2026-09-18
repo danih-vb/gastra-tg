@@ -376,7 +376,10 @@ app-fechar-conta,
 app-pendencias,
 app-desempenho,
 app-alocacao,
-app-salao-agora {
+app-salao-agora,
+app-inicio-do-cliente,
+app-cardapio-digital,
+app-conta-do-cliente {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -387,7 +390,10 @@ app-mesas,
 app-comanda,
 app-fechar-conta,
 app-pendencias,
-app-desempenho {
+app-desempenho,
+app-inicio-do-cliente,
+app-cardapio-digital,
+app-conta-do-cliente {
   max-width: 520px;
   margin: 0 auto;
 }
