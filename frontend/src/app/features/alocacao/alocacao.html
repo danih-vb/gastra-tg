@@ -1,0 +1,270 @@
+<header class="topo">
+  <div>
+    <h1>Alocação de garçons</h1>
+    <div class="sub">Distribuição dos garçons pelas praças no turno.</div>
+  </div>
+</header>
+
+<div class="turno">
+  <label class="sr" for="data">Data do turno</label>
+  <input class="entrada" id="data" type="date" [value]="data()" (change)="mudarTurno($any($event.target).value, periodo())" />
+  <div class="segmentado" role="group" aria-label="Período">
+    <button type="button" [attr.aria-pressed]="periodo() === 'Almoco'" (click)="mudarTurno(data(), 'Almoco')">Almoço</button>
+    <button type="button" [attr.aria-pressed]="periodo() === 'Jantar'" (click)="mudarTurno(data(), 'Jantar')">Jantar</button>
+  </div>
+</div>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+    </div>
+  </div>
+}
+
+@if (carregando()) {
+  <p class="carregando">Carregando o turno…</p>
+} @else {
+  <ol class="etapas" aria-label="Etapas">
+    <li [attr.aria-current]="etapa() === 'presenca' ? 'step' : null" [class.feita]="etapa() !== 'presenca'">
+      <span>{{ etapa() === 'presenca' ? '1' : '✓' }}</span> Quem está no turno
+    </li>
+    <li [attr.aria-current]="etapa() === 'sugestao' ? 'step' : null" [class.feita]="etapa() === 'confirmada'">
+      <span>{{ etapa() === 'confirmada' ? '✓' : '2' }}</span> Revisar
+    </li>
+    <li [attr.aria-current]="etapa() === 'confirmada' ? 'step' : null" [class.feita]="etapa() === 'confirmada'">
+      <span>{{ etapa() === 'confirmada' ? '✓' : '3' }}</span> Confirmada
+    </li>
+  </ol>
+
+  @if (etapa() === 'presenca') {
+    <section class="cartao" aria-labelledby="t-presenca">
+      <header>
+        <h2 id="t-presenca">Quem está no turno?</h2>
+        <span class="acoes">
+          <button class="botao compacto fantasma" type="button" (click)="marcarTodos()">Marcar todos</button>
+        </span>
+      </header>
+      <div class="corpo" style="display: flex; flex-direction: column; gap: 14px">
+        @if (garcons().length) {
+          <div class="presenca">
+            @for (garcom of garcons(); track garcom.id) {
+              <label>
+                <input type="checkbox" [checked]="presentes().includes(garcom.id)" (change)="alternarPresenca(garcom.id)" />
+                {{ garcom.nome }}
+              </label>
+            }
+          </div>
+        } @else {
+          <p class="suave">Nenhum garçom ativo cadastrado. O gerente precisa cadastrar as contas antes da alocação.</p>
+        }
+        <p aria-live="polite" [class.suave]="!excessoDePresentes()">
+          <strong>{{ presentes().length }}</strong> presentes · <strong>{{ vagasTotais() }}</strong> vagas nas praças
+        </p>
+        @if (excessoDePresentes()) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              Há mais garçons presentes do que vagas. Desmarque {{ presentes().length - vagasTotais() }} ou aumente as
+              vagas de uma praça (o gerente faz isso em Salão).
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <div class="rodape-acoes">
+      <p class="texto suave pequeno">
+        A sugestão equilibra o faturamento por turno de cada garçom e o tempo desde a última praça de alto potencial
+        (RN03). Você revisa antes de confirmar.
+      </p>
+      <button
+        class="botao"
+        type="button"
+        [disabled]="excessoDePresentes() || !presentes().length || salvando()"
+        (click)="gerarSugestao()"
+      >
+        <app-icone nome="faisca" /> Gerar sugestão
+      </button>
+    </div>
+  } @else {
+    @if (etapa() === 'confirmada') {
+      <div class="alerta sucesso" role="status">
+        <app-icone nome="check" />
+        <div>
+          <strong>Alocação confirmada</strong>
+          Os garçons já veem a própria praça no celular. Depois de confirmada, não aceita mais ajustes.
+        </div>
+      </div>
+    } @else if (servicoFalhou()) {
+      <div class="alerta aviso" role="alert">
+        <app-icone nome="alerta" />
+        <div>
+          <strong>Não foi possível calcular a sugestão agora</strong>
+          O serviço de análise não respondeu. Distribua os garçons manualmente; o restante funciona normalmente.
+        </div>
+      </div>
+    } @else {
+      <div class="alerta">
+        <app-icone nome="info" />
+        <div class="pequeno">
+          <strong>Como a sugestão foi feita</strong>
+          Quem faturou menos por turno nos últimos 30 dias e quem está há mais tempo sem praça de alto potencial tem
+          prioridade nas praças de maior movimento (pesos 0,6 e 0,4, calibrados por simulação).
+        </div>
+      </div>
+    }
+
+    <div class="quadro">
+      @if (semPraca().length) {
+        <section class="coluna sem-praca" aria-label="Sem praça">
+          <header>
+            <div class="linha"><h3>Sem praça</h3><span class="vagas">{{ semPraca().length }}</span></div>
+          </header>
+          @for (garcom of semPraca(); track garcom.id) {
+            <article class="garcom">
+              <div class="linha"><strong>{{ garcom.nome }}</strong></div>
+              @if (etapa() !== 'confirmada') {
+                <button class="botao compacto secundario" type="button" (click)="abrirMudanca(garcom)">Escolher praça</button>
+              }
+            </article>
+          }
+        </section>
+      }
+
+      @for (praca of pracas(); track praca.id) {
+        <section class="coluna" [attr.aria-labelledby]="'coluna-' + praca.id">
+          <header>
+            <div class="linha">
+              <h3 [id]="'coluna-' + praca.id">Praça {{ praca.codigo }}</h3>
+              <span class="vagas" [attr.aria-label]="ocupadas(praca.id) + ' de ' + praca.quantidadeGarcons + ' vagas'">
+                {{ ocupadas(praca.id) }}/{{ praca.quantidadeGarcons }}
+              </span>
+            </div>
+          </header>
+          @for (garcom of garconsDaPraca(praca); track garcom.id) {
+            <article class="garcom">
+              <div class="linha">
+                <strong>{{ garcom.nome }}</strong>
+                @if (garcom.ajustado) {
+                  <span class="etiqueta marca">Ajustado</span>
+                }
+              </div>
+              @if (garcom.ajustado && garcom.sugerida) {
+                <p class="pequeno suave">Sugerido: praça {{ nomeDaPraca(garcom.sugerida) }}</p>
+              }
+              @if (etapa() !== 'confirmada') {
+                <button class="botao compacto secundario" type="button" (click)="abrirMudanca(garcom)">Mudar praça</button>
+              }
+            </article>
+          } @empty {
+            <div class="vazia">Nenhum garçom</div>
+          }
+        </section>
+      }
+    </div>
+
+    @if (etapa() !== 'confirmada') {
+      <div class="rodape-acoes">
+        <p class="texto">
+          @if (semPraca().length) {
+            <strong>{{ semPraca().length }} sem praça.</strong> Escolha a praça de cada um para confirmar.
+          } @else if (ajustes()) {
+            <strong>{{ ajustes() }} {{ ajustes() === 1 ? 'ajuste' : 'ajustes' }}</strong> em relação à sugestão. Revise e
+            confirme.
+          } @else {
+            Sugestão sem ajustes. Revise e confirme.
+          }
+        </p>
+        <button class="botao secundario" type="button" (click)="voltarParaPresenca()">
+          <app-icone nome="voltar" /> Voltar à presença
+        </button>
+        <button class="botao" type="button" [disabled]="semPraca().length > 0 || salvando()" (click)="confirmando.set(true)">
+          <app-icone nome="check" /> Confirmar alocação
+        </button>
+      </div>
+    }
+  }
+}
+
+@if (garcomParaMudar(); as garcom) {
+  <app-folha
+    [titulo]="garcom.nome"
+    [subtitulo]="pracaAtualDe(garcom.id) ? 'Hoje na praça ' + nomeDaPraca(pracaAtualDe(garcom.id)!) : 'Sem praça'"
+    (fechar)="garcomParaMudar.set(null)"
+  >
+    <div class="opcoes-praca" role="group" aria-label="Praças">
+      @for (praca of pracas(); track praca.id) {
+        <button
+          type="button"
+          [attr.aria-pressed]="pracaDeDestino() === praca.id"
+          [disabled]="pracaAtualDe(garcom.id) === praca.id"
+          (click)="pracaDeDestino.set(praca.id); trocarCom.set(null)"
+        >
+          <span>
+            <strong>Praça {{ praca.codigo }}</strong>
+            {{ pracaAtualDe(garcom.id) === praca.id ? ' · atual' : '' }}
+          </span>
+          @if (pracaAtualDe(garcom.id) !== praca.id) {
+            <span
+              class="etiqueta"
+              [class.aviso]="ocupantesDe(praca.id, garcom.id).length >= praca.quantidadeGarcons"
+              [class.sucesso]="ocupantesDe(praca.id, garcom.id).length < praca.quantidadeGarcons"
+            >
+              {{ vagasDaPraca(praca, garcom.id) }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (destinoCheio()) {
+      <p style="margin-top: 12px">
+        <strong>Praça {{ nomeDaPraca(pracaDeDestino()!) }} está cheia. Trocar com quem?</strong>
+      </p>
+      <p class="suave pequeno">
+        {{
+          pracaAtualDe(garcom.id)
+            ? 'A pessoa escolhida vai para a praça ' + nomeDaPraca(pracaAtualDe(garcom.id)!) + '.'
+            : 'A pessoa escolhida fica sem praça.'
+        }}
+      </p>
+      <div class="chips" role="radiogroup" aria-label="Trocar com" style="margin-top: 8px">
+        @for (outro of ocupantesDe(pracaDeDestino()!, garcom.id); track outro.id) {
+          <button
+            class="chip"
+            type="button"
+            role="radio"
+            [attr.aria-checked]="trocarCom() === outro.id"
+            (click)="trocarCom.set(outro.id)"
+          >
+            {{ outro.nome }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="rodape-folha">
+      <button class="botao secundario" type="button" (click)="garcomParaMudar.set(null)">Cancelar</button>
+      <button class="botao" type="button" [disabled]="!podeSalvarMudanca()" (click)="salvarMudanca()">
+        {{ destinoCheio() && trocarCom() ? 'Trocar' : 'Mover' }}
+      </button>
+    </div>
+  </app-folha>
+}
+
+@if (confirmando()) {
+  <app-folha titulo="Confirmar a alocação do turno?" (fechar)="confirmando.set(false)">
+    <p>
+      Os garçons passam a ver a própria praça no celular, e a alocação <strong>não poderá mais ser ajustada</strong>
+      neste turno.
+    </p>
+    <div class="rodape-folha">
+      <button class="botao secundario" type="button" (click)="confirmando.set(false)">Revisar mais</button>
+      <button class="botao" type="button" [disabled]="salvando()" (click)="confirmar()">Confirmar</button>
+    </div>
+  </app-folha>
+}

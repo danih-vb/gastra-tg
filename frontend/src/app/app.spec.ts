@@ -55,9 +55,15 @@ describe('App', () => {
     expect(pagina.querySelector('.barra')?.textContent).toContain('Ana · Garçom');
   });
 
+  it('o metre vê a alocação e o salão, e não as telas do garçom', async () => {
+    const pagina = await renderizar('Metre');
+
+    expect(itensDoMenu(pagina)).toEqual(['Alocação', 'Salão agora']);
+  });
+
   it('o gerente vê a gestão, mas não a alocação do metre', async () => {
     const pagina = await renderizar('Gerente');
 
-    expect(itensDoMenu(pagina)).toEqual(['Comandas', 'Cardápio', 'Análises', 'Salão', 'Usuários']);
+    expect(itensDoMenu(pagina)).toEqual(['Cardápio', 'Análises', 'Salão', 'Usuários']);
   });
 });

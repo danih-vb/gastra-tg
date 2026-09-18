@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { URL_DA_API } from '../configuracao';
 import {
   AlocacaoDoTurno,
+  GarcomDoTurno,
   CategoriaRestricao,
   Comanda,
   ItemCardapio,
@@ -111,6 +112,38 @@ export class GastraApiService {
   /** Alocação do turno: é ela que diz qual praça é a do garçom hoje (RF07). */
   obterAlocacao(data: string, periodo: PeriodoAlocacao): Observable<AlocacaoDoTurno> {
     return this.http.get<AlocacaoDoTurno>(`${this.api}/api/alocacoes/${data}/${periodo}`);
+  }
+
+  /** UC15 — garçons ativos que o Metre pode marcar como presentes. */
+  listarGarconsDoTurno(): Observable<GarcomDoTurno[]> {
+    return this.http.get<GarcomDoTurno[]>(`${this.api}/api/alocacoes/garcons`);
+  }
+
+  /** UC15 — pede a sugestão da RN03 para os garçons presentes. */
+  gerarSugestao(data: string, periodo: PeriodoAlocacao, garcomIds: number[]): Observable<AlocacaoDoTurno> {
+    return this.http.post<AlocacaoDoTurno>(`${this.api}/api/alocacoes/sugestao`, { data, periodo, garcomIds });
+  }
+
+  /**
+   * UC22 — põe um garçom numa praça. Com a praça cheia, `trocarComGarcomId` troca os dois de lugar (#140): é o
+   * único jeito de ajustar no turno em que há um garçom para cada vaga.
+   */
+  ajustarAlocacao(
+    data: string,
+    periodo: PeriodoAlocacao,
+    garcomId: number,
+    pracaId: number,
+    trocarComGarcomId?: number,
+  ): Observable<AlocacaoDoTurno> {
+    return this.http.put<AlocacaoDoTurno>(`${this.api}/api/alocacoes/${data}/${periodo}/garcons/${garcomId}`, {
+      pracaId,
+      trocarComGarcomId: trocarComGarcomId ?? null,
+    });
+  }
+
+  /** UC21 — confirma o turno; depois disso a alocação não muda mais. */
+  confirmarAlocacao(data: string, periodo: PeriodoAlocacao): Observable<AlocacaoDoTurno> {
+    return this.http.post<AlocacaoDoTurno>(`${this.api}/api/alocacoes/${data}/${periodo}/confirmacao`, {});
   }
 
   /** UC17 — para o Garçom, a API já devolve apenas a própria posição. */

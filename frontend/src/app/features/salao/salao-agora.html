@@ -1,0 +1,119 @@
+<header class="topo">
+  <div>
+    <h1>Salão agora</h1>
+    <div class="sub">Comandas abertas por praça. Somente leitura.</div>
+  </div>
+  <div class="acoes">
+    <button class="botao-icone" type="button" aria-label="Atualizar" (click)="carregar()"><app-icone nome="atualizar" /></button>
+  </div>
+</header>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+    </div>
+  </div>
+}
+
+@if (carregando()) {
+  <p class="carregando">Carregando o salão…</p>
+} @else {
+  <section class="resumo" aria-label="Resumo do salão">
+    <div class="cartao">
+      <strong>{{ comandas().length }}</strong><span>mesas ocupadas</span>
+    </div>
+    <div class="cartao">
+      <strong>{{ pendentesTotais() }}</strong><span>itens a entregar</span>
+    </div>
+    <div class="cartao">
+      <strong>{{ emConsumo() | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong><span>em consumo</span>
+    </div>
+  </section>
+
+  @for (praca of pracas(); track praca.id) {
+    <section class="cartao" [attr.aria-labelledby]="'praca-' + praca.id">
+      <header>
+        <h2 [id]="'praca-' + praca.id">Praça {{ praca.codigo }}</h2>
+        <span class="acoes suave pequeno">
+          {{ linhasDaPraca(praca).length }} {{ linhasDaPraca(praca).length === 1 ? 'mesa ocupada' : 'mesas ocupadas' }}
+        </span>
+      </header>
+      @if (linhasDaPraca(praca).length) {
+        <ul class="lista">
+          @for (linha of linhasDaPraca(praca); track linha.comanda.id) {
+            <li>
+              <span class="etiqueta">Mesa {{ linha.mesa }}</span>
+              <div class="principal-item">
+                <strong>{{ linha.comanda.garcomNome }}</strong>
+                <span class="pequeno suave">
+                  {{ COMPOSICOES[linha.comanda.composicao] }} · {{ linha.comanda.quantidadePessoas }} ·
+                  aberta há {{ linha.minutos }} min
+                </span>
+              </div>
+              @if (linha.comanda.restricoes.length) {
+                <span class="etiqueta aviso"><app-icone nome="escudo" /> restrição</span>
+              }
+              @if (linha.pendentes) {
+                <span class="etiqueta aviso">{{ linha.pendentes }} a entregar</span>
+              } @else {
+                <span class="etiqueta sucesso">0</span>
+              }
+              <span class="valor num">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
+              <button class="botao compacto fantasma" type="button" (click)="comandaAberta.set(linha.comanda)">Ver</button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="corpo suave">Nenhuma mesa ocupada.</div>
+      }
+    </section>
+  }
+}
+
+@if (comandaAberta(); as comanda) {
+  <app-folha
+    [titulo]="'Mesa ' + numeroDaMesa(comanda.mesaId)"
+    [subtitulo]="comanda.garcomNome + ' · ' + COMPOSICOES[comanda.composicao] + ', ' + comanda.quantidadePessoas + ' pessoas'"
+    (fechar)="comandaAberta.set(null)"
+  >
+    @if (comanda.restricoes.length) {
+      <div class="alerta aviso">
+        <app-icone nome="escudo" />
+        <div>
+          <strong>Restrições</strong>
+          @for (restricao of comanda.restricoes; track restricao.id) {
+            <div>{{ RESTRICOES[restricao.categoria] }}{{ restricao.observacaoLivre ? ': ' + restricao.observacaoLivre : '' }}</div>
+          }
+        </div>
+      </div>
+    }
+    <ul class="lista" style="margin-top: 8px">
+      @for (item of comanda.itens; track item.id) {
+        <li>
+          <div class="principal-item" [class.cancelado]="item.status === 'Cancelado'">
+            {{ item.quantidade }} × {{ item.nome }}
+            @if (item.status === 'Cancelado' && item.motivoCancelamento) {
+              <span class="pequeno suave">{{ MOTIVOS[item.motivoCancelamento] }}</span>
+            }
+          </div>
+          <span
+            class="etiqueta"
+            [class.aviso]="item.status === 'Pendente'"
+            [class.sucesso]="item.status === 'Entregue'"
+          >
+            {{ item.status === 'Pendente' ? 'A entregar' : item.status }}
+          </span>
+        </li>
+      } @empty {
+        <li class="suave">Nada lançado ainda.</li>
+      }
+    </ul>
+    <p class="pequeno suave" style="margin-top: 8px">
+      <app-icone nome="cadeado" /> As restrições ficam visíveis para garçom e metre só enquanto a mesa está aberta.
+    </p>
+  </app-folha>
+}

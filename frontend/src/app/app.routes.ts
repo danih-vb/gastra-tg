@@ -49,12 +49,18 @@ export const routes: Routes = [
     canActivate: [exigePapel('Garcom')],
     loadComponent: () => import('./features/analises/desempenho/desempenho').then((m) => m.Desempenho),
   },
+  // UC15, UC21, UC22 — telas do Metre.
   {
     path: 'alocacao',
     title: 'Alocação — GASTRA',
     canActivate: [exigePapel('Metre')],
-    loadComponent: emConstrucao,
-    data: { titulo: 'Alocação de garçons', casosDeUso: 'UC15, UC21, UC22' },
+    loadComponent: () => import('./features/alocacao/alocacao').then((m) => m.Alocacao),
+  },
+  {
+    path: 'salao-agora',
+    title: 'Salão agora — GASTRA',
+    canActivate: [exigePapel('Metre')],
+    loadComponent: () => import('./features/salao/salao-agora').then((m) => m.SalaoAgora),
   },
   {
     path: 'cardapio',
