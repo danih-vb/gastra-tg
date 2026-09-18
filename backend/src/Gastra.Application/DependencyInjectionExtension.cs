@@ -27,6 +27,7 @@ public static class DependencyInjectionExtension
 
         services.AddScoped<IGerarSugestaoAlocacaoUseCase, GerarSugestaoAlocacaoUseCase>();
         services.AddScoped<IAjustarAlocacaoUseCase, AjustarAlocacaoUseCase>();
+        services.AddScoped<IListarGarconsDoTurnoUseCase, ListarGarconsDoTurnoUseCase>();
         services.AddScoped<IConfirmarAlocacaoUseCase, ConfirmarAlocacaoUseCase>();
         services.AddScoped<IObterAlocacaoTurnoUseCase, ObterAlocacaoTurnoUseCase>();
 
