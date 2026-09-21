@@ -41,6 +41,9 @@ public static class EventoAuditoria
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";
     public const string ComandaFechada = "COMANDA_FECHADA";
 
+    /// <summary>Sem ator: quem avalia não se identifica (RN08).</summary>
+    public const string AvaliacaoRecebida = "AVALIACAO_RECEBIDA";
+
     // 4.5 Alocação de garçons
     public const string SugestaoAlocacaoGerada = "SUGESTAO_ALOCACAO_GERADA";
     public const string AlocacaoAjustada = "ALOCACAO_AJUSTADA";

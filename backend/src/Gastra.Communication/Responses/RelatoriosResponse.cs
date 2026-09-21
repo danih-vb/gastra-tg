@@ -133,3 +133,30 @@ public class PosicaoRankingResponse
     public decimal MesasPorTurno { get; set; }
     public int Turnos { get; set; }
 }
+
+/// <summary>
+/// Avaliações do atendimento no período (RF25). Tudo agregado: a resposta não traz comentário, comanda
+/// nem garçom. Ver a nota de uma mesa isolada seria, na prática, apontar para o atendimento dela.
+/// </summary>
+public class RelatorioAvaliacoesResponse
+{
+    public PeriodoResponse Periodo { get; set; } = new();
+
+    /// <summary>Quantas avaliações chegaram no período.</summary>
+    public int Quantidade { get; set; }
+
+    /// <summary>Média das notas, com uma casa. Zero quando ninguém avaliou.</summary>
+    public decimal Media { get; set; }
+
+    /// <summary>Uma linha por nota de 1 a 5, inclusive as que ninguém deu.</summary>
+    public List<FaixaDeNotaResponse> Distribuicao { get; set; } = [];
+}
+
+public class FaixaDeNotaResponse
+{
+    public int Nota { get; set; }
+    public int Quantidade { get; set; }
+
+    /// <summary>Participação da nota no total, em porcentagem.</summary>
+    public decimal Percentual { get; set; }
+}

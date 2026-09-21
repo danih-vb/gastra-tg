@@ -264,6 +264,14 @@ por horário e o ranking de garçons.
 Todos os números vêm calculados da API. A tela não faz conta nenhuma — é regra do projeto, para não existirem duas
 versões do mesmo número (uma na tela, outra no relatório).
 
+Entre os indicadores está a **avaliação do atendimento** (seção 6.3): a média das notas do período e quantas
+notas de cada valor os clientes deram.
+
+> **O Gerente vê só o conjunto.** Não dá para ver a nota de uma mesa específica, nem o comentário, nem a nota
+> por garçom. É escolha de projeto: a avaliação foi prometida anônima ao cliente, e uma nota ligada a uma
+> comanda apontaria direto para quem atendeu aquela mesa. Se a casa decidir um dia acompanhar avaliação por
+> garçom, é uma decisão nova, que muda o que se promete a quem avalia.
+
 ### 4.2 Cardápio
 
 <img src="../ux-ui/telas/gerente-cardapio.png" alt="Gestão do cardápio" width="520">
@@ -385,6 +393,18 @@ cobrado**, para o cliente conferir que aquilo saiu mesmo da conta.
 O cliente vê **só a própria conta**, e nada que identifique pessoas: nem o nome do garçom, nem as restrições
 registradas pela mesa.
 
+### 6.3 Avaliar o atendimento
+
+Depois que a conta fecha, a mesma tela oferece dar uma **nota de 1 a 5** e, se o cliente quiser, escrever um
+comentário. É a única coisa que o código da mesa permite *escrever* no sistema.
+
+- **A avaliação é anônima.** O sistema não tem onde guardar quem avaliou, e o registro de auditoria dessa
+  ação fica de propósito sem autor. A tela pede para o cliente não escrever o próprio nome no comentário,
+  justamente para ele continuar anônimo.
+- **Uma avaliação por conta**, e só nas **24 horas** seguintes ao fechamento. Passado o prazo, o código
+  continua servindo para ver a conta, mas não para escrever.
+- Antes de a conta fechar a opção nem aparece: o atendimento ainda está acontecendo.
+
 Se o código não existir, a tela diz que não encontrou aquela mesa e sugere conferir o código — isso não é erro de
 sistema, é o caso normal de quem digitou errado.
 
@@ -400,6 +420,8 @@ sistema, é o caso normal de quem digitou errado.
 | Mais presentes do que vagas, e a sugestão não gera | Chegou mais gente do que cabe nas praças | Decida quem fica de fora, ou crie/aumente uma praça na tela de Salão (seção 4.4) |
 | "O serviço de análise não respondeu" (sugestões ou alocação) | A camada analítica está fora do ar | Siga sem ela: lançar item, fechar conta e montar o turno à mão continuam funcionando |
 | "E-mail ou senha não conferem" | Um dos dois está errado | Confira o e-mail. Se esqueceu a senha, o Gerente redefine (seção 4.5) |
+| "Esta conta já foi avaliada" | Cada conta aceita uma avaliação só | Nada a fazer: a nota anterior já foi registrada |
+| "O prazo para avaliar esta conta terminou" | Passaram mais de 24 horas do fechamento | A avaliação fica para a próxima visita |
 | "Não encontramos essa mesa" (cliente) | O código não existe ou a conta já fechou | Leia o QR de novo ou chame o garçom. Digitar o código ainda não funciona: ver [#217](https://github.com/danih-vb/gastra-tg/issues/217) |
 | A pessoa foi desconectada de repente | A conta foi inativada, teve a senha redefinida ou o segundo fator zerado | Fale com o Gerente |
 | "Já existe uma praça com este código" / "com este número" | Código de praça e número de mesa não se repetem | Escolha outro, ou edite a que já existe |
@@ -418,6 +440,7 @@ sistema, é o caso normal de quem digitou errado.
 | **Taxa de serviço** | Os 10% sobre o subtotal. Pode ser retirada a pedido do cliente |
 | **Índice de desempenho** | Nota do garçom no período: 60% faturamento médio por turno, 40% rodízio de praça |
 | **Item pendente** | Item lançado que ainda não foi entregue nem cancelado |
+| **Avaliação do atendimento** | Nota de 1 a 5 que o cliente dá depois de fechar a conta, anônima e uma por conta |
 | **Verificação em duas etapas** | Código de seis dígitos do aplicativo autenticador, exigido de Gerente e Coordenador |
 
 ---

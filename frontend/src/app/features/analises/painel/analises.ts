@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
 import {
   RankingDeDesempenho,
+  RelatorioAvaliacoes,
   RelatorioCardapio,
   RelatorioGarcons,
   RelatorioHorarios,
@@ -33,6 +34,7 @@ interface Relatorios {
   cardapio: RelatorioCardapio;
   horarios: RelatorioHorarios;
   ranking: RankingDeDesempenho;
+  avaliacoes: RelatorioAvaliacoes;
 }
 
 /**
@@ -129,6 +131,7 @@ export class Analises {
       cardapio: this.api.relatorioDoCardapio(inicio, fim),
       horarios: this.api.relatorioDeHorarios(inicio, fim),
       ranking: this.api.rankingDeDesempenho(inicio, fim),
+      avaliacoes: this.api.relatorioDeAvaliacoes(inicio, fim),
     }).subscribe({
       next: (dados) => {
         this.dados.set(dados);

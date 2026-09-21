@@ -14,3 +14,9 @@ public record IndicadorItemCardapio(int ItemCardapioId, string Categoria, decima
 
 /// <summary>Faturamento de uma praça numa fatia do tempo: hora do dia (0–23) ou dia da semana (1 = domingo).</summary>
 public record IndicadorPracaNoTempo(int PracaId, int Fatia, decimal Faturamento, int Comandas);
+
+/// <summary>
+/// Uma faixa da distribuição de notas das avaliações (RF25). Agregado: nenhuma linha identifica quem
+/// avaliou nem o garçom atendido.
+/// </summary>
+public record LinhaAvaliacao(int Nota, int Quantidade);

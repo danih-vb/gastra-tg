@@ -247,6 +247,8 @@ Legenda:
 | `restricao_alimentar.observacao_livre` | **Sensível** (pode descrever doença ou alergia) | Cliente | Opcional. Nunca vai para log nem para view. **Apagada no fechamento da comanda** (`Comanda.Fechar`) |
 | `restricao_alimentar.categoria` | Sensível na mesa ativa, **sem titular identificável depois** | Cliente | Fica ligada só à comanda, que não identifica o cliente. Após o fechamento, só a categoria permanece. Acesso restrito pela RN04 (3.3) |
 | `comanda.codigo_acesso_cliente` | Credencial | Cliente | Dá acesso à conta da mesa (UC20). Único, nunca vai para log |
+| `avaliacao_atendimento.comentario` | Pode virar pessoal se o cliente escrever dado dele | Cliente | Texto livre e opcional (RF25). A tela avisa para não escrever dado pessoal. Nunca vai para log nem para view, e **não sai na resposta do Gerente**: ele vê só média e distribuição (RN08) |
+| `avaliacao_atendimento.nota` | Não pessoal | Cliente | Presa à comanda, que não identifica o cliente. Exposta só agregada: a nota de uma comanda isolada apontaria para o atendimento daquela mesa (RN08) |
 | `comanda.quantidade_pessoas`, `comanda.composicao` | Não pessoal | — | Informação observável da mesa (RN01), sem identidade. Não é usada para inferir atributo sensível (RN05) |
 | `item_pedido.*` | Não pessoal | — | Consumo de uma comanda anônima. As views de BI e das regras de associação só usam ids |
 | `promocao.*`, `promocao_item_cardapio.*` | Não pessoal | — | Dado do cardápio |

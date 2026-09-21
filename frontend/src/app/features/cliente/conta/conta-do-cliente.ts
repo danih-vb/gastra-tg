@@ -1,5 +1,6 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, effect, inject, input, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
 import { ComandaDoCliente, StatusItemPedido } from '../../../core/api/modelos';
@@ -16,7 +17,7 @@ const INTERVALO_MS = 15_000;
 @Component({
   selector: 'app-conta-do-cliente',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, DatePipe, RouterLink, Icone],
+  imports: [CurrencyPipe, DatePipe, FormsModule, RouterLink, Icone],
   templateUrl: './conta-do-cliente.html',
   styleUrl: './conta-do-cliente.scss',
 })
@@ -33,6 +34,14 @@ export class ContaDoCliente implements OnInit, OnDestroy {
   protected readonly atualizadoHa = signal(0);
 
   private relogio: ReturnType<typeof setInterval> | null = null;
+
+  /** RF25 — avaliação do atendimento. A tela só mostra isto quando a API diz que dá (conta fechada, sem avaliação, no prazo). */
+  protected readonly NOTAS = [1, 2, 3, 4, 5];
+  protected readonly LIMITE_DO_COMENTARIO = 280;
+  protected readonly nota = signal(0);
+  protected comentario = '';
+  protected readonly enviando = signal(false);
+  protected readonly errosDaAvaliacao = signal<string[]>([]);
 
   protected readonly SITUACAO: Record<StatusItemPedido, { texto: string; classe: string }> = {
     Pendente: { texto: 'A caminho', classe: 'aviso' },
@@ -66,6 +75,26 @@ export class ContaDoCliente implements OnInit, OnDestroy {
 
   protected atualizarAgora(): void {
     this.carregar();
+  }
+
+  protected enviarAvaliacao(): void {
+    const nota = this.nota();
+    if (!nota) return;
+
+    this.enviando.set(true);
+    this.errosDaAvaliacao.set([]);
+    this.api.avaliarAtendimento(this.codigo(), { nota, comentario: this.comentario.trim() || undefined }).subscribe({
+      next: () => {
+        this.enviando.set(false);
+        this.comentario = '';
+        // Recarrega em vez de marcar na mão: quem decide se já foi avaliada é a API.
+        this.carregar(true);
+      },
+      error: (erro: unknown) => {
+        this.enviando.set(false);
+        this.errosDaAvaliacao.set(mensagensDeErro(erro));
+      },
+    });
   }
 
   /** `emSegundoPlano` mantém o que está na tela enquanto a atualização automática acontece. */

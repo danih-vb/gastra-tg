@@ -59,7 +59,41 @@
         <div class="valor">{{ dados.garcons.totais.tempoMedioAtendimentoMinutos | number: '1.0-0' }} min</div>
         <div class="detalhe">da abertura ao fechamento</div>
       </div>
+      <div class="cartao kpi">
+        <div class="rotulo">Avaliação do atendimento</div>
+        @if (dados.avaliacoes.quantidade) {
+          <div class="valor">{{ dados.avaliacoes.media | number: '1.1-1' }} <span class="suave pequeno">de 5</span></div>
+          <div class="detalhe">{{ dados.avaliacoes.quantidade | number }} avaliações de clientes</div>
+        } @else {
+          <div class="valor suave">—</div>
+          <div class="detalhe">nenhuma avaliação no período</div>
+        }
+      </div>
     </section>
+
+    @if (dados.avaliacoes.quantidade) {
+      <section class="cartao" aria-labelledby="t-avaliacoes">
+        <header>
+          <h2 id="t-avaliacoes">Como os clientes avaliaram</h2>
+          <span class="acoes suave pequeno">anônimo, sem comentário e sem garçom</span>
+        </header>
+        <div class="corpo barras">
+          @for (faixa of dados.avaliacoes.distribuicao; track faixa.nota) {
+            <div class="barra">
+              <strong>{{ faixa.nota }}</strong>
+              <div class="trilho" role="img" [attr.aria-label]="faixa.quantidade + ' avaliações com nota ' + faixa.nota">
+                <div class="preenchido" [style.width.%]="faixa.percentual"></div>
+              </div>
+              <span class="suave pequeno">{{ faixa.quantidade | number }}</span>
+            </div>
+          }
+        </div>
+        <p class="suave pequeno" style="padding: 0 16px 14px">
+          <app-icone nome="cadeado" /> A nota não é ligada ao garçom nem à mesa: a avaliação é anônima, e apontar
+          uma nota para um atendimento específico desfaria isso.
+        </p>
+      </section>
+    }
 
     <div class="grade-2">
       <section class="cartao" aria-labelledby="t-pracas">

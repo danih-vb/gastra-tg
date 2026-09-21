@@ -117,6 +117,11 @@ Dados do cardápio e do salão não são pessoais: podem ser registrados com os 
 | Evento | Caso de uso | Registrar | Nunca registrar |
 |---|---|---|---|
 | Comanda consultada por QR code | UC20 | somente em log **técnico**: data/hora e resultado (encontrada / não encontrada) | **código de acesso completo**, IP do cliente |
+| **Avaliação recebida** | UC25 | `id_comanda` e a nota, **sem ator** | **comentário**, código de acesso, IP do cliente |
+
+> A avaliação é a única escrita anônima do sistema, e o log acompanha isso: o registro fica sem
+> `usuario_id` de propósito (RN08). Gravar quem avaliou seria justamente o que a regra proíbe. A nota entra
+> porque não identifica ninguém; o comentário é texto livre do cliente e fica só na tabela.
 
 O código de acesso funciona como uma senha da comanda: quem tem o código vê a conta. Registrá-lo
 por inteiro permitiria que quem lê o log consultasse comandas de terceiros. Se for necessário

@@ -127,6 +127,33 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
     }
 
     [Fact]
+    public async Task RelatorioDeAvaliacoes_TrazMediaEAsCincoFaixas()
+    {
+        factory.Indicadores.Avaliacoes.Add(new LinhaAvaliacao(Nota: 5, Quantidade: 6));
+        factory.Indicadores.Avaliacoes.Add(new LinhaAvaliacao(Nota: 4, Quantidade: 3));
+        factory.Indicadores.Avaliacoes.Add(new LinhaAvaliacao(Nota: 1, Quantidade: 1));
+
+        var relatorio = await Ler<RelatorioAvaliacoesResponse>(_gerente, $"{Rota}/avaliacoes");
+
+        Assert.Equal(10, relatorio.Quantidade);
+        Assert.Equal(4.3m, relatorio.Media);
+        // As cinco notas sempre aparecem: as faixas em que ninguém votou informam tanto quanto as outras.
+        Assert.Equal([1, 2, 3, 4, 5], relatorio.Distribuicao.Select(f => f.Nota));
+        Assert.Equal(0, relatorio.Distribuicao[1].Quantidade);
+        Assert.Equal(60m, relatorio.Distribuicao[4].Percentual);
+    }
+
+    [Fact]
+    public async Task RelatorioDeAvaliacoes_SemNenhumaAvaliacao_NaoDividePorZero()
+    {
+        var relatorio = await Ler<RelatorioAvaliacoesResponse>(_gerente, $"{Rota}/avaliacoes");
+
+        Assert.Equal(0, relatorio.Quantidade);
+        Assert.Equal(0m, relatorio.Media);
+        Assert.All(relatorio.Distribuicao, f => Assert.Equal(0m, f.Percentual));
+    }
+
+    [Fact]
     public async Task RelatorioDeHorarios_TrazHoraEDiaDaSemanaComNome()
     {
         factory.Indicadores.PorHora.Add(new IndicadorPracaNoTempo(1, Fatia: 20, Faturamento: 900m, Comandas: 3));

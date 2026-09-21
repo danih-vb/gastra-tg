@@ -80,6 +80,20 @@ export interface Comanda {
   total: number;
 }
 
+/** RF25 — avaliação do atendimento. Anônima: não existe campo de identificação, e é de propósito (RN08). */
+export interface NovaAvaliacao {
+  nota: number;
+  comentario?: string;
+}
+
+/** RF25 — o que o Gerente vê das avaliações: só agregado, sem comentário e sem garçom. */
+export interface RelatorioAvaliacoes {
+  periodo: Periodo;
+  quantidade: number;
+  media: number;
+  distribuicao: { nota: number; quantidade: number; percentual: number }[];
+}
+
 export interface ItemSugerido {
   itemDoCardapioId: number;
   nome: string;
@@ -118,6 +132,9 @@ export interface ComandaDoCliente {
   subtotal: number;
   taxaServico: number;
   total: number;
+  /** RF25: a tela só oferece avaliar com a conta fechada, sem avaliação e dentro do prazo. */
+  podeAvaliar: boolean;
+  avaliacaoEnviada: boolean;
 }
 
 /** UC15 — garçom que pode entrar no turno (só id e nome, RNF03). */

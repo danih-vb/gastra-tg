@@ -1,7 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RankingDeDesempenho, RelatorioCardapio, RelatorioGarcons, RelatorioHorarios, RelatorioPracas } from '../../../core/api/modelos';
+import {
+  RankingDeDesempenho,
+  RelatorioAvaliacoes,
+  RelatorioCardapio,
+  RelatorioGarcons,
+  RelatorioHorarios,
+  RelatorioPracas,
+} from '../../../core/api/modelos';
 import { API } from '../../../core/api/testes';
 import { provedoresDeLocalizacao } from '../../../core/localizacao';
 import { Analises, datasDoPeriodo } from './analises';
@@ -47,6 +54,19 @@ const RANKING: RankingDeDesempenho = {
   posicoes: [{ posicao: 1, garcomId: 13, nome: 'Ana Souza', indice: 99.9, faturamentoPorTurno: 1315.45, mesasPorTurno: 9.3, turnos: 22 }],
 };
 
+const AVALIACOES: RelatorioAvaliacoes = {
+  periodo: PERIODO,
+  quantidade: 10,
+  media: 4.3,
+  distribuicao: [
+    { nota: 1, quantidade: 1, percentual: 10 },
+    { nota: 2, quantidade: 0, percentual: 0 },
+    { nota: 3, quantidade: 0, percentual: 0 },
+    { nota: 4, quantidade: 3, percentual: 30 },
+    { nota: 5, quantidade: 6, percentual: 60 },
+  ],
+};
+
 describe('datas do período', () => {
   it('inclui o dia de hoje em cada opção', () => {
     const hoje = new Date('2026-09-17T15:00:00');
@@ -72,13 +92,14 @@ describe('Análises (UC16, UC17)', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  async function responder(garcons: RelatorioGarcons = GARCONS): Promise<void> {
+  async function responder(garcons: RelatorioGarcons = GARCONS, avaliacoes = AVALIACOES): Promise<void> {
     const pedido = (nome: string) => http.expectOne((r) => r.url === `${API}/api/indicadores/${nome}`);
     pedido('garcons').flush(garcons);
     pedido('pracas').flush(PRACAS);
     pedido('cardapio').flush(CARDAPIO);
     pedido('horarios').flush(HORARIOS);
     pedido('desempenho').flush(RANKING);
+    pedido('avaliacoes').flush(avaliacoes);
     await fixture.whenStable();
   }
 
@@ -88,15 +109,15 @@ describe('Análises (UC16, UC17)', () => {
 
   afterEach(() => http.verify());
 
-  it('pede os cinco relatórios com o mesmo período e mostra os totais', async () => {
+  it('pede os seis relatórios com o mesmo período e mostra os totais', async () => {
     const pagina = await renderizar();
     const { inicio, fim } = datasDoPeriodo('30');
     const pedidos = http.match((r) => r.url.startsWith(`${API}/api/indicadores/`));
-    expect(pedidos.length).toBe(5);
+    expect(pedidos.length).toBe(6);
     expect(pedidos.every((p) => p.request.params.get('inicio') === inicio && p.request.params.get('fim') === fim)).toBe(true);
     pedidos.forEach((p) => {
       const nome = p.request.url.split('/').pop();
-      p.flush({ garcons: GARCONS, pracas: PRACAS, cardapio: CARDAPIO, horarios: HORARIOS, desempenho: RANKING }[nome!]!);
+      p.flush({ garcons: GARCONS, pracas: PRACAS, cardapio: CARDAPIO, horarios: HORARIOS, desempenho: RANKING, avaliacoes: AVALIACOES }[nome!]!);
     });
     await fixture.whenStable();
 
@@ -136,6 +157,25 @@ describe('Análises (UC16, UC17)', () => {
     expect(itens).toEqual(['Picanha na chapa', 'Caipirinha de limão']);
   });
 
+  it('mostra a média das avaliações e a distribuição, sem ligar nota a garçom (RF25)', async () => {
+    const pagina = await renderizar();
+    await responder();
+
+    expect(texto(pagina)).toContain('Avaliação do atendimento');
+    expect(texto(pagina)).toContain('4,3');
+    expect(texto(pagina)).toContain('10 avaliações de clientes');
+    expect(texto(pagina)).toContain('Como os clientes avaliaram');
+    expect(texto(pagina)).toContain('anônimo, sem comentário e sem garçom');
+  });
+
+  it('sem avaliação no período, diz isso em vez de mostrar média zero', async () => {
+    const pagina = await renderizar();
+    await responder(GARCONS, { ...AVALIACOES, quantidade: 0, media: 0, distribuicao: [] });
+
+    expect(texto(pagina)).toContain('nenhuma avaliação no período');
+    expect(texto(pagina)).not.toContain('Como os clientes avaliaram');
+  });
+
   it('período sem comanda fechada explica em vez de mostrar zeros', async () => {
     const pagina = await renderizar();
     await responder({ ...GARCONS, garcons: [], totais: { faturamento: 0, comandas: 0, ticketMedio: 0, tempoMedioAtendimentoMinutos: 0 } });
@@ -151,11 +191,11 @@ describe('Análises (UC16, UC17)', () => {
     [...pagina.querySelectorAll<HTMLButtonElement>('.segmentado button')].find((b) => b.textContent?.includes('7 dias'))!.click();
     const { inicio } = datasDoPeriodo('7');
     const pedidos = http.match((r) => r.url.startsWith(`${API}/api/indicadores/`));
-    expect(pedidos.length).toBe(5);
+    expect(pedidos.length).toBe(6);
     expect(pedidos.every((p) => p.request.params.get('inicio') === inicio)).toBe(true);
     pedidos.forEach((p) => {
       const nome = p.request.url.split('/').pop();
-      p.flush({ garcons: GARCONS, pracas: PRACAS, cardapio: CARDAPIO, horarios: HORARIOS, desempenho: RANKING }[nome!]!);
+      p.flush({ garcons: GARCONS, pracas: PRACAS, cardapio: CARDAPIO, horarios: HORARIOS, desempenho: RANKING, avaliacoes: AVALIACOES }[nome!]!);
     });
     await fixture.whenStable();
   });

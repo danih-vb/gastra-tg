@@ -301,3 +301,48 @@ public class RankingDesempenhoUseCase(
         };
     }
 }
+
+// UC16 — avaliações do atendimento (RF25)
+public interface IRelatorioAvaliacoesUseCase
+{
+    Task<RelatorioAvaliacoesResponse> Executar(DateOnly? inicio, DateOnly? fim);
+}
+
+/// <summary>
+/// Só números agregados. O comentário do cliente fica no banco e não sai por aqui: é texto livre, pode ter
+/// vindo com dado pessoal sem ninguém pedir, e uma nota atrelada a uma mesa apontaria para quem atendeu.
+/// </summary>
+public class RelatorioAvaliacoesUseCase(
+    IRepositorioIndicadores indicadores,
+    IRegistradorAuditoria auditoria,
+    IUnitOfWork unitOfWork) : IRelatorioAvaliacoesUseCase
+{
+    public async Task<RelatorioAvaliacoesResponse> Executar(DateOnly? inicio, DateOnly? fim)
+    {
+        var periodo = PeriodoDeRelatorio.Resolver(inicio, fim);
+        var linhas = await indicadores.ObterDistribuicaoDeAvaliacoes(periodo.Inicio, periodo.Fim);
+
+        await RelatorioGarconsUseCase.Auditar(auditoria, unitOfWork, "avaliacoes", periodo.Resposta);
+
+        var total = linhas.Sum(l => l.Quantidade);
+        var soma = linhas.Sum(l => l.Nota * l.Quantidade);
+
+        return new RelatorioAvaliacoesResponse
+        {
+            Periodo = periodo.Resposta,
+            Quantidade = total,
+            Media = PeriodoDeRelatorio.Dividir(soma, total, casas: 1),
+            // As cinco notas sempre aparecem: barra vazia informa tanto quanto barra cheia.
+            Distribuicao = Enumerable.Range(1, 5).Select(nota =>
+            {
+                var quantidade = linhas.FirstOrDefault(l => l.Nota == nota)?.Quantidade ?? 0;
+                return new FaixaDeNotaResponse
+                {
+                    Nota = nota,
+                    Quantidade = quantidade,
+                    Percentual = PeriodoDeRelatorio.Dividir(quantidade * 100, total, casas: 1),
+                };
+            }).ToList(),
+        };
+    }
+}

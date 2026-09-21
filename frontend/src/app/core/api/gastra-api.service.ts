@@ -4,30 +4,32 @@ import { Observable } from 'rxjs';
 import { URL_DA_API } from '../configuracao';
 import { Papel } from '../sessao/modelos';
 import {
-  NovaMesa,
-  NovaPraca,
-  NovoUsuario,
-  Usuario,
-  NovaPromocao,
-  NovoItemDoCardapio,
-  Promocao,
-  RelatorioCardapio,
-  RelatorioGarcons,
-  RelatorioHorarios,
-  RelatorioPracas,
   AlocacaoDoTurno,
-  ComandaDoCliente,
-  GarcomDoTurno,
   CategoriaRestricao,
   Comanda,
+  ComandaDoCliente,
+  GarcomDoTurno,
   ItemCardapio,
   ItemDoPedido,
   Mesa,
   MotivoCancelamento,
+  NovaAvaliacao,
+  NovaMesa,
+  NovaPraca,
+  NovaPromocao,
+  NovoItemDoCardapio,
+  NovoUsuario,
   PeriodoAlocacao,
   Praca,
+  Promocao,
   RankingDeDesempenho,
+  RelatorioAvaliacoes,
+  RelatorioCardapio,
+  RelatorioGarcons,
+  RelatorioHorarios,
+  RelatorioPracas,
   SugestoesDaComanda,
+  Usuario,
 } from './modelos';
 
 /**
@@ -64,6 +66,17 @@ export class GastraApiService {
    */
   consultarComandaDoCliente(codigoAcesso: string): Observable<ComandaDoCliente> {
     return this.http.get<ComandaDoCliente>(`${this.api}/api/comandas/consulta/${encodeURIComponent(codigoAcesso)}`);
+  }
+
+  /**
+   * UC25 — avaliação do atendimento pelo cliente (RF25). É a única escrita que o código de acesso permite, e
+   * a API só aceita com a conta fechada, uma vez e dentro do prazo (RN08).
+   */
+  avaliarAtendimento(codigoAcesso: string, avaliacao: NovaAvaliacao): Observable<void> {
+    return this.http.post<void>(
+      `${this.api}/api/comandas/consulta/${encodeURIComponent(codigoAcesso)}/avaliacao`,
+      avaliacao,
+    );
   }
 
   // --- Comandas ---
@@ -189,6 +202,10 @@ export class GastraApiService {
 
   relatorioDoCardapio(inicio: string, fim: string): Observable<RelatorioCardapio> {
     return this.http.get<RelatorioCardapio>(`${this.api}/api/indicadores/cardapio`, { params: { inicio, fim } });
+  }
+
+  relatorioDeAvaliacoes(inicio: string, fim: string): Observable<RelatorioAvaliacoes> {
+    return this.http.get<RelatorioAvaliacoes>(`${this.api}/api/indicadores/avaliacoes`, { params: { inicio, fim } });
   }
 
   relatorioDeHorarios(inicio: string, fim: string): Observable<RelatorioHorarios> {

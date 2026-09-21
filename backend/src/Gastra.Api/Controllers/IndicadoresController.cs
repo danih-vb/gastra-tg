@@ -18,6 +18,17 @@ public class IndicadoresController : ControllerBase
     private const string Gerente = nameof(PapelUsuario.Gerente);
     private const string GerenteOuGarcom = nameof(PapelUsuario.Gerente) + "," + nameof(PapelUsuario.Garcom);
 
+    /// <summary>
+    /// Média e distribuição das notas que os clientes deixaram no período (RF25). Só agregado: comentário
+    /// e garçom não saem daqui.
+    /// </summary>
+    [Authorize(Roles = Gerente)]
+    [HttpGet("avaliacoes")]
+    [ProducesResponseType(typeof(RelatorioAvaliacoesResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Avaliacoes(DateOnly? inicio, DateOnly? fim, [FromServices] IRelatorioAvaliacoesUseCase useCase) =>
+        Ok(await useCase.Executar(inicio, fim));
+
     /// <summary>Faturamento total e por turno, comandas, mesas atendidas, ticket médio e tempo de atendimento por garçom.</summary>
     [Authorize(Roles = Gerente)]
     [HttpGet("garcons")]

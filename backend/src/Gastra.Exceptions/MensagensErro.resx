@@ -82,4 +82,8 @@
   <data name="DescontoFixoMaiorQuePreco" xml:space="preserve"><value>O desconto fixo precisa ser menor que o preço de cada item da promoção.</value></data>
   <data name="PromocaoNaoEncontrada" xml:space="preserve"><value>Promoção não encontrada.</value></data>
   <data name="PromocaoJaDesativada" xml:space="preserve"><value>A promoção já foi removida.</value></data>
+  <data name="NotaAvaliacaoInvalida" xml:space="preserve"><value>A nota da avaliação deve ser um número de 1 a 5.</value></data>
+  <data name="ComentarioMuitoLongo" xml:space="preserve"><value>O comentário deve ter no máximo 280 caracteres.</value></data>
+  <data name="ComandaJaAvaliada" xml:space="preserve"><value>Esta conta já foi avaliada. Obrigado!</value></data>
+  <data name="AvaliacaoForaDoPrazo" xml:space="preserve"><value>O prazo para avaliar esta conta terminou.</value></data>
 </root>
