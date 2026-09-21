@@ -216,7 +216,7 @@ Desenhar com os contratos reais revelou lacunas, registradas como issues:
   2. Metre;
   3. Cliente;
   4. Gerente.
-- **Manual do usuário (#49):** pode usar as imagens de `telas/` depois que as telas em Angular estiverem estáveis.
+- **Manual do usuário (#49):** feito, em [`docs/manual-usuario/`](../manual-usuario/GASTRA_Manual_do_Usuario.md). Usa as 33 imagens de `telas/` por caminho relativo, então regerar as imagens atualiza o manual junto.
 
 ### Regenerar as imagens
 
