@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Semeia o banco de desenvolvimento com dados simulados (issues #179–#185). Fica fora da solução de
+    propósito: não entra no build nem nos testes da API, e nunca é publicado junto com ela.
+    Uso (dentro de backend/): dotnet run -\-project tools/GastraSemeador
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Gastra.Infrastructure\Gastra.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
