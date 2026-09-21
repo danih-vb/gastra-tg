@@ -62,19 +62,19 @@ export const routes: Routes = [
     canActivate: [exigePapel('Metre')],
     loadComponent: () => import('./features/salao/salao-agora').then((m) => m.SalaoAgora),
   },
+  // UC05–UC09 — cardápio e promoções (Gerente e Coordenador).
   {
     path: 'cardapio',
     title: 'Cardápio — GASTRA',
     canActivate: [exigePapel('Gerente', 'Coordenador')],
-    loadComponent: emConstrucao,
-    data: { titulo: 'Cardápio e promoções', casosDeUso: 'UC05–UC09' },
+    loadComponent: () => import('./features/cardapio/gestao-cardapio').then((m) => m.GestaoCardapio),
   },
+  // UC16, UC17 — relatórios de BI.
   {
     path: 'analises',
     title: 'Análises — GASTRA',
     canActivate: [exigePapel('Gerente')],
-    loadComponent: emConstrucao,
-    data: { titulo: 'Relatórios e desempenho', casosDeUso: 'UC16, UC17' },
+    loadComponent: () => import('./features/analises/painel/analises').then((m) => m.Analises),
   },
   {
     path: 'salao',

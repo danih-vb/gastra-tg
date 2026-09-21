@@ -141,3 +141,99 @@ export interface RankingDeDesempenho {
   totalNoRanking: number;
   posicoes: PosicaoNoRanking[];
 }
+
+// --- Gerente: relatórios de BI (UC16) ---
+
+export interface Periodo {
+  inicio: string;
+  fim: string;
+}
+
+export interface IndicadorGarcom {
+  garcomId: number;
+  nome: string;
+  faturamento: number;
+  comandas: number;
+  turnos: number;
+  faturamentoPorTurno: number;
+  mesasAtendidas: number;
+  ticketMedio: number;
+  tempoMedioAtendimentoMinutos: number;
+}
+
+export interface RelatorioGarcons {
+  periodo: Periodo;
+  garcons: IndicadorGarcom[];
+  totais: { faturamento: number; comandas: number; ticketMedio: number; tempoMedioAtendimentoMinutos: number };
+}
+
+export interface IndicadorPraca {
+  pracaId: number;
+  codigo: string;
+  faturamento: number;
+  comandas: number;
+  turnosComMovimento: number;
+  faturamentoPorTurno: number;
+  ticketMedio: number;
+  faturamentoMedioHistorico: number;
+}
+
+export interface RelatorioPracas {
+  periodo: Periodo;
+  pracas: IndicadorPraca[];
+}
+
+export interface IndicadorItem {
+  itemCardapioId: number;
+  nome: string;
+  categoria: string;
+  quantidade: number;
+  faturamento: number;
+  participacaoPercentual: number;
+}
+
+export interface RelatorioCardapio {
+  periodo: Periodo;
+  itens: IndicadorItem[];
+  categorias: { categoria: string; quantidade: number; faturamento: number; participacaoPercentual: number }[];
+}
+
+export interface RelatorioHorarios {
+  periodo: Periodo;
+  porHora: { pracaId: number; pracaCodigo: string; hora: number; faturamento: number; comandas: number }[];
+  porDiaDaSemana: { pracaId: number; pracaCodigo: string; diaDaSemana: number; nomeDoDia: string; faturamento: number; comandas: number }[];
+}
+
+// --- Gerente e Coordenador: cardápio e promoções (UC05–UC09) ---
+
+export type TipoDesconto = 'Percentual' | 'ValorFixo';
+
+export interface NovoItemDoCardapio {
+  nome: string;
+  categoria: CategoriaItemCardapio;
+  preco: number;
+  descricao: string;
+  flagsDieteticas: FlagDietetica[];
+  imagem: string | null;
+}
+
+export interface Promocao {
+  id: number;
+  descricao: string;
+  tipoDesconto: TipoDesconto;
+  valorDesconto: number;
+  dataInicio: string;
+  dataFim: string;
+  ativa: boolean;
+  vigenteHoje: boolean;
+  itens: { itemCardapioId: number; nome: string; precoOriginal: number; precoComDesconto: number }[];
+}
+
+export interface NovaPromocao {
+  descricao: string;
+  tipoDesconto: TipoDesconto;
+  valorDesconto: number;
+  dataInicio: string;
+  dataFim: string;
+  itemCardapioIds: number[];
+}

@@ -3,6 +3,13 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { URL_DA_API } from '../configuracao';
 import {
+  NovaPromocao,
+  NovoItemDoCardapio,
+  Promocao,
+  RelatorioCardapio,
+  RelatorioGarcons,
+  RelatorioHorarios,
+  RelatorioPracas,
   AlocacaoDoTurno,
   ComandaDoCliente,
   GarcomDoTurno,
@@ -163,5 +170,61 @@ export class GastraApiService {
   /** UC17 — para o Garçom, a API já devolve apenas a própria posição. */
   obterDesempenho(): Observable<RankingDeDesempenho> {
     return this.http.get<RankingDeDesempenho>(`${this.api}/api/indicadores/desempenho`);
+  }
+
+  // --- Gerente: relatórios (UC16, UC17). Sem datas, a API usa os últimos 30 dias. ---
+
+  relatorioDeGarcons(inicio: string, fim: string): Observable<RelatorioGarcons> {
+    return this.http.get<RelatorioGarcons>(`${this.api}/api/indicadores/garcons`, { params: { inicio, fim } });
+  }
+
+  relatorioDePracas(inicio: string, fim: string): Observable<RelatorioPracas> {
+    return this.http.get<RelatorioPracas>(`${this.api}/api/indicadores/pracas`, { params: { inicio, fim } });
+  }
+
+  relatorioDoCardapio(inicio: string, fim: string): Observable<RelatorioCardapio> {
+    return this.http.get<RelatorioCardapio>(`${this.api}/api/indicadores/cardapio`, { params: { inicio, fim } });
+  }
+
+  relatorioDeHorarios(inicio: string, fim: string): Observable<RelatorioHorarios> {
+    return this.http.get<RelatorioHorarios>(`${this.api}/api/indicadores/horarios`, { params: { inicio, fim } });
+  }
+
+  /** Para o Gerente a API devolve o ranking inteiro; para o Garçom, só a própria posição. */
+  rankingDeDesempenho(inicio: string, fim: string): Observable<RankingDeDesempenho> {
+    return this.http.get<RankingDeDesempenho>(`${this.api}/api/indicadores/desempenho`, { params: { inicio, fim } });
+  }
+
+  // --- Gerente e Coordenador: cardápio (UC05–UC07) ---
+
+  cadastrarItem(item: NovoItemDoCardapio): Observable<ItemCardapio> {
+    return this.http.post<ItemCardapio>(`${this.api}/api/cardapio`, item);
+  }
+
+  atualizarPreco(id: number, preco: number): Observable<void> {
+    return this.http.patch<void>(`${this.api}/api/cardapio/${id}/preco`, { preco });
+  }
+
+  alterarDisponibilidade(id: number, disponivel: boolean): Observable<void> {
+    return this.http.patch<void>(`${this.api}/api/cardapio/${id}/disponibilidade`, { disponivel });
+  }
+
+  /** RF05 — endereço da foto; vazio tira a foto (#141). */
+  alterarImagem(id: number, imagem: string | null): Observable<void> {
+    return this.http.patch<void>(`${this.api}/api/cardapio/${id}/imagem`, { imagem });
+  }
+
+  // --- Promoções (UC08, UC09) ---
+
+  listarPromocoes(): Observable<Promocao[]> {
+    return this.http.get<Promocao[]>(`${this.api}/api/promocoes`);
+  }
+
+  criarPromocao(promocao: NovaPromocao): Observable<Promocao> {
+    return this.http.post<Promocao>(`${this.api}/api/promocoes`, promocao);
+  }
+
+  removerPromocao(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/promocoes/${id}`);
   }
 }

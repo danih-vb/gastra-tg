@@ -1,0 +1,160 @@
+.topo {
+  flex-wrap: wrap;
+}
+
+.abas {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--borda);
+
+  button {
+    min-height: 44px;
+    padding: 8px 14px;
+    white-space: nowrap;
+    color: var(--texto-suave);
+    background: none;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+
+    &[aria-selected='true'] {
+      font-weight: 600;
+      color: var(--marinho-forte);
+      border-bottom-color: var(--laranja);
+    }
+  }
+}
+
+.ferramentas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--borda);
+
+  .busca {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+  }
+}
+
+.nome-item {
+  strong {
+    display: block;
+  }
+
+  span {
+    display: block;
+    max-width: 360px;
+    font-size: 0.8125rem;
+    color: var(--texto-suave);
+  }
+}
+
+.chips.pequenos {
+  gap: 4px;
+}
+
+.preco {
+  white-space: nowrap;
+
+  s {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+  }
+
+  .promo {
+    font-weight: 600;
+    color: var(--laranja-forte);
+  }
+}
+
+.acoes-linha {
+  white-space: nowrap;
+
+  .botao + .botao {
+    margin-left: 4px;
+  }
+}
+
+.promocoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.promocao .corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.desconto {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--laranja-forte);
+}
+
+.item-preco {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.linha-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+fieldset.campo {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.valor-atual {
+  font-size: 1.25rem;
+}
+
+.grade-itens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-pequeno);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--marinho-suave);
+    }
+  }
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--marinho);
+  }
+}

@@ -1,0 +1,135 @@
+.topo {
+  flex-wrap: wrap;
+}
+
+.barras {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barra {
+  display: grid;
+  grid-template-columns: 76px 1fr 150px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+
+  .trilho {
+    height: 14px;
+    overflow: hidden;
+    background: var(--marinho-suave);
+    border-radius: 4px;
+  }
+
+  .preenchido {
+    height: 100%;
+    background: var(--marinho);
+    border-radius: 4px;
+  }
+
+  &.destaque .preenchido {
+    background: var(--laranja);
+  }
+
+  .valor {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--texto-suave);
+    }
+  }
+}
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--texto-suave);
+}
+
+.calor {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 4px;
+  font-size: 0.75rem;
+
+  th {
+    font-weight: 600;
+    color: var(--texto-suave);
+  }
+
+  th[scope='row'] {
+    padding-right: 6px;
+    text-align: left;
+    color: var(--texto);
+  }
+
+  td {
+    height: 40px;
+    min-width: 44px;
+    text-align: center;
+    border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+
+    &.claro {
+      color: #fff;
+    }
+  }
+}
+
+.explicacao {
+  border-bottom: 1px solid var(--borda);
+}
+
+.posicao {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--marinho);
+  background: var(--marinho-suave);
+  border-radius: 50%;
+
+  &.podio {
+    color: #fff;
+    background: var(--laranja-forte);
+  }
+}
+
+.indice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 150px;
+
+  .num {
+    min-width: 44px;
+  }
+
+  .trilho {
+    flex: 1;
+    height: 8px;
+    overflow: hidden;
+    background: var(--marinho-suave);
+    border-radius: 4px;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--laranja);
+
+      &.marinho {
+        background: var(--marinho);
+      }
+    }
+  }
+}

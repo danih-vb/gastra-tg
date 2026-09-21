@@ -39,6 +39,19 @@
   }
 }
 
+.fundo.dialogo {
+  align-items: center;
+  padding: 16px;
+
+  .folha {
+    max-width: 560px;
+    padding: 20px 24px 24px;
+    border-radius: 16px;
+
+    &::before { display: none; }
+  }
+}
+
 @keyframes subir {
   from { transform: translateY(24px); opacity: 0.4; }
   to { transform: none; opacity: 1; }
