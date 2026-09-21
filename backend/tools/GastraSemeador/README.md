@@ -58,8 +58,18 @@ docker compose -f infra/docker-compose.yml down -v
 | Parte | Conteúdo | Issue |
 |---|---|---|
 | Cadastros base | 1 Gerente, 1 Coordenador, 1 Metre e 7 Garçons (`@gastra.local`); 3 praças com potenciais diferentes (vagas 3/3/2); 20 mesas com capacidades variadas; 14 itens cobrindo as quatro categorias, todas as marcações dietéticas e itens infantis | #181 |
-| Histórico de comandas fechadas | *(a fazer)* | #182 |
+| Histórico de comandas fechadas | 70 dias de almoço e jantar: alocações confirmadas e ~4.200 comandas fechadas, com itens cancelados com motivo e taxa de serviço retirada de vez em quando | #182 |
 | Estado "ao vivo" da demonstração | *(a fazer)* | #183 |
+
+### Como os números são calibrados
+
+O movimento é propriedade da **praça**, não do garçom: A recebe 15 comandas por turno, B 10 e C 5, e quem
+está alocado ali divide esse movimento. Com ticket médio perto de R$ 115, isso reproduz a proporção
+3:2:1 da calibração da RN03 — na última execução, R$ 1.876 / 1.244 / 615 por turno.
+
+Cada garçom recebe um **fator de venda** fixo (0,70 a 1,42). Sem ele, como o rodízio de praças é
+perfeitamente justo, todo mundo faturaria quase igual e o índice de desempenho ficaria sem contraste para
+explicar. Na prática o fator representa quem sugere entrada, sobremesa e a segunda rodada.
 
 O cardápio inclui de propósito os itens que o `simulador.py` usa nas combinações — moqueca, arroz de coco,
 caipirinha, pudim, café, porção infantil e suco. É o que permite plantar a combinação "moqueca puxa arroz de
