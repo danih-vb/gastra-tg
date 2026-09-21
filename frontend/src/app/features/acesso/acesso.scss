@@ -1,69 +1,79 @@
-// Layout provisório das telas de acesso: legível e acessível, sem antecipar o visual do protótipo (#47).
+// Telas de acesso (login e segundo fator). Usam o mesmo sistema visual do resto do app — .cartao,
+// .campo, .entrada, .botao e os tokens de cor —, e não mais um layout próprio.
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 24px 0;
+}
 
 .cartao {
-  max-width: 24rem;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid var(--cor-borda);
-  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 26rem;
+  padding: 28px 24px;
 }
 
 h2 {
-  margin-top: 0;
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+.sub {
+  margin: 0 0 20px;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 14px;
 }
 
-label {
-  margin-top: 0.5rem;
-  font-weight: 600;
+.botao {
+  margin-top: 4px;
+  justify-content: center;
 }
 
-input {
-  padding: 0.6rem;
-  font-size: 1rem;
-  border: 1px solid var(--cor-borda-forte);
-  border-radius: 0.35rem;
+.erro-campo {
+  font-size: 0.8125rem;
+  color: var(--erro);
 }
 
-button {
-  margin-top: 1rem;
-  padding: 0.7rem;
-  font-size: 1rem;
-  color: #fff;
-  background: var(--cor-primaria);
-  border: none;
-  border-radius: 0.35rem;
-  cursor: pointer;
+// --- Vinculação do app autenticador (RN07) ---
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: wait;
+.passos {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+
+  li + li { margin-top: 4px; }
+}
+
+.chave {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 12px;
+
+  code {
+    padding: 10px 12px;
+    // A chave é longa e não tem espaços: sem a quebra por caractere ela estoura o cartão.
+    word-break: break-all;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    background: var(--marinho-suave);
+    border-radius: var(--raio-pequeno);
   }
 }
 
-.erro,
-.erro-campo {
-  margin: 0.25rem 0 0;
-  color: var(--cor-erro);
-}
-
-.aviso {
-  padding: 0.5rem 0.75rem;
-  background: var(--cor-aviso-fundo);
-  border-radius: 0.35rem;
-}
-
-.chave code {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.2rem 0.4rem;
-  font-size: 1.05rem;
-  letter-spacing: 0.08em;
-  word-break: break-all;
-  background: var(--cor-fundo-codigo);
+.link-autenticador {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 0.9375rem;
 }

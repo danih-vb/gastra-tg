@@ -5,6 +5,7 @@ import { PAGINA_INICIAL } from '../../../core/sessao/guardas';
 import { ConfiguracaoDoSegundoFator } from '../../../core/sessao/modelos';
 import { SessaoService } from '../../../core/sessao/sessao.service';
 import { mensagensDeErro } from '../../../shared/erros';
+import { Icone } from '../../../shared/icone/icone';
 
 /**
  * UC02 — Confirmar o segundo fator (Gerente e Coordenador). No primeiro acesso, antes da confirmação, mostra a chave
@@ -12,7 +13,7 @@ import { mensagensDeErro } from '../../../shared/erros';
  */
 @Component({
   selector: 'app-segundo-fator',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Icone],
   templateUrl: './segundo-fator.html',
   styleUrl: '../acesso.scss',
 })

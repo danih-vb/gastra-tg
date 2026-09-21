@@ -4,11 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PAGINA_INICIAL } from '../../../core/sessao/guardas';
 import { SessaoService } from '../../../core/sessao/sessao.service';
 import { mensagensDeErro } from '../../../shared/erros';
+import { Icone } from '../../../shared/icone/icone';
 
-/** UC01 — Autenticar-se. Layout provisório: o visual final segue o protótipo (#47). */
+/** UC01 — Autenticar-se (RF15). Mesma mensagem para e-mail inexistente, conta inativa e senha errada. */
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Icone],
   templateUrl: './login.html',
   styleUrl: '../acesso.scss',
 })
