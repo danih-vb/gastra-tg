@@ -350,8 +350,12 @@ Como o Coordenador mexe em preço e em promoção, ele também usa a verificaç�
 
 ## 6. Cliente
 
-O cliente não faz login. Ele lê o **QR code da mesa** com a câmera do celular, ou digita o código que está na mesa.
-A tela inicial oferece duas coisas: ver o cardápio ou acompanhar a conta.
+O cliente não faz login. Ele lê o **QR code da mesa** com a câmera do celular. A tela inicial oferece duas coisas:
+ver o cardápio ou acompanhar a conta.
+
+> **Hoje só o QR funciona.** A tela tem um campo para digitar o código da mesa, mas ele espera um código de seis
+> caracteres, e o que o sistema gera hoje tem trinta e dois. Enquanto a [#217](https://github.com/danih-vb/gastra-tg/issues/217)
+> não for resolvida, quem não conseguir ler o QR precisa pedir ajuda ao garçom.
 
 <img src="../ux-ui/telas/cliente-inicio.png" alt="Início do cliente" width="320">
 
@@ -396,7 +400,7 @@ sistema, é o caso normal de quem digitou errado.
 | Mais presentes do que vagas, e a sugestão não gera | Chegou mais gente do que cabe nas praças | Decida quem fica de fora, ou crie/aumente uma praça na tela de Salão (seção 4.4) |
 | "O serviço de análise não respondeu" (sugestões ou alocação) | A camada analítica está fora do ar | Siga sem ela: lançar item, fechar conta e montar o turno à mão continuam funcionando |
 | "E-mail ou senha não conferem" | Um dos dois está errado | Confira o e-mail. Se esqueceu a senha, o Gerente redefine (seção 4.5) |
-| "Não encontramos essa mesa" (cliente) | O código digitado não existe ou a conta já fechou | Confira o código na mesa ou chame o garçom |
+| "Não encontramos essa mesa" (cliente) | O código não existe ou a conta já fechou | Leia o QR de novo ou chame o garçom. Digitar o código ainda não funciona: ver [#217](https://github.com/danih-vb/gastra-tg/issues/217) |
 | A pessoa foi desconectada de repente | A conta foi inativada, teve a senha redefinida ou o segundo fator zerado | Fale com o Gerente |
 | "Já existe uma praça com este código" / "com este número" | Código de praça e número de mesa não se repetem | Escolha outro, ou edite a que já existe |
 
