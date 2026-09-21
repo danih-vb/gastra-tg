@@ -1,0 +1,260 @@
+<header class="topo">
+  <div>
+    <h1>Usuários</h1>
+    <div class="sub">Contas de acesso e o papel de cada pessoa.</div>
+  </div>
+  <div class="acoes">
+    <button class="botao" type="button" (click)="abrirConta(null)"><app-icone nome="mais" /> Novo usuário</button>
+  </div>
+</header>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+    </div>
+  </div>
+}
+
+@if (carregando() && !usuarios().length) {
+  <p class="carregando">Carregando as contas…</p>
+} @else {
+  <section class="cartao">
+    <div class="ferramentas">
+      <div class="chips" role="group" aria-label="Situação">
+        @for (opcao of filtros; track opcao.chave) {
+          <button class="chip" type="button" [attr.aria-pressed]="filtro() === opcao.chave" (click)="filtro.set(opcao.chave)">
+            {{ opcao.nome }} ({{ quantos(opcao.chave) }})
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="rolagem-horizontal">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Papel</th>
+            <th scope="col">Verificação em duas etapas</th>
+            <th scope="col">Situação</th>
+            <th scope="col"><span class="sr">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of listados(); track usuario.id) {
+            <tr [class.inativo]="!usuario.ativo">
+              <td class="nome-conta">
+                <strong>
+                  {{ usuario.nome }}
+                  @if (usuario.id === meuId()) {
+                    <span class="etiqueta">você</span>
+                  }
+                </strong>
+                <span>{{ usuario.email }}</span>
+              </td>
+              <td>{{ PAPEIS[usuario.papel] }}</td>
+              <td>
+                @if (usaSegundoFator(usuario)) {
+                  @if (usuario.segundoFatorConfigurado) {
+                    <span class="etiqueta sucesso"><app-icone nome="check" /> Configurada</span>
+                  } @else {
+                    <span class="etiqueta aviso">No primeiro acesso</span>
+                  }
+                } @else {
+                  <span class="suave pequeno">Não exigida</span>
+                }
+              </td>
+              <td>
+                @if (usuario.ativo) {
+                  <span class="etiqueta sucesso">Ativo</span>
+                } @else {
+                  <span class="etiqueta">Inativo</span>
+                }
+              </td>
+              <td class="direita acoes-linha">
+                <button class="botao compacto fantasma" type="button" (click)="abrirConta(usuario)">Editar</button>
+                @if (usuario.id !== meuId()) {
+                  @if (usuario.ativo) {
+                    <button class="botao compacto fantasma" type="button" (click)="abrirSenha(usuario)">Senha</button>
+                    @if (usaSegundoFator(usuario) && usuario.segundoFatorConfigurado) {
+                      <button class="botao compacto fantasma" type="button" (click)="abrirSegundoFator(usuario)">
+                        Zerar 2 etapas
+                      </button>
+                    }
+                    <button class="botao compacto secundario" type="button" (click)="abrirInativacao(usuario)">Inativar</button>
+                  } @else {
+                    <button class="botao compacto secundario" type="button" [disabled]="salvando()" (click)="reativar(usuario)">
+                      Reativar
+                    </button>
+                  }
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="suave">Nenhuma conta nesta situação.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="suave pequeno">
+    <app-icone nome="info" /> Contas não são apagadas: inativar bloqueia o acesso na hora e mantém o histórico de
+    comandas e alocações. Na própria conta, o sistema não deixa inativar, redefinir a senha nem zerar a verificação em
+    duas etapas.
+  </p>
+}
+
+@switch (painel()) {
+  @case ('conta') {
+    <app-folha
+      [titulo]="usuarioEmFoco() ? 'Editar ' + usuarioEmFoco()!.nome : 'Novo usuário'"
+      [dialogo]="true"
+      (fechar)="fecharPainel()"
+    >
+      <form class="formulario" novalidate (ngSubmit)="salvarConta()">
+        @if (errosDoPainel().length) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              @for (erro of errosDoPainel(); track erro) {
+                <div>{{ erro }}</div>
+              }
+            </div>
+          </div>
+        }
+        <div class="campo">
+          <label for="conta-nome">Nome</label>
+          <input class="entrada" id="conta-nome" name="nome" maxlength="100" [(ngModel)]="formularioDaConta.nome" />
+        </div>
+        <div class="campo">
+          <label for="conta-email">E-mail</label>
+          <input class="entrada" id="conta-email" name="email" type="email" maxlength="150" [(ngModel)]="formularioDaConta.email" />
+          <span class="ajuda">É o login da pessoa.</span>
+        </div>
+        <div class="campo">
+          <label for="conta-papel">Papel</label>
+          <select
+            class="entrada"
+            id="conta-papel"
+            name="papel"
+            [disabled]="usuarioEmFoco()?.id === meuId()"
+            [(ngModel)]="formularioDaConta.papel"
+          >
+            <option value="">Escolha</option>
+            @for (papel of papeisPossiveis; track papel) {
+              <option [value]="papel">{{ PAPEIS[papel] }}</option>
+            }
+          </select>
+          <span class="ajuda">
+            @if (usuarioEmFoco()?.id === meuId()) {
+              Você não pode alterar o próprio papel.
+            } @else {
+              Gerente e Coordenador precisam do aplicativo autenticador no primeiro acesso.
+            }
+          </span>
+        </div>
+        @if (!usuarioEmFoco()) {
+          <div class="campo">
+            <label for="conta-senha">Senha inicial</label>
+            <input class="entrada" id="conta-senha" name="senha" type="password" autocomplete="new-password" [(ngModel)]="formularioDaConta.senha" />
+            <span class="ajuda">Pelo menos 8 caracteres. Entregue à pessoa pessoalmente.</span>
+          </div>
+        }
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando()">{{ usuarioEmFoco() ? 'Salvar' : 'Cadastrar' }}</button>
+        </div>
+      </form>
+    </app-folha>
+  }
+
+  @case ('inativar') {
+    <app-folha [titulo]="'Inativar ' + usuarioEmFoco()!.nome + '?'" [dialogo]="true" (fechar)="fecharPainel()">
+      @if (errosDoPainel().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDoPainel(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+      <p>
+        A pessoa perde o acesso <strong>na hora</strong>, inclusive se estiver com o sistema aberto. O histórico dela
+        continua nos relatórios, e dá para reativar depois.
+      </p>
+      <div class="rodape-folha">
+        <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+        <button class="botao perigo" type="button" [disabled]="salvando()" (click)="confirmarInativacao()">Inativar</button>
+      </div>
+    </app-folha>
+  }
+
+  @case ('senha') {
+    <app-folha titulo="Redefinir senha" [subtitulo]="usuarioEmFoco()!.nome" [dialogo]="true" (fechar)="fecharPainel()">
+      <form class="formulario" novalidate (ngSubmit)="confirmarSenha()">
+        @if (errosDoPainel().length) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              @for (erro of errosDoPainel(); track erro) {
+                <div>{{ erro }}</div>
+              }
+            </div>
+          </div>
+        }
+        <div class="campo">
+          <label for="senha-nova">Senha nova</label>
+          <input class="entrada" id="senha-nova" name="senha" type="password" autocomplete="new-password" [(ngModel)]="senhaNova" />
+          <span class="ajuda">Pelo menos 8 caracteres. Combine com a pessoa e peça para ela trocar depois.</span>
+        </div>
+        <div class="alerta aviso">
+          <app-icone nome="alerta" />
+          <div class="pequeno">
+            As sessões abertas dessa conta caem na hora, e a senha antiga deixa de valer. Você não fica sabendo a senha
+            anterior: o sistema guarda só o resumo criptografado dela.
+          </div>
+        </div>
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando()">Redefinir</button>
+        </div>
+      </form>
+    </app-folha>
+  }
+
+  @case ('segundo-fator') {
+    <app-folha
+      [titulo]="'Zerar a verificação em duas etapas de ' + usuarioEmFoco()!.nome + '?'"
+      [dialogo]="true"
+      (fechar)="fecharPainel()"
+    >
+      @if (errosDoPainel().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDoPainel(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+      <p>
+        Use quando a pessoa perdeu o celular. No próximo login ela vincula o aplicativo autenticador de novo, com uma
+        chave nova; a antiga é descartada e não aparece mais. As sessões abertas dessa conta caem.
+      </p>
+      <div class="rodape-folha">
+        <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+        <button class="botao perigo" type="button" [disabled]="salvando()" (click)="confirmarSegundoFator()">Zerar</button>
+      </div>
+    </app-folha>
+  }
+}

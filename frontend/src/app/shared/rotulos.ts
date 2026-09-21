@@ -1,3 +1,4 @@
+import { Papel } from '../core/sessao/modelos';
 import {
   CategoriaItemCardapio,
   CategoriaRestricao,
@@ -36,6 +37,13 @@ export const MOTIVOS: Record<MotivoCancelamento, string> = {
   ErroDeLancamento: 'Erro de lançamento',
   ClienteDesistiu: 'Cliente desistiu',
   ItemEmFalta: 'Item em falta',
+};
+
+export const PAPEIS: Record<Papel, string> = {
+  Gerente: 'Gerente',
+  Coordenador: 'Coordenador',
+  Metre: 'Metre',
+  Garcom: 'Garçom',
 };
 
 export const COMPOSICOES: Record<ComposicaoMesa, string> = {

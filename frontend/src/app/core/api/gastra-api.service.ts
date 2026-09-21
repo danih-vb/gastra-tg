@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { URL_DA_API } from '../configuracao';
+import { Papel } from '../sessao/modelos';
 import {
+  NovaMesa,
+  NovaPraca,
+  NovoUsuario,
+  Usuario,
   NovaPromocao,
   NovoItemDoCardapio,
   Promocao,
@@ -226,5 +231,53 @@ export class GastraApiService {
 
   removerPromocao(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/api/promocoes/${id}`);
+  }
+
+  // --- Gerente: salão (UC24) ---
+
+  criarPraca(praca: NovaPraca): Observable<Praca> {
+    return this.http.post<Praca>(`${this.api}/api/pracas`, praca);
+  }
+
+  editarPraca(id: number, praca: NovaPraca): Observable<Praca> {
+    return this.http.put<Praca>(`${this.api}/api/pracas/${id}`, praca);
+  }
+
+  criarMesa(mesa: NovaMesa): Observable<Mesa> {
+    return this.http.post<Mesa>(`${this.api}/api/mesas`, mesa);
+  }
+
+  /** A praça não entra: o vínculo mesa–praça é fixo, senão o histórico por praça perderia o sentido (REL01). */
+  editarMesa(id: number, numero: string, capacidade: number): Observable<Mesa> {
+    return this.http.put<Mesa>(`${this.api}/api/mesas/${id}`, { numero, capacidade });
+  }
+
+  // --- Gerente: contas de usuário (UC04) ---
+
+  listarUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.api}/api/usuarios`);
+  }
+
+  cadastrarUsuario(usuario: NovoUsuario): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.api}/api/usuarios`, usuario);
+  }
+
+  editarUsuario(id: number, nome: string, email: string, papel: Papel): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}`, { nome, email, papel });
+  }
+
+  /** RF18 — inativar não apaga: a conta perde o acesso na hora e o histórico continua. */
+  alterarSituacaoDoUsuario(id: number, ativo: boolean): Observable<void> {
+    return this.http.patch<void>(`${this.api}/api/usuarios/${id}/situacao`, { ativo });
+  }
+
+  /** UC04 (#141) — o Gerente define uma senha nova para outra conta; as sessões dela caem. */
+  redefinirSenha(id: number, senha: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/api/usuarios/${id}/senha`, { senha });
+  }
+
+  /** UC04 (#141) — zera a vinculação do autenticador de quem perdeu o celular (RN07). */
+  reiniciarSegundoFator(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/usuarios/${id}/segundo-fator`);
   }
 }

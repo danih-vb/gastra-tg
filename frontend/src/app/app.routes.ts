@@ -76,19 +76,18 @@ export const routes: Routes = [
     canActivate: [exigePapel('Gerente')],
     loadComponent: () => import('./features/analises/painel/analises').then((m) => m.Analises),
   },
+  // UC24 e UC04 — salão e contas (Gerente).
   {
     path: 'salao',
     title: 'Salão — GASTRA',
     canActivate: [exigePapel('Gerente')],
-    loadComponent: emConstrucao,
-    data: { titulo: 'Praças e mesas', casosDeUso: 'UC24' },
+    loadComponent: () => import('./features/salao/gestao-salao').then((m) => m.GestaoSalao),
   },
   {
     path: 'usuarios',
     title: 'Usuários — GASTRA',
     canActivate: [exigePapel('Gerente')],
-    loadComponent: emConstrucao,
-    data: { titulo: 'Contas de usuário', casosDeUso: 'UC04' },
+    loadComponent: () => import('./features/usuarios/gestao-usuarios').then((m) => m.GestaoUsuarios),
   },
 
   // UC19, UC20 — telas públicas: o cliente chega pelo QR code da mesa e não faz login.

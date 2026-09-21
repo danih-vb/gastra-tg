@@ -1,3 +1,5 @@
+import { Papel } from '../sessao/modelos';
+
 /**
  * Tipos das respostas e requisições da API (backend/src/Gastra.Communication). Os nomes seguem os do backend, para
  * a comparação com os contratos ser direta.
@@ -236,4 +238,33 @@ export interface NovaPromocao {
   dataInicio: string;
   dataFim: string;
   itemCardapioIds: number[];
+}
+
+// --- Gerente: salão e contas (UC24, UC04) ---
+
+export interface NovaPraca {
+  codigo: string;
+  quantidadeGarcons: number;
+}
+
+export interface NovaMesa {
+  numero: string;
+  capacidade: number;
+  pracaId: number;
+}
+
+export interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  papel: Papel;
+  ativo: boolean;
+  segundoFatorConfigurado: boolean;
+}
+
+export interface NovoUsuario {
+  nome: string;
+  email: string;
+  senha: string;
+  papel: Papel;
 }

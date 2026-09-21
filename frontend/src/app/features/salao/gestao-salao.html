@@ -1,0 +1,170 @@
+<header class="topo">
+  <div>
+    <h1>Salão</h1>
+    <div class="sub">Praças, vagas de garçom por turno e mesas.</div>
+  </div>
+  <div class="acoes">
+    <button class="botao secundario" type="button" (click)="abrirPraca(null)"><app-icone nome="mais" /> Nova praça</button>
+    <button class="botao" type="button" [disabled]="!pracas().length" (click)="abrirMesa(null)">
+      <app-icone nome="mais" /> Nova mesa
+    </button>
+  </div>
+</header>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+    </div>
+  </div>
+}
+
+@if (carregando() && !pracas().length) {
+  <p class="carregando">Carregando o salão…</p>
+} @else {
+  <div class="alerta">
+    <app-icone nome="info" />
+    <div class="pequeno">
+      <strong>As vagas somam {{ vagasTotais() }} {{ vagasTotais() === 1 ? 'garçom' : 'garçons' }} por turno</strong>
+      A alocação do metre não aceita mais garçons presentes do que esse total.
+    </div>
+  </div>
+
+  <div class="grade-2">
+    @for (praca of pracas(); track praca.id) {
+      <section class="cartao" [attr.aria-labelledby]="'praca-' + praca.id">
+        <header>
+          <h2 [id]="'praca-' + praca.id">Praça {{ praca.codigo }}</h2>
+          <span class="acoes">
+            <span class="etiqueta">{{ praca.quantidadeGarcons }} {{ praca.quantidadeGarcons === 1 ? 'vaga' : 'vagas' }} de garçom</span>
+            <button
+              class="botao-icone"
+              type="button"
+              [attr.aria-label]="'Editar praça ' + praca.codigo"
+              (click)="abrirPraca(praca)"
+            >
+              <app-icone nome="etiqueta" />
+            </button>
+          </span>
+        </header>
+        <ul class="lista">
+          @for (mesa of mesasDa(praca); track mesa.id) {
+            <li>
+              <div class="principal-item">
+                <strong>Mesa {{ mesa.numero }}</strong>
+                <span class="pequeno suave">{{ mesa.capacidade }} {{ mesa.capacidade === 1 ? 'lugar' : 'lugares' }}</span>
+              </div>
+              <button class="botao compacto fantasma" type="button" (click)="abrirMesa(mesa)">Editar</button>
+            </li>
+          } @empty {
+            <li class="suave">Nenhuma mesa nesta praça.</li>
+          }
+        </ul>
+        <div class="corpo pequeno suave rodape-praca">
+          {{ mesasDa(praca).length }} {{ mesasDa(praca).length === 1 ? 'mesa' : 'mesas' }} · {{ lugaresDa(praca) }} {{ lugaresDa(praca) === 1 ? 'lugar' : 'lugares' }}
+          <button class="botao compacto fantasma" type="button" (click)="abrirMesa(null, praca)">Nova mesa aqui</button>
+        </div>
+      </section>
+    } @empty {
+      <div class="cartao pad vazio">
+        <h2>Nenhuma praça cadastrada</h2>
+        <p class="suave">Cadastre a primeira praça para poder criar mesas e alocar garçons.</p>
+        <button class="botao" type="button" (click)="abrirPraca(null)">Nova praça</button>
+      </div>
+    }
+  </div>
+}
+
+@if (painel() === 'praca') {
+  <app-folha
+    [titulo]="pracaEmEdicao() ? 'Editar praça ' + pracaEmEdicao()!.codigo : 'Nova praça'"
+    [dialogo]="true"
+    (fechar)="fecharPainel()"
+  >
+    <form class="formulario" novalidate (ngSubmit)="salvarPraca()">
+      @if (errosDoPainel().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDoPainel(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+      <div class="linha-campos">
+        <div class="campo">
+          <label for="praca-codigo">Código</label>
+          <input class="entrada" id="praca-codigo" name="codigo" maxlength="20" [(ngModel)]="formularioDaPraca.codigo" />
+          <span class="ajuda">Como a equipe chama a praça. Ex.: A, Varanda.</span>
+        </div>
+        <div class="campo">
+          <label for="praca-garcons">Garçons por turno</label>
+          <input class="entrada" id="praca-garcons" name="garcons" type="number" min="1" [(ngModel)]="formularioDaPraca.garcons" />
+          <span class="ajuda">Vagas usadas na alocação do metre.</span>
+        </div>
+      </div>
+      <div class="rodape-folha">
+        <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+        <button class="botao" type="submit" [disabled]="salvando()">Salvar</button>
+      </div>
+    </form>
+  </app-folha>
+}
+
+@if (painel() === 'mesa') {
+  <app-folha
+    [titulo]="mesaEmEdicao() ? 'Editar mesa ' + mesaEmEdicao()!.numero : 'Nova mesa'"
+    [dialogo]="true"
+    (fechar)="fecharPainel()"
+  >
+    <form class="formulario" novalidate (ngSubmit)="salvarMesa()">
+      @if (errosDoPainel().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDoPainel(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+      <div class="linha-campos">
+        <div class="campo">
+          <label for="mesa-numero">Número</label>
+          <input class="entrada" id="mesa-numero" name="numero" maxlength="10" [(ngModel)]="formularioDaMesa.numero" />
+        </div>
+        <div class="campo">
+          <label for="mesa-capacidade">Lugares</label>
+          <input class="entrada" id="mesa-capacidade" name="capacidade" type="number" min="1" [(ngModel)]="formularioDaMesa.capacidade" />
+        </div>
+      </div>
+      @if (mesaEmEdicao()) {
+        <div class="campo">
+          <span class="rotulo">Praça</span>
+          <span>Praça {{ pracaDaMesaEmEdicao() }}</span>
+          <span class="ajuda">
+            <app-icone nome="cadeado" /> A praça da mesa não muda: o histórico de faturamento por praça perderia o sentido.
+          </span>
+        </div>
+      } @else {
+        <div class="campo">
+          <label for="mesa-praca">Praça</label>
+          <select class="entrada" id="mesa-praca" name="praca" [(ngModel)]="formularioDaMesa.pracaId">
+            @for (praca of pracas(); track praca.id) {
+              <option [value]="praca.id">Praça {{ praca.codigo }}</option>
+            }
+          </select>
+          <span class="ajuda"><app-icone nome="alerta" /> Não dá para mudar depois. Confira antes de salvar.</span>
+        </div>
+      }
+      <div class="rodape-folha">
+        <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+        <button class="botao" type="submit" [disabled]="salvando()">Salvar</button>
+      </div>
+    </form>
+  </app-folha>
+}
