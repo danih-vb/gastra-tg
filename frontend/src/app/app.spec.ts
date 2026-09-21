@@ -66,4 +66,10 @@ describe('App', () => {
 
     expect(itensDoMenu(pagina)).toEqual(['Análises', 'Cardápio', 'Salão', 'Usuários']);
   });
+
+  it('o coordenador vê só o cardápio, onde ficam também as promoções', async () => {
+    const pagina = await renderizar('Coordenador');
+
+    expect(itensDoMenu(pagina)).toEqual(['Cardápio']);
+  });
 });
