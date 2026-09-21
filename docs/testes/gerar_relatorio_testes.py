@@ -1,13 +1,14 @@
 """Gera a tabela de cenários de teste executados (issue #48) a partir dos resultados reais dos testes.
 
-    python gerar_relatorio_testes.py <resultados .trx do dotnet test> <pytest.xml> [--commit HASH]
+    python gerar_relatorio_testes.py <.trx do dotnet test> <pytest.xml> <vitest.xml> [--commit HASH]
 
 Como obter os arquivos de entrada (com MySQL e serviço Python no ar, para nenhum teste ficar ignorado):
 
-    backend/     dotnet test --logger trx --results-directory <pasta>
+    backend/      dotnet test --logger trx --results-directory <pasta>
     data-science/ pytest --junitxml=<pasta>/pytest.xml
+    frontend/     ng test --watch=false --reporters junit --output-file <pasta>/vitest.xml
 
-Os cenários são agrupados por bloco do TG. Um cenário com vários casos (teoria do xUnit ou parametrize do
+Os cenários são agrupados por bloco do TG e, dentro do bloco, por camada (backend, analítica, telas). Um cenário com vários casos (teoria do xUnit ou parametrize do
 pytest) aparece uma vez, com a quantidade de casos.
 """
 
@@ -36,17 +37,38 @@ BLOCOS = OrderedDict([
                                       "UsuarioControllerTests", "UsuarioTests"]),
     ("Banco de dados (views, triggers e restrições)", ["ObjetosDoBancoTests"]),
     ("Integração backend ↔ Python", ["ServicoAnaliticoHttpTests", "ContratoComPythonTests", "RegistroServicoAnaliticoTests"]),
-    ("Arquitetura e infraestrutura", ["ArquiteturaTests", "DocumentacaoOpenApiTests", "HealthCheckTests",
+    ("Arquitetura e infraestrutura", ["ArquiteturaTests", "CorsTests", "DocumentacaoOpenApiTests", "HealthCheckTests",
                                        "test_arquitetura", "test_health"]),
 ])
 BLOCO_DA_CLASSE = {classe: bloco for bloco, classes in BLOCOS.items() for classe in classes}
+
+# Trecho do caminho do .spec.ts -> bloco do TG. A ordem importa: vence o primeiro trecho que casar.
+BLOCOS_DO_FRONTEND = [
+    ("features/comandas", "Núcleo de comandas"),
+    ("features/salao", "Núcleo de comandas"),
+    ("features/cliente/conta", "Núcleo de comandas"),
+    ("features/cliente/inicio", "Núcleo de comandas"),
+    ("features/cardapio", "Cardápio e promoções"),
+    ("features/cliente/cardapio-digital", "Cardápio e promoções"),
+    ("features/alocacao", "Alocação de garçons (programação linear)"),
+    ("features/analises", "BI e índice de desempenho"),
+    ("features/usuarios", "LGPD, auditoria e segurança"),
+    ("features/acesso", "LGPD, auditoria e segurança"),
+    ("core/sessao", "LGPD, auditoria e segurança"),
+    ("app.spec.ts", "LGPD, auditoria e segurança"),  # o menu por papel é controle de acesso
+    ("shared/rotulos", "Núcleo de comandas"),  # composicaoSugerida e os rótulos de RN01
+    ("shared/", "Arquitetura e infraestrutura"),
+]
+
+BACKEND, ANALITICA, FRONTEND = "Backend .NET", "Analítica Python", "Frontend Angular"
 
 
 @dataclass
 class Cenario:
     bloco: str
-    origem: str  # classe ou módulo de teste
+    origem: str  # classe, módulo ou tela de teste
     nome: str
+    camada: str = BACKEND
     casos: int = 0
     resultados: list[str] = field(default_factory=list)
 
@@ -86,26 +108,43 @@ def ler_trx(caminho: Path, cenarios: dict) -> None:
     for resultado in raiz.iter(f"{TRX}UnitTestResult"):
         classe, metodo = definicoes[resultado.get("testId")]
         situacao = {"Passed": "Passou", "Failed": "Falhou", "NotExecuted": "Ignorado"}.get(resultado.get("outcome"), "Falhou")
-        registrar(cenarios, classe, metodo, situacao)
+        registrar(cenarios, classe, metodo, situacao, BACKEND)
 
 
 def ler_junit(caminho: Path, cenarios: dict) -> None:
+    """JUnit XML do pytest e do vitest. O vitest identifica o caso pelo arquivo .spec.ts."""
     for caso in ET.parse(caminho).getroot().iter("testcase"):
-        modulo = caso.get("classname").split(".")[-1]
-        nome = re.sub(r"\[.*\]$", "", caso.get("name"))
-        if caso.find("failure") is not None or caso.find("error") is not None:
-            situacao = "Falhou"
-        elif caso.find("skipped") is not None:
-            situacao = "Ignorado"
+        classname = caso.get("classname")
+        situacao = situacao_do_junit(caso)
+        if classname.endswith(".spec.ts"):
+            registrar_tela(cenarios, classname, caso.get("name"), situacao)
         else:
-            situacao = "Passou"
-        registrar(cenarios, modulo, nome, situacao)
+            registrar(cenarios, classname.split(".")[-1], re.sub(r"\[.*\]$", "", caso.get("name")), situacao, ANALITICA)
 
 
-def registrar(cenarios: dict, origem: str, metodo: str, situacao: str) -> None:
+def situacao_do_junit(caso: ET.Element) -> str:
+    if caso.find("failure") is not None or caso.find("error") is not None:
+        return "Falhou"
+    return "Ignorado" if caso.find("skipped") is not None else "Passou"
+
+
+def registrar(cenarios: dict, origem: str, metodo: str, situacao: str, camada: str = BACKEND) -> None:
     chave = (origem, metodo)
     if chave not in cenarios:
-        cenarios[chave] = Cenario(BLOCO_DA_CLASSE.get(origem, "Outros"), origem, legivel(metodo))
+        cenarios[chave] = Cenario(BLOCO_DA_CLASSE.get(origem, "Outros"), origem, legivel(metodo), camada)
+    cenarios[chave].casos += 1
+    cenarios[chave].resultados.append(situacao)
+
+
+def registrar_tela(cenarios: dict, arquivo: str, nome: str, situacao: str) -> None:
+    """No vitest, `name` vem como "describe > it" e já está escrito em português: não passa pelo legivel()."""
+    caminho = arquivo.replace("\\", "/")
+    bloco = next((b for trecho, b in BLOCOS_DO_FRONTEND if trecho in caminho), "Outros")
+    describe, _, teste = nome.rpartition(" > ")
+    origem = describe.split(" > ")[0] if describe else Path(caminho).name
+    chave = (origem, teste)
+    if chave not in cenarios:
+        cenarios[chave] = Cenario(bloco, origem, teste[:1].upper() + teste[1:], FRONTEND)
     cenarios[chave].casos += 1
     cenarios[chave].resultados.append(situacao)
 
@@ -124,13 +163,30 @@ def gerar(cenarios: dict, commit: str) -> str:
         "",
         f"- **Execução:** {datetime.now():%d/%m/%Y %H:%M}, commit `{commit}`.",
         "- **Ambiente:** MySQL 8.4 real (testes de views, triggers e restrições), serviço Python no ar (testes de contrato),",
-        "  .NET 10 e Python 3.13.",
+        "  .NET 10, Python 3.13 e Angular 22 sobre Vitest.",
         f"- **Resultado:** {len(cenarios)} cenários e {len(casos)} casos executados: {casos.count('Passou')} passaram,"
         f" {casos.count('Falhou')} falharam e {casos.count('Ignorado')} foram ignorados.",
         "",
         "Cobre o critério da issue #48 para os **testes automatizados**: pelo menos um cenário por bloco (comandas,",
-        "alocação por programação linear, recomendação e LGPD), com o resultado executado. Os cenários operacionais",
-        "de ponta a ponta com o frontend entram no marco M6.",
+        "alocação por programação linear, recomendação e LGPD), com o resultado executado. Cada bloco aparece nas três",
+        "camadas em que o GASTRA foi construído — backend .NET, camada analítica Python e as telas Angular —, de modo",
+        "que a regra de negócio e a tela que a mostra ao usuário são verificadas no mesmo lugar.",
+        "",
+        "O que **não** está aqui: os cenários operacionais de ponta a ponta (navegador contra a API e o banco reais,",
+        "sem dublê), que dependem de dados de operação e entram no marco M6.",
+        "",
+        "## Resumo por camada",
+        "",
+        "| Camada | Cenários | Casos | Passaram | Falharam | Ignorados |",
+        "|---|---|---|---|---|---|",
+    ]
+    for camada in (BACKEND, ANALITICA, FRONTEND):
+        da_camada = [c for c in cenarios.values() if c.camada == camada]
+        resultados = [r for c in da_camada for r in c.resultados]
+        linhas.append(f"| {camada} | {len(da_camada)} | {len(resultados)} | {resultados.count('Passou')} | "
+                      f"{resultados.count('Falhou')} | {resultados.count('Ignorado')} |")
+
+    linhas += [
         "",
         "## Resumo por bloco",
         "",
@@ -148,9 +204,13 @@ def gerar(cenarios: dict, commit: str) -> str:
     for bloco in ordem:
         if bloco not in por_bloco:
             continue
-        linhas += ["", f"## {bloco}", "", "| # | Cenário | Origem | Casos | Resultado |", "|---|---|---|---|---|"]
-        for indice, cenario in enumerate(sorted(por_bloco[bloco], key=lambda c: (c.origem, c.nome)), start=1):
-            linhas.append(f"| {indice} | {cenario.nome} | `{cenario.origem}` | {cenario.casos} | {cenario.resultado} |")
+        linhas += ["", f"## {bloco}", "", "| # | Cenário | Camada | Origem | Casos | Resultado |", "|---|---|---|---|---|---|"]
+        ordem_camada = {BACKEND: 0, ANALITICA: 1, FRONTEND: 2}
+        for indice, cenario in enumerate(
+            sorted(por_bloco[bloco], key=lambda c: (ordem_camada[c.camada], c.origem, c.nome)), start=1
+        ):
+            linhas.append(f"| {indice} | {cenario.nome} | {cenario.camada} | `{cenario.origem}` | {cenario.casos} | "
+                          f"{cenario.resultado} |")
 
     if "Outros" in por_bloco:
         linhas += ["", "> ⚠️ Há classes de teste sem bloco definido em `BLOCOS` no script. Atualize o mapeamento."]
