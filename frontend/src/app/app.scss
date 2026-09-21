@@ -68,6 +68,8 @@ main {
 
 /* Em tela grande (metre e gerente) o menu sobe para junto da barra: o rodapé é coisa de celular. */
 @media (min-width: 768px) {
+  .barra { order: -2; }
+
   .menu {
     order: -1;
     position: sticky;

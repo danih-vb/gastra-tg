@@ -64,6 +64,6 @@ describe('App', () => {
   it('o gerente vê a gestão, mas não a alocação do metre', async () => {
     const pagina = await renderizar('Gerente');
 
-    expect(itensDoMenu(pagina)).toEqual(['Cardápio', 'Análises', 'Salão', 'Usuários']);
+    expect(itensDoMenu(pagina)).toEqual(['Análises', 'Cardápio', 'Salão', 'Usuários']);
   });
 });

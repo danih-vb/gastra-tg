@@ -11,7 +11,7 @@ import { Icone } from '../icone/icone';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Icone],
   template: `
-    <div class="fundo" (click)="fundoClicado($event)">
+    <div class="fundo" [class.dialogo]="dialogo()" (click)="fundoClicado($event)">
       <section class="folha" role="dialog" aria-modal="true" [attr.aria-label]="titulo()" tabindex="-1">
         <header>
           <div>
@@ -36,6 +36,8 @@ export class Folha {
 
   readonly titulo = input.required<string>();
   readonly subtitulo = input('');
+  /** Em tela de computador (gerente) o painel abre no centro, como diálogo, em vez de subir do rodapé. */
+  readonly dialogo = input(false);
   readonly fechar = output<void>();
 
   constructor() {

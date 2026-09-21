@@ -5,29 +5,6 @@
   gap: 8px;
 }
 
-.segmentado {
-  display: inline-flex;
-  padding: 3px;
-  background: var(--marinho-suave);
-  border-radius: 10px;
-
-  button {
-    min-height: 40px;
-    padding: 6px 16px;
-    color: var(--marinho);
-    background: none;
-    border: 0;
-    border-radius: 8px;
-    cursor: pointer;
-
-    &[aria-pressed='true'] {
-      font-weight: 600;
-      background: var(--superficie);
-      box-shadow: var(--sombra);
-    }
-  }
-}
-
 .etapas {
   display: flex;
   flex-wrap: wrap;

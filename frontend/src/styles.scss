@@ -366,6 +366,99 @@ textarea.entrada { min-height: 88px; resize: vertical; }
   .acoes { margin-left: auto; display: flex; gap: 4px; }
 }
 
+/* ---------- Componentes das telas de gestão (metre, gerente) ---------- */
+
+.segmentado {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 3px;
+  background: var(--marinho-suave);
+  border-radius: 10px;
+
+  button {
+    min-height: 40px;
+    padding: 6px 14px;
+    color: var(--marinho);
+    background: none;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      font-weight: 600;
+      background: var(--superficie);
+      box-shadow: var(--sombra);
+    }
+  }
+}
+
+.rolagem-horizontal { overflow-x: auto; }
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+
+  th {
+    padding: 10px 12px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--texto-suave);
+    background: #fafaf8;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  tr:last-child td { border-bottom: 0; }
+
+  .direita { text-align: right; }
+
+  tr.inativo td { color: var(--texto-suave); }
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.kpi {
+  padding: 16px;
+
+  .rotulo { font-size: 0.8125rem; color: var(--texto-suave); }
+
+  .valor {
+    margin-top: 4px;
+    font-size: 1.625rem;
+    font-weight: 700;
+    color: var(--marinho-forte);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .detalhe { margin-top: 2px; font-size: 0.8125rem; color: var(--texto-suave); }
+}
+
+.grade-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
 /*
  * Cada tela é um componente e vira a coluna de conteúdo. As telas de celular (garçom) ficam numa coluna estreita
  * mesmo em tela grande; as de tablet/computador (metre) ocupam a largura toda.
@@ -379,7 +472,9 @@ app-alocacao,
 app-salao-agora,
 app-inicio-do-cliente,
 app-cardapio-digital,
-app-conta-do-cliente {
+app-conta-do-cliente,
+app-analises,
+app-gestao-cardapio {
   display: flex;
   flex-direction: column;
   gap: 16px;

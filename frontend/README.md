@@ -169,3 +169,16 @@ Públicas: o cliente chega pelo QR code da mesa e **não faz login**.
 - **A conta se atualiza sozinha** a cada 15 segundos enquanto a mesa está aberta, e para quando ela fecha. Também dá para atualizar na mão.
 - **Código inexistente não é erro de sistema:** a tela diz para conferir o código na mesa ou chamar o garçom.
 - **Sem dado pessoal:** a resposta do cliente já não traz garçom nem restrição alimentar (RN04), e a tela diz isso ao cliente.
+
+## Telas do Gerente — parte 1 (#153)
+
+| Rota | Tela | Casos de uso |
+|---|---|---|
+| `/analises` | KPIs, faturamento por praça, mapa de calor por hora, ranking e itens mais vendidos | UC16, UC17 |
+| `/cardapio` | Itens (busca, cadastro, preço, disponibilidade, foto) e promoções | UC05–UC09 |
+
+- **Gráficos em HTML e CSS**, sem biblioteca: são poucos e simples, e assim o mapa de calor é uma tabela de verdade, que leitor de tela consegue ler.
+- **Validação fica na API.** A tela mostra as mensagens que o servidor devolve, dentro do painel em que o gerente está digitando, para a regra não existir em dois lugares.
+- **Desfazer** na disponibilidade e no preço: tirar um item do ar por engano tem volta imediata.
+- **Prévia dos preços** na criação da promoção, com a mesma conta do domínio (percentual ou fixo, nunca abaixo de R$ 0,01).
+- O **Coordenador** vê só Cardápio e Promoções; o menu e as rotas seguem o papel, e a API confere de novo.

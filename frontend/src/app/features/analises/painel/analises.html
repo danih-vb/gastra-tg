@@ -1,0 +1,224 @@
+<header class="topo">
+  <div>
+    <h1>Análises</h1>
+    @if (dados(); as dados) {
+      <div class="sub">
+        {{ dados.garcons.periodo.inicio | date: 'dd/MM/yyyy' }} a {{ dados.garcons.periodo.fim | date: 'dd/MM/yyyy' }}
+      </div>
+    }
+  </div>
+  <div class="acoes">
+    <div class="segmentado" role="group" aria-label="Período">
+      @for (opcao of periodos; track opcao.chave) {
+        <button type="button" [attr.aria-pressed]="periodo() === opcao.chave" (click)="escolherPeriodo(opcao.chave)">
+          {{ opcao.nome }}
+        </button>
+      }
+    </div>
+  </div>
+</header>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+      <button class="botao compacto secundario" style="margin-top: 8px" type="button" (click)="carregar()">Tentar de novo</button>
+    </div>
+  </div>
+}
+
+@if (carregando()) {
+  <p class="carregando">Carregando os relatórios…</p>
+} @else if (dados(); as dados) {
+  @if (semMovimento()) {
+    <div class="cartao pad vazio">
+      <h2>Sem movimento no período</h2>
+      <p class="suave">Nenhuma comanda foi fechada entre essas datas. Escolha outro período.</p>
+    </div>
+  } @else {
+    <section class="kpis" aria-label="Totais do período">
+      <div class="cartao kpi">
+        <div class="rotulo">Faturamento</div>
+        <div class="valor">{{ dados.garcons.totais.faturamento | currency: 'BRL' : 'symbol' : '1.0-0' }}</div>
+        <div class="detalhe">comandas fechadas, sem taxa de serviço</div>
+      </div>
+      <div class="cartao kpi">
+        <div class="rotulo">Comandas</div>
+        <div class="valor">{{ dados.garcons.totais.comandas | number }}</div>
+      </div>
+      <div class="cartao kpi">
+        <div class="rotulo">Ticket médio</div>
+        <div class="valor">{{ dados.garcons.totais.ticketMedio | currency: 'BRL' }}</div>
+        <div class="detalhe">por comanda</div>
+      </div>
+      <div class="cartao kpi">
+        <div class="rotulo">Tempo médio de atendimento</div>
+        <div class="valor">{{ dados.garcons.totais.tempoMedioAtendimentoMinutos | number: '1.0-0' }} min</div>
+        <div class="detalhe">da abertura ao fechamento</div>
+      </div>
+    </section>
+
+    <div class="grade-2">
+      <section class="cartao" aria-labelledby="t-pracas">
+        <header>
+          <h2 id="t-pracas">Faturamento por praça</h2>
+          <span class="acoes suave pequeno">média por turno com movimento</span>
+        </header>
+        <div class="corpo barras">
+          @for (praca of pracas(); track praca.pracaId) {
+            <div class="barra" [class.destaque]="praca.altoPotencial">
+              <strong>Praça {{ praca.codigo }}</strong>
+              <div class="trilho" role="img" [attr.aria-label]="(praca.faturamentoPorTurno | currency: 'BRL') + ' por turno'">
+                <div class="preenchido" [style.width.%]="praca.largura"></div>
+              </div>
+              <span class="valor">
+                {{ praca.faturamentoPorTurno | currency: 'BRL' : 'symbol' : '1.0-0' }}
+                <small>{{ praca.faturamento | currency: 'BRL' : 'symbol' : '1.0-0' }} em {{ praca.turnosComMovimento }} turnos</small>
+              </span>
+            </div>
+          }
+          <p class="legenda"><span class="etiqueta marca">laranja</span> acima da média: alto potencial na alocação (RN03)</p>
+        </div>
+      </section>
+
+      <section class="cartao" aria-labelledby="t-calor">
+        <header>
+          <h2 id="t-calor">Faturamento por horário</h2>
+          <span class="acoes suave pequeno">soma do período</span>
+        </header>
+        <div class="corpo">
+          @if (mapaDeCalor().horas.length) {
+            <div class="rolagem-horizontal">
+              <table class="calor">
+                <caption class="sr">Faturamento por praça e hora, em reais</caption>
+                <thead>
+                  <tr>
+                    <th scope="col"><span class="sr">Praça</span></th>
+                    @for (hora of mapaDeCalor().horas; track hora) {
+                      <th scope="col">{{ hora }}h</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (linha of mapaDeCalor().linhas; track linha.codigo) {
+                    <tr>
+                      <th scope="row">{{ linha.codigo }}</th>
+                      @for (celula of linha.celulas; track celula.hora) {
+                        <td
+                          [style.background]="'rgb(43 58 78 / ' + (celula.intensidade < 0.06 ? 0.06 : celula.intensidade) + ')'"
+                          [class.claro]="celula.intensidade > 0.45"
+                        >
+                          {{ celula.valor / 1000 | number: '1.1-1' }}
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <p class="legenda">
+              Valores em R$ mil.
+              @if (mapaDeCalor().pico; as pico) {
+                Pico: {{ pico.hora }}h na praça {{ pico.pracaCodigo }}.
+              }
+            </p>
+          } @else {
+            <p class="suave">Sem movimento por hora no período.</p>
+          }
+        </div>
+      </section>
+    </div>
+
+    <section class="cartao" aria-labelledby="t-ranking">
+      <header>
+        <h2 id="t-ranking">Desempenho dos garçons</h2>
+        <span class="acoes">
+          <button class="botao compacto fantasma" type="button" (click)="explicandoIndice.set(!explicandoIndice())">
+            <app-icone nome="info" /> Como o índice é calculado
+          </button>
+        </span>
+      </header>
+      @if (explicandoIndice()) {
+        <div class="corpo explicacao">
+          <p>
+            <strong>{{ dados.ranking.pesoFaturamento * 100 | number: '1.0-0' }}%</strong> vem do faturamento por turno e
+            <strong>{{ dados.ranking.pesoMesasAtendidas * 100 | number: '1.0-0' }}%</strong> das mesas atendidas por turno
+            (RF11: não é só venda). Cada parte é comparada com o melhor do período, que vale 100. Por ser por turno, quem
+            trabalhou menos dias não fica atrás só por isso. O garçom vê apenas a própria posição.
+          </p>
+        </div>
+      }
+      <div class="rolagem-horizontal">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Garçom</th>
+              <th scope="col">Índice</th>
+              <th scope="col" class="direita">Faturamento por turno</th>
+              <th scope="col" class="direita">Mesas por turno</th>
+              <th scope="col" class="direita">Turnos</th>
+              <th scope="col" class="direita">Ticket médio</th>
+              <th scope="col" class="direita">Tempo médio</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linha of ranking(); track linha.garcomId) {
+              <tr>
+                <td><span class="posicao" [class.podio]="linha.posicao <= 3">{{ linha.posicao }}</span></td>
+                <td><strong>{{ linha.nome }}</strong></td>
+                <td>
+                  <div class="indice">
+                    <span class="num">{{ linha.indice | number: '1.1-1' }}</span>
+                    <span class="trilho" aria-hidden="true"><span [style.width.%]="linha.indice"></span></span>
+                  </div>
+                </td>
+                <td class="direita num">{{ linha.faturamentoPorTurno | currency: 'BRL' }}</td>
+                <td class="direita num">{{ linha.mesasPorTurno | number: '1.1-1' }}</td>
+                <td class="direita num">{{ linha.turnos }}</td>
+                <td class="direita num">{{ linha.detalhe?.ticketMedio | currency: 'BRL' }}</td>
+                <td class="direita num">{{ linha.detalhe?.tempoMedioAtendimentoMinutos | number: '1.0-0' }} min</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="cartao" aria-labelledby="t-itens">
+      <header><h2 id="t-itens">Itens mais vendidos</h2></header>
+      <div class="rolagem-horizontal">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Categoria</th>
+              <th scope="col" class="direita">Quantidade</th>
+              <th scope="col" class="direita">Faturamento</th>
+              <th scope="col">Participação</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of itensMaisVendidos(); track item.itemCardapioId) {
+              <tr>
+                <td><strong>{{ item.nome }}</strong></td>
+                <td>{{ nomeDaCategoria(item.categoria) }}</td>
+                <td class="direita num">{{ item.quantidade | number }}</td>
+                <td class="direita num">{{ item.faturamento | currency: 'BRL' }}</td>
+                <td>
+                  <div class="indice">
+                    <span class="num">{{ item.participacaoPercentual | number: '1.1-1' }}%</span>
+                    <span class="trilho" aria-hidden="true"><span class="marinho" [style.width.%]="item.participacaoPercentual"></span></span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+}

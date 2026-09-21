@@ -1,0 +1,404 @@
+<header class="topo">
+  <div>
+    <h1>Cardápio</h1>
+    <div class="sub">Itens usados nas comandas, no cardápio digital e nas sugestões.</div>
+  </div>
+  <div class="acoes">
+    @if (aba() === 'itens') {
+      <button class="botao" type="button" (click)="abrirNovoItem()"><app-icone nome="mais" /> Novo item</button>
+    } @else {
+      <button class="botao" type="button" (click)="abrirNovaPromocao()"><app-icone nome="mais" /> Nova promoção</button>
+    }
+  </div>
+</header>
+
+<div class="abas" role="tablist">
+  <button type="button" role="tab" [attr.aria-selected]="aba() === 'itens'" (click)="aba.set('itens')">
+    Itens ({{ itens().length }})
+  </button>
+  <button type="button" role="tab" [attr.aria-selected]="aba() === 'promocoes'" (click)="aba.set('promocoes')">
+    Promoções ({{ promocoes().length }})
+  </button>
+</div>
+
+@if (erros().length) {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+    </div>
+  </div>
+}
+
+@if (carregando() && !itens().length) {
+  <p class="carregando">Carregando o cardápio…</p>
+} @else if (aba() === 'itens') {
+  <section class="cartao">
+    <div class="ferramentas">
+      <label class="sr" for="busca">Buscar item</label>
+      <input
+        class="entrada busca"
+        id="busca"
+        type="search"
+        placeholder="Buscar item"
+        [value]="busca()"
+        (input)="busca.set($any($event.target).value)"
+      />
+      <div class="chips" role="group" aria-label="Categoria">
+        <button class="chip" type="button" [attr.aria-pressed]="categoria() === 'todas'" (click)="categoria.set('todas')">Todas</button>
+        @for (opcao of CATEGORIAS; track opcao.chave) {
+          <button class="chip" type="button" [attr.aria-pressed]="categoria() === opcao.chave" (click)="categoria.set(opcao.chave)">
+            {{ opcao.nome }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (itensFiltrados().length) {
+      <div class="rolagem-horizontal">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Flags dietéticas</th>
+              <th scope="col" class="direita">Preço</th>
+              <th scope="col">Disponível</th>
+              <th scope="col"><span class="sr">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of itensFiltrados(); track item.id) {
+              <tr [class.inativo]="!item.disponivel">
+                <td class="nome-item">
+                  <strong>{{ item.nome }}</strong>
+                  <span>{{ item.descricao }}</span>
+                </td>
+                <td>{{ nomeDaCategoria(item.categoria) }}</td>
+                <td>
+                  <div class="chips pequenos">
+                    @for (flag of item.flagsDieteticas; track flag) {
+                      <span class="etiqueta">{{ FLAGS[flag] }}</span>
+                    } @empty {
+                      <span class="suave">—</span>
+                    }
+                  </div>
+                </td>
+                <td class="direita num preco">
+                  @if (item.precoPromocional !== null) {
+                    <s>{{ item.preco | currency: 'BRL' }}</s>
+                    <span class="promo">{{ item.precoPromocional | currency: 'BRL' }}</span>
+                  } @else {
+                    {{ item.preco | currency: 'BRL' }}
+                  }
+                </td>
+                <td>
+                  <label class="interruptor">
+                    <input
+                      type="checkbox"
+                      [checked]="item.disponivel"
+                      [disabled]="salvando()"
+                      (change)="alternarDisponibilidade(item)"
+                    />
+                    <span class="sr">Disponível: {{ item.nome }}</span>
+                    <span class="pequeno">{{ item.disponivel ? 'Sim' : 'Não' }}</span>
+                  </label>
+                </td>
+                <td class="direita acoes-linha">
+                  <button class="botao compacto secundario" type="button" (click)="abrirPreco(item)">Preço</button>
+                  <button class="botao compacto fantasma" type="button" (click)="abrirFoto(item)">
+                    {{ item.imagem ? 'Trocar foto' : 'Foto' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="corpo suave vazio">Nenhum item encontrado{{ busca() ? ' para “' + busca() + '”' : '' }}.</div>
+    }
+  </section>
+} @else {
+  @if (promocoes().length) {
+    <div class="promocoes">
+      @for (promocao of promocoes(); track promocao.id) {
+        <article class="cartao promocao" [attr.aria-labelledby]="'promo-' + promocao.id">
+          <header>
+            <h2 [id]="'promo-' + promocao.id">{{ promocao.descricao }}</h2>
+            <span class="acoes">
+              <span class="etiqueta {{ situacaoDa(promocao).classe }}">{{ situacaoDa(promocao).texto }}</span>
+            </span>
+          </header>
+          <div class="corpo">
+            <p class="desconto">
+              @if (promocao.tipoDesconto === 'Percentual') {
+                {{ promocao.valorDesconto }}% de desconto
+              } @else {
+                {{ promocao.valorDesconto | currency: 'BRL' }} de desconto
+              }
+            </p>
+            <p class="suave pequeno">
+              {{ promocao.dataInicio | date: 'dd/MM/yyyy' }} a {{ promocao.dataFim | date: 'dd/MM/yyyy' }}
+            </p>
+            @for (item of promocao.itens; track item.itemCardapioId) {
+              <div class="item-preco">
+                <span>{{ item.nome }}</span>
+                <span><s class="suave">{{ item.precoOriginal | currency: 'BRL' }}</s> → <strong>{{ item.precoComDesconto | currency: 'BRL' }}</strong></span>
+              </div>
+            }
+            <div>
+              <button class="botao compacto secundario" type="button" (click)="abrirRemocao(promocao)">Remover</button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+    <p class="suave pequeno">
+      <app-icone nome="info" /> Se um item estiver em mais de uma promoção vigente, vale o maior desconto. O preço nunca fica
+      abaixo de R$ 0,01.
+    </p>
+  } @else {
+    <div class="cartao pad vazio">
+      <h2>Nenhuma promoção</h2>
+      <p class="suave">Crie uma promoção para dar desconto em itens por um período.</p>
+    </div>
+  }
+}
+
+<!-- Painéis -->
+@switch (painel()) {
+  @case ('novo-item') {
+    <app-folha titulo="Novo item do cardápio" [dialogo]="true" (fechar)="fecharPainel()">
+      <form class="formulario" novalidate (ngSubmit)="cadastrarItem()">
+        @if (errosDoPainel().length) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              <strong>Corrija para salvar</strong>
+              @for (erro of errosDoPainel(); track erro) {
+                <div>{{ erro }}</div>
+              }
+            </div>
+          </div>
+        }
+        <div class="campo">
+          <label for="item-nome">Nome</label>
+          <input class="entrada" id="item-nome" name="nome" maxlength="100" [(ngModel)]="novoItem.nome" />
+        </div>
+        <div class="linha-campos">
+          <div class="campo">
+            <label for="item-categoria">Categoria</label>
+            <select class="entrada" id="item-categoria" name="categoria" [(ngModel)]="novoItem.categoria">
+              <option value="">Escolha</option>
+              @for (opcao of CATEGORIAS; track opcao.chave) {
+                <option [value]="opcao.chave">{{ opcao.nome }}</option>
+              }
+            </select>
+          </div>
+          <div class="campo">
+            <label for="item-preco">Preço (R$)</label>
+            <input class="entrada" id="item-preco" name="preco" inputmode="decimal" placeholder="0,00" [(ngModel)]="novoItem.preco" />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="item-descricao">Descrição</label>
+          <textarea class="entrada" id="item-descricao" name="descricao" maxlength="500" [(ngModel)]="novoItem.descricao"></textarea>
+          <span class="ajuda">Aparece no cardápio digital do cliente.</span>
+        </div>
+        <fieldset class="campo">
+          <legend class="rotulo">Flags dietéticas</legend>
+          <div class="chips">
+            @for (flag of flagsPossiveis; track flag) {
+              <button class="chip" type="button" [attr.aria-pressed]="flagsDoNovoItem().includes(flag)" (click)="alternarFlag(flag)">
+                {{ FLAGS[flag] }}
+              </button>
+            }
+          </div>
+          <span class="ajuda">“Infantil” faz a mesa ser reconhecida como Família.</span>
+        </fieldset>
+        <div class="campo">
+          <label for="item-foto">Foto (opcional)</label>
+          <input class="entrada" id="item-foto" name="imagem" placeholder="https://… ou /fotos/…" [(ngModel)]="novoItem.imagem" />
+          <span class="ajuda">Endereço da imagem. Sem foto, o cardápio digital mostra um bloco na cor da categoria.</span>
+        </div>
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando()">Cadastrar item</button>
+        </div>
+      </form>
+    </app-folha>
+  }
+
+  @case ('preco') {
+    <app-folha titulo="Atualizar preço" [subtitulo]="itemEmEdicao()?.nome ?? ''" [dialogo]="true" (fechar)="fecharPainel()">
+      <form class="formulario" novalidate (ngSubmit)="salvarPreco()">
+        @if (errosDoPainel().length) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              @for (erro of errosDoPainel(); track erro) {
+                <div>{{ erro }}</div>
+              }
+            </div>
+          </div>
+        }
+        <div class="linha-campos">
+          <div class="campo">
+            <span class="rotulo">Preço atual</span>
+            <span class="num valor-atual">{{ itemEmEdicao()?.preco | currency: 'BRL' }}</span>
+          </div>
+          <div class="campo">
+            <label for="novo-preco">Novo preço (R$)</label>
+            <input class="entrada" id="novo-preco" name="preco" inputmode="decimal" [(ngModel)]="novoPreco" />
+          </div>
+        </div>
+        <div class="alerta">
+          <app-icone nome="info" />
+          <div class="pequeno">Comandas já abertas mantêm o preço do momento em que o item foi lançado.</div>
+        </div>
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando()">Salvar preço</button>
+        </div>
+      </form>
+    </app-folha>
+  }
+
+  @case ('foto') {
+    <app-folha titulo="Foto do item" [subtitulo]="itemEmEdicao()?.nome ?? ''" [dialogo]="true" (fechar)="fecharPainel()">
+      <form class="formulario" novalidate (ngSubmit)="salvarFoto()">
+        @if (errosDoPainel().length) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              @for (erro of errosDoPainel(); track erro) {
+                <div>{{ erro }}</div>
+              }
+            </div>
+          </div>
+        }
+        <div class="campo">
+          <label for="foto">Endereço da foto</label>
+          <input class="entrada" id="foto" name="foto" placeholder="https://… ou /fotos/…" [(ngModel)]="novaFoto" />
+          <span class="ajuda">Link http(s) ou caminho começando com barra. Deixe vazio para tirar a foto.</span>
+        </div>
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando()">Salvar</button>
+        </div>
+      </form>
+    </app-folha>
+  }
+
+  @case ('nova-promocao') {
+    <app-folha titulo="Nova promoção" [dialogo]="true" (fechar)="fecharPainel()">
+      <form class="formulario" novalidate (ngSubmit)="criarPromocao()">
+        @if (errosDoPainel().length) {
+          <div class="alerta erro" role="alert">
+            <app-icone nome="alerta" />
+            <div>
+              <strong>Corrija para salvar</strong>
+              @for (erro of errosDoPainel(); track erro) {
+                <div>{{ erro }}</div>
+              }
+            </div>
+          </div>
+        }
+        <div class="campo">
+          <label for="promo-descricao">Descrição</label>
+          <input
+            class="entrada"
+            id="promo-descricao"
+            name="descricao"
+            maxlength="200"
+            placeholder="Ex.: Happy hour da caipirinha"
+            [(ngModel)]="novaPromocao.descricao"
+          />
+        </div>
+        <div class="linha-campos">
+          <div class="campo">
+            <span class="rotulo">Tipo</span>
+            <div class="segmentado" role="group" aria-label="Tipo de desconto">
+              <button type="button" [attr.aria-pressed]="tipoDesconto() === 'Percentual'" (click)="tipoDesconto.set('Percentual')">
+                Percentual
+              </button>
+              <button type="button" [attr.aria-pressed]="tipoDesconto() === 'ValorFixo'" (click)="tipoDesconto.set('ValorFixo')">
+                Valor fixo
+              </button>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="promo-valor">{{ tipoDesconto() === 'Percentual' ? 'Desconto (%)' : 'Desconto (R$)' }}</label>
+            <input
+              class="entrada"
+              id="promo-valor"
+              name="valor"
+              inputmode="decimal"
+              [value]="valorDaPromocao()"
+              (input)="valorDaPromocao.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+        <div class="linha-campos">
+          <div class="campo">
+            <label for="promo-inicio">Início</label>
+            <input class="entrada" id="promo-inicio" name="inicio" type="date" [(ngModel)]="novaPromocao.inicio" />
+          </div>
+          <div class="campo">
+            <label for="promo-fim">Fim</label>
+            <input class="entrada" id="promo-fim" name="fim" type="date" [(ngModel)]="novaPromocao.fim" />
+          </div>
+        </div>
+        <fieldset class="campo">
+          <legend class="rotulo">Itens</legend>
+          <div class="grade-itens">
+            @for (item of itens(); track item.id) {
+              <label>
+                <input type="checkbox" [checked]="itensDaPromocao().includes(item.id)" (change)="alternarItemDaPromocao(item.id)" />
+                {{ item.nome }}
+              </label>
+            }
+          </div>
+        </fieldset>
+        <div class="campo">
+          <span class="rotulo">Prévia dos preços</span>
+          @for (linha of previa(); track linha.nome) {
+            <div class="item-preco">
+              <span>{{ linha.nome }}</span>
+              <span><s class="suave">{{ linha.de | currency: 'BRL' }}</s> → <strong>{{ linha.por | currency: 'BRL' }}</strong></span>
+            </div>
+          } @empty {
+            <p class="suave pequeno">Escolha o desconto e os itens para ver os novos preços.</p>
+          }
+        </div>
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando()">Criar promoção</button>
+        </div>
+      </form>
+    </app-folha>
+  }
+
+  @case ('remover-promocao') {
+    <app-folha [titulo]="'Remover “' + (promocaoParaRemover()?.descricao ?? '') + '”?'" [dialogo]="true" (fechar)="fecharPainel()">
+      @if (errosDoPainel().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDoPainel(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+      <p>Os itens voltam ao preço normal no cardápio e nas próximas comandas. Itens já lançados mantêm o preço cobrado.</p>
+      <div class="rodape-folha">
+        <button class="botao secundario" type="button" (click)="fecharPainel()">Manter promoção</button>
+        <button class="botao perigo" type="button" [disabled]="salvando()" (click)="removerPromocao()">Remover</button>
+      </div>
+    </app-folha>
+  }
+}
