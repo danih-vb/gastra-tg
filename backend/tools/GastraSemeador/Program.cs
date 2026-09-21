@@ -3,7 +3,7 @@ using GastraSemeador;
 // Semeia o banco de desenvolvimento com dados simulados (épico #179).
 //
 // Cria os cadastros base (#181) — contas, praças, mesas e cardápio — e, sobre eles, o histórico de turnos
-// já encerrados (#182). O estado "ao vivo" da demonstração (#183) entra em seguida.
+// já encerrados (#182) e o estado "ao vivo" da demonstração (#183).
 //
 // Uso, dentro de backend/:
 //   GASTRA_AMBIENTE=Development \
@@ -28,6 +28,7 @@ try
     Console.WriteLine($"Semeando com a semente {configuracao.Semente}.");
     var cenario = await CadastrosBase.Semear(contexto, configuracao, Console.Out);
     await Historico.Semear(contexto, cenario, configuracao, Console.Out);
+    await AoVivo.Semear(contexto, cenario, configuracao, Console.Out);
     Console.WriteLine("Pronto. Os dados são fictícios e não representam nenhum restaurante real.");
     return 0;
 }

@@ -59,7 +59,7 @@ docker compose -f infra/docker-compose.yml down -v
 |---|---|---|
 | Cadastros base | 1 Gerente, 1 Coordenador, 1 Metre e 7 Garçons (`@gastra.local`); 3 praças com potenciais diferentes (vagas 3/3/2); 20 mesas com capacidades variadas; 14 itens cobrindo as quatro categorias, todas as marcações dietéticas e itens infantis | #181 |
 | Histórico de comandas fechadas | 70 dias de almoço e jantar: alocações confirmadas e ~4.200 comandas fechadas, com itens cancelados com motivo e taxa de serviço retirada de vez em quando | #182 |
-| Estado "ao vivo" da demonstração | *(a fazer)* | #183 |
+| Estado "ao vivo" da demonstração | O turno de hoje montado e **não confirmado**, 6 mesas abertas com itens esperando entrega e uma com restrição registrada. No fim, imprime o código de acesso de uma das mesas | #183 |
 
 ### Como os números são calibrados
 
