@@ -9,19 +9,27 @@
 
     @if (configuracao(); as dados) {
       <ol class="passos">
-        <li>No app, escolha adicionar conta e digite a chave abaixo (ou abra o link no celular).</li>
+        <li>No app, escolha adicionar conta e aponte a câmera para o código abaixo.</li>
         <li>Digite o código de 6 dígitos que o app mostrar.</li>
       </ol>
 
-      <div class="campo chave">
-        <span class="rotulo">Chave</span>
-        <code>{{ dados.chaveManual }}</code>
-      </div>
+      @if (qrCode(); as svg) {
+        <div class="qr-code" role="img" aria-label="Código QR para vincular o aplicativo autenticador">
+          <span [innerHTML]="svg"></span>
+        </div>
+      }
 
-      <p class="link-autenticador">
-        <app-icone nome="qr" />
-        <a [href]="dados.uriConfiguracao">Abrir no app autenticador</a>
-      </p>
+      <details class="chave-manual">
+        <summary>Não consegue apontar a câmera? Digite a chave</summary>
+        <div class="campo chave">
+          <span class="rotulo">Chave</span>
+          <code>{{ dados.chaveManual }}</code>
+        </div>
+        <p class="link-autenticador">
+          <app-icone nome="qr" />
+          <a [href]="dados.uriConfiguracao">Abrir no app autenticador deste aparelho</a>
+        </p>
+      </details>
 
       <div class="alerta aviso" role="note">
         <app-icone nome="alerta" />
