@@ -1,0 +1,139 @@
+# GASTRA — Revisão de modelagem: consistência entre desenho, código e banco
+
+Registra o critério da revisão, a matriz do que cada artefato precisa bater e o que a conferência
+encontrou. Issues #190, #196 e #197.
+
+## 1. Regra de desempate
+
+Quando dois artefatos divergem, **um deles está errado** — e a correção nunca é silenciosa. A ordem de
+autoridade adotada:
+
+1. **O requisito manda**, quando a divergência é sobre *o que o sistema deve fazer*. Se o código faz algo
+   que requisito nenhum pediu, ou o requisito passa a descrever, ou o código sai.
+2. **O código manda**, quando a divergência é sobre *como está construído* — nome de classe, camada,
+   coluna. Desenho que discorda do código é desenho desatualizado.
+3. **O banco manda** sobre o modelo físico, e o **MER** manda sobre o conceitual. Diferença entre os dois
+   é legítima quando tem justificativa escrita (chave estrangeira, atributo derivado, multivalorado).
+
+Toda divergência encontrada vira linha na seção 4, com a decisão tomada.
+
+## 2. Checklist por tipo de diagrama
+
+| Tipo | O que se confere |
+|---|---|
+| Casos de uso | Cada caso tem ator; o identificador (UCxx) bate com o documento de casos de uso; `<<include>>` e `<<extend>>` usados pelo significado certo, e não como "depois disso"; fronteira do sistema desenhada |
+| Classes | Nome, atributo e método existem no código com a mesma grafia; visibilidade correta; constante aparece como estática; navegabilidade e multiplicidade coerentes com o EF |
+| Sequência | Participantes existem como classe ou serviço; mensagem síncrona × assíncrona; retorno desenhado; fragmento `alt`/`opt` onde há decisão |
+| Atividade | Início e fim; decisão com guarda em toda saída; raia por ator quando há mais de um |
+| Implantação | Nó, artefato e protocolo entre eles; bate com o `docker-compose.yml` |
+| MER / DER | Entidade × tabela, atributo × coluna, cardinalidade × chave estrangeira |
+
+## 3. Matriz de consistência
+
+| Diagrama | Precisa bater com | Situação |
+|---|---|---|
+| 6 de casos de uso | UCxx do `GASTRA_Casos_de_Uso.docx`, atores, RF | ⏳ a revisar (#191) |
+| 4 de classes | Nomes do código (`Gastra.Domain`, `Gastra.Infrastructure`) | ⏳ a revisar (#192) — ver 4.3 |
+| 3 de sequência | Classes e endpoints existentes | ⏳ a revisar (#193) |
+| 2 de atividade | RN01–RN08 e o fluxo do código | ⏳ a revisar (#194) |
+| Implantação | `infra/docker-compose.yml` | ⏳ a revisar (#195) — **mudou**, ver 4.2 |
+| MER e DER | Banco depois das migrations | ✅ conferido, ver 4.1 |
+
+## 4. O que a conferência encontrou
+
+### 4.1 O banco tem uma tabela que o modelo conceitual não tem (#196)
+
+O catálogo do banco foi extraído depois das últimas migrations e comparado com o DER conceitual. As 11
+entidades e as 2 tabelas associativas que a comparação anterior já cobria continuam batendo, com as mesmas
+justificativas de sempre (chave estrangeira só no físico, atributo derivado, multivalorado que virou
+tabela).
+
+**A divergência nova é uma só:**
+
+| Tabela no banco | No MER/DER | Decisão |
+|---|---|---|
+| `avaliacao_atendimento` | **ausente** | Entrar no MER e no DER como entidade fraca de `Comanda`, cardinalidade (0,1) |
+
+A tabela nasceu com o RF25 (avaliação do atendimento pelo cliente) e é entidade de verdade: tem
+identidade, atributos próprios (`nota`, `comentario`, `data_hora_envio`) e vive presa a uma comanda, uma
+por comanda. **Essa correção precisa do brModelo**, que é aplicação gráfica — está registrada como tarefa
+manual na seção 5.
+
+### 4.2 O diagrama de implantação está desatualizado (#195)
+
+O `docker-compose.yml` ganhou o serviço **`web`** (nginx servindo a SPA e repassando `/api`, decisão D12).
+O diagrama de implantação mostra três nós; agora são quatro, e a seta do navegador passa a chegar no nginx,
+não na API.
+
+### 4.3 `PercentualTaxaServico` é constante, não coluna (#196)
+
+A issue perguntava se é constante ou coluna, porque aparece na classe `Comanda` gerada do código e não
+aparece no MER. **É constante de domínio:**
+
+```csharp
+public const decimal PercentualTaxaServico = 0.10m;
+```
+
+Os dois artefatos estão certos, cada um no seu papel: o MER não a tem porque ela **não é persistida** — o
+que o banco guarda é `comanda.taxa_servico_removida`, um booleano, e o valor da taxa é recalculado. O
+diagrama de classes a mostra porque ela faz parte da regra (RF04).
+
+**O que precisa mudar é a notação:** em UML, membro estático se representa **sublinhado**. Como o diagrama
+é gerado por `backend/tools/GeradorDiagramaClasses`, a correção é no gerador, e vale para qualquer outra
+constante — não só para esta. Registrado na seção 5.
+
+### 4.4 O código faz coisas que o requisito não descrevia (#197)
+
+Desde a #141 o sistema **redefine senha** e **reinicia a verificação em duas etapas** de outra conta, com
+endpoint, tela e teste. O RF18 falava só em cadastrar, editar e inativar.
+
+**Decisão, pela regra 1:** o requisito passa a descrever o que existe. O RF18 foi ampliado:
+
+> O sistema deve permitir ao Gerente cadastrar, editar, inativar (*soft delete*) e reativar contas de
+> usuário, atribuindo o papel correspondente, além de redefinir a senha e reiniciar a verificação em duas
+> etapas de outra conta.
+
+Ampliar o RF18 foi preferido a criar um requisito novo porque é a mesma capacidade — gestão de contas pelo
+Gerente — e criar RF26 espalharia UC04 em dois lugares. **O UC04 e a Matriz de Rastreabilidade precisam
+acompanhar**, e isso é trabalho no `.docx`: seção 5.
+
+### 4.5 O nome do módulo do frontend não batia (#197)
+
+A arquitetura listava os módulos como `autenticacao`, `cardapio`, `comandas`, `alocacao`, `analises`,
+`cliente`. O repositório tem `acesso`, `alocacao`, `analises`, `cardapio`, `cliente`, `comandas`, `salao` e
+`usuarios` — um nome diferente e dois módulos que nem existiam quando o documento foi escrito. Corrigido
+pela regra 2, com o código mandando.
+
+### 4.6 Onze marcações de "planejado" estavam vencidas (#197)
+
+A arquitetura ainda marcava como 🔜 coisas entregues há semanas: as telas dos quatro perfis, a organização
+em módulos, a comunicação com a API, o log e auditoria, a restrição alimentar, os testes de frontend e os
+testes dos algoritmos em Python. Todas corrigidas para ✅.
+
+Sobraram três 🔜, e esses são honestos: a avaliação de Nielsen, a análise estática no SonarCloud e a
+coluna "Demonstração / banca".
+
+A linha de **Prototipagem** também estava errada de outro jeito: dizia "Figma, antes da implementação". O
+protótipo foi feito em HTML navegável e depois importado no Figma pelo plugin — o documento agora descreve
+o que aconteceu.
+
+## 5. O que ficou pendente, e por quê
+
+| Pendência | Por que não foi feito aqui | Issue |
+|---|---|---|
+| `avaliacao_atendimento` no MER e no DER | Exige o brModelo, que é aplicação gráfica | #196 |
+| Diagrama de implantação com o nó `web` | Exige draw.io | #195 |
+| Constante sublinhada no diagrama de classes | Mudança no `GeradorDiagramaClasses`, com regeração dos 4 diagramas | #192 |
+| UC04 e Matriz de Rastreabilidade acompanhando o RF18 | Edição nos `.docx` de casos de uso e rastreabilidade | #197 |
+| Revisão dos 15 diagramas contra o checklist | É o trabalho das #191–#195 | #191–#195 |
+
+## 6. Como repetir a conferência do banco
+
+```bash
+docker exec -i gastra-mysql sh -c 'mysql -N -B -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" gastra_dev' \
+  < docs/modelagem/engenharia-reversa/extrair_schema.sql > schema.tsv
+```
+
+E comparar com o DER conceitual exportado do brModelo, como descreve
+[`engenharia-reversa/README.md`](engenharia-reversa/README.md). O passo do brModelo é manual: ele não tem
+linha de comando para exportar XML.

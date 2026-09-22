@@ -21,7 +21,7 @@ O GASTRA tem três componentes de software e um banco de dados:
 
 | Componente | Tecnologia | Responsabilidade | Situação |
 |---|---|---|---|
-| **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ estrutura inicial · 🔜 telas |
+| **Frontend** | Angular 22 (SPA) | Telas do garçom, metre, gerente, coordenador e cliente | ✅ |
 | **Backend** | ASP.NET Core (.NET 10) | Regras de negócio, autenticação, autorização, gravação no banco | ✅ cardápio, autenticação, usuários, comandas, praças e mesas, sugestão de pratos, auditoria, alocação de garçons, relatórios de BI, índice de desempenho e promoções |
 | **Camada analítica** | Python 3.13 + FastAPI | Cálculos: recomendação de pratos e alocação de garçons por programação linear | ✅ recomendação e alocação, as duas chamadas pelo backend · ✅ leitura do histórico real pelas views (D10) |
 | **Banco de dados** | MySQL 8.4 | Dados transacionais e views de BI | ✅ tabelas do cardápio, de acesso e do núcleo de comandas · ✅ views de BI e triggers de auditoria · ✅ promoções |
@@ -40,12 +40,15 @@ resultado.
 
 ### 2.1 Dois ambientes
 
-| | Desenvolvimento (hoje) | Demonstração / banca (🔜) |
+| | Desenvolvimento (hoje) | Demonstração / banca (✅) |
 |---|---|---|
 | MySQL | contêiner Docker (`infra/docker-compose.yml`), porta 3307 no host | contêiner |
-| Backend | `dotnet run` na máquina | contêiner (Dockerfile a criar) |
-| Camada analítica | `uvicorn` na máquina, porta 8000 | contêiner (Dockerfile a criar) |
-| Frontend | `ng serve` na máquina, porta 4200 | contêiner nginx servindo os arquivos compilados |
+| Backend | `dotnet run` na máquina | contêiner (`backend/Dockerfile`) |
+| Camada analítica | `uvicorn` na máquina, porta 8000 | contêiner (`data-science/Dockerfile`) |
+| Frontend | `ng serve` na máquina, porta 4200 | contêiner nginx servindo os arquivos compilados e repassando `/api` (D12) |
+
+Os quatro sobem juntos com `docker compose --profile app up -d --build`, e o sistema fica em
+`http://localhost:4200`.
 
 **Por que só o MySQL no Docker durante o desenvolvimento:** o código muda a cada minuto, e rodar
 API, Python e Angular direto na máquina permite recarregar ao salvar e depurar sem reconstruir
@@ -200,12 +203,12 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 | Item | Decisão | Situação |
 |---|---|---|
 | Tipo de aplicação | SPA com componentes *standalone*, SCSS e testes com Vitest | ✅ criado |
-| Organização | Por módulo funcional: `autenticacao`, `cardapio`, `comandas`, `alocacao`, `analises`, `cliente`, além de `core` (interceptador do token, guardas de rota por papel) e `shared` (componentes comuns) — issue #82 | 🔜 |
-| Comunicação | Chamadas REST ao backend; um interceptador anexa o token JWT; erros exibidos a partir do formato `{ erros: [...] }` | 🔜 |
-| Telas do garçom e metre | *Mobile first*: uso no celular, em pé, com pressa. RNF02: abrir mesa e lançar item em no máximo 5 toques | 🔜 |
-| Telas do gerente | Computador, com tabelas e dashboards de BI | 🔜 |
-| Cliente | Cardápio digital e consulta da comanda, sem login | 🔜 |
-| Prototipagem | Figma, antes da implementação, avaliado pelas heurísticas de Nielsen (issues #47, #80, #99–#102) | 🔜 |
+| Organização | Por módulo funcional: `acesso`, `alocacao`, `analises`, `cardapio`, `cliente`, `comandas`, `salao` e `usuarios`, além de `core` (interceptador do token, guardas de rota por papel) e `shared` (componentes comuns) — issue #82 | ✅ |
+| Comunicação | Chamadas REST ao backend; um interceptador anexa o token JWT; erros exibidos a partir do formato `{ erros: [...] }` | ✅ |
+| Telas do garçom e metre | *Mobile first*: uso no celular, em pé, com pressa. RNF02: abrir mesa e lançar item em no máximo 5 toques | ✅ |
+| Telas do gerente | Computador, com tabelas e dashboards de BI | ✅ |
+| Cliente | Cardápio digital, consulta da comanda e avaliação do atendimento (RF25), sem login | ✅ |
+| Prototipagem | Protótipo navegável em HTML (`docs/ux-ui/prototipo/`), importado no Figma pelo plugin html.to.design. Avaliação de Nielsen pendente (issues #80, #101, #102) | ✅ protótipo · 🔜 Nielsen |
 
 ---
 
@@ -240,8 +243,8 @@ barreira, garantindo que o registro de auditoria não seja alterado depois
 | Logoff e inativação imediatos | Cada usuário tem uma `chave_sessao` que vai no token e é conferida a cada requisição. Logoff, inativação e troca de papel trocam a chave | ✅ |
 | Autorização por papel (RNF04) | `[Authorize(Roles = ...)]` em cada controller; endpoints do cliente marcados como públicos | ✅ |
 | Segredos | Chave JWT, senha do banco e administrador inicial ficam em `appsettings.Development.json` e `.env`, **fora do Git** | ✅ |
-| Log e auditoria (RNF03, RN04, RN05) | Conforme `GASTRA_Politica_Log_Auditoria.md`: auditoria por 6 meses, log técnico por 30 dias, IP só no login, restrição alimentar tratada como dado sensível e nunca registrada em log | 🔜 |
-| Restrição alimentar (RF14) | Vinculada só à comanda ativa; ao fechar a comanda, a observação livre é apagada e fica apenas a contagem por categoria | 🔜 |
+| Log e auditoria (RNF03, RN04, RN05) | Conforme `GASTRA_Politica_Log_Auditoria.md`: auditoria por 6 meses, log técnico por 30 dias, IP só no login, restrição alimentar tratada como dado sensível e nunca registrada em log | ✅ |
+| Restrição alimentar (RF14) | Vinculada só à comanda ativa; ao fechar a comanda, a observação livre é apagada e fica apenas a categoria | ✅ |
 
 ### 8.1 OWASP Top 10 como referência
 
@@ -265,8 +268,8 @@ O OWASP Top 10 não é uma ferramenta a instalar: é a lista de riscos usada par
 | Unitário de domínio | xUnit (`Gastra.Domain.Tests`) | Regras das entidades sem banco nem HTTP | ✅ |
 | Integração da API | xUnit + `WebApplicationFactory` + EF Core InMemory (`Gastra.Api.Tests`) | Requisições reais de ponta a ponta: status, mensagens, permissões, 2FA | ✅ |
 | Arquitetura | `ArquiteturaTests` (C#) e `test_arquitetura.py` (Python) | Regra de dependência entre camadas | ✅ |
-| Python | pytest | Serviço FastAPI; 🔜 algoritmos | ✅ / 🔜 |
-| Frontend | Vitest | 🔜 componentes e serviços | 🔜 |
+| Python | pytest | Serviço FastAPI e os algoritmos (recomendação, alocação, calibração) | ✅ |
+| Frontend | Vitest | Componentes e serviços, ao lado de cada tela | ✅ |
 | Análise estática | SonarCloud | Qualidade e duplicação de código | 🔜 no fim do desenvolvimento |
 
 ---
