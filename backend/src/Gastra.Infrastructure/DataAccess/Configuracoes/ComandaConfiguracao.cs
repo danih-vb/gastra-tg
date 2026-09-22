@@ -47,8 +47,15 @@ public class ComandaConfiguracao : IEntityTypeConfiguration<Comanda>
             .HasForeignKey(r => r.ComandaId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // A avaliação também não existe fora da comanda, e é no máximo uma (RF25, RN08).
+        builder.HasOne(c => c.Avaliacao)
+            .WithOne()
+            .HasForeignKey<AvaliacaoAtendimento>(a => a.ComandaId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // As coleções são expostas como somente leitura: o EF acessa os campos por trás delas.
         builder.Metadata.FindNavigation(nameof(Comanda.Itens))!.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder.Metadata.FindNavigation(nameof(Comanda.Restricoes))!.SetPropertyAccessMode(PropertyAccessMode.Field);
+        builder.Metadata.FindNavigation(nameof(Comanda.Avaliacao))!.SetPropertyAccessMode(PropertyAccessMode.Property);
     }
 }

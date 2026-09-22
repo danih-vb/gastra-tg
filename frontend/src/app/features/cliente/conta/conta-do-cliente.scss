@@ -72,3 +72,42 @@
   gap: 10px;
   text-align: center;
 }
+
+/* RF25 — avaliação do atendimento, no fim da conta. */
+.avaliacao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h2 { margin: 0; font-size: 1rem; }
+
+  &.enviada {
+    align-items: center;
+    text-align: center;
+
+    .icone { color: var(--sucesso); }
+  }
+}
+
+.notas {
+  display: flex;
+  gap: 8px;
+}
+
+.nota {
+  flex: 1;
+  min-height: 48px; /* alvo de toque: a mesma régua do RNF02 */
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-pequeno);
+  background: var(--fundo);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--texto);
+  cursor: pointer;
+
+  &.escolhida {
+    border-color: var(--laranja);
+    background: var(--laranja);
+    color: #fff;
+  }
+}

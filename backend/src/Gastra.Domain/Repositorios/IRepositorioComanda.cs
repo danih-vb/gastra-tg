@@ -12,6 +12,12 @@ public interface IRepositorioComanda
     /// <summary>Consulta do cliente por QR code (UC20), sem login.</summary>
     Task<Comanda?> ObterPorCodigoAcesso(string codigoAcesso);
 
+    /// <summary>
+    /// A mesma comanda da consulta, mas rastreada e com a avaliação carregada: é a única escrita que o
+    /// código de acesso permite (RF25).
+    /// </summary>
+    Task<Comanda?> ObterParaAvaliacao(string codigoAcesso);
+
     Task<List<Comanda>> ListarAbertas();
 
     Task<bool> ExisteAbertaNaMesa(int mesaId);

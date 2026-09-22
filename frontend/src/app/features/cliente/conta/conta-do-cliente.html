@@ -52,12 +52,72 @@
   <section class="cartao pad" aria-label="Valores">
     <div class="linha-total"><span>Subtotal</span><span>{{ comanda.subtotal | currency: 'BRL' }}</span></div>
     <div class="linha-total"><span>Taxa de serviço (10%)</span><span>{{ comanda.taxaServico | currency: 'BRL' }}</span></div>
-    <p class="suave pequeno">A taxa de serviço é opcional. Se não quiser pagar, avise o garçom antes de fechar a conta.</p>
+    @if (!comanda.fechada) {
+      <p class="suave pequeno">A taxa de serviço é opcional. Se não quiser pagar, avise o garçom antes de fechar a conta.</p>
+    }
     <div class="linha-total grande">
       <span>{{ comanda.fechada ? 'Total' : 'Total parcial' }}</span>
       <span>{{ comanda.total | currency: 'BRL' }}</span>
     </div>
   </section>
+
+  @if (comanda.avaliacaoEnviada) {
+    <section class="cartao pad avaliacao enviada" aria-label="Avaliação">
+      <app-icone nome="check" />
+      <h2>Obrigado pela avaliação</h2>
+      <p class="suave">Sua nota chegou sem nome nenhum junto. Boa refeição!</p>
+    </section>
+  } @else if (comanda.podeAvaliar) {
+    <section class="cartao pad avaliacao" aria-label="Avaliar o atendimento">
+      <h2>Como foi o atendimento?</h2>
+
+      @if (errosDaAvaliacao().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDaAvaliacao(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="notas" role="radiogroup" aria-label="Nota de 1 a 5">
+        @for (valor of NOTAS; track valor) {
+          <button
+            class="nota"
+            type="button"
+            role="radio"
+            [class.escolhida]="nota() === valor"
+            [attr.aria-checked]="nota() === valor"
+            [attr.aria-label]="valor + ' de 5'"
+            (click)="nota.set(valor)"
+          >
+            {{ valor }}
+          </button>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="comentario">Quer contar mais? (opcional)</label>
+        <textarea
+          class="entrada"
+          id="comentario"
+          name="comentario"
+          rows="3"
+          [maxlength]="LIMITE_DO_COMENTARIO"
+          [(ngModel)]="comentario"
+        ></textarea>
+        <span class="ajuda">
+          Não escreva seu nome nem nenhum dado seu — a avaliação é anônima e assim ela continua.
+        </span>
+      </div>
+
+      <button class="botao" type="button" [disabled]="!nota() || enviando()" (click)="enviarAvaliacao()">
+        Enviar avaliação
+      </button>
+    </section>
+  }
 
   <p class="suave pequeno">
     <app-icone nome="cadeado" /> Esta página mostra só os itens e valores da mesa. Nenhum dado pessoal é exibido.

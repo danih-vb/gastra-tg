@@ -13,6 +13,12 @@ public class ComandaClienteResponse
     public decimal Subtotal { get; set; }
     public decimal TaxaServico { get; set; }
     public decimal Total { get; set; }
+
+    /// <summary>RF25: a tela só oferece avaliar quando a conta fechou, ninguém avaliou ainda e o prazo não passou.</summary>
+    public bool PodeAvaliar { get; set; }
+
+    /// <summary>Para a tela dizer "obrigado" em vez de oferecer avaliar de novo.</summary>
+    public bool AvaliacaoEnviada { get; set; }
 }
 
 public class ItemConsultaCliente

@@ -68,5 +68,7 @@ internal static class MapeadorComanda
         Subtotal = comanda.CalcularSubtotal(),
         TaxaServico = comanda.CalcularTaxaServico(),
         Total = comanda.CalcularTotal(),
+        PodeAvaliar = comanda.PodeSerAvaliada(DateTime.UtcNow),
+        AvaliacaoEnviada = comanda.Avaliacao is not null,
     };
 }

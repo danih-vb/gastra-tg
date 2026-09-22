@@ -19,7 +19,12 @@ const CONTA: ComandaDoCliente = {
   subtotal: 191,
   taxaServico: 19.1,
   total: 210.1,
+  podeAvaliar: false,
+  avaliacaoEnviada: false,
 };
+
+/** Conta fechada e dentro do prazo: o estado em que a API libera avaliar (RF25). */
+const FECHADA_AVALIAVEL: ComandaDoCliente = { ...CONTA, fechada: true, podeAvaliar: true };
 
 describe('Conta do cliente (UC20)', () => {
   let http: HttpTestingController;
@@ -89,6 +94,69 @@ describe('Conta do cliente (UC20)', () => {
 
     expect(texto(pagina)).toContain('Não encontramos essa conta');
     expect(texto(pagina)).toContain('XXXXXX');
+  });
+
+  it('com a conta aberta, nao oferece avaliar: o atendimento ainda esta acontecendo', async () => {
+    const pagina = await renderizar(CONTA);
+
+    expect(texto(pagina)).not.toContain('Como foi o atendimento?');
+  });
+
+  it('envia a nota e o comentario, e depois agradece (RF25)', async () => {
+    const pagina = await renderizar(FECHADA_AVALIAVEL);
+
+    expect(texto(pagina)).toContain('Como foi o atendimento?');
+
+    const quatro = [...pagina.querySelectorAll<HTMLButtonElement>('.nota')].find((b) => b.textContent?.trim() === '4')!;
+    quatro.click();
+    const campo = pagina.querySelector<HTMLTextAreaElement>('#comentario')!;
+    campo.value = 'Atendimento rapido.';
+    campo.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Enviar avaliacao'.replace('avaliacao', 'avaliação')))!.click();
+
+    const requisicao = http.expectOne({ method: 'POST', url: `${API}/api/comandas/consulta/M3R8TD/avaliacao` });
+    expect(requisicao.request.body).toEqual({ nota: 4, comentario: 'Atendimento rapido.' });
+    requisicao.flush(null);
+
+    // A tela recarrega em vez de marcar na mao: quem decide se ja foi avaliada e a API.
+    http.expectOne(`${API}/api/comandas/consulta/M3R8TD`).flush({ ...FECHADA_AVALIAVEL, podeAvaliar: false, avaliacaoEnviada: true });
+    await fixture.whenStable();
+
+    expect(texto(pagina)).toContain('Obrigado pela avaliação');
+    expect(texto(pagina)).not.toContain('Como foi o atendimento?');
+  });
+
+  it('sem escolher nota, o botao de enviar fica desabilitado', async () => {
+    const pagina = await renderizar(FECHADA_AVALIAVEL);
+
+    const enviar = [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Enviar'))!;
+
+    expect(enviar.disabled).toBe(true);
+  });
+
+  it('erro da API na avaliacao aparece dentro do bloco, sem derrubar a conta', async () => {
+    const pagina = await renderizar(FECHADA_AVALIAVEL);
+
+    [...pagina.querySelectorAll<HTMLButtonElement>('.nota')].find((b) => b.textContent?.trim() === '5')!.click();
+    // Sem esperar a detecção de mudanças, o botão ainda estaria desabilitado e o clique não faria nada.
+    await fixture.whenStable();
+    [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Enviar'))!.click();
+    http.expectOne({ method: 'POST', url: `${API}/api/comandas/consulta/M3R8TD/avaliacao` }).flush(
+      { erros: ['Esta conta ja foi avaliada. Obrigado!'] },
+      { status: 422, statusText: 'Unprocessable Entity' },
+    );
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.avaliacao [role="alert"]')?.textContent).toContain('ja foi avaliada');
+    expect(texto(pagina)).toContain('Total');
+  });
+
+  it('avisa para nao escrever dado pessoal no comentario', async () => {
+    const pagina = await renderizar(FECHADA_AVALIAVEL);
+
+    expect(texto(pagina)).toContain('anônima');
   });
 
   it('atualizar agora busca a conta de novo', async () => {

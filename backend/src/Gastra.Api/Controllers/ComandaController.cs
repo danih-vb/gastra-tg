@@ -170,4 +170,23 @@ public class ComandaController : ControllerBase
     {
         return Ok(await useCase.Executar(codigoAcesso));
     }
+
+    /// <summary>
+    /// UC25 — Avaliação do atendimento pelo cliente, sem login (RF25). É a única escrita que o código de
+    /// acesso permite, e só depois de a conta fechar, uma vez e dentro da janela (RN08).
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("consulta/{codigoAcesso}/avaliacao")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> AvaliarAtendimento(
+        string codigoAcesso,
+        [FromBody] AvaliacaoRequest request,
+        [FromServices] IAvaliarAtendimentoUseCase useCase)
+    {
+        await useCase.Executar(codigoAcesso, request);
+        return NoContent();
+    }
 }

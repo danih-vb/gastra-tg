@@ -82,4 +82,8 @@
   <data name="DescontoFixoMaiorQuePreco" xml:space="preserve"><value>The fixed discount must be less than the price of each item in the promotion.</value></data>
   <data name="PromocaoNaoEncontrada" xml:space="preserve"><value>Promotion not found.</value></data>
   <data name="PromocaoJaDesativada" xml:space="preserve"><value>The promotion has already been removed.</value></data>
+  <data name="NotaAvaliacaoInvalida" xml:space="preserve"><value>The rating must be a number from 1 to 5.</value></data>
+  <data name="ComentarioMuitoLongo" xml:space="preserve"><value>The comment must be at most 280 characters long.</value></data>
+  <data name="ComandaJaAvaliada" xml:space="preserve"><value>This bill has already been rated. Thank you!</value></data>
+  <data name="AvaliacaoForaDoPrazo" xml:space="preserve"><value>The window to rate this bill has closed.</value></data>
 </root>

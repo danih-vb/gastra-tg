@@ -63,6 +63,16 @@ public class RepositorioIndicadores(GastraDbContext contexto) : IRepositorioIndi
             GROUP BY item_cardapio_id, categoria
             """).ToListAsync();
 
+    public Task<List<LinhaAvaliacao>> ObterDistribuicaoDeAvaliacoes(DateOnly inicio, DateOnly fim) =>
+        contexto.Database.SqlQuery<LinhaAvaliacao>($"""
+            SELECT a.nota AS Nota, COUNT(*) AS Quantidade
+            FROM avaliacao_atendimento a
+            JOIN comanda c ON c.id = a.comanda_id
+            WHERE DATE(CONVERT_TZ(c.data_hora_fechamento, '+00:00', '-03:00')) >= {inicio}
+              AND DATE(CONVERT_TZ(c.data_hora_fechamento, '+00:00', '-03:00')) < {fim}
+            GROUP BY a.nota
+            """).ToListAsync();
+
     public Task<List<IndicadorPracaNoTempo>> ObterFaturamentoPorPracaEHora(DateOnly inicio, DateOnly fim) =>
         contexto.Database.SqlQuery<IndicadorPracaNoTempo>($"""
             SELECT praca_id AS PracaId, hora AS Fatia, SUM(faturamento) AS Faturamento, COUNT(*) AS Comandas

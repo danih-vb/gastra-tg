@@ -11,6 +11,12 @@ public class Comanda : EntidadeBase
     /// <summary>RF04: taxa de serviço de 10% sobre o subtotal, quando o cliente não pede a remoção.</summary>
     public const decimal PercentualTaxaServico = 0.10m;
 
+    /// <summary>
+    /// RN08: a avaliação só vale enquanto a mesa está fresca na memória de quem sentou nela. Passada a
+    /// janela, o código de acesso deixa de servir para escrever — só para ler a conta.
+    /// </summary>
+    public static readonly TimeSpan JanelaDeAvaliacao = TimeSpan.FromHours(24);
+
     private readonly List<ItemDoPedido> _itens = [];
     private readonly List<RestricaoAlimentar> _restricoes = [];
 
@@ -34,6 +40,9 @@ public class Comanda : EntidadeBase
 
     public IReadOnlyCollection<ItemDoPedido> Itens => _itens;
     public IReadOnlyCollection<RestricaoAlimentar> Restricoes => _restricoes;
+
+    /// <summary>A avaliação do cliente, quando ele deixou uma (RF25). Uma por comanda.</summary>
+    public AvaliacaoAtendimento? Avaliacao { get; private set; }
 
     /// <summary>
     /// RN04: a restrição alimentar é dado do cliente e só pode ser vista por quem atende a mesa (Garçom
@@ -156,6 +165,32 @@ public class Comanda : EntidadeBase
 
         Status = StatusComanda.Fechada;
         DataHoraFechamento = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// RN08: avaliação só depois de fechar a conta, uma por comanda e dentro da janela. Antes do
+    /// fechamento não faz sentido: o atendimento ainda está acontecendo.
+    /// </summary>
+    public bool PodeSerAvaliada(DateTime agoraUtc) =>
+        Status == StatusComanda.Fechada
+        && Avaliacao is null
+        && DataHoraFechamento is not null
+        && agoraUtc - DataHoraFechamento.Value <= JanelaDeAvaliacao;
+
+    /// <summary>RF25: o cliente avalia o atendimento pelo mesmo código com que acompanhou a conta.</summary>
+    public AvaliacaoAtendimento Avaliar(int nota, string? comentario, DateTime agoraUtc)
+    {
+        if (Status != StatusComanda.Fechada)
+            throw new InvalidOperationException("A conta ainda não foi fechada.");
+
+        if (Avaliacao is not null)
+            throw new InvalidOperationException("Esta conta já foi avaliada.");
+
+        if (!PodeSerAvaliada(agoraUtc))
+            throw new InvalidOperationException("O prazo para avaliar esta conta terminou.");
+
+        Avaliacao = new AvaliacaoAtendimento(nota, comentario);
+        return Avaliacao;
     }
 
     private void GarantirAberta()

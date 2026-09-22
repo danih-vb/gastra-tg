@@ -340,6 +340,112 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
     }
 
+    // --- UC25: avaliação do atendimento (RF25, RN08) ---
+
+    /// <summary>Abre, lança, entrega e fecha — o estado em que a avaliação passa a fazer sentido.</summary>
+    private async Task<ComandaResponse> ComandaFechada()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarItem(comanda.Id, await factory.CriarItemCardapio(preco: 30m));
+        await _cliente.PatchAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/situacao",
+            new { situacao = "Entregue" }, Json);
+        var fechamento = await _cliente.PostAsync($"{Rota}/{comanda.Id}/fechamento", null);
+        fechamento.EnsureSuccessStatusCode();
+        return comanda;
+    }
+
+    [Fact]
+    public async Task Avaliacao_DepoisDeFechar_AceitaSemLoginENaoDeixaAvaliarDeNovo()
+    {
+        var comanda = await ComandaFechada();
+        var semLogin = factory.CreateClient();
+
+        var primeira = await semLogin.PostAsJsonAsync(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}/avaliacao",
+            new { nota = 5, comentario = "Atendimento rápido." }, Json);
+
+        Assert.Equal(HttpStatusCode.NoContent, primeira.StatusCode);
+
+        var segunda = await semLogin.PostAsJsonAsync(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}/avaliacao", new { nota = 1 }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, segunda.StatusCode);
+    }
+
+    [Fact]
+    public async Task Avaliacao_ComContaAberta_Recusa()
+    {
+        var comanda = await AbrirComanda();
+
+        var resposta = await factory.CreateClient().PostAsJsonAsync(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}/avaliacao", new { nota = 4 }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(6)]
+    public async Task Avaliacao_ComNotaForaDaEscala_Retorna400(int nota)
+    {
+        var comanda = await ComandaFechada();
+
+        var resposta = await factory.CreateClient().PostAsJsonAsync(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}/avaliacao", new { nota }, Json);
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task Avaliacao_ComCodigoInexistente_Retorna404()
+    {
+        var resposta = await factory.CreateClient().PostAsJsonAsync(
+            $"{Rota}/consulta/codigo-que-nao-existe/avaliacao", new { nota = 5 }, Json);
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task ConsultaDoCliente_DizSePodeAvaliarEQuandoJaAvaliou()
+    {
+        var comanda = await ComandaFechada();
+        var semLogin = factory.CreateClient();
+
+        var antes = await (await semLogin.GetAsync($"{Rota}/consulta/{comanda.CodigoAcessoCliente}"))
+            .Content.ReadFromJsonAsync<ComandaClienteResponse>(Json);
+
+        Assert.True(antes!.PodeAvaliar);
+        Assert.False(antes.AvaliacaoEnviada);
+
+        await semLogin.PostAsJsonAsync($"{Rota}/consulta/{comanda.CodigoAcessoCliente}/avaliacao",
+            new { nota = 4 }, Json);
+
+        var depois = await (await semLogin.GetAsync($"{Rota}/consulta/{comanda.CodigoAcessoCliente}"))
+            .Content.ReadFromJsonAsync<ComandaClienteResponse>(Json);
+
+        Assert.False(depois!.PodeAvaliar);
+        Assert.True(depois.AvaliacaoEnviada);
+    }
+
+    [Fact]
+    public async Task Avaliacao_NaoIdentificaQuemAvaliou()
+    {
+        var comanda = await ComandaFechada();
+        await factory.CreateClient().PostAsJsonAsync(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}/avaliacao",
+            new { nota = 2, comentario = "Demorou." }, Json);
+
+        using var escopo = factory.Services.CreateScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<GastraDbContext>();
+        var avaliacao = await contexto.Avaliacoes.AsNoTracking().FirstAsync(a => a.ComandaId == comanda.Id);
+
+        // A entidade não tem para onde guardar quem avaliou, e é esse o ponto da RN08.
+        Assert.Equal(2, avaliacao.Nota);
+        Assert.Equal("Demorou.", avaliacao.Comentario);
+        Assert.Empty(typeof(AvaliacaoAtendimento).GetProperties()
+            .Where(p => p.Name.Contains("Cliente") || p.Name.Contains("Usuario") || p.Name.Contains("Ip")));
+    }
+
     // --- Permissões (RNF04) ---
 
     [Fact]

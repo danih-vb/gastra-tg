@@ -31,4 +31,10 @@ public interface IRepositorioIndicadores
 
     /// <summary>Faturamento por praça e dia da semana (1 = domingo).</summary>
     Task<List<IndicadorPracaNoTempo>> ObterFaturamentoPorPracaEDiaDaSemana(DateOnly inicio, DateOnly fim);
+
+    /// <summary>
+    /// Distribuição das notas das avaliações no período (RF25). Agregado de propósito: sem comentário, sem
+    /// comanda e sem garçom — ver a nota de uma mesa isolada seria identificar o atendimento dela.
+    /// </summary>
+    Task<List<LinhaAvaliacao>> ObterDistribuicaoDeAvaliacoes(DateOnly inicio, DateOnly fim);
 }

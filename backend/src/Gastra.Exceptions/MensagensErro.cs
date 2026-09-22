@@ -91,6 +91,10 @@ public static class MensagensErro
     public static string DescontoFixoMaiorQuePreco => Obter(nameof(DescontoFixoMaiorQuePreco));
     public static string PromocaoNaoEncontrada => Obter(nameof(PromocaoNaoEncontrada));
     public static string PromocaoJaDesativada => Obter(nameof(PromocaoJaDesativada));
+    public static string NotaAvaliacaoInvalida => Obter(nameof(NotaAvaliacaoInvalida));
+    public static string ComentarioMuitoLongo => Obter(nameof(ComentarioMuitoLongo));
+    public static string ComandaJaAvaliada => Obter(nameof(ComandaJaAvaliada));
+    public static string AvaliacaoForaDoPrazo => Obter(nameof(AvaliacaoForaDoPrazo));
 
     private static string Obter(string chave) =>
         Recursos.GetString(chave, CultureInfo.CurrentUICulture) ?? chave;

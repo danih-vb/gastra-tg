@@ -1,5 +1,6 @@
 using Gastra.Communication.Enums;
 using Gastra.Communication.Requests;
+using Gastra.Domain.Entidades;
 using Gastra.Exceptions;
 
 namespace Gastra.Application.UseCases.Comandas;
@@ -31,6 +32,21 @@ public static class ValidadorComanda
     {
         if (request.Quantidade < 1)
             throw new ErroValidacaoException([MensagensErro.QuantidadeItemInvalida]);
+    }
+
+    /// <summary>RF25: nota dentro da escala e comentário curto — texto longo do cliente não serve a ninguém.</summary>
+    public static void ValidarAvaliacao(AvaliacaoRequest request)
+    {
+        var erros = new List<string>();
+
+        if (request.Nota is < AvaliacaoAtendimento.NotaMinima or > AvaliacaoAtendimento.NotaMaxima)
+            erros.Add(MensagensErro.NotaAvaliacaoInvalida);
+
+        if (request.Comentario?.Trim().Length > AvaliacaoAtendimento.TamanhoMaximoDoComentario)
+            erros.Add(MensagensErro.ComentarioMuitoLongo);
+
+        if (erros.Count > 0)
+            throw new ErroValidacaoException(erros);
     }
 
     public static void ValidarRestricao(RestricaoAlimentarRequest request)

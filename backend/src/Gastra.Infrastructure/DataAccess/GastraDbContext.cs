@@ -17,6 +17,7 @@ public class GastraDbContext(DbContextOptions<GastraDbContext> options) : DbCont
     public DbSet<Alocacao> Alocacoes => Set<Alocacao>();
     public DbSet<RegistroAuditoria> RegistrosAuditoria => Set<RegistroAuditoria>();
     public DbSet<Promocao> Promocoes => Set<Promocao>();
+    public DbSet<AvaliacaoAtendimento> Avaliacoes => Set<AvaliacaoAtendimento>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
