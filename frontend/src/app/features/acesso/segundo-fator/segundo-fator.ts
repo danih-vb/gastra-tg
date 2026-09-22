@@ -1,10 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PAGINA_INICIAL } from '../../../core/sessao/guardas';
 import { ConfiguracaoDoSegundoFator } from '../../../core/sessao/modelos';
 import { SessaoService } from '../../../core/sessao/sessao.service';
 import { mensagensDeErro } from '../../../shared/erros';
+import { Icone } from '../../../shared/icone/icone';
+import { toString as qrCodeSvg } from 'qrcode';
 
 /**
  * UC02 — Confirmar o segundo fator (Gerente e Coordenador). No primeiro acesso, antes da confirmação, mostra a chave
@@ -12,7 +15,7 @@ import { mensagensDeErro } from '../../../shared/erros';
  */
 @Component({
   selector: 'app-segundo-fator',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, Icone],
   templateUrl: './segundo-fator.html',
   styleUrl: '../acesso.scss',
 })
@@ -20,9 +23,16 @@ export class SegundoFator implements OnInit {
   private readonly sessao = inject(SessaoService);
   private readonly router = inject(Router);
   private readonly rota = inject(ActivatedRoute);
+  private readonly sanitizador = inject(DomSanitizer);
 
   protected readonly configurando = this.rota.snapshot.queryParamMap.get('configurar') === '1';
   protected readonly configuracao = signal<ConfiguracaoDoSegundoFator | null>(null);
+
+  /**
+   * QR code da URI otpauth://, desenhado **no próprio navegador**. A URI carrega o segredo do segundo
+   * fator: mandá-la para um gerador de QR na internet entregaria a chave a um terceiro (RN07).
+   */
+  protected readonly qrCode = signal<SafeHtml | null>(null);
   protected readonly enviando = signal(false);
   protected readonly erros = signal<string[]>([]);
 
@@ -39,10 +49,23 @@ export class SegundoFator implements OnInit {
 
     if (this.configurando) {
       this.sessao.configurarSegundoFator().subscribe({
-        next: (configuracao) => this.configuracao.set(configuracao),
+        next: (configuracao) => {
+          this.configuracao.set(configuracao);
+          this.desenharQrCode(configuracao.uriConfiguracao);
+        },
         error: (erro: unknown) => this.erros.set(mensagensDeErro(erro)),
       });
     }
+  }
+
+  /**
+   * O SVG vem do próprio código (não é entrada de usuário), por isso marcá-lo como confiável é seguro.
+   * Se a geração falhar, a tela segue com a chave digitável, que é a contingência de sempre.
+   */
+  private desenharQrCode(uri: string): void {
+    void qrCodeSvg(uri, { type: 'svg', margin: 1, width: 180, errorCorrectionLevel: 'M' })
+      .then((svg) => this.qrCode.set(this.sanitizador.bypassSecurityTrustHtml(svg)))
+      .catch(() => this.qrCode.set(null));
   }
 
   protected confirmar(): void {
