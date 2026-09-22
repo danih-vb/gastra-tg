@@ -139,7 +139,30 @@ Primeiro módulo de telas, feito a partir do protótipo (`docs/ux-ui/prototipo/g
 npm start
 ```
 
-Com a API em `http://localhost:5019` (`dotnet run --project backend/src/Gastra.Api`) e um Gerente que já tenha cadastrado praças, mesas, cardápio e o garçom.
+Com a API em `http://localhost:5019` (`dotnet run --project backend/src/Gastra.Api`) e um Gerente que já tenha cadastrado praças, mesas, cardápio e o garçom — ou, mais rápido, com o banco semeado por `backend/tools/GastraSemeador`.
+
+### Onde a URL da API entra (D12)
+
+O Angular compilado é estático, então o endereço da API entra **no build**:
+
+| Ambiente | Arquivo | URL | Por quê |
+|---|---|---|---|
+| Desenvolvimento (`npm start`) | `src/environments/environment.ts` | `http://localhost:5019` | `ng serve` (4200) e API (5019) são origens diferentes; o CORS da API libera a 4200 |
+| Contêiner (`npm run build`) | `src/environments/environment.production.ts` | vazia (relativa) | O nginx serve a SPA e repassa `/api`: mesma origem, sem CORS |
+
+A troca acontece pelo `fileReplacements` da configuração `production` no `angular.json`.
+
+**Consequência a conhecer:** um build de produção servido fora do proxy (por exemplo, abrindo o `dist/` num
+servidor estático qualquer) não encontra a API, porque vai procurá-la no próprio endereço.
+
+### Rodar tudo em contêiner
+
+```bash
+docker compose -f infra/docker-compose.yml --env-file infra/.env --profile app up -d --build
+```
+
+Sobe MySQL, serviço analítico, API e as telas. O sistema fica em `http://localhost:4200`, e **o mesmo
+endereço pelo IP da máquina funciona no celular da mesma rede**, sem recompilar nada.
 
 ## Telas do Metre (#149)
 

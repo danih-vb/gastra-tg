@@ -38,19 +38,22 @@ O serviço Python lê o histórico pelas views com um usuário que só tem `SELE
 O script pode ser rodado de novo sem problema: ele atualiza a senha e dá acesso às views que forem
 criadas depois. A senha vai para o MySQL pela entrada padrão, e não pela linha de comando.
 
-## Sistema inteiro em Docker (MySQL + API + serviço analítico)
+## Sistema inteiro em Docker (MySQL + API + serviço analítico + telas)
 
-Para apresentar ou avaliar o GASTRA sem instalar .NET nem Python:
+Para apresentar ou avaliar o GASTRA sem instalar .NET, Python nem Node:
 
 1. **No `.env`**, além das variáveis do MySQL, defina (ver `.env.example`):
    - `JWT_CHAVE_ASSINATURA`: 32 caracteres aleatórios ou mais;
    - `ADMIN_EMAIL` e `ADMIN_SENHA`: o primeiro Gerente, criado se o banco ainda não tiver usuário;
-   - `API_AMBIENTE=Development`, só se quiser o Swagger.
+   - `API_AMBIENTE=Development`, só se quiser o Swagger;
+   - `WEB_PORT`, se a porta 4200 estiver ocupada (o padrão é 4200).
 2. **Suba tudo:**
    ```bash
    docker compose --profile app up -d --build
    ```
-3. **Confira:** `docker compose --profile app ps` deve mostrar os três serviços `healthy`.
+3. **Abra `http://localhost:4200`.** É o sistema inteiro: o nginx serve as telas e repassa `/api` para a API.
+4. **Confira:** `docker compose --profile app ps` deve mostrar os quatro serviços `healthy`.
+   - telas: `http://localhost:4200/saude`;
    - API: `http://localhost:5019/health` (Swagger em `/swagger`, se o ambiente for `Development`);
    - serviço analítico: `http://localhost:8000/health` e `http://localhost:8000/docs`.
 
@@ -61,12 +64,15 @@ O que acontece na subida:
 - **Histórico real (D10):** com `MYSQL_ANALITICA_PASSWORD` no `.env` e o usuário criado (seção acima), o serviço
   analítico lê as views; sem isso, usa o histórico simulado.
 - **Imagens:** rodam com usuário sem privilégio de root, e nenhum segredo entra nelas; tudo vem do `.env`.
+- **Mesma origem (D12):** as telas chamam `/api` no próprio endereço por onde a página foi aberta, e o nginx
+  repassa para a API. Não há CORS para configurar, e **abrir pelo IP da máquina funciona no celular da mesma
+  rede sem recompilar nada** — útil para demonstrar a parte do cliente num telefone de verdade.
 - **Sem o perfil `app`:** `docker compose up -d` continua subindo só o MySQL, como antes.
 
-Para desligar só a API e o serviço analítico, mantendo o MySQL:
+Para desligar só as telas, a API e o serviço analítico, mantendo o MySQL:
 
 ```bash
-docker compose --profile app rm -sf api analitica
+docker compose --profile app rm -sf web api analitica
 ```
 
 > A API avisa no log "Failed to determine the https port for redirect": no contêiner ela atende só HTTP, e o

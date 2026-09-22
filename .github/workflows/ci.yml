@@ -147,6 +147,43 @@ jobs:
         working-directory: frontend
         run: npx ng test --watch=false
 
+  imagem-web:
+    name: Imagem do frontend (Docker)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # Só constrói: publicar a imagem exigiria registro e credencial, e o TG não tem ambiente de deploy.
+      # O que este job protege é o Dockerfile continuar compilando e o nginx subir com a configuração.
+      - name: Construir a imagem
+        run: docker build -t gastra-web:ci frontend
+
+      - name: A imagem sobe e responde
+        run: |
+          docker run -d --name gastra-web-ci -p 8080:8080 gastra-web:ci
+          for tentativa in $(seq 1 20); do
+            if curl -fsS http://localhost:8080/saude > /dev/null; then
+              echo "nginx respondeu na tentativa $tentativa"
+              break
+            fi
+            if [ "$tentativa" = "20" ]; then
+              echo "o contêiner não respondeu em /saude" >&2
+              docker logs gastra-web-ci >&2
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: A SPA é servida e a rota interna cai no index.html
+        run: |
+          curl -fsS http://localhost:8080/ | grep -q "<app-root"             || { echo "a raiz não serviu a SPA" >&2; exit 1; }
+          curl -fsS http://localhost:8080/cliente/conta/ABC123 | grep -q "<app-root"             || { echo "o try_files não caiu no index.html" >&2; exit 1; }
+
+      - name: Encerrar
+        if: always()
+        run: docker rm -f gastra-web-ci || true
+
   segredos:
     name: Varredura de segredos
     runs-on: ubuntu-latest

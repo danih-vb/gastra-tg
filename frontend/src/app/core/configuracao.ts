@@ -1,9 +1,14 @@
 import { InjectionToken } from '@angular/core';
+import { ambiente } from '../../environments/environment';
 
-/** Endereço da API do GASTRA. No desenvolvimento, a API roda em http://localhost:5019 (backend/README.md). */
+/**
+ * Endereço da API do GASTRA. Vem do ambiente da compilação (decisão D12): absoluto no desenvolvimento
+ * (`ng serve` e API em portas diferentes) e vazio no contêiner, onde o nginx repassa /api e tudo sai da
+ * mesma origem.
+ */
 export const URL_DA_API = new InjectionToken<string>('URL_DA_API', {
   providedIn: 'root',
-  factory: () => 'http://localhost:5019',
+  factory: () => ambiente.urlDaApi,
 });
 
 /**
