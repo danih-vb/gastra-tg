@@ -36,7 +36,7 @@ Toda divergência encontrada vira linha na seção 4, com a decisão tomada.
 | 4 de classes | Nomes do código (`Gastra.Domain`, `Gastra.Infrastructure`) | ⏳ a revisar (#192) — ver 4.3 |
 | 3 de sequência | Classes e endpoints existentes | ⏳ a revisar (#193) |
 | 2 de atividade | RN01–RN08 e o fluxo do código | ⏳ a revisar (#194) |
-| Implantação | `infra/docker-compose.yml` | ⏳ a revisar (#195) — **mudou**, ver 4.2 |
+| Implantação | `infra/docker-compose.yml` | ✅ corrigido, ver 4.2 |
 | MER e DER | Banco depois das migrations | ✅ conferido, ver 4.1 |
 
 ## 4. O que a conferência encontrou
@@ -59,11 +59,22 @@ identidade, atributos próprios (`nota`, `comentario`, `data_hora_envio`) e vive
 por comanda. **Essa correção precisa do brModelo**, que é aplicação gráfica — está registrada como tarefa
 manual na seção 5.
 
-### 4.2 O diagrama de implantação está desatualizado (#195)
+### 4.2 O diagrama de implantação (#195)
 
-O `docker-compose.yml` ganhou o serviço **`web`** (nginx servindo a SPA e repassando `/api`, decisão D12).
-O diagrama de implantação mostra três nós; agora são quatro, e a seta do navegador passa a chegar no nginx,
-não na API.
+**Correção de uma afirmação anterior deste documento:** escrevi que o diagrama mostrava três nós e que
+faltava o `web`. Estava errado — os quatro nós sempre estiveram lá. O que havia era outra coisa, e duas:
+
+1. **`web`, `api` e `analitica` estavam marcados como "planejado"** (borda tracejada, com a legenda
+   dizendo "Dockerfile ainda não criado"). Os três Dockerfiles existem e os quatro contêineres rodam.
+   Marcação removida e legenda reescrita. A seta da leitura somente-leitura das views também estava
+   tracejada, e a D10 foi implementada na #121.
+2. **O desenho contradizia a D12.** O navegador aparecia falando **direto com a `api`**, o que era verdade
+   quando as origens eram diferentes. Com o proxy reverso, quem fala com a API é o nginx: agora o
+   navegador chega no `web`, e do `web` sai a seta "proxy reverso (D12)" para a `api`.
+
+O segundo ponto só apareceu **depois** de corrigir o primeiro: com os nós deixando de ser "planejado", a
+topologia errada ficou visível. Serve de argumento para revisar diagrama olhando o desenho, e não só a
+lista de elementos.
 
 ### 4.3 `PercentualTaxaServico` é constante, não coluna (#196)
 
@@ -157,7 +168,6 @@ porque muda a leitura do diagrama e vale a dupla decidir junto — fica como o p
 | Pendência | Por que não foi feito aqui | Issue |
 |---|---|---|
 | `avaliacao_atendimento` no MER e no DER | Exige o brModelo, que é aplicação gráfica | #196 |
-| Diagrama de implantação com o nó `web` | Exige draw.io | #195 |
 | Constante sublinhada no diagrama de classes | Mudança no `GeradorDiagramaClasses`, com regeração dos 4 diagramas | #192 |
 | UC04 e Matriz de Rastreabilidade acompanhando o RF18 | Edição nos `.docx` de casos de uso e rastreabilidade | #197 |
 | Revisão dos 15 diagramas contra o checklist | É o trabalho das #191–#195 | #191–#195 |
