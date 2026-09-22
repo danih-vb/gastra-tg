@@ -143,3 +143,9 @@ estável na faixa de 0,6 a 0,7.
 | Serviço Python: padrão de `POST /alocacao/sugestao` | 0,6 e 0,4 |
 | `GASTRA_Requisitos_RN.docx`, RN03 | valores registrados |
 | `GASTRA_KPIs_Criterios_Analiticos.docx`, seção 1 | pendência substituída pelo resultado |
+
+---
+
+> **Validação com o banco semeado.** O quanto desta calibração se confirma sobre dados no banco está em
+> [`GASTRA_Validacao_Dados_Simulados.md`](GASTRA_Validacao_Dados_Simulados.md), inclusive a divergência do Gini e o
+> motivo dela (issue #185).
