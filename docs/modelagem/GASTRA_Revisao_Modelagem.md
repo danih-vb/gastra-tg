@@ -32,7 +32,7 @@ Toda divergência encontrada vira linha na seção 4, com a decisão tomada.
 
 | Diagrama | Precisa bater com | Situação |
 |---|---|---|
-| 6 de casos de uso | UCxx do `GASTRA_Casos_de_Uso.docx`, atores, RF | ⏳ a revisar (#191) |
+| 6 de casos de uso | UCxx do `GASTRA_Casos_de_Uso.docx`, atores, RF | ✅ inventário conferido, ver 4.7 |
 | 4 de classes | Nomes do código (`Gastra.Domain`, `Gastra.Infrastructure`) | ⏳ a revisar (#192) — ver 4.3 |
 | 3 de sequência | Classes e endpoints existentes | ⏳ a revisar (#193) |
 | 2 de atividade | RN01–RN08 e o fluxo do código | ⏳ a revisar (#194) |
@@ -116,6 +116,41 @@ coluna "Demonstração / banca".
 A linha de **Prototipagem** também estava errada de outro jeito: dizia "Figma, antes da implementação". O
 protótipo foi feito em HTML navegável e depois importado no Figma pelo plugin — o documento agora descreve
 o que aconteceu.
+
+### 4.7 O código citava uma UC25 que não existia (#191)
+
+Os identificadores dos seis diagramas foram extraídos das fontes `.drawio` e cruzados com o
+`GASTRA_Casos_de_Uso.docx`. As 24 UCs do documento aparecem nos diagramas, sem sobra nem falta:
+
+| Diagrama | Casos de uso |
+|---|---|
+| Autenticação | UC01–UC04 |
+| Gestão de cardápio | UC05–UC09 |
+| Núcleo de comandas | UC10–UC14, UC23 |
+| Blocos analíticos | UC15–UC18, UC21, UC22 |
+| Cliente | UC19, UC20 |
+| Configuração do salão | UC24 |
+
+**Mas o código cita uma UC25 em três lugares** — no controller, no caso de uso e no serviço do
+frontend —, e ela não existia nem no documento nem em diagrama nenhum. É a avaliação do atendimento,
+que entrou com o RF25: o código referenciou um caso de uso que ninguém tinha escrito.
+
+Corrigido pela regra 1: a **UC25 — Avaliar o Atendimento** (ator: Cliente) entrou no documento de casos
+de uso e no diagrama do Cliente, com a nota das restrições da RN08. A **UC04** também foi ampliada junto
+com o RF18, para continuar descrevendo a mesma coisa que ele.
+
+### 4.8 Um `<<include>>` que merece segunda opinião (#191)
+
+No diagrama do núcleo de comandas, a UC11 (confirmar/ajustar composição da mesa) aparece **só** como
+`<<include>>` da UC10 (abrir comanda), sem associação com o Garçom.
+
+Isso descreve bem a abertura: os dois toques do RNF02 confirmam a composição sugerida. Mas o sistema
+também permite **ajustar a composição depois**, com a comanda já aberta (`PATCH /api/comandas/{id}/composicao`,
+usado na tela da comanda). Nesse caminho a UC11 é iniciada diretamente pelo Garçom, e o diagrama não mostra
+isso.
+
+**Proposta:** manter o `<<include>>` e **acrescentar** a associação do Garçom com a UC11. Não apliquei
+porque muda a leitura do diagrama e vale a dupla decidir junto — fica como o primeiro item da #191.
 
 ## 5. O que ficou pendente, e por quê
 
