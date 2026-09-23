@@ -68,5 +68,16 @@ services:
       analitica:
         condition: service_healthy
 
+  web:
+    profiles: [app]
+    build: ../frontend
+    container_name: gastra-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-4200}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   gastra_mysql_data:
