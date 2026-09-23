@@ -34,8 +34,8 @@ Toda divergência encontrada vira linha na seção 4, com a decisão tomada.
 |---|---|---|
 | 6 de casos de uso | UCxx do `GASTRA_Casos_de_Uso.docx`, atores, RF | ✅ inventário conferido, ver 4.7 |
 | 4 de classes | Nomes do código (`Gastra.Domain`, `Gastra.Infrastructure`) | ✅ corrigidos, ver 4.3 e 4.9 |
-| 3 de sequência | Classes e endpoints existentes | ⏳ a revisar (#193) |
-| 2 de atividade | RN01–RN08 e o fluxo do código | ⏳ a revisar (#194) |
+| 3 de sequência | Classes e endpoints existentes | ✅ corrigido, ver 4.10 |
+| 2 de atividade | RN01–RN08 e o fluxo do código | ✅ corrigidos, ver 4.11 |
 | Implantação | `infra/docker-compose.yml` | ✅ corrigido, ver 4.2 |
 | MER e DER | Banco depois das migrations | ✅ conferido, ver 4.1 |
 
@@ -189,13 +189,71 @@ O construtor da `Comanda` também passou a aparecer, porque é nele que o códig
 O `GASTRA_Classe_Pacotes`, o outro desenhado à mão, não tinha divergência: todo nome dele existe no
 código.
 
+### 4.10 Uma rota errada no diagrama de sequência (#193)
+
+As 11 rotas citadas nos três diagramas de sequência foram cruzadas com os atributos `[Http*]` dos
+controllers e com as rotas do serviço Python. Dez batem. **Uma não:**
+
+| No diagrama | No código |
+|---|---|
+| `PATCH /api/itens/{id}/situacao` | `PATCH /api/comandas/{id}/itens/{itemId}/situacao` |
+
+O item do pedido não tem rota própria: ele vive dentro da comanda, e a rota diz isso. Corrigido, com o
+rótulo quebrado em duas linhas para não atravessar a linha de vida do controller. Os nomes de classe e
+método dos três diagramas existem todos no código.
+
+### 4.11 Os diagramas de atividade (#194)
+
+**Núcleo de comandas — o preço.** A ação dizia "copiar o preço atual (RF03)". O código congela o
+**preço promocional quando há promoção vigente** (RF03 + RF22, em `RegistrarItemPedidoUseCase`). O rótulo agora
+diz isso.
+
+**Alocação — uma decisão que o desenho não tinha.** O backend recusa gerar a sugestão quando há mais
+garçons presentes do que vagas nas praças (`AlocacaoSemVagas`), e faz essa checagem **antes** de chamar o
+Python — logo depois de ler as praças. O diagrama ia direto para "o serviço está no ar?". Entrou a decisão
+nova, na ordem do código, com a saída "mais presentes que vagas" voltando para o metre rever a presença.
+
+**Alocação — uma seta que enganava.** Na imagem, parecia sair de "Confirmar a alocação" uma seta direto
+para o fim, além da seta para "Registrar" — o que em UML é paralelismo implícito, e o fluxo real é
+sequencial. **Na fonte, o fluxo estava certo:** a seta era Registrar → fim, roteada por cima da caixa
+"Confirmar", atravessando o texto dela. O nó final foi para baixo de "Registrar", e a seta de "aceito a
+sugestão", que dava a volta e entrava em "Confirmar" por um laço, passou a entrar direto pelo topo.
+
+É a lição oposta à da seção 4.2: lá a lista de elementos escondia o problema e só a imagem o mostrou; aqui a
+imagem sugeria um problema que a fonte desmentia. **Revisar diagrama exige olhar os dois.**
+
+### 4.12 A Matriz de Rastreabilidade não tinha o que entrou com a avaliação (#197)
+
+Faltavam **RF25, UC25 e RN08** — tudo o que nasceu com a avaliação do atendimento (#39). Entraram as três, com a
+fonte "Decisão da dupla (21/09) — issue #39", e o RF18 passou a ter na matriz o mesmo texto ampliado do
+documento de requisitos.
+
+**Sobre o RF12, uma correção.** A ficha de números da pesquisa (#205) dizia que o RF12 não aparecia em
+lugar nenhum. Aparece, na matriz, e a história é melhor do que "foi retirado":
+
+| ID | Descrição | Fonte | Artefatos | Status |
+|---|---|---|---|---|
+| RF12 | O Cliente poder solicitar a exclusão do seu histórico de pedidos a qualquer momento | Questionário de clientes (n = 13) — LGPD | (removido) | **Reprovado** |
+
+Ou seja: o requisito foi **avaliado e reprovado**, e a matriz mantém a linha com o status para registrar a
+decisão. É o jeito certo de documentar um requisito recusado — e responde a pergunta "cadê o RF12?" melhor
+do que qualquer nota. O motivo da reprovação não está escrito na matriz; vale a dupla registrar, e a hipótese
+natural é que **o sistema não identifica o cliente** (RN04, e agora RN08), então não há histórico de cliente
+para excluir.
+
+**Por que as duas buscas erraram.** O Word parte o texto em pedaços (*runs*) sem critério visível: "UC15"
+estava gravado como "UC1" + "5". Tirar as tags trocando-as por espaço separa os pedaços ("UC1 5") e a
+busca não acha; tirar as tags sem espaço junta também células vizinhas ("RF11RF12RF13") e a busca por
+palavra inteira falha. O primeiro erro quase registrou a UC15 como ausente; o segundo produziu a afirmação
+errada sobre o RF12. **A extração certa é por célula:** juntar os pedaços dentro de cada `<w:tc>` e separar
+uma célula da outra. Foi assim que esta seção foi conferida.
+
 ## 5. O que ficou pendente, e por quê
 
 | Pendência | Por que não foi feito aqui | Issue |
 |---|---|---|
+| Motivo da reprovação do RF12 registrado na matriz | Decisão da dupla; a matriz só tem o status | #197 |
 | `avaliacao_atendimento` no MER e no DER | Exige o brModelo, que é aplicação gráfica | #196 |
-| UC04 e Matriz de Rastreabilidade acompanhando o RF18 | Edição nos `.docx` de casos de uso e rastreabilidade | #197 |
-| Revisão dos 15 diagramas contra o checklist | É o trabalho das #191–#195 | #191–#195 |
 
 ## 6. Como repetir a conferência do banco
 
