@@ -33,7 +33,7 @@ Toda divergência encontrada vira linha na seção 4, com a decisão tomada.
 | Diagrama | Precisa bater com | Situação |
 |---|---|---|
 | 6 de casos de uso | UCxx do `GASTRA_Casos_de_Uso.docx`, atores, RF | ✅ inventário conferido, ver 4.7 |
-| 4 de classes | Nomes do código (`Gastra.Domain`, `Gastra.Infrastructure`) | ⏳ a revisar (#192) — ver 4.3 |
+| 4 de classes | Nomes do código (`Gastra.Domain`, `Gastra.Infrastructure`) | ✅ corrigidos, ver 4.3 e 4.9 |
 | 3 de sequência | Classes e endpoints existentes | ⏳ a revisar (#193) |
 | 2 de atividade | RN01–RN08 e o fluxo do código | ⏳ a revisar (#194) |
 | Implantação | `infra/docker-compose.yml` | ✅ corrigido, ver 4.2 |
@@ -89,9 +89,18 @@ Os dois artefatos estão certos, cada um no seu papel: o MER não a tem porque e
 que o banco guarda é `comanda.taxa_servico_removida`, um booleano, e o valor da taxa é recalculado. O
 diagrama de classes a mostra porque ela faz parte da regra (RF04).
 
-**O que precisa mudar é a notação:** em UML, membro estático se representa **sublinhado**. Como o diagrama
-é gerado por `backend/tools/GeradorDiagramaClasses`, a correção é no gerador, e vale para qualquer outra
-constante — não só para esta. Registrado na seção 5.
+**O que precisava mudar era a notação:** em UML, membro estático se representa **sublinhado**. A correção foi
+feita no gerador (`backend/tools/GeradorDiagramaClasses`), e por isso vale para todo membro estático, não só
+para este: são 18 entre constantes, campos e métodos. No Markdown, onde o texto fica dentro de crase e não
+aceita formatação, eles saem com «static» por extenso.
+
+De quebra, apareceu um segundo defeito justamente nesta constante: o diagrama a mostrava **sem o valor**.
+`const decimal` não é literal para a reflection — o compilador o transforma em `static readonly` com
+`[DecimalConstant]` —, e o gerador só lia o valor de literais. Agora aparece
+`PercentualTaxaServico: decimal = 0.10`, e `PrecoMinimo = 0.01` pelo mesmo motivo.
+
+A regeração também trouxe para o diagrama a `AvaliacaoAtendimento` e os métodos novos da `Comanda`, que ele
+ainda não tinha.
 
 ### 4.4 O código faz coisas que o requisito não descrevia (#197)
 
@@ -163,12 +172,28 @@ isso.
 **Proposta:** manter o `<<include>>` e **acrescentar** a associação do Garçom com a UC11. Não apliquei
 porque muda a leitura do diagrama e vale a dupla decidir junto — fica como o primeiro item da #191.
 
+### 4.9 O diagrama da fatia vertical tinha quatro divergências (#192)
+
+O `GASTRA_Classe_AbrirComanda` é desenhado à mão — mostra um caso de uso atravessando as camadas —, e por
+isso não se atualiza sozinho. Os nomes dele foram cruzados com o repositório e com o `AbrirComandaUseCase`:
+
+| No diagrama | No código | Decisão |
+|---|---|---|
+| `ComandasController` | `ComandaController` | Renomeado (regra 2) |
+| `«interface» IGeradorCodigoAcesso` | **Não existe.** O código de acesso é gerado no construtor da `Comanda`, com `Guid` | Removido, com nota apontando para a #217, onde a forma do código está em discussão |
+| *(ausente)* | `IRegistradorAuditoria` — o caso de uso registra `COMANDA_ABERTA` | Acrescentado, na cor da Application, que é onde a interface mora |
+| `ComandaResponse.ComposicaoSugerida` | `Composicao` | Renomeado |
+
+O construtor da `Comanda` também passou a aparecer, porque é nele que o código de acesso nasce hoje.
+
+O `GASTRA_Classe_Pacotes`, o outro desenhado à mão, não tinha divergência: todo nome dele existe no
+código.
+
 ## 5. O que ficou pendente, e por quê
 
 | Pendência | Por que não foi feito aqui | Issue |
 |---|---|---|
 | `avaliacao_atendimento` no MER e no DER | Exige o brModelo, que é aplicação gráfica | #196 |
-| Constante sublinhada no diagrama de classes | Mudança no `GeradorDiagramaClasses`, com regeração dos 4 diagramas | #192 |
 | UC04 e Matriz de Rastreabilidade acompanhando o RF18 | Edição nos `.docx` de casos de uso e rastreabilidade | #197 |
 | Revisão dos 15 diagramas contra o checklist | É o trabalho das #191–#195 | #191–#195 |
 

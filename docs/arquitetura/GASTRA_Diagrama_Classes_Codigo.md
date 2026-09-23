@@ -6,7 +6,7 @@
 
 Diagramas: [domínio](../diagramas/classe/GASTRA_Classe_Dominio.png) · [contratos e implementações](../diagramas/classe/GASTRA_Classe_Contratos.png).
 
-Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfaces e 16 implementações.
+Resumo: 14 entidades, 11 enumerações, 13 regras e objetos de valor, 16 interfaces e 16 implementações.
 
 ## 1. Entidades (`Gastra.Domain.Entidades`)
 
@@ -16,11 +16,17 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 |---|---|
 | `+Data: DateOnly`<br>`+Periodo: PeriodoAlocacao`<br>`+GarcomId: int`<br>`+PracaId: int`<br>`+Confirmada: bool` | `+Ajustar(novaPracaId: int): void`<br>`+Confirmar(): void` |
 
+### AvaliacaoAtendimento
+
+| Atributos | Métodos |
+|---|---|
+| `+NotaMinima: int = 1 «static»`<br>`+NotaMaxima: int = 5 «static»`<br>`+TamanhoMaximoDoComentario: int = 280 «static»`<br>`+ComandaId: int`<br>`+Nota: int`<br>`+Comentario: string?`<br>`+DataHoraEnvio: DateTime` | — |
+
 ### Comanda
 
 | Atributos | Métodos |
 |---|---|
-| `+PercentualTaxaServico: decimal`<br>`+MesaId: int`<br>`+GarcomId: int`<br>`+DataHoraAbertura: DateTime`<br>`+DataHoraFechamento: DateTime?`<br>`+Status: StatusComanda`<br>`+QuantidadePessoas: int`<br>`+Composicao: ComposicaoMesa`<br>`+TaxaServicoRemovida: bool`<br>`+ComposicaoAjustadaManualmente: bool`<br>`+CodigoAcessoCliente: string`<br>`+Itens: IReadOnlyCollection<ItemDoPedido>`<br>`+Restricoes: IReadOnlyCollection<RestricaoAlimentar>` | `+AdicionarItem(item: ItemDoCardapio, quantidade: int, precoPromocional: decimal?): ItemDoPedido`<br>`+CalcularSubtotal(): decimal`<br>`+CalcularTaxaServico(): decimal`<br>`+CalcularTotal(): decimal`<br>`+ConfirmarComposicao(quantidadePessoas: int, composicao: ComposicaoMesa): void`<br>`+Fechar(): void`<br>`+PossuiPendencias(): bool`<br>`+RegistrarRestricao(categoria: CategoriaRestricao, observacaoLivre: string?): RestricaoAlimentar`<br>`+RemoverTaxaServico(): void`<br>`+RestricoesVisiveisPara(papel: PapelUsuario): IReadOnlyCollection<RestricaoAlimentar>`<br>`+SugerirComposicao(quantidadePessoas: int): ComposicaoMesa` |
+| `+PercentualTaxaServico: decimal = 0.10 «static»`<br>`+JanelaDeAvaliacao: TimeSpan «static»`<br>`+MesaId: int`<br>`+GarcomId: int`<br>`+DataHoraAbertura: DateTime`<br>`+DataHoraFechamento: DateTime?`<br>`+Status: StatusComanda`<br>`+QuantidadePessoas: int`<br>`+Composicao: ComposicaoMesa`<br>`+TaxaServicoRemovida: bool`<br>`+ComposicaoAjustadaManualmente: bool`<br>`+CodigoAcessoCliente: string`<br>`+Itens: IReadOnlyCollection<ItemDoPedido>`<br>`+Restricoes: IReadOnlyCollection<RestricaoAlimentar>`<br>`+Avaliacao: AvaliacaoAtendimento?` | `+AdicionarItem(item: ItemDoCardapio, quantidade: int, precoPromocional: decimal?): ItemDoPedido`<br>`+Avaliar(nota: int, comentario: string?, agoraUtc: DateTime): AvaliacaoAtendimento`<br>`+CalcularSubtotal(): decimal`<br>`+CalcularTaxaServico(): decimal`<br>`+CalcularTotal(): decimal`<br>`+ConfirmarComposicao(quantidadePessoas: int, composicao: ComposicaoMesa): void`<br>`+Fechar(): void`<br>`+PodeSerAvaliada(agoraUtc: DateTime): bool`<br>`+PossuiPendencias(): bool`<br>`+RegistrarRestricao(categoria: CategoriaRestricao, observacaoLivre: string?): RestricaoAlimentar`<br>`+RemoverTaxaServico(): void`<br>`+RestricoesVisiveisPara(papel: PapelUsuario): IReadOnlyCollection<RestricaoAlimentar>`<br>`+SugerirComposicao(quantidadePessoas: int): ComposicaoMesa` |
 
 ### EntidadeBase
 
@@ -62,7 +68,7 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 
 | Atributos | Métodos |
 |---|---|
-| `+PrecoMinimo: decimal`<br>`+TamanhoMaximoDescricao: int = 200`<br>`+Descricao: string`<br>`+TipoDesconto: TipoDesconto`<br>`+ValorDesconto: decimal`<br>`+DataInicio: DateOnly`<br>`+DataFim: DateOnly`<br>`+Ativa: bool`<br>`+ItemCardapioIds: IReadOnlyCollection<int>` | `+AplicarDesconto(preco: decimal): decimal`<br>`+Desativar(): void`<br>`+IncluiItem(itemCardapioId: int): bool`<br>`+PrecoPromocional(item: ItemDoCardapio, promocoes: IEnumerable<Promocao>, data: DateOnly): decimal? «static»`<br>`+VigenteEm(data: DateOnly): bool` |
+| `+PrecoMinimo: decimal = 0.01 «static»`<br>`+TamanhoMaximoDescricao: int = 200 «static»`<br>`+Descricao: string`<br>`+TipoDesconto: TipoDesconto`<br>`+ValorDesconto: decimal`<br>`+DataInicio: DateOnly`<br>`+DataFim: DateOnly`<br>`+Ativa: bool`<br>`+ItemCardapioIds: IReadOnlyCollection<int>` | `+AplicarDesconto(preco: decimal): decimal`<br>`+Desativar(): void`<br>`+IncluiItem(itemCardapioId: int): bool`<br>`+PrecoPromocional(item: ItemDoCardapio, promocoes: IEnumerable<Promocao>, data: DateOnly): decimal? «static»`<br>`+VigenteEm(data: DateOnly): bool` |
 
 ### PromocaoItem
 
@@ -74,7 +80,7 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 
 | Atributos | Métodos |
 |---|---|
-| `+MesesDeRetencao: int = 6`<br>`+DataHoraUtc: DateTime`<br>`+Evento: string`<br>`+Resultado: ResultadoAuditoria`<br>`+UsuarioId: int?`<br>`+Papel: PapelUsuario?`<br>`+Entidade: string?`<br>`+IdEntidade: int?`<br>`+Detalhes: string?`<br>`+Ip: string?`<br>`+IdCorrelacao: string?` | `+LimiteDeRetencao(agoraUtc: DateTime): DateTime «static»` |
+| `+MesesDeRetencao: int = 6 «static»`<br>`+DataHoraUtc: DateTime`<br>`+Evento: string`<br>`+Resultado: ResultadoAuditoria`<br>`+UsuarioId: int?`<br>`+Papel: PapelUsuario?`<br>`+Entidade: string?`<br>`+IdEntidade: int?`<br>`+Detalhes: string?`<br>`+Ip: string?`<br>`+IdCorrelacao: string?` | `+LimiteDeRetencao(agoraUtc: DateTime): DateTime «static»` |
 
 ### RestricaoAlimentar
 
@@ -110,7 +116,7 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 
 | Atributos | Métodos |
 |---|---|
-| `+PesoDesequilibrio: double = 0.6`<br>`+DiasDaJanelaDeFaturamento: int = 30`<br>`+PesoEspera: double` | `+PracasDeAltoPotencial(faturamentoMedioPorPraca: IReadOnlyDictionary<int, decimal>): IReadOnlySet<int> «static»`<br>`+TurnosDesdePracaDeAltoPotencial(pracasDosTurnosAnteriores: IEnumerable<int>, altoPotencial: IReadOnlySet<int>): int «static»` |
+| `+PesoDesequilibrio: double = 0.6 «static»`<br>`+DiasDaJanelaDeFaturamento: int = 30 «static»`<br>`+PesoEspera: double «static»` | `+PracasDeAltoPotencial(faturamentoMedioPorPraca: IReadOnlyDictionary<int, decimal>): IReadOnlySet<int> «static»`<br>`+TurnosDesdePracaDeAltoPotencial(pracasDosTurnosAnteriores: IEnumerable<int>, altoPotencial: IReadOnlySet<int>): int «static»` |
 
 ### DesempenhoNoPeriodo
 
@@ -146,7 +152,13 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 
 | Atributos | Métodos |
 |---|---|
-| `+PesoFaturamento: decimal` | `+Calcular(desempenhos: IEnumerable<DesempenhoNoPeriodo>): IReadOnlyList<PosicaoNoRanking> «static»` |
+| `+PesoFaturamento: decimal = 0.5 «static»` | `+Calcular(desempenhos: IEnumerable<DesempenhoNoPeriodo>): IReadOnlyList<PosicaoNoRanking> «static»` |
+
+### LinhaAvaliacao
+
+| Atributos | Métodos |
+|---|---|
+| `+Nota: int`<br>`+Quantidade: int` | — |
 
 ### PosicaoNoRanking
 
@@ -184,8 +196,8 @@ Resumo: 13 entidades, 11 enumerações, 12 regras e objetos de valor, 16 interfa
 |---|---|---|
 | `IRepositorioAlocacao` | `RepositorioAlocacao` | `+Adicionar(alocacao: Alocacao): Task`<br>`+ListarDoTurno(data: DateOnly, periodo: PeriodoAlocacao): Task<List<Alocacao>>`<br>`+ListarPracasConfirmadasAntesDe(garcomIds: IEnumerable<int>, data: DateOnly): Task<Dictionary<int, List<int>>>`<br>`+Remover(alocacoes: IEnumerable<Alocacao>): void` |
 | `IRepositorioAuditoria` | `RepositorioAuditoria` | `+Adicionar(registro: RegistroAuditoria): Task`<br>`+EliminarAnterioresA(limiteUtc: DateTime): Task<int>` |
-| `IRepositorioComanda` | `RepositorioComanda` | `+Adicionar(comanda: Comanda): Task`<br>`+ExisteAbertaNaMesa(mesaId: int): Task<bool>`<br>`+ListarAbertas(): Task<List<Comanda>>`<br>`+ObterPorCodigoAcesso(codigoAcesso: string): Task<Comanda?>`<br>`+ObterPorId(id: int): Task<Comanda?>` |
-| `IRepositorioIndicadores` | `RepositorioIndicadores` | `+ObterFaturamentoMedioPorPraca(): Task<Dictionary<int, decimal>>`<br>`+ObterFaturamentoMedioPorTurnoDoGarcom(inicio: DateOnly, fim: DateOnly): Task<Dictionary<int, decimal>>`<br>`+ObterFaturamentoPorPracaEDiaDaSemana(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorPracaNoTempo>>`<br>`+ObterFaturamentoPorPracaEHora(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorPracaNoTempo>>`<br>`+ObterIndicadoresPorGarcom(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorGarcom>>`<br>`+ObterIndicadoresPorItem(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorItemCardapio>>`<br>`+ObterIndicadoresPorPraca(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorPraca>>` |
+| `IRepositorioComanda` | `RepositorioComanda` | `+Adicionar(comanda: Comanda): Task`<br>`+ExisteAbertaNaMesa(mesaId: int): Task<bool>`<br>`+ListarAbertas(): Task<List<Comanda>>`<br>`+ObterParaAvaliacao(codigoAcesso: string): Task<Comanda?>`<br>`+ObterPorCodigoAcesso(codigoAcesso: string): Task<Comanda?>`<br>`+ObterPorId(id: int): Task<Comanda?>` |
+| `IRepositorioIndicadores` | `RepositorioIndicadores` | `+ObterDistribuicaoDeAvaliacoes(inicio: DateOnly, fim: DateOnly): Task<List<LinhaAvaliacao>>`<br>`+ObterFaturamentoMedioPorPraca(): Task<Dictionary<int, decimal>>`<br>`+ObterFaturamentoMedioPorTurnoDoGarcom(inicio: DateOnly, fim: DateOnly): Task<Dictionary<int, decimal>>`<br>`+ObterFaturamentoPorPracaEDiaDaSemana(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorPracaNoTempo>>`<br>`+ObterFaturamentoPorPracaEHora(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorPracaNoTempo>>`<br>`+ObterIndicadoresPorGarcom(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorGarcom>>`<br>`+ObterIndicadoresPorItem(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorItemCardapio>>`<br>`+ObterIndicadoresPorPraca(inicio: DateOnly, fim: DateOnly): Task<List<IndicadorPraca>>` |
 | `IRepositorioItemCardapio` | `RepositorioItemCardapio` | `+Adicionar(item: ItemDoCardapio): Task`<br>`+BuscarPorNome(nome: string): Task<List<ItemDoCardapio>>`<br>`+ListarDisponiveis(): Task<List<ItemDoCardapio>>`<br>`+ListarPorIds(ids: IEnumerable<int>): Task<List<ItemDoCardapio>>`<br>`+ListarTodos(): Task<List<ItemDoCardapio>>`<br>`+ObterPorId(id: int): Task<ItemDoCardapio?>` |
 | `IRepositorioMesa` | `RepositorioMesa` | `+Adicionar(mesa: Mesa): Task`<br>`+ListarTodas(): Task<List<Mesa>>`<br>`+ObterPorId(id: int): Task<Mesa?>`<br>`+ObterPorNumero(numero: string): Task<Mesa?>` |
 | `IRepositorioPraca` | `RepositorioPraca` | `+Adicionar(praca: Praca): Task`<br>`+ListarTodas(): Task<List<Praca>>`<br>`+ObterPorCodigo(codigo: string): Task<Praca?>`<br>`+ObterPorId(id: int): Task<Praca?>` |
