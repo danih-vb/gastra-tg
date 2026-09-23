@@ -10,7 +10,7 @@ public class IndiceDeDesempenhoTests
         var ranking = IndiceDeDesempenho.Calcular([
             new DesempenhoNoPeriodo(1, Faturamento: 1000m, Turnos: 2, MesasAtendidas: 10),
             new DesempenhoNoPeriodo(2, Faturamento: 500m, Turnos: 2, MesasAtendidas: 5),
-        ]);
+        ]).Posicoes;
 
         Assert.Equal((1, 1, 100m), (ranking[0].GarcomId, ranking[0].Posicao, ranking[0].Indice));
         Assert.Equal((2, 2, 50m), (ranking[1].GarcomId, ranking[1].Posicao, ranking[1].Indice));
@@ -23,7 +23,7 @@ public class IndiceDeDesempenhoTests
         var ranking = IndiceDeDesempenho.Calcular([
             new DesempenhoNoPeriodo(1, Faturamento: 2000m, Turnos: 8, MesasAtendidas: 16),
             new DesempenhoNoPeriodo(2, Faturamento: 1000m, Turnos: 2, MesasAtendidas: 4),
-        ]);
+        ]).Posicoes;
 
         Assert.Equal(2, ranking[0].GarcomId);
         Assert.Equal(500m, ranking[0].FaturamentoPorTurno);
@@ -31,13 +31,13 @@ public class IndiceDeDesempenhoTests
     }
 
     [Fact]
-    public void NaoEApenasVenda_MesasAtendidasPesamMetade()
+    public void SemAvaliacoes_MesasAtendidasPesamMetade()
     {
         // O 1 vende mais por turno; o 2 atende o dobro de mesas. Com 50/50, o 2 fica na frente.
         var ranking = IndiceDeDesempenho.Calcular([
             new DesempenhoNoPeriodo(1, Faturamento: 1000m, Turnos: 1, MesasAtendidas: 2),
             new DesempenhoNoPeriodo(2, Faturamento: 800m, Turnos: 1, MesasAtendidas: 4),
-        ]);
+        ]).Posicoes;
 
         // Garçom 2: 0,5 × (800/1000) + 0,5 × (4/4) = 0,90. Garçom 1: 0,5 × 1 + 0,5 × (2/4) = 0,75.
         Assert.Equal((2, 90m), (ranking[0].GarcomId, ranking[0].Indice));
@@ -51,7 +51,7 @@ public class IndiceDeDesempenhoTests
             new DesempenhoNoPeriodo(1, 600m, 1, 3),
             new DesempenhoNoPeriodo(2, 600m, 1, 3),
             new DesempenhoNoPeriodo(3, 300m, 1, 1),
-        ]);
+        ]).Posicoes;
 
         Assert.Equal([1, 1, 3], ranking.Select(p => p.Posicao));
     }
@@ -59,6 +59,78 @@ public class IndiceDeDesempenhoTests
     [Fact]
     public void SemTurnos_FicaForaDoRanking()
     {
-        Assert.Empty(IndiceDeDesempenho.Calcular([new DesempenhoNoPeriodo(1, 0m, 0, 0)]));
+        Assert.Empty(IndiceDeDesempenho.Calcular([new DesempenhoNoPeriodo(1, 0m, 0, 0)]).Posicoes);
+    }
+
+    // --- Avaliação do cliente no índice (RF11 + RF25, com o mínimo da RN08) ---
+
+    [Fact]
+    public void ComAvaliacoes_PesosViram40_30_30()
+    {
+        var calculo = IndiceDeDesempenho.Calcular([
+            new DesempenhoNoPeriodo(1, 1000m, 1, 4, Avaliacoes: 10, SomaDasNotas: 50),
+            new DesempenhoNoPeriodo(2, 1000m, 1, 4, Avaliacoes: 10, SomaDasNotas: 30),
+        ]);
+
+        Assert.Equal(new PesosDoIndice(0.4m, 0.3m, 0.3m), calculo.Pesos);
+    }
+
+    [Fact]
+    public void MesmaVendaEMesmasMesas_AvaliacaoDesempata()
+    {
+        // Média geral 4. Garçom 1: (5×4 + 50) / 15 = 4,67. Garçom 2: (5×4 + 30) / 15 = 3,33.
+        var posicoes = IndiceDeDesempenho.Calcular([
+            new DesempenhoNoPeriodo(1, 1000m, 1, 4, Avaliacoes: 10, SomaDasNotas: 50),
+            new DesempenhoNoPeriodo(2, 1000m, 1, 4, Avaliacoes: 10, SomaDasNotas: 30),
+        ]).Posicoes;
+
+        Assert.Equal((1, 4.67m), (posicoes[0].GarcomId, posicoes[0].NotaConsiderada));
+        Assert.Equal((2, 3.33m), (posicoes[1].GarcomId, posicoes[1].NotaConsiderada));
+        // 100 × (0,4 + 0,3 + 0,3 × (4,67 − 1) / 4) = 97,5; o 2: 100 × (0,7 + 0,3 × 2,33 / 4) = 87,5.
+        Assert.Equal((97.5m, 87.5m), (posicoes[0].Indice, posicoes[1].Indice));
+    }
+
+    [Fact]
+    public void AbaixoDoMinimo_NotaNaoApareceEOGarcomRecebeAMediaGeral()
+    {
+        // O 2 teve só 4 avaliações, todas nota 1. Mostrar a "média dele" seria mostrar a nota de cada mesa.
+        var posicoes = IndiceDeDesempenho.Calcular([
+            new DesempenhoNoPeriodo(1, 1000m, 1, 4, Avaliacoes: 16, SomaDasNotas: 64),
+            new DesempenhoNoPeriodo(2, 1000m, 1, 4, Avaliacoes: 4, SomaDasNotas: 4),
+        ]).Posicoes;
+
+        var dois = posicoes.Single(p => p.GarcomId == 2);
+        Assert.Null(dois.NotaConsiderada);
+        // Média geral: 68 / 20 = 3,4. Neutra: o 2 fica exatamente com ela, e as quatro notas 1 não pesam contra ele.
+        Assert.Equal(Math.Round(100 * (0.7m + 0.3m * (3.4m - 1) / 4), 1), dois.Indice);
+    }
+
+    [Fact]
+    public void MediaBayesiana_PoucasNotasAltasNaoPassamMuitasNotasQuaseAltas()
+    {
+        // 5 notas 5 contra 40 notas 4,8 (soma 192). Pela média simples, o 1 ganharia (5,0 contra 4,8).
+        var posicoes = IndiceDeDesempenho.Calcular([
+            new DesempenhoNoPeriodo(1, 1000m, 1, 4, Avaliacoes: 5, SomaDasNotas: 25),
+            new DesempenhoNoPeriodo(2, 1000m, 1, 4, Avaliacoes: 40, SomaDasNotas: 192),
+            new DesempenhoNoPeriodo(3, 1000m, 1, 4, Avaliacoes: 55, SomaDasNotas: 165),
+        ]).Posicoes;
+
+        // Média geral: 382 / 100 = 3,82. Garçom 1: (19,1 + 25) / 10 = 4,41. Garçom 2: (19,1 + 192) / 45 = 4,69.
+        Assert.Equal(4.41m, posicoes.Single(p => p.GarcomId == 1).NotaConsiderada);
+        Assert.Equal(4.69m, posicoes.Single(p => p.GarcomId == 2).NotaConsiderada);
+        Assert.Equal(2, posicoes[0].GarcomId);
+    }
+
+    [Fact]
+    public void NinguemComOMinimo_AvaliacaoSaiDoIndiceComoAntes()
+    {
+        var calculo = IndiceDeDesempenho.Calcular([
+            new DesempenhoNoPeriodo(1, 1000m, 1, 2, Avaliacoes: 4, SomaDasNotas: 20),
+            new DesempenhoNoPeriodo(2, 800m, 1, 4, Avaliacoes: 1, SomaDasNotas: 1),
+        ]);
+
+        Assert.Equal(IndiceDeDesempenho.SemAvaliacao, calculo.Pesos);
+        Assert.All(calculo.Posicoes, p => Assert.Null(p.NotaConsiderada));
+        Assert.Equal([90m, 75m], calculo.Posicoes.Select(p => p.Indice));
     }
 }

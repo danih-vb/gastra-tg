@@ -180,9 +180,20 @@
           <p>
             <strong>{{ dados.ranking.pesoFaturamento * 100 | number: '1.0-0' }}%</strong> vem do faturamento por turno e
             <strong>{{ dados.ranking.pesoMesasAtendidas * 100 | number: '1.0-0' }}%</strong> das mesas atendidas por turno
-            (RF11: não é só venda). Cada parte é comparada com o melhor do período, que vale 100. Por ser por turno, quem
-            trabalhou menos dias não fica atrás só por isso. O garçom vê apenas a própria posição.
+            @if (dados.ranking.pesoAvaliacao > 0) {
+              e <strong>{{ dados.ranking.pesoAvaliacao * 100 | number: '1.0-0' }}%</strong> da avaliação dos clientes
+            }
+            (RF11: não é só venda). Faturamento e mesas são comparados com o melhor do período, que vale 100. Por ser por
+            turno, quem trabalhou menos dias não fica atrás só por isso. O garçom vê apenas a própria posição.
           </p>
+          @if (dados.ranking.pesoAvaliacao > 0) {
+            <p>
+              A nota é uma média que puxa quem tem poucas avaliações para a média do restaurante, para cinco notas 5 não
+              valerem mais que quarenta notas 4,8. Com menos de {{ dados.ranking.minimoDeAvaliacoes }} avaliações no
+              período, a nota do garçom não aparece e ele recebe a média do restaurante: com tão poucas, dava para saber
+              a nota que cada mesa deu (RN08).
+            </p>
+          }
         </div>
       }
       <div class="rolagem-horizontal">
@@ -194,6 +205,7 @@
               <th scope="col">Índice</th>
               <th scope="col" class="direita">Faturamento por turno</th>
               <th scope="col" class="direita">Mesas por turno</th>
+              <th scope="col" class="direita">Avaliação</th>
               <th scope="col" class="direita">Turnos</th>
               <th scope="col" class="direita">Ticket médio</th>
               <th scope="col" class="direita">Tempo médio</th>
@@ -212,6 +224,13 @@
                 </td>
                 <td class="direita num">{{ linha.faturamentoPorTurno | currency: 'BRL' }}</td>
                 <td class="direita num">{{ linha.mesasPorTurno | number: '1.1-1' }}</td>
+                <td class="direita num">
+                  @if (linha.notaConsiderada !== null) {
+                    {{ linha.notaConsiderada | number: '1.2-2' }}
+                  } @else {
+                    <span class="suave" [title]="'Menos de ' + dados.ranking.minimoDeAvaliacoes + ' avaliações no período'">—</span>
+                  }
+                </td>
                 <td class="direita num">{{ linha.turnos }}</td>
                 <td class="direita num">{{ linha.detalhe?.ticketMedio | currency: 'BRL' }}</td>
                 <td class="direita num">{{ linha.detalhe?.tempoMedioAtendimentoMinutos | number: '1.0-0' }} min</td>

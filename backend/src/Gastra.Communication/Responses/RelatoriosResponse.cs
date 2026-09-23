@@ -116,6 +116,12 @@ public class RankingDesempenhoResponse
     public decimal PesoFaturamento { get; set; }
     public decimal PesoMesasAtendidas { get; set; }
 
+    /// <summary>Zero quando nenhum garçom teve o mínimo de avaliações no período: o índice fica só com as outras duas.</summary>
+    public decimal PesoAvaliacao { get; set; }
+
+    /// <summary>Abaixo disto, a nota de um garçom não entra no índice nem aparece (RN08).</summary>
+    public int MinimoDeAvaliacoes { get; set; }
+
     /// <summary>Quantos garçons trabalharam no período e entraram no ranking.</summary>
     public int TotalNoRanking { get; set; }
 
@@ -132,6 +138,9 @@ public class PosicaoRankingResponse
     public decimal FaturamentoPorTurno { get; set; }
     public decimal MesasPorTurno { get; set; }
     public int Turnos { get; set; }
+
+    /// <summary>Média bayesiana das avaliações (1 a 5). Nula abaixo do mínimo: o índice usou a média geral.</summary>
+    public decimal? NotaConsiderada { get; set; }
 }
 
 /// <summary>

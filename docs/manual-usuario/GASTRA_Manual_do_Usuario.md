@@ -186,8 +186,15 @@ saiu da cozinha.
 
 <img src="../ux-ui/telas/garcom-desempenho.png" alt="Desempenho do garçom" width="320">
 
-Cada garçom vê a própria posição no ranking do período, com o faturamento por turno e a média de mesas atendidas.
-O garçom vê **só os próprios números** e a posição; não vê o desempenho dos colegas.
+Cada garçom vê a própria posição no ranking do período, com o faturamento por turno, a média de mesas atendidas e,
+quando há avaliações suficientes, a nota dos clientes. O garçom vê **só os próprios números** e a posição; não vê o
+desempenho dos colegas.
+
+**Como a avaliação entra no índice.** Quando algum garçom recebeu pelo menos 5 avaliações no período, o índice passa a
+ser 40% faturamento, 30% mesas e 30% avaliação. A nota considerada é uma média que puxa quem tem poucas avaliações para
+a média do restaurante, para poucas notas altas não valerem mais que muitas notas quase tão altas. Quem teve **menos
+de 5 avaliações** no período não tem a nota mostrada e recebe a média do restaurante: com tão poucas, daria para saber
+a nota que cada mesa deu. A avaliação continua anônima; ninguém vê quem avaliou.
 
 ---
 

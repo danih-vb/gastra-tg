@@ -20,3 +20,9 @@ public record IndicadorPracaNoTempo(int PracaId, int Fatia, decimal Faturamento,
 /// avaliou nem o garçom atendido.
 /// </summary>
 public record LinhaAvaliacao(int Nota, int Quantidade);
+
+/// <summary>
+/// Quantas avaliações as comandas de um garçom receberam no período, e a soma das notas. Só alimenta o índice de
+/// desempenho (RF11), que aplica o mínimo de avaliações da RN08 antes de usar ou mostrar qualquer nota.
+/// </summary>
+public record AvaliacoesDoGarcom(int GarcomId, int Quantidade, int SomaDasNotas);

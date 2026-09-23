@@ -58,6 +58,26 @@
         </div>
         <span class="num">{{ minha.mesasPorTurno | number: '1.1-1' }}</span>
       </li>
+      @if (ranking()!.pesoAvaliacao > 0) {
+        <li>
+          <div class="principal-item">
+            <strong>Avaliação dos clientes</strong>
+            <span class="pequeno suave">
+              vale {{ ranking()!.pesoAvaliacao * 100 | number: '1.0-0' }}% do índice
+              @if (minha.notaConsiderada === null) {
+                · com menos de {{ ranking()!.minimoDeAvaliacoes }} avaliações, entra a média do restaurante
+              }
+            </span>
+          </div>
+          <span class="num">
+            @if (minha.notaConsiderada !== null) {
+              {{ minha.notaConsiderada | number: '1.2-2' }} / 5
+            } @else {
+              —
+            }
+          </span>
+        </li>
+      }
       <li>
         <div class="principal-item">
           <strong>Turnos trabalhados</strong>

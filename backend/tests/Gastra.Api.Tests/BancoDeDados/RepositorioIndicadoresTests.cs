@@ -110,4 +110,21 @@ public class RepositorioIndicadoresTests : IAsyncLifetime
         // 20/09/2026 é domingo (1) e 10/09/2026 é quinta-feira (5).
         Assert.Equal([new IndicadorPracaNoTempo(1, 1, 350m, 2), new IndicadorPracaNoTempo(1, 5, 100m, 1)], porDia);
     }
+
+    [FactComMySql]
+    public async Task Avaliacoes_por_garcom_somam_as_notas_das_comandas_dele_pelo_dia_do_fechamento()
+    {
+        await _banco.Executar("""
+            INSERT INTO avaliacao_atendimento (comanda_id, nota, data_hora_envio) VALUES
+                (1, 5, '2026-09-10 16:10:00'), (2, 3, '2026-09-20 16:10:00'), (3, 4, '2026-09-20 16:10:00');
+            """);
+        await using var contexto = _banco.CriarContexto();
+        var repositorio = new RepositorioIndicadores(contexto);
+
+        var tudo = (await repositorio.ObterAvaliacoesPorGarcom(Inicio, Fim)).OrderBy(l => l.GarcomId).ToList();
+        var so20 = await repositorio.ObterAvaliacoesPorGarcom(new DateOnly(2026, 9, 11), Fim);
+
+        Assert.Equal([new AvaliacoesDoGarcom(1, 2, 8), new AvaliacoesDoGarcom(2, 1, 4)], tudo);
+        Assert.Contains(new AvaliacoesDoGarcom(1, 1, 3), so20);
+    }
 }

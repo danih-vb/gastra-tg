@@ -81,7 +81,10 @@ teste automatizado verifica que nenhuma coluna de view se chama `nome`, `email`,
 O documento de arquitetura previa uma view com o índice de desempenho. Ela foi trocada pelas
 **bases** do índice (`vw_desempenho_garcom_turno`), e a fórmula fica na aplicação:
 
-- o índice combina faturamento e mesas atendidas **com pesos**, e os pesos podem mudar;
+- o índice combina faturamento, mesas atendidas e a avaliação do cliente **com pesos**, e os pesos mudam conforme haja
+  avaliações suficientes no período;
+- a nota de cada garçom passa por um mínimo de avaliações (RN08) e por uma média bayesiana, regras que ficam melhor
+  testadas em C# do que escritas em SQL;
 - o índice é **relativo ao período escolhido** na tela (semana, mês). Uma view não recebe
   parâmetros, então precisaria fixar um período ou calcular sobre todo o histórico.
 
