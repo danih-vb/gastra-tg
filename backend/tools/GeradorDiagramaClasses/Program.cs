@@ -89,13 +89,28 @@ static List<string> Atributos(Type tipo)
 
     var constantes = tipo.GetFields(publicos)
         .Where(f => f.IsLiteral || f.IsInitOnly)
-        .Select(f => $"+{f.Name}: {NomeDoTipo(f.FieldType)}{(f.IsLiteral ? " = " + Formatar(f.GetRawConstantValue()) : "")}");
+        .Select(f => Uml.Marcar(
+            $"+{f.Name}: {NomeDoTipo(f.FieldType)}{ValorConstante(f)}",
+            f.IsStatic));
 
     var propriedades = tipo.GetProperties(publicos)
         .Where(p => p.GetMethod is { IsPublic: true } && !(EhRecord(tipo) && p.Name == "EqualityContract"))
-        .Select(p => $"+{p.Name}: {NomeComNulidade(p.PropertyType, new NullabilityInfoContext().Create(p))}");
+        .Select(p => Uml.Marcar(
+            $"+{p.Name}: {NomeComNulidade(p.PropertyType, new NullabilityInfoContext().Create(p))}",
+            p.GetMethod!.IsStatic));
 
     return constantes.Concat(propriedades).ToList();
+}
+
+// `const decimal` não é literal para a reflection: o compilador o transforma em static readonly com
+// [DecimalConstant]. Sem isto, justamente PercentualTaxaServico (RF04) aparecia sem o valor.
+static string ValorConstante(FieldInfo campo)
+{
+    if (campo.IsLiteral)
+        return " = " + Formatar(campo.GetRawConstantValue());
+
+    var decimalConstante = campo.GetCustomAttribute<System.Runtime.CompilerServices.DecimalConstantAttribute>();
+    return decimalConstante is null ? "" : " = " + Formatar(decimalConstante.Value);
 }
 
 static string Formatar(object? valor) => valor switch
@@ -118,7 +133,7 @@ static List<string> Metodos(Type tipo)
         {
             var contexto = new NullabilityInfoContext();
             var parametros = string.Join(", ", m.GetParameters().Select(p => $"{p.Name}: {NomeComNulidade(p.ParameterType, contexto.Create(p))}"));
-            return $"+{m.Name}({parametros}): {NomeComNulidade(m.ReturnType, contexto.Create(m.ReturnParameter))}{(m.IsStatic ? " «static»" : "")}";
+            return Uml.Marcar($"+{m.Name}({parametros}): {NomeComNulidade(m.ReturnType, contexto.Create(m.ReturnParameter))}", m.IsStatic);
         })
         .ToList();
 }
@@ -324,7 +339,7 @@ string Markdown()
 
     static string Lista(List<string> itens) => itens.Count == 0 ? "—" : string.Join("<br>", itens.Select(i => $"`{Escapar(i)}`"));
 
-    static string Escapar(string texto) => texto.Replace("|", "\\|");
+    static string Escapar(string texto) => Uml.ParaTexto(texto).Replace("|", "\\|");
 }
 
 // ---------------------------------------------------------------- escrita do XML do draw.io
@@ -399,7 +414,7 @@ internal sealed class Desenho
 
     private void Texto(string pai, List<string> linhas, int y, int w, int h, string estilo)
     {
-        var valor = Html(string.Join("<br>", linhas.Select(Html)));
+        var valor = Html(string.Join("<br>", linhas.Select(Uml.ParaHtml)));
         _celulas.Append($"<mxCell id=\"{NovoId()}\" value=\"{valor}\" style=\"{estilo}\" vertex=\"1\" parent=\"{pai}\"><mxGeometry y=\"{y}\" width=\"{w}\" height=\"{h}\" as=\"geometry\"/></mxCell>");
     }
 
@@ -435,4 +450,21 @@ internal sealed class Desenho
 
     public string Xml(string nome) =>
         $"<mxfile host=\"drawio\"><diagram name=\"{nome}\" id=\"{nome}\"><mxGraphModel dx=\"1400\" dy=\"900\" grid=\"1\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"0\" pageScale=\"1\" background=\"#ffffff\" math=\"0\" shadow=\"0\"><root><mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/>{_celulas}</root></mxGraphModel></diagram></mxfile>";
+}
+
+/// <summary>
+/// Membro estático (constante, campo ou método de classe). Na UML ele se desenha <b>sublinhado</b>. A marca
+/// viaja no começo da linha e cada saída decide como mostrá-la: sublinhado no draw.io, e «static» por
+/// extenso no Markdown, onde o texto fica dentro de crase e não aceita formatação.
+/// </summary>
+internal static class Uml
+{
+    private const char Estatico = '\u0001';
+
+    public static string Marcar(string texto, bool estatico) => estatico ? Estatico + texto : texto;
+
+    public static string ParaHtml(string linha) =>
+        linha.StartsWith(Estatico) ? $"<u>{SecurityElement.Escape(linha[1..])}</u>" : SecurityElement.Escape(linha);
+
+    public static string ParaTexto(string linha) => linha.StartsWith(Estatico) ? linha[1..] + " «static»" : linha;
 }
