@@ -13,6 +13,8 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutenticacaoJwt(builder.Configuration);
 builder.Services.AddPoliticaCors(builder.Configuration);
+builder.Services.AddProxyReverso(builder.Configuration);
+builder.Services.AddLimiteDeRequisicoes(builder.Configuration);
 
 builder.Services
     .AddControllers(opcoes => opcoes.Filters.Add<FiltroExcecao>())
@@ -31,6 +33,9 @@ if (builder.Configuration.GetValue("Auditoria:EliminacaoAutomatica", true))
 
 var app = builder.Build();
 
+// Primeiro de tudo: daqui em diante, RemoteIpAddress é o IP do navegador, e não o do nginx (#230).
+app.UseForwardedHeaders();
+
 // Swagger em /swagger (só em desenvolvimento).
 app.UseDocumentacaoOpenApi();
 
@@ -43,6 +48,9 @@ app.UseRequestLocalization(opcoes => opcoes
     .AddSupportedUICultures(culturas));
 
 app.UseHttpsRedirection();
+
+// Depois da tradução, para o 429 sair no idioma pedido (#230).
+app.UseRateLimiter();
 
 // CORS antes da autenticação: a requisição de verificação (OPTIONS) do navegador não leva token.
 app.UseCors(PoliticaCors.Nome);

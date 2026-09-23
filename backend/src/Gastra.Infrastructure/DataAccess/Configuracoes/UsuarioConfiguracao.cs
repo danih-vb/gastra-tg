@@ -19,6 +19,8 @@ public class UsuarioConfiguracao : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.Ativo).HasColumnName("ativo").IsRequired();
         builder.Property(u => u.SegredoTotp).HasColumnName("segredo_totp").HasMaxLength(500);
         builder.Property(u => u.ChaveSessao).HasColumnName("chave_sessao").IsRequired();
+        builder.Property(u => u.TentativasFalhas).HasColumnName("tentativas_falhas").IsRequired();
+        builder.Property(u => u.BloqueadaAte).HasColumnName("bloqueada_ate");
 
         // E-mail é chave alternativa (MER, ENT03).
         builder.HasIndex(u => u.Email).IsUnique();

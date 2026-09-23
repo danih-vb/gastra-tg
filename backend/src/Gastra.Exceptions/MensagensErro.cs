@@ -28,6 +28,8 @@ public static class MensagensErro
     public static string CredenciaisInvalidas => Obter(nameof(CredenciaisInvalidas));
     public static string TokenSegundoFatorInvalido => Obter(nameof(TokenSegundoFatorInvalido));
     public static string CodigoSegundoFatorInvalido => Obter(nameof(CodigoSegundoFatorInvalido));
+    public static string AcessoBloqueadoTemporariamente => Obter(nameof(AcessoBloqueadoTemporariamente));
+    public static string MuitasRequisicoes => Obter(nameof(MuitasRequisicoes));
     public static string SegundoFatorJaConfigurado => Obter(nameof(SegundoFatorJaConfigurado));
     public static string SegundoFatorNaoConfigurado => Obter(nameof(SegundoFatorNaoConfigurado));
     public static string NaoAutenticado => Obter(nameof(NaoAutenticado));

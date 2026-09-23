@@ -15,6 +15,10 @@ public class AutenticacaoControllerTests(GastraApiFactory factory) : IClassFixtu
     private const string Logoff = "/api/autenticacao/logoff";
     private const string RotaProtegida = "/api/cardapio";
 
+    private const string CredenciaisInvalidas =
+        "E-mail ou senha inválidos. Depois de 5 tentativas erradas seguidas, o acesso fica bloqueado por 15 minutos.";
+    private const string AcessoBloqueado = "Muitas tentativas erradas seguidas. O acesso está bloqueado por 15 minutos.";
+
     private readonly HttpClient _cliente = factory.CreateClient();
 
     private static string NovoEmail(string prefixo) => $"{prefixo}-{Guid.NewGuid():N}@gastra.test";
@@ -56,7 +60,7 @@ public class AutenticacaoControllerTests(GastraApiFactory factory) : IClassFixtu
         var resposta = await _cliente.PostAsJsonAsync(Login, new { email, senha }, Json);
 
         Assert.Equal(HttpStatusCode.Unauthorized, resposta.StatusCode);
-        Assert.Equal(["E-mail ou senha inválidos."], await LerErros(resposta));
+        Assert.Equal([CredenciaisInvalidas], await LerErros(resposta));
     }
 
     [Fact]
@@ -133,6 +137,108 @@ public class AutenticacaoControllerTests(GastraApiFactory factory) : IClassFixtu
 
         Assert.Equal(HttpStatusCode.Unauthorized, resposta.StatusCode);
         Assert.Equal(["Código de verificação inválido."], await LerErros(resposta));
+    }
+
+    // --- RN09: bloqueio por tentativas ---
+
+    private Task<HttpResponseMessage> TentarLogin(string email, string senha) =>
+        _cliente.PostAsJsonAsync(Login, new { email, senha }, Json);
+
+    private Task<HttpResponseMessage> TentarCodigo(string tokenSegundoFator, string codigo) =>
+        _cliente.PostAsJsonAsync(Confirmar, new { tokenSegundoFator, codigo }, Json);
+
+    /// <summary>Um código de 6 dígitos que com certeza não é o atual.</summary>
+    private static string CodigoErrado(string chaveManual) =>
+        ((int.Parse(CodigoTotp(chaveManual)) + 500_000) % 1_000_000).ToString("D6");
+
+    /// <summary>Gerente com o autenticador já vinculado; devolve o e-mail e a chave manual.</summary>
+    private async Task<(string Email, string Chave)> GerenteComAutenticador()
+    {
+        var email = NovoEmail("gerente");
+        await factory.CriarUsuario(email, PapelUsuario.Gerente);
+        var login = await Logar(email);
+        var configuracao = await (await _cliente.PostAsJsonAsync(Configurar, new { tokenSegundoFator = login.TokenSegundoFator }, Json))
+            .Content.ReadFromJsonAsync<ConfiguracaoSegundoFatorResponse>(Json);
+        return (email, configuracao!.ChaveManual);
+    }
+
+    [Fact]
+    public async Task Login_CincoSenhasErradas_BloqueiaAtéASenhaCertaComAMesmaMensagem()
+    {
+        var email = NovoEmail("garcom");
+        await factory.CriarUsuario(email, PapelUsuario.Garcom);
+        for (var i = 0; i < 5; i++)
+            await TentarLogin(email, "senha-errada");
+
+        var comSenhaCerta = await TentarLogin(email, SenhaPadrao);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, comSenhaCerta.StatusCode);
+        // Mesma mensagem da senha errada: senão cinco erros revelariam que o e-mail existe.
+        Assert.Equal([CredenciaisInvalidas], await LerErros(comSenhaCerta));
+    }
+
+    [Fact]
+    public async Task Login_ComSucesso_ZeraAContagem()
+    {
+        var email = NovoEmail("metre");
+        await factory.CriarUsuario(email, PapelUsuario.Metre);
+
+        for (var rodada = 0; rodada < 2; rodada++)
+        {
+            for (var i = 0; i < 4; i++)
+                await TentarLogin(email, "senha-errada");
+
+            Assert.Equal(HttpStatusCode.OK, (await TentarLogin(email, SenhaPadrao)).StatusCode);
+        }
+    }
+
+    [Fact]
+    public async Task SegundoFator_QuintoCodigoErrado_BloqueiaComMensagemPropria()
+    {
+        var (email, chave) = await GerenteComAutenticador();
+        var token = (await Logar(email)).TokenSegundoFator!;
+        for (var i = 0; i < 4; i++)
+            Assert.Equal(["Código de verificação inválido."], await LerErros(await TentarCodigo(token, CodigoErrado(chave))));
+
+        var quinto = await TentarCodigo(token, CodigoErrado(chave));
+        var comCodigoCerto = await TentarCodigo(token, CodigoTotp(chave));
+
+        Assert.Equal([AcessoBloqueado], await LerErros(quinto));
+        Assert.Equal(HttpStatusCode.Unauthorized, comCodigoCerto.StatusCode);
+        Assert.Equal([AcessoBloqueado], await LerErros(comCodigoCerto));
+    }
+
+    [Fact]
+    public async Task SegundoFator_LogarDeNovo_NaoDaMaisPalpitesDeCodigo()
+    {
+        var (email, chave) = await GerenteComAutenticador();
+
+        // Acertar a senha entre um palpite e outro não zera a contagem: são 5 erros no total, não 5 por login.
+        for (var i = 0; i < 5; i++)
+        {
+            var token = (await Logar(email)).TokenSegundoFator!;
+            await TentarCodigo(token, CodigoErrado(chave));
+        }
+
+        // Bloqueada, a conta recusa até a senha certa: não sai nem um token de segundo fator para tentar mais.
+        var comSenhaCerta = await TentarLogin(email, SenhaPadrao);
+        Assert.Equal(HttpStatusCode.Unauthorized, comSenhaCerta.StatusCode);
+        Assert.Equal([CredenciaisInvalidas], await LerErros(comSenhaCerta));
+    }
+
+    [Fact]
+    public async Task SegundoFator_CodigoCerto_ZeraAContagem()
+    {
+        var (email, chave) = await GerenteComAutenticador();
+
+        for (var rodada = 0; rodada < 2; rodada++)
+        {
+            var token = (await Logar(email)).TokenSegundoFator!;
+            for (var i = 0; i < 4; i++)
+                await TentarCodigo(token, CodigoErrado(chave));
+
+            Assert.Equal(HttpStatusCode.OK, (await TentarCodigo(token, CodigoTotp(chave))).StatusCode);
+        }
     }
 
     [Fact]

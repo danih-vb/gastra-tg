@@ -19,6 +19,18 @@ public class Usuario : EntidadeBase
     /// </summary>
     public Guid ChaveSessao { get; private set; }
 
+    /// <summary>RN09: quantas tentativas de acesso erradas seguidas bloqueiam a conta.</summary>
+    public const int MaximoTentativasFalhas = 5;
+
+    /// <summary>RN09: por quanto tempo a conta fica bloqueada.</summary>
+    public static readonly TimeSpan DuracaoBloqueio = TimeSpan.FromMinutes(15);
+
+    /// <summary>Tentativas erradas (senha ou código do segundo fator) desde o último acesso completo.</summary>
+    public int TentativasFalhas { get; private set; }
+
+    /// <summary>Até quando a conta recusa qualquer tentativa, mesmo com a senha certa (RN09). Nulo = livre.</summary>
+    public DateTime? BloqueadaAte { get; private set; }
+
     public bool SegundoFatorConfigurado => SegredoTotp is not null;
 
     // Usado pelo Entity Framework ao ler do banco.
@@ -48,16 +60,51 @@ public class Usuario : EntidadeBase
         SegredoTotp = segredoProtegido;
     }
 
+    /// <summary>RN09: bloqueada enquanto o prazo não passar.</summary>
+    public bool EstaBloqueada(DateTime agora) => BloqueadaAte > agora;
+
+    /// <summary>
+    /// RN09: conta uma tentativa errada, de senha ou de código. A quinta seguida bloqueia a conta e recomeça a contagem,
+    /// para o próximo bloqueio também exigir cinco erros. Durante o bloqueio nada é contado: senão cada tentativa de um
+    /// atacante empurraria o fim do bloqueio e o dono não entraria nunca mais.
+    /// </summary>
+    /// <returns>Verdadeiro quando esta tentativa bloqueou a conta.</returns>
+    public bool RegistrarTentativaFalha(DateTime agora)
+    {
+        if (EstaBloqueada(agora))
+            return false;
+
+        TentativasFalhas++;
+        if (TentativasFalhas < MaximoTentativasFalhas)
+            return false;
+
+        TentativasFalhas = 0;
+        BloqueadaAte = agora.Add(DuracaoBloqueio);
+        return true;
+    }
+
+    /// <summary>
+    /// RN09: só um acesso completo zera a contagem — com segundo fator, depois do código. Acertar só a senha não zera,
+    /// senão bastaria logar de novo para ganhar mais cinco palpites de código.
+    /// </summary>
+    public void RegistrarAcessoCompleto()
+    {
+        TentativasFalhas = 0;
+        BloqueadaAte = null;
+    }
+
     /// <summary>RF17: invalida todos os tokens de acesso emitidos até agora.</summary>
     public void EncerrarSessoes() => ChaveSessao = Guid.NewGuid();
 
     /// <summary>
     /// UC04: o Gerente define uma senha nova para quem perdeu a sua (#141). As sessões abertas caem junto, para o
-    /// acesso antigo não continuar valendo.
+    /// acesso antigo não continuar valendo, e um bloqueio por tentativas (RN09) é desfeito: quem esqueceu a senha
+    /// costuma ser justamente quem errou cinco vezes.
     /// </summary>
     public void RedefinirSenha(string senhaHash)
     {
         SenhaHash = senhaHash;
+        RegistrarAcessoCompleto();
         EncerrarSessoes();
     }
 

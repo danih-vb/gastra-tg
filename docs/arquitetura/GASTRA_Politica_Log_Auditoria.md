@@ -67,9 +67,9 @@ identificador do registro afetado.
 | Evento | Caso de uso | Registrar | Nunca registrar |
 |---|---|---|---|
 | Login com sucesso | UC01 | ator, data/hora, IP | senha, token de sessão |
-| Login com falha | UC01 | `id_usuario` **se a conta existir**; motivo (senha incorreta / conta inativa); data/hora; IP | senha digitada; **e-mail digitado quando a conta não existe** |
+| Login com falha | UC01 | `id_usuario` **se a conta existir**; motivo (senha incorreta / conta inativa / conta bloqueada); se esta falha bloqueou a conta (RN09); data/hora; IP | senha digitada; **e-mail digitado quando a conta não existe** |
 | Autenticador vinculado | RN07 | ator, data/hora, IP | segredo TOTP, chave manual |
-| Segundo fator confirmado / recusado | UC02 | ator, resultado, data/hora | código TOTP digitado, segredo TOTP |
+| Segundo fator confirmado / recusado | UC02 | ator, resultado, data/hora; se a recusa bloqueou a conta ou se ela já estava bloqueada (RN09) | código TOTP digitado, segredo TOTP |
 | Logoff | UC03 | ator, data/hora | token de sessão |
 | Conta criada / editada / inativada | UC04 | ator, alvo, **nomes** dos campos alterados; papel anterior → novo | senha, hash, segredo TOTP, valores de nome e e-mail |
 | Senha redefinida pelo Gerente | UC04 | ator, alvo, data/hora | senha nova, hash |
@@ -116,7 +116,7 @@ Dados do cardápio e do salão não são pessoais: podem ser registrados com os 
 
 | Evento | Caso de uso | Registrar | Nunca registrar |
 |---|---|---|---|
-| Comanda consultada por QR code | UC20 | somente em log **técnico**: data/hora e resultado (encontrada / não encontrada) | **código de acesso completo**, IP do cliente |
+| Comanda consultada por QR code | UC20 | somente em log **técnico**: data/hora e resultado (encontrada / não encontrada) | **código de acesso completo**, IP do cliente (o limite por IP do #230 guarda o IP só em memória, como chave de um contador que some em um minuto) |
 | **Avaliação recebida** | UC25 | `id_comanda` e a nota, **sem ator** | **comentário**, código de acesso, IP do cliente |
 
 > A avaliação é a única escrita anônima do sistema, e o log acompanha isso: o registro fica sem

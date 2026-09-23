@@ -55,4 +55,87 @@ public class UsuarioTests
         usuario.Reativar();
         Assert.True(usuario.Ativo);
     }
+
+    // --- RN09: bloqueio por tentativas ---
+
+    private static readonly DateTime Agora = new(2026, 9, 23, 12, 0, 0, DateTimeKind.Utc);
+
+    private static void Errar(Usuario usuario, int vezes, DateTime quando)
+    {
+        for (var i = 0; i < vezes; i++)
+            usuario.RegistrarTentativaFalha(quando);
+    }
+
+    [Fact]
+    public void TentativaFalha_QuatroSeguidas_AindaNaoBloqueia()
+    {
+        var usuario = CriarUsuario();
+
+        Errar(usuario, Usuario.MaximoTentativasFalhas - 1, Agora);
+
+        Assert.False(usuario.EstaBloqueada(Agora));
+        Assert.Equal(4, usuario.TentativasFalhas);
+    }
+
+    [Fact]
+    public void TentativaFalha_AQuinta_BloqueiaPorQuinzeMinutosEAvisaQueBloqueou()
+    {
+        var usuario = CriarUsuario();
+        Errar(usuario, Usuario.MaximoTentativasFalhas - 1, Agora);
+
+        var bloqueou = usuario.RegistrarTentativaFalha(Agora);
+
+        Assert.True(bloqueou);
+        Assert.True(usuario.EstaBloqueada(Agora.AddMinutes(14)));
+        Assert.False(usuario.EstaBloqueada(Agora.AddMinutes(15)));
+    }
+
+    [Fact]
+    public void TentativaFalha_DuranteOBloqueio_NaoEmpurraOFim()
+    {
+        var usuario = CriarUsuario();
+        Errar(usuario, Usuario.MaximoTentativasFalhas, Agora);
+
+        Errar(usuario, 20, Agora.AddMinutes(10));
+
+        // Se cada palpite do atacante estendesse o prazo, o dono da conta nunca mais entraria.
+        Assert.Equal(Agora.Add(Usuario.DuracaoBloqueio), usuario.BloqueadaAte);
+        Assert.False(usuario.EstaBloqueada(Agora.AddMinutes(15)));
+    }
+
+    [Fact]
+    public void TentativaFalha_DepoisDoBloqueio_ExigeOutrosCincoErros()
+    {
+        var usuario = CriarUsuario();
+        Errar(usuario, Usuario.MaximoTentativasFalhas, Agora);
+        var depois = Agora.AddMinutes(16);
+
+        Errar(usuario, Usuario.MaximoTentativasFalhas - 1, depois);
+
+        Assert.False(usuario.EstaBloqueada(depois));
+    }
+
+    [Fact]
+    public void AcessoCompleto_ZeraAContagemELiberaAConta()
+    {
+        var usuario = CriarUsuario();
+        Errar(usuario, Usuario.MaximoTentativasFalhas - 1, Agora);
+
+        usuario.RegistrarAcessoCompleto();
+        Errar(usuario, Usuario.MaximoTentativasFalhas - 1, Agora);
+
+        Assert.False(usuario.EstaBloqueada(Agora));
+    }
+
+    [Fact]
+    public void RedefinirSenha_DesfazOBloqueio()
+    {
+        var usuario = CriarUsuario();
+        Errar(usuario, Usuario.MaximoTentativasFalhas, Agora);
+
+        usuario.RedefinirSenha("hash-novo");
+
+        Assert.False(usuario.EstaBloqueada(Agora));
+        Assert.Equal(0, usuario.TentativasFalhas);
+    }
 }

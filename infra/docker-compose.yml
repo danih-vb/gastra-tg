@@ -61,7 +61,9 @@ services:
       Administrador__Email: ${ADMIN_EMAIL:-}
       Administrador__Senha: ${ADMIN_SENHA:-}
     ports:
-      - "${API_PORT:-5019}:8080"
+      # Só na própria máquina: de fora, o caminho é o nginx do frontend (D12). Aberta para a rede, a API aceitaria
+      # conexão direta vinda da rede do Docker, em que ela confia para ler o X-Forwarded-For (#230).
+      - "127.0.0.1:${API_PORT:-5019}:8080"
     depends_on:
       mysql:
         condition: service_healthy
