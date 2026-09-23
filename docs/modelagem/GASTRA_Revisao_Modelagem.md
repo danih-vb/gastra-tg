@@ -159,7 +159,7 @@ Corrigido pela regra 1: a **UC25 — Avaliar o Atendimento** (ator: Cliente) ent
 de uso e no diagrama do Cliente, com a nota das restrições da RN08. A **UC04** também foi ampliada junto
 com o RF18, para continuar descrevendo a mesma coisa que ele.
 
-### 4.8 Um `<<include>>` que merece segunda opinião (#191)
+### 4.8 A UC11 também é iniciada pelo Garçom (#191)
 
 No diagrama do núcleo de comandas, a UC11 (confirmar/ajustar composição da mesa) aparece **só** como
 `<<include>>` da UC10 (abrir comanda), sem associação com o Garçom.
@@ -169,8 +169,10 @@ também permite **ajustar a composição depois**, com a comanda já aberta (`PA
 usado na tela da comanda). Nesse caminho a UC11 é iniciada diretamente pelo Garçom, e o diagrama não mostra
 isso.
 
-**Proposta:** manter o `<<include>>` e **acrescentar** a associação do Garçom com a UC11. Não apliquei
-porque muda a leitura do diagrama e vale a dupla decidir junto — fica como o primeiro item da #191.
+**Decisão:** manter o `<<include>>` e **acrescentar** a associação do Garçom com a UC11. As duas leituras
+são verdadeiras e o diagrama agora mostra as duas: na abertura a UC11 vem incluída na UC10; depois, o Garçom a
+inicia sozinho. A linha nova sai do topo do ator e passa por cima dos outros casos de uso, para não cruzar
+o `<<include>>`.
 
 ### 4.9 O diagrama da fatia vertical tinha quatro divergências (#192)
 
@@ -233,13 +235,13 @@ lugar nenhum. Aparece, na matriz, e a história é melhor do que "foi retirado":
 
 | ID | Descrição | Fonte | Artefatos | Status |
 |---|---|---|---|---|
-| RF12 | O Cliente poder solicitar a exclusão do seu histórico de pedidos a qualquer momento | Questionário de clientes (n = 13) — LGPD | (removido) | **Reprovado** |
+| RF12 | O Cliente poder solicitar a exclusão do seu histórico de pedidos a qualquer momento | Questionário de clientes (n = 13) — LGPD | (removido) — o sistema não identifica o cliente (RN04, RN08): não existe histórico de cliente a excluir | **Reprovado** |
 
 Ou seja: o requisito foi **avaliado e reprovado**, e a matriz mantém a linha com o status para registrar a
 decisão. É o jeito certo de documentar um requisito recusado — e responde a pergunta "cadê o RF12?" melhor
-do que qualquer nota. O motivo da reprovação não está escrito na matriz; vale a dupla registrar, e a hipótese
-natural é que **o sistema não identifica o cliente** (RN04, e agora RN08), então não há histórico de cliente
-para excluir.
+do que qualquer nota. Faltava o motivo, que agora está na coluna de artefatos: **o sistema não identifica o
+cliente** (RN04, e agora RN08), então não existe histórico de cliente para excluir. A preocupação de LGPD
+que originou o pedido é atendida justamente por não guardar dado pessoal do cliente.
 
 **Por que as duas buscas erraram.** O Word parte o texto em pedaços (*runs*) sem critério visível: "UC15"
 estava gravado como "UC1" + "5". Tirar as tags trocando-as por espaço separa os pedaços ("UC1 5") e a
@@ -252,7 +254,6 @@ uma célula da outra. Foi assim que esta seção foi conferida.
 
 | Pendência | Por que não foi feito aqui | Issue |
 |---|---|---|
-| Motivo da reprovação do RF12 registrado na matriz | Decisão da dupla; a matriz só tem o status | #197 |
 | `avaliacao_atendimento` no MER e no DER | Exige o brModelo, que é aplicação gráfica | #196 |
 
 ## 6. Como repetir a conferência do banco
