@@ -64,15 +64,23 @@ O Roteiro dizia "24 perguntas" para o questionário de garçons; o instrumento e
 
 | Conjunto | Quantidade | Faixa |
 |---|---:|---|
-| Requisitos funcionais (RF) | **24** | RF01–RF25, **sem RF12** |
+| Requisitos funcionais (RF) aprovados | **24** | RF01–RF25, **sem RF12** |
+| Requisito funcional reprovado | 1 | RF12 |
 | Requisitos não funcionais (RNF) | 5 | RNF01–RNF05 |
 | Regras de negócio (RN) | 8 | RN01–RN08 |
 
-> **O RF12 não existe, e é de propósito.** Ele foi retirado durante o refinamento, e a numeração dos
-> demais foi preservada para não quebrar as referências cruzadas espalhadas por casos de uso, matriz de
-> rastreabilidade, comentários de código e telas. São **24 requisitos funcionais numerados até 25**, e o
-> documento de pesquisa precisa dizer isso explicitamente — senão a pergunta "cadê o RF12?" aparece na
-> banca.
+> **O RF12 foi avaliado e reprovado.** Era "o Cliente poder solicitar a exclusão do seu histórico de pedidos
+> a qualquer momento", vindo do questionário de clientes (LGPD). A Matriz de Rastreabilidade mantém a linha
+> com o status **Reprovado**, que é o registro da decisão; os demais não foram renumerados, para não quebrar
+> as referências cruzadas. São **24 requisitos funcionais aprovados, numerados até 25**, e o documento de
+> pesquisa precisa dizer isso — senão a pergunta "cadê o RF12?" aparece na banca.
+>
+> O motivo da reprovação não está escrito na matriz. A hipótese natural é que o sistema **não identifica o
+> cliente** (RN04, RN08), então não existe histórico de cliente para excluir — mas é a dupla quem confirma.
+>
+> *Correção: a primeira versão desta ficha dizia que o RF12 não aparecia em nenhum documento. Aparece, na
+> matriz. A busca tinha falhado porque o Word parte o texto das células em pedaços; ver
+> `docs/modelagem/GASTRA_Revisao_Modelagem.md`, seção 4.12.*
 
 ## 6. Correções aplicadas
 
