@@ -80,6 +80,7 @@ Cada decisão com a alternativa considerada e o custo aceito.
 | D10 | **Python lê o histórico só por views, com usuário somente leitura** ✅ *(aprovada pela dupla em 15/09; implementada no #121)* | O backend enviar todo o histórico em cada chamada | As regras de associação precisam de todo o histórico de pedidos; mandar isso a cada chamada é pesado. A view entrega só colunas agregadas, sem dado pessoal, e o usuário não consegue gravar | O Python passa a conhecer o nome das views |
 | D11 | **Dados simulados por ferramenta de console que escreve pelo domínio** (`backend/tools/GastraSemeador`) | Semear pela API REST, ou por script SQL direto | Pela API não dá: toda comanda nasce com `DateTime.UtcNow`, e o histórico precisa de datas do passado para as views por turno, dia e hora e para a janela de 30 dias da RN03. SQL direto daria as datas, mas passaria por cima das regras do domínio (composição da mesa, taxa, totais, hash de senha) e geraria dado que o sistema nunca produziria | A ferramenta grava com o `GastraDbContext` e ajusta só as datas pela API de propriedades do EF, que enxerga o setter privado. Fica fora da solução e recusa rodar fora de `Development` |
 | D12 | **No contêiner, o nginx serve a SPA e repassa `/api` para a API** (mesma origem) | Manter origens diferentes e liberar a origem do contêiner no CORS | Sem origem cruzada não existe CORS para configurar nem para errar, e o celular na rede local funciona pelo IP da máquina **sem recompilar**, porque a página sempre chama o endereço por onde ela mesma foi aberta | O Angular compilado é estático, então a URL da API entra no build: `environment.ts` no desenvolvimento (absoluta, porque `ng serve` e API são portas diferentes) e `environment.production.ts` no contêiner (relativa). Um build de produção servido fora do proxy não acha a API |
+| D13 | **Duas camadas contra tentativa e erro: bloqueio da conta (RN09) e limite por IP**, com a API lendo o IP real no `X-Forwarded-For` só quando a conexão vem da rede do Docker (#230) | Só limite por IP; só bloqueio de conta; confiar no `X-Forwarded-For` de qualquer origem | Cada camada cobre o que a outra não vê. O bloqueio protege **uma conta** de muitos palpites, venham de onde vierem; o limite protege contra quem testa **muitas contas** ou muitos códigos de cliente do mesmo endereço. Atrás do nginx (D12), sem ler o cabeçalho, a API veria todo mundo com o IP do nginx: o limite viraria uma cota única para o restaurante inteiro e a auditoria registraria o IP errado. Confiar no cabeçalho vindo de qualquer lugar deixaria o cliente escolher o próprio IP | Bloqueio conta erros de senha **e** de código 2FA e só zera num acesso completo. Login bloqueado responde a mesma mensagem da senha errada. Porta da API publicada só em `127.0.0.1`: de fora, o caminho é o nginx |
 
 ---
 
@@ -239,6 +240,8 @@ barreira, garantindo que o registro de auditoria não seja alterado depois
 |---|---|---|
 | Senhas (RN06) | Hash BCrypt, fator de custo 12; senha entre 8 caracteres e 72 bytes (limite do BCrypt) | ✅ |
 | Login | Mesma mensagem e mesmo tempo de resposta para e-mail inexistente e senha errada (evita descobrir e-mails cadastrados) | ✅ |
+| Bloqueio por tentativas (RN09) | 5 erros seguidos de senha ou de código 2FA bloqueiam a conta por 15 minutos; só um acesso completo zera a contagem; conta bloqueada responde como senha errada (D13) | ✅ |
+| Limite por IP | Login, 2FA, consulta e avaliação do cliente: cota por minuto e por IP, resposta 429 traduzida; IP real lido do `X-Forwarded-For` só vindo do nginx (D13) | ✅ |
 | Segundo fator (RF16, RN07) | TOTP de 6 dígitos (RFC 6238) para Gerente e Coordenador; o segredo é gerado uma única vez e gravado **criptografado** (ASP.NET Data Protection) | ✅ |
 | Token de acesso | JWT assinado, válido por 8 horas. Na etapa do segundo fator, um token de 5 minutos com audiência própria, que não abre nenhum endpoint | ✅ |
 | Logoff e inativação imediatos | Cada usuário tem uma `chave_sessao` que vai no token e é conferida a cada requisição. Logoff, inativação e troca de papel trocam a chave | ✅ |
@@ -257,7 +260,7 @@ O OWASP Top 10 não é uma ferramenta a instalar: é a lista de riscos usada par
 | A02 Falhas criptográficas | BCrypt nas senhas; segredo TOTP criptografado; HTTPS |
 | A03 Injeção | Acesso ao banco só pelo EF Core, com consultas parametrizadas |
 | A05 Configuração incorreta | Segredos fora do Git; Swagger desativado fora do desenvolvimento |
-| A07 Falhas de identificação e autenticação | Segundo fator para perfis de gestão; mensagem única no login; tempo de resposta constante |
+| A07 Falhas de identificação e autenticação | Segundo fator para perfis de gestão; mensagem única no login; tempo de resposta constante; bloqueio da conta após 5 erros e limite de tentativas por IP (D13) |
 | A09 Falhas de log e monitoramento | Política de log e auditoria definida |
 
 ---

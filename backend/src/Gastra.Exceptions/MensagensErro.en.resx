@@ -16,9 +16,11 @@
   <data name="ErroInesperado" xml:space="preserve"><value>An unexpected error occurred.</value></data>
   <data name="EmailObrigatorio" xml:space="preserve"><value>Email is required.</value></data>
   <data name="SenhaObrigatoria" xml:space="preserve"><value>Password is required.</value></data>
-  <data name="CredenciaisInvalidas" xml:space="preserve"><value>Invalid email or password.</value></data>
+  <data name="CredenciaisInvalidas" xml:space="preserve"><value>Invalid email or password. After 5 failed attempts in a row, access is blocked for 15 minutes.</value></data>
   <data name="TokenSegundoFatorInvalido" xml:space="preserve"><value>Verification step expired or invalid. Please log in again.</value></data>
   <data name="CodigoSegundoFatorInvalido" xml:space="preserve"><value>Invalid verification code.</value></data>
+  <data name="AcessoBloqueadoTemporariamente" xml:space="preserve"><value>Too many failed attempts in a row. Access is blocked for 15 minutes.</value></data>
+  <data name="MuitasRequisicoes" xml:space="preserve"><value>Too many requests in a short time. Wait a minute and try again.</value></data>
   <data name="SegundoFatorJaConfigurado" xml:space="preserve"><value>The authenticator app is already set up for this user.</value></data>
   <data name="SegundoFatorNaoConfigurado" xml:space="preserve"><value>Set up the authenticator app before confirming the code.</value></data>
   <data name="NaoAutenticado" xml:space="preserve"><value>You must log in.</value></data>

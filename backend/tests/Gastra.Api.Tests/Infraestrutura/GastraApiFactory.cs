@@ -51,6 +51,10 @@ public class GastraApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Jwt:ChaveAssinatura", "chave-exclusiva-dos-testes-de-integracao-do-gastra");
         builder.UseSetting("Auditoria:EliminacaoAutomatica", "false");
 
+        // Todos os testes saem do mesmo IP falso: com limite, uma classe esgotaria a cota da outra.
+        // Os testes do limite (LimiteDeRequisicoesTests) religam com uma cota pequena.
+        builder.UseSetting("LimiteRequisicoes:Habilitado", "false");
+
         builder.ConfigureServices(services =>
         {
             var configuracaoMySql = services

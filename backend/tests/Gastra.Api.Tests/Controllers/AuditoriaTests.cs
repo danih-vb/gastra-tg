@@ -57,6 +57,21 @@ public class AuditoriaTests(GastraApiFactory factory) : IClassFixture<GastraApiF
     }
 
     [Fact]
+    public async Task Login_ComXForwardedForDeQuemNaoEProxy_IgnoraOCabecalho()
+    {
+        var email = $"metre-{Guid.NewGuid():N}@gastra.test";
+        var metre = await factory.CriarUsuario(email, PapelUsuario.Metre);
+        var cliente = factory.CreateClient();
+        cliente.DefaultRequestHeaders.Add("X-Forwarded-For", "198.51.100.99");
+
+        await factory.Login(cliente, email);
+
+        // O IP de teste não está numa rede confiável (#230): quem chama direto não escolhe o IP que vai para o log.
+        var registro = (await factory.Auditoria(EventoAuditoria.LoginSucesso)).Last(r => r.UsuarioId == metre.Id);
+        Assert.Equal(IpDeTeste, registro.Ip);
+    }
+
+    [Fact]
     public async Task Login_ComSenhaErrada_RegistraFalhaComAContaEOMotivo_SemASenha()
     {
         var email = $"garcom-{Guid.NewGuid():N}@gastra.test";
@@ -71,6 +86,24 @@ public class AuditoriaTests(GastraApiFactory factory) : IClassFixture<GastraApiF
         Assert.Contains("senha_incorreta", registro.Detalhes);
         Assert.Equal(IpDeTeste, registro.Ip);
         SemDadoProibido(registro, "senha-errada-123", email);
+    }
+
+    [Fact]
+    public async Task Login_QuintaSenhaErrada_RegistraQueBloqueouEDepoisOMotivoContaBloqueada()
+    {
+        var email = $"garcom-{Guid.NewGuid():N}@gastra.test";
+        var garcom = await factory.CriarUsuario(email, PapelUsuario.Garcom);
+        var cliente = factory.CreateClient();
+
+        for (var i = 0; i < 5; i++)
+            await cliente.PostAsJsonAsync("/api/autenticacao/login", new { email, senha = "senha-errada-123" }, Json);
+        await cliente.PostAsJsonAsync("/api/autenticacao/login", new { email, senha = SenhaPadrao }, Json);
+
+        var falhas = (await factory.Auditoria(EventoAuditoria.LoginFalha)).Where(r => r.UsuarioId == garcom.Id).ToList();
+        Assert.Equal(6, falhas.Count);
+        Assert.Contains("conta_bloqueada\":true", falhas[4].Detalhes!.Replace(" ", ""));
+        Assert.Contains("\"conta_bloqueada\"", falhas[5].Detalhes!.Replace(" ", ""));
+        Assert.All(falhas, r => SemDadoProibido(r, "senha-errada-123", email));
     }
 
     [Fact]

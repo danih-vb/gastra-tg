@@ -1,9 +1,11 @@
+using Gastra.Api.Configuracao;
 using Gastra.Application.UseCases.Comandas;
 using Gastra.Communication.Enums;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Gastra.Api.Controllers;
 
@@ -162,6 +164,7 @@ public class ComandaController : ControllerBase
     /// </summary>
     [AllowAnonymous]
     [HttpGet("consulta/{codigoAcesso}")]
+    [EnableRateLimiting(LimiteDeRequisicoes.ConsultaCliente)]
     [ProducesResponseType(typeof(ComandaClienteResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ConsultarPeloCliente(
@@ -177,6 +180,7 @@ public class ComandaController : ControllerBase
     /// </summary>
     [AllowAnonymous]
     [HttpPost("consulta/{codigoAcesso}/avaliacao")]
+    [EnableRateLimiting(LimiteDeRequisicoes.ConsultaCliente)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]

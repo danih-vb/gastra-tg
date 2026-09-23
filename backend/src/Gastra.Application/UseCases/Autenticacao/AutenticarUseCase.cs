@@ -9,7 +9,7 @@ using Gastra.Exceptions;
 
 namespace Gastra.Application.UseCases.Autenticacao;
 
-// UC01 — Autenticar-se (RF15, RF16, RN06)
+// UC01 — Autenticar-se (RF15, RF16, RN06, RN09)
 public interface IAutenticarUseCase
 {
     Task<LoginResponse> Executar(LoginRequest request);
@@ -29,6 +29,7 @@ public class AutenticarUseCase(
     {
         Validar(request);
 
+        var agora = DateTime.UtcNow;
         var usuario = await repositorio.ObterPorEmail(request.Email);
 
         // A verificação do hash roda mesmo quando o e-mail não existe: assim o tempo de resposta
@@ -36,16 +37,31 @@ public class AutenticarUseCase(
         _hashFicticio ??= criptografia.GerarHash(Guid.NewGuid().ToString());
         var senhaConfere = criptografia.Verificar(request.Senha, usuario?.SenhaHash ?? _hashFicticio);
 
-        if (usuario is null || !usuario.Ativo || !senhaConfere)
+        // RN09: bloqueada, a conta recusa até a senha certa — senão o bloqueio não pararia quem já acertou.
+        var bloqueada = usuario is not null && usuario.EstaBloqueada(agora);
+
+        if (usuario is null || !usuario.Ativo || bloqueada || !senhaConfere)
         {
             // Política de log, 4.1: o e-mail digitado nunca vai para a auditoria. Sem conta, só o motivo.
-            var motivo = usuario is null ? "conta_nao_encontrada" : !usuario.Ativo ? "conta_inativa" : "senha_incorreta";
+            var motivo = usuario is null ? "conta_nao_encontrada"
+                : !usuario.Ativo ? "conta_inativa"
+                : bloqueada ? "conta_bloqueada"
+                : "senha_incorreta";
+            var bloqueouAgora = motivo == "senha_incorreta" && usuario!.RegistrarTentativaFalha(agora);
+
             await auditoria.Registrar(EventoAuditoria.LoginFalha, ResultadoAuditoria.Falha,
-                detalhes: new { Motivo = motivo }, ator: usuario, comIp: true);
+                detalhes: bloqueouAgora ? new { Motivo = motivo, ContaBloqueada = true } : new { Motivo = motivo },
+                ator: usuario, comIp: true);
             await unitOfWork.Commit();
 
+            // A mesma mensagem para os quatro motivos: se "conta bloqueada" tivesse texto próprio, cinco senhas
+            // erradas revelariam quais e-mails existem (só conta existente bloqueia). O texto já avisa da regra.
             throw new NaoAutenticadoException(MensagensErro.CredenciaisInvalidas);
         }
+
+        // Com segundo fator, o acesso só está completo depois do código (RN09): a contagem fica para lá.
+        if (!usuario.ExigeSegundoFator())
+            usuario.RegistrarAcessoCompleto();
 
         await auditoria.Registrar(EventoAuditoria.LoginSucesso,
             detalhes: usuario.ExigeSegundoFator() ? new { SegundoFatorPendente = true } : null,
