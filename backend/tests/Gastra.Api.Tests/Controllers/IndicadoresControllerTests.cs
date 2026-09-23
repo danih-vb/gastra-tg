@@ -214,4 +214,27 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
         Assert.DoesNotContain($"\"garcomId\":{colega.Id},", json);
         Assert.Contains($"\"garcom_consultado\":\"{eu.Id}\"", (await factory.Auditoria(EventoAuditoria.IndiceDesempenhoConsultado)).Last().Detalhes);
     }
+
+    [Fact]
+    public async Task Ranking_ComAvaliacoes_UsaANotaDeQuemTemOMinimoEEscondeADosOutros()
+    {
+        var (_, ana) = await ClienteGarcom();
+        var (_, bia) = await ClienteGarcom();
+        factory.Indicadores.Garcons.Add(new IndicadorGarcom(ana.Id, 1000m, 4, Turnos: 1, MesasAtendidas: 4, 0));
+        factory.Indicadores.Garcons.Add(new IndicadorGarcom(bia.Id, 1000m, 4, Turnos: 1, MesasAtendidas: 4, 0));
+        factory.Indicadores.AvaliacoesPorGarcom.Add(new AvaliacoesDoGarcom(ana.Id, Quantidade: 10, SomaDasNotas: 48));
+        factory.Indicadores.AvaliacoesPorGarcom.Add(new AvaliacoesDoGarcom(bia.Id, Quantidade: 2, SomaDasNotas: 2));
+
+        var ranking = await Ler<RankingDesempenhoResponse>(_gerente, $"{Rota}/desempenho");
+
+        Assert.Equal((0.4m, 0.3m, 0.3m), (ranking.PesoFaturamento, ranking.PesoMesasAtendidas, ranking.PesoAvaliacao));
+        Assert.Equal(5, ranking.MinimoDeAvaliacoes);
+        var daAna = ranking.Posicoes.Single(p => p.GarcomId == ana.Id);
+        var daBia = ranking.Posicoes.Single(p => p.GarcomId == bia.Id);
+        // Média geral 50 / 12 = 4,17; a da Ana, (5 × 4,17 + 48) / 15 = 4,59.
+        Assert.Equal(4.59m, daAna.NotaConsiderada);
+        // Duas avaliações não bastam: a nota da Bia não aparece, e as duas notas 1 não a derrubam.
+        Assert.Null(daBia.NotaConsiderada);
+        Assert.Equal(ana.Id, ranking.Posicoes[0].GarcomId);
+    }
 }

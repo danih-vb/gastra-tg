@@ -151,12 +151,17 @@ export interface PosicaoNoRanking {
   faturamentoPorTurno: number;
   mesasPorTurno: number;
   turnos: number;
+  /** Média bayesiana das avaliações (1 a 5); nula abaixo do mínimo de avaliações (RN08). */
+  notaConsiderada: number | null;
 }
 
 export interface RankingDeDesempenho {
   periodo: { inicio: string; fim: string };
   pesoFaturamento: number;
   pesoMesasAtendidas: number;
+  /** Zero quando ninguém teve o mínimo de avaliações no período. */
+  pesoAvaliacao: number;
+  minimoDeAvaliacoes: number;
   totalNoRanking: number;
   posicoes: PosicaoNoRanking[];
 }

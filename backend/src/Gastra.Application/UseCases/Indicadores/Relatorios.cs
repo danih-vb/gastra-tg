@@ -259,7 +259,12 @@ public class RankingDesempenhoUseCase(
     {
         var periodo = PeriodoDeRelatorio.Resolver(inicio, fim);
         var linhas = await indicadores.ObterIndicadoresPorGarcom(periodo.Inicio, periodo.Fim);
-        var ranking = IndiceDeDesempenho.Calcular(linhas.Select(l => new DesempenhoNoPeriodo(l.GarcomId, l.Faturamento, l.Turnos, l.MesasAtendidas)));
+        var avaliacoes = (await indicadores.ObterAvaliacoesPorGarcom(periodo.Inicio, periodo.Fim)).ToDictionary(a => a.GarcomId);
+        var calculo = IndiceDeDesempenho.Calcular(linhas.Select(l => new DesempenhoNoPeriodo(
+            l.GarcomId, l.Faturamento, l.Turnos, l.MesasAtendidas,
+            avaliacoes.GetValueOrDefault(l.GarcomId)?.Quantidade ?? 0,
+            avaliacoes.GetValueOrDefault(l.GarcomId)?.SomaDasNotas ?? 0)));
+        var ranking = calculo.Posicoes;
 
         var quem = usuarioLogado.ObterIdentificacao()
                    ?? throw new InvalidOperationException("Consulta de desempenho sem usuário autenticado.");
@@ -283,8 +288,10 @@ public class RankingDesempenhoUseCase(
         return new RankingDesempenhoResponse
         {
             Periodo = periodo.Resposta,
-            PesoFaturamento = IndiceDeDesempenho.PesoFaturamento,
-            PesoMesasAtendidas = 1 - IndiceDeDesempenho.PesoFaturamento,
+            PesoFaturamento = calculo.Pesos.Faturamento,
+            PesoMesasAtendidas = calculo.Pesos.MesasAtendidas,
+            PesoAvaliacao = calculo.Pesos.Avaliacao,
+            MinimoDeAvaliacoes = IndiceDeDesempenho.MinimoDeAvaliacoes,
             TotalNoRanking = ranking.Count,
             Posicoes = visiveis
                 .Select(p => new PosicaoRankingResponse
@@ -296,6 +303,7 @@ public class RankingDesempenhoUseCase(
                     FaturamentoPorTurno = p.FaturamentoPorTurno,
                     MesasPorTurno = p.MesasPorTurno,
                     Turnos = p.Turnos,
+                    NotaConsiderada = p.NotaConsiderada,
                 })
                 .ToList(),
         };

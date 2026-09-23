@@ -50,8 +50,12 @@ const RANKING: RankingDeDesempenho = {
   periodo: PERIODO,
   pesoFaturamento: 0.5,
   pesoMesasAtendidas: 0.5,
+  pesoAvaliacao: 0,
+  minimoDeAvaliacoes: 5,
   totalNoRanking: 1,
-  posicoes: [{ posicao: 1, garcomId: 13, nome: 'Ana Souza', indice: 99.9, faturamentoPorTurno: 1315.45, mesasPorTurno: 9.3, turnos: 22 }],
+  posicoes: [
+    { posicao: 1, garcomId: 13, nome: 'Ana Souza', indice: 99.9, faturamentoPorTurno: 1315.45, mesasPorTurno: 9.3, turnos: 22, notaConsiderada: null },
+  ],
 };
 
 const AVALIACOES: RelatorioAvaliacoes = {

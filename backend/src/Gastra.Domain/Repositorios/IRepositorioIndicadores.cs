@@ -37,4 +37,10 @@ public interface IRepositorioIndicadores
     /// comanda e sem garçom — ver a nota de uma mesa isolada seria identificar o atendimento dela.
     /// </summary>
     Task<List<LinhaAvaliacao>> ObterDistribuicaoDeAvaliacoes(DateOnly inicio, DateOnly fim);
+
+    /// <summary>
+    /// Avaliações por garçom no período, só para o índice de desempenho (RF11). Quem usa precisa aplicar o mínimo de
+    /// avaliações antes de mostrar qualquer nota (<see cref="IndiceDeDesempenho.MinimoDeAvaliacoes"/>, RN08).
+    /// </summary>
+    Task<List<AvaliacoesDoGarcom>> ObterAvaliacoesPorGarcom(DateOnly inicio, DateOnly fim);
 }

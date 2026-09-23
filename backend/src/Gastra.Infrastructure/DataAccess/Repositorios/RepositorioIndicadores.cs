@@ -73,6 +73,17 @@ public class RepositorioIndicadores(GastraDbContext contexto) : IRepositorioIndi
             GROUP BY a.nota
             """).ToListAsync();
 
+    // Mesmo recorte de data da distribuição: o dia do fechamento, no horário de Brasília.
+    public Task<List<AvaliacoesDoGarcom>> ObterAvaliacoesPorGarcom(DateOnly inicio, DateOnly fim) =>
+        contexto.Database.SqlQuery<AvaliacoesDoGarcom>($"""
+            SELECT c.garcom_id AS GarcomId, COUNT(*) AS Quantidade, CAST(SUM(a.nota) AS SIGNED) AS SomaDasNotas
+            FROM avaliacao_atendimento a
+            JOIN comanda c ON c.id = a.comanda_id
+            WHERE DATE(CONVERT_TZ(c.data_hora_fechamento, '+00:00', '-03:00')) >= {inicio}
+              AND DATE(CONVERT_TZ(c.data_hora_fechamento, '+00:00', '-03:00')) < {fim}
+            GROUP BY c.garcom_id
+            """).ToListAsync();
+
     public Task<List<IndicadorPracaNoTempo>> ObterFaturamentoPorPracaEHora(DateOnly inicio, DateOnly fim) =>
         contexto.Database.SqlQuery<IndicadorPracaNoTempo>($"""
             SELECT praca_id AS PracaId, hora AS Fatia, SUM(faturamento) AS Faturamento, COUNT(*) AS Comandas
