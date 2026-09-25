@@ -113,7 +113,8 @@
         <div class="pequeno">
           <strong>Como a sugestão foi feita</strong>
           Quem faturou menos por turno nos últimos 30 dias e quem está há mais tempo sem praça de alto potencial tem
-          prioridade nas praças de maior movimento (pesos 0,6 e 0,4, calibrados por simulação).
+          prioridade nas praças de maior movimento (pesos 0,6 e 0,4, calibrados por simulação). Embaixo de cada nome
+          está o motivo; as vendas aparecem só como faixa, comparadas com a equipe do turno.
         </div>
       </div>
     }
@@ -140,6 +141,9 @@
           <header>
             <div class="linha">
               <h3 [id]="'coluna-' + praca.id">Praça {{ praca.codigo }}</h3>
+              @if (ehDeAltoMovimento(praca.id)) {
+                <span class="etiqueta">Alto movimento</span>
+              }
               <span class="vagas" [attr.aria-label]="ocupadas(praca.id) + ' de ' + praca.quantidadeGarcons + ' vagas'">
                 {{ ocupadas(praca.id) }}/{{ praca.quantidadeGarcons }}
               </span>
@@ -153,6 +157,9 @@
                   <span class="etiqueta marca">Ajustado</span>
                 }
               </div>
+              @if (garcom.motivo) {
+                <p class="pequeno suave motivo">{{ garcom.motivo }}</p>
+              }
               @if (garcom.ajustado && garcom.sugerida) {
                 <p class="pequeno suave">Sugerido: praça {{ nomeDaPraca(garcom.sugerida) }}</p>
               }

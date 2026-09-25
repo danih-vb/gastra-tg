@@ -407,6 +407,67 @@ public class AlocacaoControllerTests(GastraApiFactory factory) : IClassFixture<G
         Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
     }
 
+    // --- Explicação da sugestão: faixa, e nunca valor ---
+
+    /// <summary>Dois garçons (900 e 300 por turno, média 600) e uma praça de alto potencial; o Python manda o de 300 para ela.</summary>
+    private async Task<(DateOnly Dia, Usuario Alto, Usuario Baixo, Praca Boa)> SugestaoComDoisGarcons()
+    {
+        var boa = await CriarPraca(vagas: 1);
+        var fraca = await CriarPraca(vagas: 1);
+        var alto = await CriarGarcom();
+        var baixo = await CriarGarcom();
+        factory.Indicadores.FaturamentoMedioPorPraca[boa.Id] = 1_000_000m;
+        factory.Indicadores.FaturamentoMedioPorPraca[fraca.Id] = 1m;
+        factory.Indicadores.FaturamentoPorTurnoDoGarcom[alto.Id] = 900m;
+        factory.Indicadores.FaturamentoPorTurnoDoGarcom[baixo.Id] = 300m;
+        factory.ServicoAnalitico.ResponderAlocacao = _ =>
+            [new DesignacaoSugerida(baixo.Id, boa.Id), new DesignacaoSugerida(alto.Id, fraca.Id)];
+
+        var dia = NovoDia();
+        await Ler(await PedirSugestao(dia, alto.Id, baixo.Id));
+        return (dia, alto, baixo, boa);
+    }
+
+    [Fact]
+    public async Task Sugestao_ExplicaAEscolhaComFaixaETurnos_SemMostrarValores()
+    {
+        var (dia, alto, baixo, boa) = await SugestaoComDoisGarcons();
+
+        // Recarregando a tela, a explicação continua lá: é recalculada do histórico, não guardada.
+        var resposta = await _metre.GetAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar");
+        var json = await resposta.Content.ReadAsStringAsync();
+        var turno = await Ler(resposta);
+
+        Assert.Equal(Gastra.Communication.Enums.FaixaDeFaturamento.AbaixoDaEquipe,
+            turno.Designacoes.Single(d => d.GarcomId == baixo.Id).FaixaDeFaturamento);
+        Assert.Equal(Gastra.Communication.Enums.FaixaDeFaturamento.AcimaDaEquipe,
+            turno.Designacoes.Single(d => d.GarcomId == alto.Id).FaixaDeFaturamento);
+        Assert.Equal(0, turno.Designacoes.Single(d => d.GarcomId == baixo.Id).TurnosDesdePracaDeAltoPotencial);
+        Assert.Contains(boa.Id, turno.PracasDeAltoPotencial!);
+        // O Metre não consulta indicador de desempenho: nenhum valor em reais sai na resposta.
+        Assert.DoesNotContain("900", json);
+        Assert.DoesNotContain("300", json);
+    }
+
+    [Fact]
+    public async Task Consulta_ComoGarcom_VeOSalaoMasNaoAFaixaDosColegas()
+    {
+        var (dia, _, _, _) = await SugestaoComDoisGarcons();
+        var email = $"garcom-{Guid.NewGuid():N}@gastra.test";
+        await factory.CriarUsuario(email, PapelUsuario.Garcom);
+        var garcom = factory.CreateClient();
+        Autenticar(garcom, await factory.Login(factory.CreateClient(), email));
+
+        var resposta = await garcom.GetAsync($"{Rota}/{dia:yyyy-MM-dd}/Jantar");
+        var json = await resposta.Content.ReadAsStringAsync();
+        var turno = await Ler(resposta);
+
+        Assert.Equal(2, turno.Designacoes.Count);
+        Assert.All(turno.Designacoes, d => Assert.Null(d.FaixaDeFaturamento));
+        Assert.Null(turno.PracasDeAltoPotencial);
+        Assert.DoesNotContain("Equipe", json);
+    }
+
     // --- Permissões e rota ---
 
     [Fact]

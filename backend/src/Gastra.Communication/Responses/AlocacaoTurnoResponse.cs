@@ -17,6 +17,11 @@ public class AlocacaoTurnoResponse
     public bool? ServicoDisponivel { get; set; }
 
     public List<DesignacaoResponse> Designacoes { get; set; } = [];
+
+    /// <summary>
+    /// Praças de maior movimento, as que a RN03 reparte com mais cuidado. Só para Metre e Gerente; nulo para os demais.
+    /// </summary>
+    public List<int>? PracasDeAltoPotencial { get; set; }
 }
 
 public class DesignacaoResponse
@@ -25,4 +30,12 @@ public class DesignacaoResponse
     public string GarcomNome { get; set; } = string.Empty;
     public int PracaId { get; set; }
     public string PracaCodigo { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Por que a RN03 mandou o garçom para cá: onde o faturamento por turno dele fica em relação à equipe do turno
+    /// (a faixa, nunca o valor) e há quantos turnos ele não pega praça de alto potencial. Só para Metre e Gerente.
+    /// </summary>
+    public FaixaDeFaturamento? FaixaDeFaturamento { get; set; }
+
+    public int? TurnosDesdePracaDeAltoPotencial { get; set; }
 }

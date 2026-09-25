@@ -20,6 +20,7 @@ public class AjustarAlocacaoUseCase(
     IRepositorioAlocacao repositorio,
     IRepositorioUsuario repositorioUsuario,
     IRepositorioPraca repositorioPraca,
+    IRepositorioIndicadores indicadores,
     IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IAjustarAlocacaoUseCase
 {
@@ -91,7 +92,9 @@ public class AjustarAlocacaoUseCase(
 
         await unitOfWork.Commit();
 
-        return await LeitorDoTurno.Montar(data, periodo, turno, repositorioUsuario, repositorioPraca);
+        var fatores = await FatoresDoTurno.Calcular(
+            data, turno.Select(a => a.GarcomId).ToList(), await repositorioPraca.ListarTodas(), indicadores, repositorio);
+        return await LeitorDoTurno.Montar(data, periodo, turno, repositorioUsuario, repositorioPraca, fatores);
     }
 
     /// <summary>

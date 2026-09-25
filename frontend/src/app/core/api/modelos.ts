@@ -108,11 +108,17 @@ export interface SugestoesDaComanda {
   itens: ItemSugerido[];
 }
 
+/** Onde as vendas por turno do garçom ficam em relação à equipe do turno: a faixa, nunca o valor. */
+export type FaixaDeFaturamento = 'SemHistorico' | 'AbaixoDaEquipe' | 'NaMediaDaEquipe' | 'AcimaDaEquipe';
+
 export interface DesignacaoDoTurno {
   garcomId: number;
   garcomNome: string;
   pracaId: number;
   pracaCodigo: string;
+  /** Explicação da RN03; só vem para Metre e Gerente. */
+  faixaDeFaturamento?: FaixaDeFaturamento | null;
+  turnosDesdePracaDeAltoPotencial?: number | null;
 }
 
 export interface AlocacaoDoTurno {
@@ -121,6 +127,8 @@ export interface AlocacaoDoTurno {
   confirmada: boolean;
   servicoDisponivel: boolean | null;
   designacoes: DesignacaoDoTurno[];
+  /** Praças de maior movimento; só para Metre e Gerente. */
+  pracasDeAltoPotencial?: number[] | null;
 }
 
 /** UC20 — o que o cliente vê da própria conta: nada de garçom, restrição ou outra mesa (RN04). */

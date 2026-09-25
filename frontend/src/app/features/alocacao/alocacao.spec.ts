@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AlocacaoDoTurno, GarcomDoTurno } from '../../core/api/modelos';
 import { API, praca } from '../../core/api/testes';
 import { dataDeHoje, periodoDoTurno } from '../comandas/turno';
-import { Alocacao } from './alocacao';
+import { Alocacao, motivoDaSugestao } from './alocacao';
 
 const GARCONS: GarcomDoTurno[] = [
   { id: 11, nome: 'Carla Mendes' },
@@ -105,6 +105,40 @@ describe('Alocação (UC15, UC21, UC22)', () => {
     expect(pagina.textContent).toContain('Como a sugestão foi feita');
     expect([...pagina.querySelectorAll('.coluna')].length).toBe(2);
     expect(pagina.querySelector('.coluna')?.textContent).toContain('2/2');
+  });
+
+  it('mostra o motivo de cada garçom e marca a praça de alto movimento, sem valores', async () => {
+    const pagina = await renderizar();
+
+    botao(pagina, 'Gerar sugestão').click();
+    const resposta = turno([[11, 1], [12, 1], [13, 2]]);
+    resposta.pracasDeAltoPotencial = [1];
+    resposta.designacoes[0] = { ...resposta.designacoes[0], faixaDeFaturamento: 'AbaixoDaEquipe', turnosDesdePracaDeAltoPotencial: 3 };
+    resposta.designacoes[1] = { ...resposta.designacoes[1], faixaDeFaturamento: 'SemHistorico', turnosDesdePracaDeAltoPotencial: 0 };
+    http.expectOne(`${API}/api/alocacoes/sugestao`).flush(resposta);
+    await fixture.whenStable();
+
+    const [pracaA, pracaB] = [...pagina.querySelectorAll('.coluna')];
+    expect(pracaA.textContent).toContain('Alto movimento');
+    expect(pracaB.textContent).not.toContain('Alto movimento');
+    expect(pracaA.textContent).toContain('Vendas abaixo da equipe · 3 turnos sem praça de alto movimento');
+    // Zero turnos de espera não vira frase.
+    expect(pracaA.textContent).toContain('Sem vendas nos últimos 30 dias');
+    expect(pracaA.textContent).not.toContain('0 turnos');
+  });
+
+  it('sem os fatores na resposta, não inventa motivo', () => {
+    expect(motivoDaSugestao({ garcomId: 1, garcomNome: 'Ana', pracaId: 1, pracaCodigo: 'A' })).toBeNull();
+    expect(
+      motivoDaSugestao({
+        garcomId: 1,
+        garcomNome: 'Ana',
+        pracaId: 1,
+        pracaCodigo: 'A',
+        faixaDeFaturamento: 'NaMediaDaEquipe',
+        turnosDesdePracaDeAltoPotencial: 1,
+      }),
+    ).toBe('Vendas na média da equipe · 1 turno sem praça de alto movimento');
   });
 
   it('na praça cheia, exige escolher com quem trocar e envia a troca (#140)', async () => {
