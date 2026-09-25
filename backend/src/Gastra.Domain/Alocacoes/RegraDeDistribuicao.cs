@@ -1,3 +1,5 @@
+using Gastra.Domain.Enums;
+
 namespace Gastra.Domain.Alocacoes;
 
 /// <summary>
@@ -52,5 +54,34 @@ public static class RegraDeDistribuicao
         }
 
         return turnos;
+    }
+
+    /// <summary>
+    /// Quanto o faturamento por turno pode se afastar da média da equipe e ainda contar como "na média": 10% para
+    /// cada lado. Diferença menor que isso não explica a sugestão, e chamá-la de "abaixo" seria exagero.
+    /// </summary>
+    public const decimal MargemDaMedia = 0.10m;
+
+    /// <summary>
+    /// A faixa de cada garçom do turno, comparado com a média dos colegas que faturaram na janela. É a tradução do
+    /// fator de desequilíbrio da RN03 para quem não pode ver o valor (o Metre): "abaixo da equipe" é quem a
+    /// programação linear tende a mandar para a praça de maior movimento.
+    /// </summary>
+    public static IReadOnlyDictionary<int, FaixaDeFaturamento> FaixasDeFaturamento(
+        IEnumerable<int> garcomIds, IReadOnlyDictionary<int, decimal> faturamentoPorTurno)
+    {
+        var ids = garcomIds.Distinct().ToList();
+        var comHistorico = ids.Where(id => faturamentoPorTurno.GetValueOrDefault(id) > 0).ToList();
+        var media = comHistorico.Count == 0 ? 0m : comHistorico.Average(id => faturamentoPorTurno[id]);
+
+        return ids.ToDictionary(id => id, id =>
+        {
+            var valor = faturamentoPorTurno.GetValueOrDefault(id);
+            if (valor <= 0)
+                return FaixaDeFaturamento.SemHistorico;
+            if (valor < media * (1 - MargemDaMedia))
+                return FaixaDeFaturamento.AbaixoDaEquipe;
+            return valor > media * (1 + MargemDaMedia) ? FaixaDeFaturamento.AcimaDaEquipe : FaixaDeFaturamento.NaMediaDaEquipe;
+        });
     }
 }

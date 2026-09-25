@@ -225,6 +225,13 @@ A distribuição não é sorteio. Cada garçom recebe um índice que pesa duas c
 rodízio: sem ele, o mesmo garçom pegaria sempre a praça boa, e os outros nunca teriam chance de melhorar o próprio
 número.
 
+Na tela, as praças de alto potencial levam a etiqueta **Alto movimento**, e embaixo do nome de cada garçom aparece
+o motivo, por exemplo *"Vendas abaixo da equipe · 3 turnos sem praça de alto movimento"*. As vendas aparecem só
+como **faixa** (abaixo, na média ou acima da equipe do turno, com 10% de tolerância), nunca em reais: o valor é
+indicador de desempenho, que só o Gerente consulta. Quem é novo na casa aparece como *"Sem vendas nos últimos 30
+dias"* e, para a regra, conta como quem vendeu menos. O garçom que consulta o salão vê as praças, mas não o motivo
+dos colegas.
+
 **Passo 3 — confirmar.** Depois de confirmada, a alocação do turno **não muda mais**. O quadro fica só para
 leitura.
 

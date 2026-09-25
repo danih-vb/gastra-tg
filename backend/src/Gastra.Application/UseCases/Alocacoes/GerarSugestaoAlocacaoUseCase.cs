@@ -49,13 +49,13 @@ public class GerarSugestaoAlocacaoUseCase(
         if (pracas.Sum(p => p.QuantidadeGarcons) < garcomIds.Count)
             throw new RegraDeNegocioException(MensagensErro.AlocacaoSemVagas);
 
-        var (garconsDoTurno, pracasDoTurno) = await MontarFatores(request.Data, garcomIds, pracas);
+        var fatores = await FatoresDoTurno.Calcular(request.Data, garcomIds, pracas, indicadores, repositorio);
 
         IReadOnlyList<DesignacaoSugerida> designacoes;
         try
         {
             designacoes = await servicoAnalitico.SugerirAlocacao(
-                garconsDoTurno, pracasDoTurno, RegraDeDistribuicao.PesoDesequilibrio, RegraDeDistribuicao.PesoEspera);
+                fatores.Garcons, fatores.Pracas, RegraDeDistribuicao.PesoDesequilibrio, RegraDeDistribuicao.PesoEspera);
             GarantirResultadoValido(designacoes, garcomIds, pracas);
         }
         catch (ServicoAnaliticoIndisponivelException)
@@ -65,7 +65,7 @@ public class GerarSugestaoAlocacaoUseCase(
                 detalhes: new { request.Data, Periodo = periodo, Motivo = "servico_analitico_indisponivel" });
             await unitOfWork.Commit();
 
-            return await LeitorDoTurno.Montar(request.Data, periodo, turnoAtual, repositorioUsuario, repositorioPraca, servicoDisponivel: false);
+            return await LeitorDoTurno.Montar(request.Data, periodo, turnoAtual, repositorioUsuario, repositorioPraca, fatores, servicoDisponivel: false);
         }
 
         // A sugestão nova substitui a anterior não confirmada. Dois Commits: o índice único (data, período,
@@ -87,28 +87,7 @@ public class GerarSugestaoAlocacaoUseCase(
         });
         await unitOfWork.Commit();
 
-        return await LeitorDoTurno.Montar(request.Data, periodo, novas, repositorioUsuario, repositorioPraca, servicoDisponivel: true);
-    }
-
-    /// <summary>RN03: faturamento por turno e espera de cada garçom; potencial e vagas de cada praça.</summary>
-    private async Task<(List<GarcomParaAlocacao>, List<PracaParaAlocacao>)> MontarFatores(
-        DateOnly data, List<int> garcomIds, List<Praca> pracas)
-    {
-        var faturamentoMedio = await indicadores.ObterFaturamentoMedioPorPraca();
-        var faturamentoPorTurno = await indicadores.ObterFaturamentoMedioPorTurnoDoGarcom(
-            data.AddDays(-RegraDeDistribuicao.DiasDaJanelaDeFaturamento), data);
-        var altoPotencial = RegraDeDistribuicao.PracasDeAltoPotencial(faturamentoMedio);
-        var historico = await repositorio.ListarPracasConfirmadasAntesDe(garcomIds, data);
-
-        var garcons = garcomIds.Select(id => new GarcomParaAlocacao(
-            id,
-            faturamentoPorTurno.GetValueOrDefault(id),
-            RegraDeDistribuicao.TurnosDesdePracaDeAltoPotencial(historico.GetValueOrDefault(id, []), altoPotencial))).ToList();
-
-        var pracasDoTurno = pracas.Select(p => new PracaParaAlocacao(
-            p.Id, p.QuantidadeGarcons, faturamentoMedio.GetValueOrDefault(p.Id))).ToList();
-
-        return (garcons, pracasDoTurno);
+        return await LeitorDoTurno.Montar(request.Data, periodo, novas, repositorioUsuario, repositorioPraca, fatores, servicoDisponivel: true);
     }
 
     /// <summary>

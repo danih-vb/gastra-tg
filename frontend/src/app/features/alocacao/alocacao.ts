@@ -1,7 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { catchError, forkJoin, of } from 'rxjs';
 import { GastraApiService } from '../../core/api/gastra-api.service';
-import { AlocacaoDoTurno, GarcomDoTurno, PeriodoAlocacao, Praca } from '../../core/api/modelos';
+import {
+  AlocacaoDoTurno,
+  DesignacaoDoTurno,
+  FaixaDeFaturamento,
+  GarcomDoTurno,
+  PeriodoAlocacao,
+  Praca,
+} from '../../core/api/modelos';
 import { AvisoService } from '../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
@@ -75,7 +82,9 @@ export class Alocacao {
     return this.pracas().find((p) => p.id === pracaId)?.codigo ?? String(pracaId);
   }
 
-  protected garconsDaPraca(praca: Praca): { id: number; nome: string; ajustado: boolean; sugerida: number | null }[] {
+  protected garconsDaPraca(
+    praca: Praca,
+  ): { id: number; nome: string; ajustado: boolean; sugerida: number | null; motivo: string | null }[] {
     return this.designados()
       .filter((d) => d.pracaId === praca.id)
       .map((d) => ({
@@ -83,7 +92,12 @@ export class Alocacao {
         nome: d.garcomNome,
         ajustado: !!this.sugerida()[d.garcomId] && this.sugerida()[d.garcomId] !== d.pracaId,
         sugerida: this.sugerida()[d.garcomId] ?? null,
+        motivo: motivoDaSugestao(d),
       }));
+  }
+
+  protected ehDeAltoMovimento(pracaId: number): boolean {
+    return this.turno()?.pracasDeAltoPotencial?.includes(pracaId) ?? false;
   }
 
   protected ocupadas(pracaId: number): number {
@@ -245,4 +259,27 @@ export class Alocacao {
       },
     });
   }
+}
+
+const FAIXAS: Record<FaixaDeFaturamento, string> = {
+  SemHistorico: 'Sem vendas nos últimos 30 dias',
+  AbaixoDaEquipe: 'Vendas abaixo da equipe',
+  NaMediaDaEquipe: 'Vendas na média da equipe',
+  AcimaDaEquipe: 'Vendas acima da equipe',
+};
+
+/**
+ * Os dois fatores da RN03 em palavras: a faixa de vendas (nunca o valor, que é indicador de desempenho e o Metre não
+ * consulta) e a espera por uma praça de alto movimento. Sem os fatores na resposta, não há o que explicar.
+ */
+export function motivoDaSugestao(designacao: DesignacaoDoTurno): string | null {
+  if (!designacao.faixaDeFaturamento) {
+    return null;
+  }
+  const partes = [FAIXAS[designacao.faixaDeFaturamento]];
+  const turnos = designacao.turnosDesdePracaDeAltoPotencial ?? 0;
+  if (turnos > 0) {
+    partes.push(`${turnos} ${turnos === 1 ? 'turno' : 'turnos'} sem praça de alto movimento`);
+  }
+  return partes.join(' · ');
 }
