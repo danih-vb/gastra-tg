@@ -67,7 +67,7 @@ O Roteiro dizia "24 perguntas" para o questionário de garçons; o instrumento e
 | Requisitos funcionais (RF) aprovados | **24** | RF01–RF25, **sem RF12** |
 | Requisito funcional reprovado | 1 | RF12 |
 | Requisitos não funcionais (RNF) | 5 | RNF01–RNF05 |
-| Regras de negócio (RN) | 8 | RN01–RN08 |
+| Regras de negócio (RN) | 9 | RN01–RN09 (a RN09, bloqueio por tentativas, veio da #230, e não da pesquisa) |
 
 > **O RF12 foi avaliado e reprovado.** Era "o Cliente poder solicitar a exclusão do seu histórico de pedidos
 > a qualquer momento", vindo do questionário de clientes (LGPD). A Matriz de Rastreabilidade mantém a linha
@@ -75,8 +75,8 @@ O Roteiro dizia "24 perguntas" para o questionário de garçons; o instrumento e
 > as referências cruzadas. São **24 requisitos funcionais aprovados, numerados até 25**, e o documento de
 > pesquisa precisa dizer isso — senão a pergunta "cadê o RF12?" aparece na banca.
 >
-> O motivo da reprovação não está escrito na matriz. A hipótese natural é que o sistema **não identifica o
-> cliente** (RN04, RN08), então não existe histórico de cliente para excluir — mas é a dupla quem confirma.
+> O motivo da reprovação agora está na matriz: o sistema **não identifica o cliente** (RN04, RN08), então não
+> existe histórico de cliente para excluir (#229).
 >
 > *Correção: a primeira versão desta ficha dizia que o RF12 não aparecia em nenhum documento. Aparece, na
 > matriz. A busca tinha falhado porque o Word parte o texto das células em pedaços; ver
