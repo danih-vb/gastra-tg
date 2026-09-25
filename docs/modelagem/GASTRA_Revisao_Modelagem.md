@@ -52,12 +52,23 @@ tabela).
 
 | Tabela no banco | No MER/DER | Decisão |
 |---|---|---|
-| `avaliacao_atendimento` | **ausente** | Entrar no MER e no DER como entidade fraca de `Comanda`, cardinalidade (0,1) |
+| `avaliacao_atendimento` | **ausente** → incluída (ENT11, REL11) | Entidade com identificador próprio, ligada à `Comanda` por "recebe": (0,1) do lado da comanda, (1,1) do lado da avaliação |
 
 A tabela nasceu com o RF25 (avaliação do atendimento pelo cliente) e é entidade de verdade: tem
 identidade, atributos próprios (`nota`, `comentario`, `data_hora_envio`) e vive presa a uma comanda, uma
-por comanda. **Essa correção precisa do brModelo**, que é aplicação gráfica — está registrada como tarefa
-manual na seção 5.
+por comanda.
+
+**Não é entidade fraca**, como uma primeira versão desta seção dizia. Entidade fraca é a que não se identifica
+sozinha e precisa da chave da dona; esta tem identificador próprio (`id_avaliacao`). O que ela tem é
+**dependência de existência**: não há avaliação sem comanda. No DER isso aparece na participação obrigatória,
+(1,1) do lado da avaliação; no físico, na chave estrangeira única `comanda_id`.
+
+**Como entrou no DER.** O brModelo é aplicação gráfica, mas as classes dele podem ser usadas por script (o
+mesmo recurso do `gerar_logico.js` da engenharia reversa). O script `der/acrescentar_avaliacao.js` abre espaço
+descendo a fileira de baixo (ItemDoPedido, ItemDoCardapio, Promocao) com o método que leva as linhas junto e
+passa o relacionamento "recebe" pelo corredor livre entre as linhas de "contém" e "possui", sem cruzar
+nenhuma. Conferência: reaberto do arquivo, o diagrama tem exatamente 1 entidade, 4 atributos, 1
+relacionamento, 6 ligações e 2 cardinalidades a mais que antes. O MER ganhou a ENT11 e a REL11.
 
 ### 4.2 O diagrama de implantação (#195)
 
@@ -252,9 +263,7 @@ uma célula da outra. Foi assim que esta seção foi conferida.
 
 ## 5. O que ficou pendente, e por quê
 
-| Pendência | Por que não foi feito aqui | Issue |
-|---|---|---|
-| `avaliacao_atendimento` no MER e no DER | Exige o brModelo, que é aplicação gráfica | #196 |
+Nada. A última pendência, a avaliação no MER e no DER (#196), foi resolvida como descreve a seção 4.1.
 
 ## 6. Como repetir a conferência do banco
 
