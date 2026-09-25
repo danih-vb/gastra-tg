@@ -175,6 +175,24 @@ jobs:
             sleep 1
           done
 
+      # Responder pela porta publicada não basta: a checagem de saúde roda dentro do contêiner, por outro caminho,
+      # e já falhou com o site no ar (localhost resolvendo para IPv6). O compose espera "healthy" para subir tudo.
+      - name: A checagem de saúde do próprio contêiner passa
+        run: |
+          for tentativa in $(seq 1 30); do
+            estado=$(docker inspect --format '{{.State.Health.Status}}' gastra-web-ci)
+            if [ "$estado" = "healthy" ]; then
+              echo "saudável na tentativa $tentativa"
+              break
+            fi
+            if [ "$tentativa" = "30" ]; then
+              echo "o contêiner não ficou saudável (estado: $estado)" >&2
+              docker inspect --format '{{json .State.Health}}' gastra-web-ci >&2
+              exit 1
+            fi
+            sleep 1
+          done
+
       - name: A SPA é servida e a rota interna cai no index.html
         run: |
           curl -fsS http://localhost:8080/ | grep -q "<app-root"             || { echo "a raiz não serviu a SPA" >&2; exit 1; }
