@@ -15,7 +15,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
 from gastra_analitica.dados.simulador import gerar_historico
-from gastra_analitica.recomendacao.regras_associacao import ModeloRecomendacao, treinar
+from gastra_analitica.recomendacao.segmentada import ModeloSegmentado, treinar_segmentado
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ CACHE_SEGUNDOS = 300
 
 @dataclass(frozen=True)
 class ModeloComOrigem:
-    modelo: ModeloRecomendacao
+    modelo: ModeloSegmentado
     origem: str  # "banco" ou "simulado"
     motivo: str | None = None  # por que caiu no simulado
     comandas_usadas: int = 0
@@ -79,19 +79,19 @@ class ProvedorDeModelo:
                 f"histórico real insuficiente ({len(comandas_uteis)} de {self._minimo} comandas com 2 ou mais itens)"
             )
 
-        return ModeloComOrigem(treinar(comandas_uteis), "banco", comandas_usadas=len(comandas_uteis))
+        return ModeloComOrigem(treinar_segmentado(comandas_uteis), "banco", comandas_usadas=len(comandas_uteis))
 
 
 class CacheDoModeloSimulado:
     """O modelo simulado é sempre o mesmo (semente fixa): treina uma vez só."""
 
     def __init__(self) -> None:
-        self._modelo: ModeloRecomendacao | None = None
+        self._modelo: ModeloSegmentado | None = None
         self._comandas = 0
 
     def obter(self, motivo: str) -> ModeloComOrigem:
         if self._modelo is None:
             transacoes = gerar_historico().transacoes
-            self._modelo = treinar(transacoes)
+            self._modelo = treinar_segmentado(transacoes)
             self._comandas = len(transacoes)
         return ModeloComOrigem(self._modelo, "simulado", motivo, self._comandas)

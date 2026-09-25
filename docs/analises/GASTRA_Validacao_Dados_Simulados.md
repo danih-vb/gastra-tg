@@ -1,125 +1,162 @@
 # GASTRA — Validação dos dados simulados
 
 Confere se o histórico gerado pelo semeador (`backend/tools/GastraSemeador`) faz os algoritmos do TG
-funcionarem de verdade, e não só encher tabela. Issue #185.
+funcionarem de verdade, e não só encher tabela. Issue #185, atualizada com a clusterização (#240).
 
-- **Execução conferida:** semente 42, 70 dias, 4.213 comandas fechadas e 12.753 itens.
-- **Ambiente:** MySQL 8.4 local, serviço analítico Python no ar, lendo o banco pelo usuário somente leitura (D10).
+- **Execução conferida:** semente 42, 70 dias, 4.204 comandas fechadas e 13.914 itens, semeados num banco separado
+  (`gastra_validacao`) para não mexer no banco de desenvolvimento.
+- **Como repetir:** `data-science/scripts/validar_dados_semeados.py`, que lê só as views e imprime as tabelas deste
+  documento (seção "Como repetir").
 
 > Os dados são **simulados**. Não representam nenhum restaurante real, nem o estabelecimento entrevistado
 > na pesquisa.
 
+## Os dois gabaritos plantados
+
+O semeador e o `simulador.py` plantam, de propósito, padrões que os algoritmos precisam **redescobrir** sem que
+ninguém diga quais são:
+
+| Gabarito | O que é | Quem precisa redescobrir |
+|---|---|---|
+| Combinações | "Moqueca puxa arroz de coco" em 85% das vezes, "moqueca puxa caipirinha" em 60%, "pudim puxa café" em 70% e "porção infantil puxa suco" em 65% | Regras de associação |
+| Perfis de consumo | Cada comanda nasce de um de três perfis — **almoço executivo** (salada, risoto, suco, água com gás, café), **frutos do mar** (moqueca, bobó, bolinho de bacalhau, caipirinha, petit gâteau) e **família** (porção infantil, suco, arroz de coco, pudim, sorvete) —, que dá a chance de cada item | Clusterização |
+
+O perfil de cada comanda é sorteado pelo período e pela quantidade de pessoas (no almoço a dois, o executivo; no
+jantar, os frutos do mar; com três ou mais pessoas, a família). **Período e pessoas não entram no algoritmo**
+(RN05): ele recebe só os itens pedidos. Servem só para conferir, depois, se os grupos encontrados fazem sentido.
+
 ---
 
-## 1. O Python passou a ler o banco
+## 1. Clusterização: os três perfis foram redescobertos
 
-O serviço analítico usa o histórico real quando encontra movimento suficiente — pelo menos 50 comandas com
-2 itens ou mais no último ano. Abaixo disso, cai no histórico simulado em memória e avisa o motivo.
+O K-Means agrupou as comandas pelos itens pedidos, testando de 2 a 6 perfis. A quantidade escolhida é a de maior
+**silhueta** (o quanto cada comanda está mais perto do próprio grupo do que do vizinho):
 
-O banco semeado tem **3.128 comandas com 2 ou mais itens**. Pedindo uma recomendação:
+| Perfis testados | 2 | **3** | 4 | 5 | 6 |
+|---|---|---|---|---|---|
+| Silhueta | 0,351 | **0,387** | 0,351 | 0,330 | 0,329 |
 
-```json
-{ "regras_consideradas": 59, "origem_do_historico": "banco", "motivo_do_simulado": null }
-```
+✅ **Escolheu 3, a quantidade plantada**, e acima de 0,25, o limite abaixo do qual não há estrutura
+substancial. Os grupos:
 
-✅ **`origem_do_historico = banco`.** Antes do semeador, a resposta vinha com `"simulado"`.
+| Perfil | Comandas | Itens que mais se destacam (presença no perfil; quantas vezes acima do restaurante) | No almoço | Com 3+ pessoas |
+|---|---:|---|---:|---:|
+| Família | 1.290 (31%) | porção infantil (74%; 3,0×), pudim (46%; 2,8×), sorvete de tapioca (46%; 2,8×), suco (73%; 2,1×) | 53% | **72%** |
+| Almoço executivo | 1.080 (26%) | risoto (57%; 3,4×), salada (60%; 3,3×), água com gás (45%; 3,3×), café (45%; 1,8×) | **76%** | 17% |
+| Frutos do mar | 1.798 (43%) | moqueca (62%; 2,2×), bolinho de bacalhau (54%; 2,1×), caipirinha (67%; 2,1×), bobó (37%; 2,0×) | 31% | 33% |
+
+✅ **Os itens de cada grupo são os do perfil plantado**, e o período e a composição — que o algoritmo nunca viu —
+confirmam a leitura: o grupo executivo é três quartos almoço e quase só mesas de uma ou duas pessoas; o grupo
+família é três quartos mesas de três ou mais.
+
+No simulador, em que se sabe o perfil de cada comanda, a concordância entre os grupos e o gabarito foi medida pelo
+**índice de Rand ajustado** (1 = perfeita, 0 = o que o acaso daria): entre 0,84 e 0,88 em três sementes, com cada
+grupo formado em mais de 90% por um único perfil plantado (teste `test_redescobre_os_perfis_plantados`).
 
 ---
 
-## 2. A combinação plantada foi reencontrada
+## 2. Recomendação: a combinação plantada voltou, e a segmentada acerta mais
 
-O semeador embute as mesmas combinações do `simulador.py` — entre elas "moqueca puxa arroz de coco", com 85%
-de chance. O teste é o gabarito da validação: o algoritmo de regras de associação precisa **redescobrir** a
-regra a partir dos dados, sem que ninguém diga qual é.
+### 2.1 Regras de associação
 
-Pedindo sugestão para uma comanda que tem só moqueca (item 5):
+Pedindo sugestão para uma comanda que tem só moqueca:
 
 | Sugestão | Confiança | Lift | Plantado com |
-|---|---|---|---|
-| Arroz de coco | 0,871 | 1,552 | 0,85 |
-| Caipirinha | 0,749 | 1,294 | 0,60 |
+|---|---:|---:|---:|
+| Arroz de coco | 0,853 | 2,115 | 0,85 |
+| Caipirinha | 0,765 | 2,202 | 0,60 + a presença no perfil |
+| Bolinho de bacalhau | 0,525 | 1,900 | — (vem do perfil frutos do mar) |
 
-✅ **As duas regras voltaram, na ordem certa e com confiança próxima da plantada.** O lift acima de 1 mostra
-que a associação é maior do que o acaso explicaria.
+✅ **A combinação plantada voltou com a confiança plantada** (0,853 contra 0,85). A caipirinha sai acima dos 0,60
+da combinação porque ela também é item do perfil frutos do mar, e o bolinho de bacalhau aparece sem combinação
+nenhuma: é o perfil se mostrando nas regras gerais.
+
+### 2.2 Recomendação segmentada por perfil
+
+A recomendação segmentada associa a comanda em andamento ao perfil mais parecido e sugere, nesta ordem, pelas
+regras do perfil, pelos itens característicos do perfil que a mesa ainda não pediu e pelas regras gerais.
+
+Para medir se isso ajuda o garçom, cada comanda de teste teve um item escondido por vez, e conferiu-se se ele
+voltava entre as três sugestões feitas a partir dos demais (70% das comandas para treinar, 30% para testar):
+
+| Recomendação | Acertou o item escondido |
+|---|---:|
+| Só regras de associação (gerais) | 76,2% |
+| **Segmentada por perfil (clusterização + regras)** | **83,2%** |
+
+✅ **Sete pontos a mais.** O exemplo que resume a diferença: numa mesa com salada e suco, as regras gerais sugerem
+a porção infantil, porque o suco aparece muito com ela nas famílias; a segmentada reconhece o almoço executivo e
+sugere risoto, café e água com gás (teste `test_segmentada_sugere_o_que_mesas_do_mesmo_perfil_pedem`).
 
 ---
 
-## 3. A alocação entrega a praça de alto potencial a quem faturou menos
+## 3. A alocação combina os dois fatores da RN03
 
-É o comportamento que a RN03 existe para produzir. Com os números que as views devolvem (últimos 30 dias) e
-as praças semeadas:
+Com o faturamento por turno dos últimos 30 dias devolvido pelas views e o histórico de alocações confirmadas:
 
-| Garçom | Faturamento por turno | Praça designada | Potencial da praça |
-|---|---|---|---|
-| 5 | R$ 386,85 — o menor | **1** | R$ 1.876/turno — alto |
-| 7 | R$ 516,75 | **1** | alto |
-| 6 | R$ 532,06 | 2 | R$ 1.244/turno |
-| 8 | R$ 626,90 | 2 | médio |
-| 9 | R$ 664,81 | 2 | médio |
-| 10 | R$ 729,85 | 3 | R$ 615/turno — baixo |
-| 11 | R$ 816,42 — o maior | 3 | baixo |
+| Garçom | Faturamento por turno | Turnos sem praça de alto potencial | Praça designada | Potencial da praça |
+|---|---:|---:|---|---:|
+| 4 | R$ 493,96 — o menor | 0 | 2 | R$ 1.518/turno — médio |
+| 5 | R$ 583,87 | **3** | **1** | R$ 2.254/turno — alto |
+| 6 | R$ 639,59 | 1 | 2 | médio |
+| 7 | R$ 775,27 | **3** | **1** | alto |
+| 8 | R$ 826,39 | 0 | 2 | médio |
+| 10 | R$ 1.084,02 | 0 | 3 | R$ 787/turno — baixo |
+| 9 | R$ 1.096,17 — o maior | 0 | 3 | baixo |
 
-✅ **A ordem saiu exatamente invertida:** quem fatura menos pega a praça melhor, quem fatura mais pega a
-mais fraca. É o efeito do peso de 0,6 sobre o faturamento médio por turno.
+✅ **As duas pontas saíram como a regra pede:** os dois que mais faturaram ficaram na praça mais fraca, e a praça de
+alto potencial foi para dois dos que menos faturaram.
+
+**O garçom que menos faturou não ficou com a praça alta, e isso é a RN03 funcionando.** Ele tinha acabado de sair
+dela (zero turnos de espera), enquanto os garçons 5 e 7 faturavam pouco *e* esperavam havia três turnos. Com peso
+de 0,4 para a espera, a regra dá a vez a quem espera, em vez de devolver a praça boa sempre à mesma pessoa. É o
+rodízio que o orientador pediu, e que a calibração (`GASTRA_Calibracao_Pesos_RN03.md`) mediu.
 
 ---
 
 ## 4. As telas de análise não ficam vazias
 
-| View | O que devolve | Situação |
-|---|---|---|
-| `vw_faturamento_medio_praca` | 3 praças, todas com movimento em ~140 turnos | ✅ |
-| `vw_desempenho_garcom_turno` | 7 garçons, 41 a 55 turnos cada nos últimos 30 dias | ✅ |
-| `vw_comanda_faturamento` | 4.213 comandas, almoço e jantar equilibrados | ✅ |
-| `vw_faturamento_item_cardapio` | os 14 itens do cardápio vendem, de 431 a 2.557 unidades | ✅ |
-| `vw_itens_por_comanda` | 3.128 comandas com 2 itens ou mais | ✅ |
+As views devolvem movimento nos 70 dias, nas três praças e nos sete garçons — é delas que saem as tabelas acima.
+O semeador distribui as comandas entre 11h e 15h30 no almoço e entre 18h30 e 21h30 no jantar, o que dá ao mapa de
+calor por hora os dois picos de um restaurante.
 
-O movimento por hora tem a cara de um restaurante, com dois picos:
-
-| Hora | 11 | 12 | 13 | 14 | 15 | 18 | 19 | 20 | 21 |
-|---|---|---|---|---|---|---|---|---|---|
-| Comandas | 498 | 461 | 456 | 469 | 211 | 339 | 693 | 702 | 384 |
-
-> **Ressalva.** As views foram consultadas direto no banco. As telas em Angular leem exatamente esses
-> números por `/api/indicadores/*`, mas **não foram exercitadas contra a API real** — entrar no sistema pede
-> senha, e essa continua sendo a lacuna de verificação registrada em todas as PRs do frontend.
+> **Ressalva.** As views foram consultadas direto no banco. As telas em Angular leem esses números por
+> `/api/indicadores/*`, mas **não foram exercitadas contra a API real** nesta validação — entrar no sistema pede
+> senha. Os testes operacionais (Sprint 5) cobrem essa lacuna.
 
 ---
 
 ## 5. Divergência documentada: o Gini do histórico é maior que o da calibração
 
-A issue pedia para comparar a desigualdade do dado semeado com a de
-[`GASTRA_Calibracao_Pesos_RN03.md`](GASTRA_Calibracao_Pesos_RN03.md), e registrar a divergência como achado.
-
 | Medida | Gini do faturamento médio por turno |
 |---|---|
 | Calibração, política escolhida (w1 = 0,6) | 0,0048 a 0,0072 |
-| Calibração, sem rodízio (w1 = 0,0) | 0,0473 |
-| **Histórico semeado** | **0,1235** |
+| Calibração, sem regra | 0,0456 |
+| **Histórico semeado** | **0,1555** |
 
 **Divergiu, e era para divergir.** As duas medidas não medem a mesma coisa:
 
-- A calibração mede a desigualdade **depois** de 120 turnos rodando a política de alocação, com garçons que
-  só diferem pelo histórico. É o *resultado* da RN03.
-- O histórico semeado é o **estado inicial**: 70 dias de rodízio neutro, com garçons que têm fatores de
-  venda diferentes de propósito (de 0,70 a 1,42). É o *problema* que a RN03 existe para corrigir.
+- A calibração mede a desigualdade **depois** de 120 turnos aplicando a RN03, com garçons que só diferem pelo
+  histórico. É o *resultado* da regra.
+- O histórico semeado é o **estado inicial**: 70 dias de rodízio neutro, com garçons de fator de venda diferente de
+  propósito (de 0,70 a 1,42) — o que mais fatura ganha 2,2 vezes o que menos fatura. É o *problema* que a RN03
+  existe para corrigir; se o semeador já entregasse Gini perto de zero, a alocação não teria o que mostrar.
 
-Se o semeador entregasse Gini de 0,005, a alocação não teria nada para consertar: todo mundo já estaria
-igual, a sugestão sairia arbitrária e a demonstração não mostraria a regra funcionando. A desigualdade
-inicial de 0,1235 — o garçom que mais fatura ganha 2,1 vezes o que menos fatura — é o que dá contraste à
-seção 3 acima.
-
-**Achado a acompanhar:** ninguém mediu ainda o Gini *depois* de N turnos usando a alocação do sistema sobre
-esta base. Seria a prova mais forte da RN03 — a curva caindo de 0,12 em direção ao valor da calibração — e
-fica como sugestão de experimento para o documento de pesquisa.
+**Achado a acompanhar:** ainda não se mediu o Gini *depois* de sucessivos turnos alocados pelo próprio sistema
+sobre esta base (#221). Seria a prova mais forte da RN03: a curva caindo de 0,16 em direção ao valor da calibração.
 
 ---
 
 ## Como repetir
 
-1. Suba o MySQL e o serviço analítico, e rode o semeador (ver `backend/tools/GastraSemeador/README.md`).
-2. Recomendação: `POST http://localhost:8000/recomendacao/combinacoes` com `{"itens":[<id da moqueca>]}`.
-3. Alocação: `POST http://localhost:8000/alocacao/sugestao` com os garçons e praças que as views devolvem.
-4. Views: consultas diretas, como as deste documento.
+1. Crie um banco separado e aplique as migrations:
+   `dotnet ef database update -p src/Gastra.Infrastructure -s src/Gastra.Api --connection "...Database=gastra_validacao..."`
+   (dentro de `backend/`).
+2. Rode o semeador apontando para ele (`backend/tools/GastraSemeador/README.md`), com a semente 42.
+3. Rode a validação, dentro de `data-science/`:
+   ```bash
+   GASTRA_VALIDACAO_URL="mysql+pymysql://<usuario>:<senha>@localhost:3307/gastra_validacao" \
+       python scripts/validar_dados_semeados.py
+   ```
 
 Com a mesma semente, os números se repetem.
