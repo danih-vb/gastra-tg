@@ -95,6 +95,55 @@
       </section>
     }
 
+    <section class="cartao" aria-labelledby="t-perfis">
+      <header>
+        <h2 id="t-perfis">Perfis de consumo</h2>
+        <span class="acoes suave pequeno">mesas agrupadas pelo que pedem, sem nenhum dado do cliente</span>
+      </header>
+      @if (perfis(); as perfis) {
+        @if (!perfis.servicoDisponivel) {
+          <p class="corpo suave">
+            O serviço de análise está fora do ar agora. Os perfis voltam com ele; o resto das análises não depende dele.
+          </p>
+        } @else if (!perfis.historicoSuficiente) {
+          <p class="corpo suave">
+            Ainda não há movimento suficiente para encontrar os perfis deste restaurante. Eles aparecem quando houver
+            pelo menos 50 comandas fechadas com dois itens ou mais.
+          </p>
+        } @else {
+          <div class="corpo perfis">
+            @for (perfil of perfis.perfis; track $index) {
+              <article class="perfil">
+                <div class="linha">
+                  <strong>Perfil {{ $index + 1 }}</strong>
+                  <span class="suave pequeno">
+                    {{ perfil.participacao | percent: '1.0-0' }} das mesas · {{ perfil.comandas | number }} comandas
+                  </span>
+                </div>
+                <ul class="itens-do-perfil">
+                  @for (item of perfil.itens; track item.nome) {
+                    <li>
+                      {{ item.nome }}
+                      <span class="suave pequeno">em {{ item.presenca | percent: '1.0-0' }} das mesas</span>
+                    </li>
+                  }
+                </ul>
+              </article>
+            }
+          </div>
+          <p class="suave pequeno" style="padding: 0 16px 14px">
+            Encontrados pelo algoritmo K-Means em {{ perfis.comandasAnalisadas | number }} comandas do último ano, só
+            pelos itens pedidos.
+            @if (perfis.segmentaARecomendacao) {
+              A sugestão de pratos ao garçom já usa o que é comum em cada perfil.
+            }
+          </p>
+        }
+      } @else {
+        <p class="corpo suave">Carregando os perfis…</p>
+      }
+    </section>
+
     <div class="grade-2">
       <section class="cartao" aria-labelledby="t-pracas">
         <header>

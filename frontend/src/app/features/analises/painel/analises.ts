@@ -1,9 +1,10 @@
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
 import {
   RankingDeDesempenho,
+  PerfisDeConsumo,
   RelatorioAvaliacoes,
   RelatorioCardapio,
   RelatorioGarcons,
@@ -44,7 +45,7 @@ interface Relatorios {
 @Component({
   selector: 'app-analises',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, DatePipe, DecimalPipe, Icone],
+  imports: [PercentPipe, CurrencyPipe, DatePipe, DecimalPipe, Icone],
   templateUrl: './analises.html',
   styleUrl: './analises.scss',
 })
@@ -56,6 +57,8 @@ export class Analises {
   protected readonly erros = signal<string[]>([]);
   protected readonly dados = signal<Relatorios | null>(null);
   protected readonly explicandoIndice = signal(false);
+  /** Carregados à parte e uma vez só: olham o último ano, e o serviço analítico fora do ar não derruba o painel. */
+  protected readonly perfis = signal<PerfisDeConsumo | null>(null);
 
   protected readonly periodos: { chave: PeriodoDaAnalise; nome: string }[] = [
     { chave: '7', nome: 'Últimos 7 dias' },
@@ -110,6 +113,18 @@ export class Analises {
 
   constructor() {
     this.carregar();
+    this.api.perfisDeConsumo().subscribe({
+      next: (perfis) => this.perfis.set(perfis),
+      error: () =>
+        this.perfis.set({
+          servicoDisponivel: false,
+          historicoSuficiente: false,
+          silhueta: null,
+          comandasAnalisadas: 0,
+          segmentaARecomendacao: false,
+          perfis: [],
+        }),
+    });
   }
 
   protected nomeDaCategoria(chave: string): string {

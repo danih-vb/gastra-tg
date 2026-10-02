@@ -49,11 +49,32 @@ public class ServicoAnaliticoHttp(HttpClient http, ILogger<ServicoAnaliticoHttp>
         return resposta.Designacoes.Select(d => new DesignacaoSugerida(d.GarcomId, d.PracaId)).ToList();
     }
 
-    private async Task<TResposta> Enviar<TResposta>(string rota, object corpo, CancellationToken cancellationToken)
+    public async Task<PerfisDeConsumo> ObterPerfisDeConsumo(CancellationToken cancellationToken = default)
+    {
+        var resposta = await Chamar<RespostaDePerfis>(
+            "clusterizacao/perfis", ct => http.GetAsync("clusterizacao/perfis", ct), cancellationToken);
+
+        return new PerfisDeConsumo(
+            resposta.Perfis
+                .Select(p => new PerfilDeConsumo(
+                    p.Id, p.Comandas, p.Participacao,
+                    p.ItensMarcantes.Select(i => new ItemDoPerfil(i.ItemId, i.Presenca, i.Destaque)).ToList()))
+                .ToList(),
+            resposta.Silhueta,
+            resposta.SegmentaARecomendacao,
+            resposta.ComandasAnalisadas,
+            resposta.OrigemDoHistorico == "banco");
+    }
+
+    private Task<TResposta> Enviar<TResposta>(string rota, object corpo, CancellationToken cancellationToken) =>
+        Chamar<TResposta>(rota, ct => http.PostAsJsonAsync(rota, corpo, Json, ct), cancellationToken);
+
+    private async Task<TResposta> Chamar<TResposta>(
+        string rota, Func<CancellationToken, Task<HttpResponseMessage>> requisicao, CancellationToken cancellationToken)
     {
         try
         {
-            using var resposta = await http.PostAsJsonAsync(rota, corpo, Json, cancellationToken);
+            using var resposta = await requisicao(cancellationToken);
             resposta.EnsureSuccessStatusCode();
 
             return await resposta.Content.ReadFromJsonAsync<TResposta>(Json, cancellationToken)
@@ -93,4 +114,11 @@ public class ServicoAnaliticoHttp(HttpClient http, ILogger<ServicoAnaliticoHttp>
     private record RespostaDeAlocacao(List<DesignacaoDoPython> Designacoes);
 
     private record DesignacaoDoPython(int GarcomId, int PracaId);
+
+    private record RespostaDePerfis(
+        List<PerfilDoPython> Perfis, double? Silhueta, bool SegmentaARecomendacao, int ComandasAnalisadas, string OrigemDoHistorico);
+
+    private record PerfilDoPython(int Id, int Comandas, double Participacao, List<ItemMarcanteDoPython> ItensMarcantes);
+
+    private record ItemMarcanteDoPython(int ItemId, double Presenca, double Destaque);
 }

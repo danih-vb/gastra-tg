@@ -30,7 +30,7 @@ BLOCOS = OrderedDict([
     ("Cardápio e promoções", ["CardapioControllerTests", "ItemDoCardapioTests", "PromocaoControllerTests", "PromocaoTests"]),
     ("Alocação de garçons (programação linear)", ["AlocacaoControllerTests", "AlocacaoTests", "RegraDeDistribuicaoTests",
                                                    "test_alocacao", "test_calibracao"]),
-    ("Recomendação de pratos (ciência de dados)", ["SugestoesComandaTests", "test_recomendacao", "test_provedor_modelo",
+    ("Recomendação de pratos (ciência de dados)", ["SugestoesComandaTests", "test_recomendacao", "test_clusterizacao", "test_provedor_modelo",
                                                     "test_historico_banco", "test_api_analitica"]),
     ("BI e índice de desempenho", ["IndicadoresControllerTests", "IndiceDeDesempenhoTests", "RepositorioIndicadoresTests"]),
     ("LGPD, auditoria e segurança", ["AuditoriaTests", "EliminacaoAuditoriaTests", "AutenticacaoControllerTests",
