@@ -143,4 +143,23 @@ public class ServicoAnaliticoHttpTests
 
         Assert.IsAssignableFrom<OperationCanceledException>(erro);
     }
+
+    [Fact]
+    public async Task PerfisDeConsumo_LeOContratoEmSnakeCase_EMarcaSeOHistoricoEReal()
+    {
+        var (servico, handler) = Criar((_, _) => Json("""
+            {"perfis": [{"id": 2, "comandas": 180, "participacao": 0.43,
+                         "itens_marcantes": [{"item_id": 7, "presenca": 0.62, "destaque": 2.2}]}],
+             "silhueta": 0.387, "silhuetas_testadas": {"2": 0.35, "3": 0.387}, "segmenta_a_recomendacao": true,
+             "comandas_analisadas": 4168, "origem_do_historico": "banco"}
+            """));
+
+        var perfis = await servico.ObterPerfisDeConsumo();
+
+        Assert.Equal("http://analitica.test/clusterizacao/perfis", handler.UrlRecebida!.ToString());
+        var perfil = Assert.Single(perfis.Perfis);
+        Assert.Equal((2, 180, 0.43), (perfil.Id, perfil.Comandas, perfil.Participacao));
+        Assert.Equal(new ItemDoPerfil(7, 0.62, 2.2), Assert.Single(perfil.Itens));
+        Assert.Equal((0.387, true, 4168, true), (perfis.Silhueta, perfis.SegmentaARecomendacao, perfis.ComandasAnalisadas, perfis.HistoricoReal));
+    }
 }

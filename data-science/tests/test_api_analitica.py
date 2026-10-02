@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from gastra_analitica.api.main import app, provedor_de_modelo
 from gastra_analitica.recomendacao.provedor_modelo import ModeloComOrigem
-from gastra_analitica.recomendacao.regras_associacao import treinar
+from gastra_analitica.recomendacao.segmentada import treinar_segmentado
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def test_recomendacao_informa_o_motivo_de_usar_o_simulado(cliente):
 
 def test_recomendacao_usa_o_historico_do_banco_quando_disponivel(cliente, monkeypatch):
     # Com todo pedido igual, o lift seria 1 e a regra descartada: o histórico precisa ter contraste.
-    modelo_real = treinar([[10, 11]] * 40 + [[12, 13]] * 40)
+    modelo_real = treinar_segmentado([[10, 11]] * 40 + [[12, 13]] * 40)
     monkeypatch.setattr(provedor_de_modelo, "obter", lambda: ModeloComOrigem(modelo_real, "banco", comandas_usadas=60))
 
     corpo = cliente.post("/recomendacao/combinacoes", json={"itens": [10]}).json()
@@ -117,3 +117,22 @@ def test_alocacao_com_pesos_que_nao_somam_um_retorna_422(cliente):
     )
 
     assert resposta.status_code == 422
+
+
+def test_recomendacao_diz_qual_perfil_de_consumo_usou(cliente):
+    # Salada (5) e água com gás (13) são do perfil "almoço executivo" do simulador.
+    corpo = cliente.post("/recomendacao/combinacoes", json={"itens": [5, 13]}).json()
+
+    assert corpo["perfil"] is not None
+    assert 6 not in [s["item_id"] for s in corpo["sugestoes"]]  # porção infantil é de outro perfil
+
+
+def test_perfis_de_consumo_descrevem_os_grupos_encontrados(cliente):
+    corpo = cliente.get("/clusterizacao/perfis").json()
+
+    assert corpo["origem_do_historico"] == "simulado"
+    assert corpo["segmenta_a_recomendacao"] is True
+    assert len(corpo["perfis"]) == 3
+    assert abs(sum(p["participacao"] for p in corpo["perfis"]) - 1) < 0.01
+    assert corpo["silhueta"] == max(corpo["silhuetas_testadas"].values())
+    assert all(item["destaque"] > 1 for p in corpo["perfis"] for item in p["itens_marcantes"])

@@ -73,6 +73,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IRegistrarRestricaoUseCase, RegistrarRestricaoUseCase>();
         services.AddScoped<IAvaliarAtendimentoUseCase, AvaliarAtendimentoUseCase>();
         services.AddScoped<IRelatorioAvaliacoesUseCase, RelatorioAvaliacoesUseCase>();
+        services.AddScoped<IRelatorioPerfisDeConsumoUseCase, RelatorioPerfisDeConsumoUseCase>();
         services.AddScoped<IRemoverTaxaServicoUseCase, RemoverTaxaServicoUseCase>();
         services.AddScoped<IFecharComandaUseCase, FecharComandaUseCase>();
         services.AddScoped<IObterComandaUseCase, ObterComandaUseCase>();

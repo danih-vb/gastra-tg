@@ -286,6 +286,12 @@ notas de cada valor os clientes deram.
 > comanda apontaria direto para quem atendeu aquela mesa. Se a casa decidir um dia acompanhar avaliação por
 > garçom, é uma decisão nova, que muda o que se promete a quem avalia.
 
+Mais abaixo ficam os **perfis de consumo**: os tipos de mesa que o sistema encontrou no histórico do último ano,
+agrupando as comandas só pelo que foi pedido — por exemplo, um perfil em que quase toda mesa pede a porção infantil,
+o suco e uma sobremesa. Cada perfil mostra quantas mesas são daquele tipo e os itens que mais o caracterizam. É o
+mesmo agrupamento que a sugestão de pratos ao garçom usa para acertar mais. Enquanto o restaurante ainda não tem
+movimento suficiente (pelo menos 50 comandas com dois itens ou mais), a tela avisa em vez de mostrar perfis.
+
 ### 4.2 Cardápio
 
 <img src="../ux-ui/telas/gerente-cardapio.png" alt="Gestão do cardápio" width="520">

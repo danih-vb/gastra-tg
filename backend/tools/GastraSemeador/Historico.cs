@@ -9,9 +9,10 @@ namespace GastraSemeador;
 /// Histórico de turnos já encerrados: alocações confirmadas e comandas fechadas (#182).
 ///
 /// É o que faz as views de BI, o índice de desempenho e as regras de associação terem o que mostrar.
-/// As probabilidades e as combinações de itens são as mesmas do <c>simulador.py</c>, para que a
-/// recomendação treine sobre o mesmo padrão que os notebooks usaram — inclusive a combinação plantada
-/// "moqueca puxa arroz de coco", que serve de gabarito na validação (#185).
+/// Os perfis de consumo, as probabilidades e as combinações de itens são os mesmos do <c>simulador.py</c>, para
+/// que a recomendação treine sobre o mesmo padrão que os notebooks usaram — inclusive os dois gabaritos da
+/// validação: a combinação plantada "moqueca puxa arroz de coco" (regras de associação, #185) e os três perfis
+/// (clusterização).
 /// </summary>
 internal static class Historico
 {
@@ -34,24 +35,48 @@ internal static class Historico
     /// </summary>
     private static readonly Dictionary<string, int> ComandasPorTurno = new() { ["A"] = 15, ["B"] = 10, ["C"] = 5 };
 
-    /// <summary>Itens do <c>simulador.py</c>, com a chance de aparecer numa comanda qualquer.</summary>
-    private static readonly (string Nome, double Chance)[] Frequentes =
-    [
-        ("Moqueca de peixe", 0.30),
-        ("Arroz de coco", 0.25),
-        ("Caipirinha", 0.35),
-        ("Pudim de leite", 0.20),
-        ("Salada da horta", 0.15),
-        ("Porção infantil de frango", 0.10),
-        ("Suco natural de laranja", 0.25),
-        ("Café coado", 0.30),
-    ];
+    /// <summary>
+    /// Perfis de consumo plantados, os mesmos do <c>simulador.py</c>: cada comanda nasce de um perfil, que dá a chance
+    /// de cada item. É o gabarito da clusterização (RF09): o algoritmo recebe só os itens pedidos e precisa
+    /// redescobrir estes três grupos. Item fora do perfil entra com <see cref="ChanceForaDoPerfil"/>.
+    /// </summary>
+    private static readonly Dictionary<string, (string Nome, double Chance)[]> Perfis = new()
+    {
+        ["executivo"] =
+        [
+            ("Salada da horta", 0.55), ("Risoto de cogumelos", 0.50), ("Suco natural de laranja", 0.45),
+            ("Água com gás", 0.40), ("Café coado", 0.45),
+        ],
+        ["frutos_do_mar"] =
+        [
+            ("Moqueca de peixe", 0.60), ("Bobó de camarão", 0.35), ("Bolinho de bacalhau (6 un.)", 0.50),
+            ("Caipirinha", 0.45), ("Petit gâteau", 0.35),
+        ],
+        ["familia"] =
+        [
+            ("Porção infantil de frango", 0.75), ("Suco natural de laranja", 0.40), ("Arroz de coco", 0.30),
+            ("Pudim de leite", 0.45), ("Sorvete de tapioca", 0.45),
+        ],
+    };
+
+    /// <summary>Chance de um item que não é do perfil entrar na comanda: ruído, como no salão de verdade.</summary>
+    private const double ChanceForaDoPerfil = 0.03;
 
     /// <summary>
-    /// O resto do cardápio entra com chance baixa: sem isso, metade dos itens nunca venderia e as telas de
-    /// item mais vendido ficariam com buracos. A chance é pequena para não abafar as combinações plantadas.
+    /// Quem senta à mesa muda o perfil mais provável, como no <c>simulador.py</c>. Período e pessoas escolhem o perfil,
+    /// mas não entram na clusterização (RN05): servem só para interpretar os grupos que ela encontra.
     /// </summary>
-    private const double ChanceDosDemais = 0.08;
+    private static string SortearPerfil(Random sorteio, PeriodoAlocacao periodo, int pessoas)
+    {
+        int[] pesos = (periodo, pessoas <= 2) switch
+        {
+            (PeriodoAlocacao.Almoco, true) => [65, 25, 10],
+            (PeriodoAlocacao.Almoco, false) => [15, 25, 60],
+            (_, true) => [15, 75, 10],
+            _ => [5, 45, 50],
+        };
+        return Sortear(sorteio, ["executivo", "frutos_do_mar", "familia"], pesos);
+    }
 
     /// <summary>
     /// Fator de venda de cada garçom, do menos ao mais vendedor. É o que dá ao índice de desempenho algo para
@@ -184,7 +209,7 @@ internal static class Historico
         var comanda = new Comanda(mesa.Id, garcom.Id, pessoas);
         contexto.Comandas.Add(comanda);
 
-        var escolhidos = EscolherItens(cenario.Cardapio, sorteio, fatorDeVenda);
+        var escolhidos = EscolherItens(cenario.Cardapio, sorteio, fatorDeVenda, SortearPerfil(sorteio, periodo, pessoas));
         foreach (var item in escolhidos)
         {
             var quantidade = sorteio.NextDouble() < 0.25 * fatorDeVenda ? 2 : 1;
@@ -244,20 +269,16 @@ internal static class Historico
         }
     }
 
-    /// <summary>Sorteia os itens da comanda pelas chances do simulador e aplica as combinações.</summary>
-    private static List<ItemDoCardapio> EscolherItens(List<ItemDoCardapio> cardapio, Random sorteio, double fatorDeVenda)
+    /// <summary>Sorteia os itens da comanda pelas chances do perfil e aplica as combinações.</summary>
+    private static List<ItemDoCardapio> EscolherItens(
+        List<ItemDoCardapio> cardapio, Random sorteio, double fatorDeVenda, string perfil)
     {
         var nomes = new HashSet<string>();
+        var chances = Perfis[perfil].ToDictionary(p => p.Nome, p => p.Chance);
 
-        foreach (var (nome, chance) in Frequentes)
+        foreach (var item in cardapio)
         {
-            if (sorteio.NextDouble() < chance * fatorDeVenda)
-                nomes.Add(nome);
-        }
-
-        foreach (var item in cardapio.Where(i => Frequentes.All(f => f.Nome != i.Nome)))
-        {
-            if (sorteio.NextDouble() < ChanceDosDemais * fatorDeVenda)
+            if (sorteio.NextDouble() < chances.GetValueOrDefault(item.Nome, ChanceForaDoPerfil) * fatorDeVenda)
                 nomes.Add(item.Nome);
         }
 
