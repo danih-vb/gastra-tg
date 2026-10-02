@@ -396,13 +396,29 @@ Fonte: elaborado pelos autores.
 
 ### 4.4.3 Camada analítica
 
-A camada analítica é um serviço HTTP em FastAPI com dois algoritmos. A recomendação de pratos (RF09) usa regras de
-associação, obtidas pelo algoritmo Apriori da biblioteca mlxtend sobre o histórico de itens pedidos juntos em cada
-comanda: uma regra "quem pede A costuma pedir B" só é usada com suporte mínimo de 5%, confiança mínima de 30% e
+A camada analítica é um serviço HTTP em FastAPI. A recomendação de pratos (RF09) combina duas técnicas de ciência de
+dados. A primeira são as regras de associação, obtidas pelo algoritmo Apriori da biblioteca mlxtend sobre o
+histórico de itens pedidos juntos em cada comanda: uma regra "quem pede A costuma pedir B" só é usada com suporte mínimo de 5%, confiança mínima de 30% e
 lift acima de 1, porque um lift abaixo de 1 indica itens que se evitam, e sugeri-los seria pior do que não sugerir
 nada. O histórico é lido das views do banco por um usuário que não tem permissão de escrita nem acesso às
 tabelas; enquanto houver menos de 50 comandas fechadas, o serviço usa um histórico simulado e informa esse motivo
 na resposta.
+
+A segunda técnica é a clusterização. Cada comanda do histórico é representada por um vetor com o valor 1 nos itens
+que ela levou e 0 nos demais, normalizado pelo próprio tamanho, de modo que a distância entre duas comandas passa a
+medir a proporção do consumo que elas compartilham (similaridade do cosseno), e não a quantidade de itens. O
+algoritmo K-Means, da biblioteca scikit-learn, agrupa as comandas parecidas em perfis de consumo. Como o K-Means
+precisa saber quantos grupos procurar, testam-se de dois a seis, e escolhe-se a quantidade com maior coeficiente de
+silhueta, medida que compara, para cada comanda, a distância ao próprio grupo com a distância ao grupo vizinho;
+abaixo de 0,25, considera-se que não há perfis de fato. Nenhum atributo do cliente entra no cálculo (RN05): os
+perfis são definidos apenas pelo que foi pedido.
+
+As duas técnicas trabalham juntas na recomendação segmentada. A comanda em andamento é associada ao perfil mais
+parecido com o que ela já tem e recebe sugestões de três fontes, nesta ordem: as regras de associação apuradas
+somente entre as comandas do perfil; os itens que caracterizam o perfil e que a mesa ainda não pediu; e, para
+completar, as regras gerais do restaurante. Quando a clusterização não encontra perfis, a recomendação usa apenas
+as regras gerais. Os perfis encontrados também são apresentados ao Gerente, nos relatórios de Business
+Intelligence.
 
 A alocação de garçons (RF06) foi modelada como um problema de designação, caso particular do problema de
 transporte em programação linear (HILLIER; LIEBERMAN, 2006), e resolvida com a biblioteca PuLP. A variável de

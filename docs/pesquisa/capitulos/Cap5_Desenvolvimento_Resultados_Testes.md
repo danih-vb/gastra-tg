@@ -71,8 +71,9 @@ Fonte: elaborado pelos autores.
 
 O Gerente acompanha a operação pelos relatórios de Business Intelligence (Figura 13): faturamento por praça, com
 destaque para as de alto potencial, pela mesma regra usada na alocação; faturamento por hora e por dia da semana,
-em mapa de calor; ranking dos garçons pelo índice de desempenho; faturamento por item e por categoria; e a média
-das avaliações dos clientes, sempre agregada. O Gerente também gerencia o cardápio, as promoções, as praças, as
+em mapa de calor; ranking dos garçons pelo índice de desempenho; faturamento por item e por categoria; a média
+das avaliações dos clientes, sempre agregada; e os perfis de consumo encontrados pela clusterização, com os itens
+que caracterizam cada tipo de mesa. O Gerente também gerencia o cardápio, as promoções, as praças, as
 mesas e as contas de usuário; o Coordenador tem acesso somente ao cardápio e às promoções.
 
 **Figura 13 – Relatórios de Business Intelligence do Gerente**
@@ -206,51 +207,89 @@ fórmula estava implementada exatamente como especificada.
 Para verificar os blocos analíticos em funcionamento, e não apenas isoladamente, o banco foi preenchido com um
 histórico simulado por uma ferramenta que grava pelas mesmas entidades do domínio usadas pelo sistema (decisão
 D11), de modo que os dados respeitam as mesmas regras de composição da mesa, taxa e totais. Com a semente 42, a
-ferramenta gerou 70 dias de operação, com 4.213 comandas fechadas e 12.753 itens. Os dados são fictícios e não
-representam o restaurante colaborador.
+ferramenta gerou 70 dias de operação, com 4.204 comandas fechadas e 13.914 itens, em um banco separado do usado no
+desenvolvimento. Os dados são fictícios e não representam o restaurante colaborador.
 
-No histórico, foram embutidas algumas combinações de consumo conhecidas, como "quem pede moqueca pede arroz de
-coco" com 85% de probabilidade. Elas funcionam como gabarito: o algoritmo de regras de associação precisa
-redescobri-las a partir dos dados, sem que ninguém as informe. Com 3.128 comandas de dois itens ou mais, o serviço
-analítico passou a usar o histórico do banco, e não o simulado em memória, e, para uma comanda que tinha só a
-moqueca, sugeriu os itens da Tabela 4.
+O histórico foi gerado com dois gabaritos embutidos, que os algoritmos precisam redescobrir sem que ninguém os
+informe. O primeiro são combinações de consumo, como "quem pede moqueca pede arroz de coco" com 85% de
+probabilidade, que servem de gabarito às regras de associação. O segundo são três perfis de consumo — um almoço
+executivo, com salada, risoto, suco, água e café; uma refeição de frutos do mar, com moqueca, bobó, bolinho de
+bacalhau, caipirinha e petit gâteau; e uma refeição em família, com porção infantil, suco, arroz de coco e
+sobremesas —, dos quais cada comanda é sorteada conforme o período e a quantidade de pessoas da mesa. Período e
+pessoas não entram na clusterização, que recebe apenas os itens pedidos; servem somente para conferir, depois, se
+os grupos encontrados fazem sentido.
 
-**Tabela 4 – Sugestões para uma comanda com moqueca e combinações embutidas no histórico**
+A clusterização escolheu, pela silhueta, exatamente três perfis (silhueta de 0,387, contra 0,351 para dois e para
+quatro), apresentados na Tabela 4.
 
-| Sugestão | Confiança obtida | Lift | Probabilidade embutida |
-|---|---:|---:|---:|
-| Arroz de coco | 0,871 | 1,552 | 0,85 |
-| Caipirinha | 0,749 | 1,294 | 0,60 |
+**Tabela 4 – Perfis de consumo encontrados pela clusterização no histórico simulado**
 
-Fonte: elaborado pelos autores.
+| Perfil | Comandas | Itens que mais se destacam (presença no perfil) | Comandas no almoço | Mesas com 3 ou mais pessoas |
+|---|---:|---|---:|---:|
+| Família | 1.290 (31%) | Porção infantil (74%), pudim (46%), sorvete de tapioca (46%), suco (73%) | 53% | 72% |
+| Almoço executivo | 1.080 (26%) | Risoto (57%), salada (60%), água com gás (45%), café (45%) | 76% | 17% |
+| Frutos do mar | 1.798 (43%) | Moqueca (62%), bolinho de bacalhau (54%), caipirinha (67%), bobó (37%) | 31% | 33% |
 
-As duas combinações foram reencontradas, na ordem correta e com confiança próxima da embutida, e o lift acima de 1
-indica associação maior do que o acaso explicaria. A alocação de garçons, calculada sobre o faturamento dos
-últimos 30 dias devolvido pelas views, produziu o comportamento que a RN03 existe para produzir (Tabela 5): a ordem
-saiu exatamente invertida, com as vagas da praça de maior potencial para os dois garçons que menos faturaram por
-turno e as da praça mais fraca para os dois que mais faturaram.
+Fonte: elaborado pelos autores (script `validar_dados_semeados.py`).
 
-**Tabela 5 – Alocação calculada sobre o histórico simulado**
+Os itens de cada grupo são os do perfil embutido, e as duas colunas da direita, calculadas com informações que o
+algoritmo nunca recebeu, confirmam a leitura: o grupo do almoço executivo é composto em três quartos por comandas
+do almoço e quase só por mesas de uma ou duas pessoas, e o grupo da família, em três quartos por mesas de três ou
+mais pessoas. No simulador, em que se conhece o perfil de origem de cada comanda, a concordância entre os grupos
+encontrados e os embutidos, medida pelo índice de Rand ajustado — em que 1 indica concordância perfeita e 0, a que
+o acaso produziria —, ficou entre 0,84 e 0,88 em três sementes diferentes.
 
-| Garçom | Faturamento por turno (R$) | Praça designada | Potencial da praça (R$ por turno) |
-|---|---:|---|---:|
-| 5 | 386,85 | 1 | 1.876 |
-| 7 | 516,75 | 1 | 1.876 |
-| 6 | 532,06 | 2 | 1.244 |
-| 8 | 626,90 | 2 | 1.244 |
-| 9 | 664,81 | 2 | 1.244 |
-| 10 | 729,85 | 3 | 615 |
-| 11 | 816,42 | 3 | 615 |
+Para medir se a segmentação ajuda o garçom, adotou-se a avaliação por item escondido: 70% das comandas treinaram
+os modelos, e, em cada comanda restante, um item foi escondido por vez, verificando-se se ele voltava entre as três
+sugestões feitas a partir dos demais. O resultado está na Tabela 5.
 
-Fonte: elaborado pelos autores.
+**Tabela 5 – Acerto da recomendação de pratos na avaliação por item escondido**
 
-Uma divergência foi registrada como achado. O Gini do histórico simulado é 0,1235, muito acima dos valores da
-calibração. A diferença é esperada, porque as duas medidas não medem a mesma coisa: a calibração mede a
-desigualdade depois de 120 turnos aplicando a RN03, e o histórico simulado é o estado inicial, com garçons de
-desempenho propositalmente diferente — o que mais fatura ganha 2,1 vezes o que menos fatura — e distribuídos por
-rodízio neutro. É o problema que a RN03 existe para corrigir. A demonstração mais forte da regra seria medir o
-Gini depois de sucessivos turnos alocados pelo próprio sistema sobre essa base, acompanhando a queda a partir de
-0,12; esse experimento ficou registrado como trabalho a realizar.
+| Recomendação | Acerto entre as três sugestões |
+|---|---:|
+| Somente regras de associação | 76,2% |
+| Segmentada por perfil (clusterização e regras de associação) | 83,2% |
+
+Fonte: elaborado pelos autores, com 70% das comandas para treino e 30% para teste.
+
+A recomendação segmentada acertou 7 pontos percentuais a mais. A diferença aparece com clareza em uma mesa que
+pediu salada e suco: as regras gerais sugerem a porção infantil, porque o suco aparece com frequência junto dela
+nas famílias, enquanto a recomendação segmentada reconhece o almoço executivo e sugere risoto, café e água. As
+combinações embutidas também foram reencontradas pelas regras de associação: para uma comanda que tinha apenas a
+moqueca, a primeira sugestão foi o arroz de coco, com confiança de 0,853 para uma probabilidade embutida de 0,85, e
+lift de 2,1, o que indica uma associação bem maior do que o acaso explicaria.
+
+A alocação de garçons, calculada sobre o faturamento dos últimos 30 dias devolvido pelas views e sobre o histórico
+de alocações confirmadas, está na Tabela 6.
+
+**Tabela 6 – Alocação calculada sobre o histórico simulado**
+
+| Garçom | Faturamento por turno (R$) | Turnos sem praça de alto potencial | Praça designada | Potencial da praça (R$ por turno) |
+|---|---:|---:|---|---:|
+| 4 | 493,96 | 0 | 2 | 1.518 |
+| 5 | 583,87 | 3 | 1 | 2.254 |
+| 6 | 639,59 | 1 | 2 | 1.518 |
+| 7 | 775,27 | 3 | 1 | 2.254 |
+| 8 | 826,39 | 0 | 2 | 1.518 |
+| 10 | 1.084,02 | 0 | 3 | 787 |
+| 9 | 1.096,17 | 0 | 3 | 787 |
+
+Fonte: elaborado pelos autores (script `validar_dados_semeados.py`).
+
+A tabela mostra os dois fatores da RN03 atuando juntos. Os dois garçons que mais faturaram por turno ficaram na
+praça de menor potencial, e as vagas da praça de maior potencial foram para dois dos que menos faturaram. O garçom
+que menos faturou, porém, não a recebeu: ele havia acabado de sair dela, sem nenhum turno de espera, enquanto os
+garçons 5 e 7 faturavam pouco e esperavam havia três turnos. Com peso de 0,4 para a espera, a regra dá a vez a quem
+espera, em vez de devolver a praça de maior movimento sempre à mesma pessoa — exatamente o rodízio que o segundo
+fator existe para garantir.
+
+Uma divergência foi registrada como achado. O coeficiente de Gini do faturamento por turno no histórico simulado é
+0,1555, muito acima dos valores da calibração. A diferença é esperada, porque as duas medidas não medem a mesma
+coisa: a calibração mede a desigualdade depois de 120 turnos aplicando a RN03, e o histórico simulado é o estado
+inicial, com garçons de desempenho propositalmente diferente — o que mais fatura ganha 2,2 vezes o que menos
+fatura — e distribuídos por rodízio neutro. É o problema que a RN03 existe para corrigir. A demonstração mais forte
+da regra seria medir o Gini depois de sucessivos turnos alocados pelo próprio sistema sobre essa base,
+acompanhando a queda a partir de 0,16; esse experimento ficou registrado como trabalho a realizar.
 
 > **[ATUALIZAR se o experimento da issue #221 for feito antes da entrega: incluir a curva do Gini por turno.]**
 

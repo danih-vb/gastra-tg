@@ -15,8 +15,8 @@ projeto: fazer isso sem identificar o cliente e tratando os dados dos funcionár
 
 O objetivo geral — desenvolver um sistema de apoio à decisão que combine relatórios de Business Intelligence,
 recomendação de pratos por ciência de dados e distribuição de garçons por programação linear, alimentado por um
-módulo operacional de pedidos e em conformidade com a LGPD — foi atingido, com a ressalva sobre a clusterização
-discutida adiante. Os objetivos específicos são avaliados um a um a seguir.
+módulo operacional de pedidos e em conformidade com a LGPD — foi atingido. Os objetivos específicos são avaliados
+um a um a seguir.
 
 O levantamento de requisitos por entrevista e questionários foi realizado e formalizado em 24 requisitos
 funcionais aprovados, cinco não funcionais e nove regras de negócio, cada um rastreado até a sua fonte, aos casos
@@ -29,17 +29,20 @@ quando o serviço analítico está indisponível.
 A aplicação web foi construída com backend em ASP.NET Core e frontend em Angular, incluindo os relatórios de
 Business Intelligence por praça, por garçom, por horário e por item. A distribuição de garçons foi modelada como
 um problema de designação e resolvida por programação linear, com pesos calibrados por simulação; sobre o histórico
-simulado, a alocação entregou as melhores praças a quem menos havia faturado, que é exatamente o comportamento
-pretendido (seções 5.4 e 5.5). A conformidade com a LGPD foi tratada como requisito de projeto, e não como
+simulado, a alocação combinou os dois fatores da regra, levando a praça de maior potencial a quem faturava pouco e
+esperava havia mais tempo por ela (seções 5.4 e 5.5). A conformidade com a LGPD foi tratada como requisito de projeto, e não como
 funcionalidade adicional: o cliente não é identificado em nenhuma tabela, o único dado sensível é apagado no
 fechamento da comanda, e cada proteção foi traduzida em teste automatizado. Por fim, o sistema foi validado por 489
 casos de teste automatizados, todos aprovados, nas três camadas de software [e pelos testes operacionais descritos
 na seção 5.6].
 
-A recomendação de pratos foi implementada por regras de associação, e a validação mostrou que o algoritmo
-redescobre, a partir dos dados, as combinações de consumo embutidas no histórico. **A clusterização por padrão de
-consumo, prevista no objetivo específico ao lado das regras de associação, não foi implementada.** [Se for
-implementada antes da entrega, substituir este parágrafo pela descrição do resultado.]
+A recomendação de pratos combinou as duas técnicas previstas no objetivo específico. A clusterização agrupou as
+comandas em perfis de consumo e, sobre o histórico simulado, redescobriu os três perfis nele embutidos sem receber
+nenhuma informação além dos itens pedidos; as regras de associação redescobriram as combinações embutidas. Juntas,
+na recomendação segmentada por perfil, elevaram o acerto das sugestões de 76,2% para 83,2% na avaliação por item
+escondido (seção 5.5). Durante o desenvolvimento, verificou-se que essa parte do objetivo havia ficado de fora da
+primeira implementação, que só tinha as regras de associação; a lacuna foi identificada na revisão dos capítulos e
+corrigida antes da entrega.
 
 ## 6.2 LIMITAÇÕES
 
@@ -71,9 +74,9 @@ As limitações apontam os próximos passos mais diretos. O primeiro é operar o
 o consentimento adequado, e refazer a calibração dos pesos e dos limiares a partir do histórico acumulado — a
 arquitetura já prevê isso, porque o serviço analítico passa a usar o histórico do banco assim que ele atinge o
 volume mínimo. O segundo é medir a evolução da desigualdade entre os garçons ao longo de sucessivos turnos alocados
-pelo sistema, que é a demonstração mais forte do valor da RN03. O terceiro é a clusterização das comandas por
-padrão de consumo, que permitiria segmentar a recomendação — por exemplo, por período do dia ou por composição da
-mesa — sem recorrer a nenhum atributo pessoal do cliente, em linha com a RN05.
+pelo sistema, que é a demonstração mais forte do valor da RN03. O terceiro é avaliar a recomendação segmentada com
+o uso real: a taxa de acerto da seção 5.5 foi medida sobre dados simulados, e o indicador que importa ao
+restaurante é quantas sugestões o garçom de fato oferece e quantas o cliente aceita.
 
 Do ponto de vista do produto, algumas evoluções foram identificadas e registradas durante o desenvolvimento: o
 funcionamento do aplicativo do garçom com conexão instável, instalável no celular; a impressão dos códigos QR
