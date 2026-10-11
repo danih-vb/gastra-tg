@@ -23,5 +23,7 @@ USER nginx
 
 EXPOSE 8080
 
+# 127.0.0.1, e não localhost: no Alpine, localhost resolve primeiro para ::1 (IPv6), e o nginx escuta só em IPv4.
+# Com localhost, o site funcionava e mesmo assim o contêiner ficava "unhealthy" para sempre.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=5 \
-  CMD wget --quiet --tries=1 --spider http://localhost:8080/saude || exit 1
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:8080/saude || exit 1
