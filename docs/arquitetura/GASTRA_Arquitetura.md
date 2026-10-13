@@ -181,6 +181,7 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 |---|---|---|---|
 | Sugestão de alocação (RF06, RN03) ✅ | Backend, quando o metre pede a sugestão (`POST /api/alocacoes/sugestao`) | Garçons presentes com faturamento acumulado e turnos desde a praça de alto potencial; praças com vagas e faturamento médio; pesos w1 e w2 | Pares garçom → praça, conferidos pelo backend antes de gravar |
 | Sugestão de pratos (RF09) ✅ | Backend, quando o garçom abre as sugestões (`GET /api/comandas/{id}/sugestoes`) | Itens já pedidos e itens permitidos (disponíveis, fora da comanda, compatíveis com a restrição) | Ids sugeridos, em ordem |
+| Perfis de consumo (RF09, RF10) ✅ | Backend, quando o Gerente abre as análises (`GET /api/indicadores/perfis-consumo`) | Nada: o Python agrupa o histórico do último ano | Perfis encontrados pela clusterização, com os itens que caracterizam cada um; o backend troca os ids pelos nomes do cardápio e não mostra nada enquanto o histórico for simulado |
 
 - O backend chama o serviço por meio de `IServicoAnalitico` (domínio), implementado por
   `ServicoAnaliticoHttp` (infraestrutura), com tempo limite de 2 s (configurável em
@@ -188,6 +189,10 @@ nos notebooks do TG. `tests/test_arquitetura.py` verifica isso automaticamente.
 - **Falha não derruba o atendimento (D3):** fora do ar, lento ou com resposta inválida, o
   `ServicoAnaliticoHttp` lança `ServicoAnaliticoIndisponivelException`. O caso de uso responde a lista
   vazia com `servicoDisponivel = false`.
+- **Recomendação segmentada (#240):** a sugestão de pratos combina clusterização e regras de associação. O
+  K-Means agrupa as comandas do histórico pelos itens pedidos (a quantidade de perfis é escolhida pela silhueta);
+  a comanda em andamento é associada ao perfil mais parecido e recebe as regras do perfil, os itens que o
+  caracterizam e as regras gerais. Sem perfis claros (silhueta abaixo de 0,25), fica só com as regras gerais.
 - **O backend decide, o Python ordena:** o backend manda só os itens que podem ser oferecidos e, na
   volta, descarta qualquer id fora dessa lista.
 - **O Python nunca grava.** O resultado volta ao backend, que valida e persiste (ex.: a alocação

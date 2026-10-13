@@ -7,6 +7,7 @@ using Gastra.Domain.Entidades;
 using Gastra.Domain.Enums;
 using Gastra.Domain.Indicadores;
 using Gastra.Domain.Repositorios;
+using Gastra.Domain.Servicos;
 using Microsoft.Extensions.DependencyInjection;
 using static Gastra.Api.Tests.Infraestrutura.GastraApiFactory;
 
@@ -25,6 +26,7 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
     public async Task InitializeAsync()
     {
         factory.Indicadores.Reiniciar();
+        factory.ServicoAnalitico.Reiniciar();
         Autenticar(_gerente, await factory.TokenGerente(factory.CreateClient()));
     }
 
@@ -236,5 +238,61 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
         // Duas avaliações não bastam: a nota da Bia não aparece, e as duas notas 1 não a derrubam.
         Assert.Null(daBia.NotaConsiderada);
         Assert.Equal(ana.Id, ranking.Posicoes[0].GarcomId);
+    }
+
+    // --- Perfis de consumo (RF09, RF10) ---
+
+    [Fact]
+    public async Task PerfisDeConsumo_ComHistoricoReal_TrazOsNomesDoCardapio_DoMaisComumAoMenos_ERegistraAConsulta()
+    {
+        var moqueca = await factory.CriarItemCardapio();
+        var suco = await factory.CriarItemCardapio();
+        factory.ServicoAnalitico.Perfis = new PerfisDeConsumo(
+        [
+            new PerfilDeConsumo(0, 300, 0.3, [new ItemDoPerfil(suco, 0.7, 2.1)]),
+            new PerfilDeConsumo(1, 700, 0.7, [new ItemDoPerfil(moqueca, 0.6, 2.2), new ItemDoPerfil(99999, 0.5, 1.5)]),
+        ], Silhueta: 0.39, SegmentaARecomendacao: true, ComandasAnalisadas: 1000, HistoricoReal: true);
+
+        var perfis = await Ler<PerfisDeConsumoResponse>(_gerente, $"{Rota}/perfis-consumo");
+
+        Assert.True(perfis.HistoricoSuficiente);
+        Assert.Equal([0.7, 0.3], perfis.Perfis.Select(p => p.Participacao));
+        // O item 99999 não existe mais no cardápio: some da lista em vez de aparecer sem nome.
+        var principal = Assert.Single(perfis.Perfis[0].Itens);
+        Assert.StartsWith("Prato", principal.Nome);
+        Assert.Equal((0.39, 1000, true), (perfis.Silhueta, perfis.ComandasAnalisadas, perfis.SegmentaARecomendacao));
+        Assert.Contains("\"relatorio\":\"perfis\"", (await factory.Auditoria(EventoAuditoria.RelatorioBiConsultado)).Last().Detalhes);
+    }
+
+    [Fact]
+    public async Task PerfisDeConsumo_ComHistoricoSimulado_NaoMostraPerfisQueNaoSaoDesteRestaurante()
+    {
+        factory.ServicoAnalitico.Perfis = new PerfisDeConsumo(
+            [new PerfilDeConsumo(0, 400, 1, [new ItemDoPerfil(1, 0.5, 2)])], 0.4, true, 400, HistoricoReal: false);
+
+        var perfis = await Ler<PerfisDeConsumoResponse>(_gerente, $"{Rota}/perfis-consumo");
+
+        Assert.True(perfis.ServicoDisponivel);
+        Assert.False(perfis.HistoricoSuficiente);
+        Assert.Empty(perfis.Perfis);
+    }
+
+    [Fact]
+    public async Task PerfisDeConsumo_ComServicoAnaliticoFora_Responde200SemPerfis()
+    {
+        factory.ServicoAnalitico.Indisponivel = true;
+
+        var perfis = await Ler<PerfisDeConsumoResponse>(_gerente, $"{Rota}/perfis-consumo");
+
+        Assert.False(perfis.ServicoDisponivel);
+        Assert.Empty(perfis.Perfis);
+    }
+
+    [Fact]
+    public async Task PerfisDeConsumo_SaoDoGerente()
+    {
+        var (garcom, _) = await ClienteGarcom();
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await garcom.GetAsync($"{Rota}/perfis-consumo")).StatusCode);
     }
 }

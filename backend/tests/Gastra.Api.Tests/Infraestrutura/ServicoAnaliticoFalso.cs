@@ -24,8 +24,12 @@ public class ServicoAnaliticoFalso : IServicoAnalitico
     /// <summary>Resposta da alocação. Por padrão, distribui os garçons pelas praças em rodízio.</summary>
     public Func<ChamadaAlocacao, IReadOnlyList<DesignacaoSugerida>>? ResponderAlocacao { get; set; }
 
+    /// <summary>Resposta dos perfis de consumo. Por padrão, nenhum perfil e histórico simulado.</summary>
+    public PerfisDeConsumo? Perfis { get; set; }
+
     public void Reiniciar()
     {
+        Perfis = null;
         Chamadas.Clear();
         ChamadasAlocacao.Clear();
         Indisponivel = false;
@@ -50,6 +54,14 @@ public class ServicoAnaliticoFalso : IServicoAnalitico
         var resposta = ResponderAlocacao?.Invoke(chamada)
                        ?? chamada.Garcons.Select((g, i) => new DesignacaoSugerida(g.GarcomId, listaPracas[i % listaPracas.Count].PracaId)).ToList();
         return Task.FromResult(resposta);
+    }
+
+    public Task<PerfisDeConsumo> ObterPerfisDeConsumo(CancellationToken cancellationToken = default)
+    {
+        if (Indisponivel)
+            throw new ServicoAnaliticoIndisponivelException("simulado no teste");
+
+        return Task.FromResult(Perfis ?? new PerfisDeConsumo([], null, false, 0, false));
     }
 
     public Task<IReadOnlyList<int>> SugerirCombinacoes(

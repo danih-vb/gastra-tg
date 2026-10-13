@@ -19,18 +19,21 @@ from gastra_analitica.api.modelos import (
     DesignacaoSugerida,
     ItemSugerido,
     PedidoDeAlocacao,
+    ItemMarcanteDoPerfil,
     PedidoDeRecomendacao,
+    PerfilDeConsumo,
     RespostaDeAlocacao,
+    RespostaDePerfis,
     RespostaDeRecomendacao,
 )
 from gastra_analitica.dados.historico_banco import ConfiguracaoBanco, ler_transacoes
 from gastra_analitica.recomendacao.provedor_modelo import ProvedorDeModelo
-from gastra_analitica.recomendacao.regras_associacao import treinar
+from gastra_analitica.recomendacao.segmentada import treinar_segmentado
 
 app = FastAPI(
     title="GASTRA — Camada Analítica",
-    description="Recomendação de pratos e alocação de garçons, consumida pelo backend em C#.",
-    version="0.2.0",
+    description="Recomendação de pratos, perfis de consumo e alocação de garçons, consumida pelo backend em C#.",
+    version="0.3.0",
 )
 
 # Janela do histórico real: um ano acompanha a sazonalidade sem carregar mudanças antigas de cardápio.
@@ -62,7 +65,8 @@ def health() -> dict[str, str]:
 @app.post("/recomendacao/combinacoes", tags=["Recomendação"], response_model=RespostaDeRecomendacao)
 def sugerir_combinacoes(pedido: PedidoDeRecomendacao) -> RespostaDeRecomendacao:
     """
-    RF09 — sugere itens a partir do que já foi pedido na comanda.
+    RF09 — sugere itens a partir do que já foi pedido na comanda, pelas regras do perfil de consumo da mesa
+    (clusterização) e pelas regras gerais (regras de associação).
 
     Usa só padrão de consumo observável: nenhum atributo pessoal do cliente entra no cálculo (RN05).
     """
@@ -70,15 +74,48 @@ def sugerir_combinacoes(pedido: PedidoDeRecomendacao) -> RespostaDeRecomendacao:
         atual = provedor_de_modelo.obter()
         modelo, origem, motivo = atual.modelo, atual.origem, atual.motivo
     else:
-        modelo, origem, motivo = treinar(pedido.historico), "informado", None
+        modelo, origem, motivo = treinar_segmentado(pedido.historico), "informado", None
 
-    sugestoes = modelo.sugerir(pedido.itens, pedido.limite, pedido.itens_disponiveis)
+    recomendacao = modelo.recomendar(pedido.itens, pedido.limite, pedido.itens_disponiveis)
 
     return RespostaDeRecomendacao(
-        sugestoes=[ItemSugerido(item_id=s.item_id, confianca=s.confianca, lift=s.lift) for s in sugestoes],
+        sugestoes=[
+            ItemSugerido(item_id=s.item_id, confianca=s.confianca, lift=s.lift) for s in recomendacao.sugestoes
+        ],
         regras_consideradas=len(modelo),
         origem_do_historico=origem,
         motivo_do_simulado=motivo,
+        perfil=recomendacao.perfil,
+    )
+
+
+@app.get("/clusterizacao/perfis", tags=["Recomendação"], response_model=RespostaDePerfis)
+def perfis_de_consumo() -> RespostaDePerfis:
+    """
+    RF09 e RF10 — os perfis de consumo que a clusterização encontrou no histórico, para o Gerente entender o
+    salão: quantas mesas de cada tipo e o que caracteriza cada uma. Só itens pedidos; nada do cliente (RN05).
+    """
+    atual = provedor_de_modelo.obter()
+    perfis = atual.modelo.perfis
+    return RespostaDePerfis(
+        perfis=[
+            PerfilDeConsumo(
+                id=p.id,
+                comandas=p.comandas,
+                participacao=p.participacao,
+                itens_marcantes=[
+                    ItemMarcanteDoPerfil(item_id=i.item_id, presenca=i.presenca, destaque=i.destaque)
+                    for i in p.itens_marcantes
+                ],
+            )
+            for p in (perfis.perfis if perfis is not None else [])
+        ],
+        silhueta=perfis.silhueta if perfis is not None else None,
+        silhuetas_testadas=perfis.silhuetas_testadas if perfis is not None else {},
+        segmenta_a_recomendacao=bool(atual.modelo.por_perfil),
+        comandas_analisadas=atual.comandas_usadas,
+        origem_do_historico=atual.origem,
+        motivo_do_simulado=atual.motivo,
     )
 
 

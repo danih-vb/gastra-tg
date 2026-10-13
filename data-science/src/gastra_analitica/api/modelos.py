@@ -29,6 +29,30 @@ class RespostaDeRecomendacao(BaseModel):
     regras_consideradas: int
     origem_do_historico: str  # "banco", "simulado" ou "informado"
     motivo_do_simulado: str | None = None
+    perfil: int | None = None  # perfil de consumo usado; None quando só as regras gerais valeram
+
+
+class ItemMarcanteDoPerfil(BaseModel):
+    item_id: int
+    presenca: float  # fração das comandas do perfil que levaram o item
+    destaque: float  # quantas vezes mais ele aparece no perfil do que no restaurante inteiro
+
+
+class PerfilDeConsumo(BaseModel):
+    id: int
+    comandas: int
+    participacao: float
+    itens_marcantes: list[ItemMarcanteDoPerfil]
+
+
+class RespostaDePerfis(BaseModel):
+    perfis: list[PerfilDeConsumo]
+    silhueta: float | None
+    silhuetas_testadas: dict[int, float]
+    segmenta_a_recomendacao: bool
+    comandas_analisadas: int
+    origem_do_historico: str
+    motivo_do_simulado: str | None = None
 
 
 class GarcomDoTurno(BaseModel):

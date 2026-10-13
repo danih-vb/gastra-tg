@@ -169,3 +169,46 @@ public class FaixaDeNotaResponse
     /// <summary>Participação da nota no total, em porcentagem.</summary>
     public decimal Percentual { get; set; }
 }
+
+/// <summary>
+/// Perfis de consumo encontrados pela clusterização (RF09, RF10). Vazio quando o serviço está fora do ar ou quando o
+/// histórico ainda é simulado — os dois casos vêm sinalizados, para a tela explicar em vez de mostrar nada.
+/// </summary>
+public class PerfisDeConsumoResponse
+{
+    public bool ServicoDisponivel { get; set; }
+
+    /// <summary>Falso enquanto o serviço usa o histórico simulado: aí os perfis não descrevem este restaurante.</summary>
+    public bool HistoricoSuficiente { get; set; }
+
+    /// <summary>Quão bem separados os perfis estão (de -1 a 1; abaixo de 0,25, não há perfis de verdade).</summary>
+    public double? Silhueta { get; set; }
+
+    public int ComandasAnalisadas { get; set; }
+
+    /// <summary>Verdadeiro quando a sugestão ao garçom já usa as regras de cada perfil.</summary>
+    public bool SegmentaARecomendacao { get; set; }
+
+    /// <summary>Do perfil mais comum ao menos comum.</summary>
+    public List<PerfilDeConsumoResponse> Perfis { get; set; } = [];
+}
+
+public class PerfilDeConsumoResponse
+{
+    public int Comandas { get; set; }
+    public double Participacao { get; set; }
+
+    /// <summary>Os itens que mais se destacam no perfil em relação ao restaurante inteiro.</summary>
+    public List<ItemDoPerfilResponse> Itens { get; set; } = [];
+}
+
+public class ItemDoPerfilResponse
+{
+    public string Nome { get; set; } = string.Empty;
+
+    /// <summary>Fração das comandas do perfil que levaram o item.</summary>
+    public double Presenca { get; set; }
+
+    /// <summary>Quantas vezes mais o item aparece no perfil do que no restaurante inteiro.</summary>
+    public double Destaque { get; set; }
+}

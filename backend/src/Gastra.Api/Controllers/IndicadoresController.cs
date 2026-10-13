@@ -61,6 +61,16 @@ public class IndicadoresController : ControllerBase
     public async Task<IActionResult> Horarios(DateOnly? inicio, DateOnly? fim, [FromServices] IRelatorioHorariosUseCase useCase) =>
         Ok(await useCase.Executar(inicio, fim));
 
+    /// <summary>
+    /// Perfis de consumo que a clusterização encontrou no último ano (RF09, RF10): quantas mesas de cada tipo e o que
+    /// caracteriza cada uma. Com o serviço analítico fora do ar, responde 200 sem perfis (D3).
+    /// </summary>
+    [Authorize(Roles = Gerente)]
+    [HttpGet("perfis-consumo")]
+    [ProducesResponseType(typeof(PerfisDeConsumoResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PerfisDeConsumo([FromServices] IRelatorioPerfisDeConsumoUseCase useCase) =>
+        Ok(await useCase.Executar());
+
     /// <summary>UC17 — ranking pelo índice de desempenho. O Gerente vê todos; o Garçom vê só a própria posição.</summary>
     [Authorize(Roles = GerenteOuGarcom)]
     [HttpGet("desempenho")]

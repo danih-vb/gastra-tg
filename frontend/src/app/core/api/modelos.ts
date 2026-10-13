@@ -94,6 +94,21 @@ export interface RelatorioAvaliacoes {
   distribuicao: { nota: number; quantidade: number; percentual: number }[];
 }
 
+/** Perfis de consumo que a clusterização encontrou (RF09, RF10): agrupados pelo que as mesas pedem. */
+export interface PerfisDeConsumo {
+  servicoDisponivel: boolean;
+  /** Falso enquanto o serviço usa o histórico simulado: aí os perfis não descrevem este restaurante. */
+  historicoSuficiente: boolean;
+  silhueta: number | null;
+  comandasAnalisadas: number;
+  segmentaARecomendacao: boolean;
+  perfis: {
+    comandas: number;
+    participacao: number;
+    itens: { nome: string; presenca: number; destaque: number }[];
+  }[];
+}
+
 export interface ItemSugerido {
   itemDoCardapioId: number;
   nome: string;

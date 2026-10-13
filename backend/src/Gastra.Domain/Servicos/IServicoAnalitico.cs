@@ -29,4 +29,11 @@ public interface IServicoAnalitico
         double pesoDesequilibrio,
         double pesoEspera,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// RF09 e RF10 — os perfis de consumo que a clusterização encontrou no histórico, com os itens que caracterizam
+    /// cada um. Só itens pedidos; nada do cliente (RN05).
+    /// </summary>
+    /// <exception cref="ServicoAnaliticoIndisponivelException">Serviço fora do ar, lento ou com resposta inválida.</exception>
+    Task<PerfisDeConsumo> ObterPerfisDeConsumo(CancellationToken cancellationToken = default);
 }

@@ -23,6 +23,7 @@ import {
   Praca,
   Promocao,
   RankingDeDesempenho,
+  PerfisDeConsumo,
   RelatorioAvaliacoes,
   RelatorioCardapio,
   RelatorioGarcons,
@@ -202,6 +203,11 @@ export class GastraApiService {
 
   relatorioDoCardapio(inicio: string, fim: string): Observable<RelatorioCardapio> {
     return this.http.get<RelatorioCardapio>(`${this.api}/api/indicadores/cardapio`, { params: { inicio, fim } });
+  }
+
+  /** Perfis de consumo do último ano; não dependem do período escolhido na tela. */
+  perfisDeConsumo(): Observable<PerfisDeConsumo> {
+    return this.http.get<PerfisDeConsumo>(`${this.api}/api/indicadores/perfis-consumo`);
   }
 
   relatorioDeAvaliacoes(inicio: string, fim: string): Observable<RelatorioAvaliacoes> {
