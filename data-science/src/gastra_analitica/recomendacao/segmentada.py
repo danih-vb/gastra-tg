@@ -1,15 +1,16 @@
 """Recomendação segmentada por perfil de consumo: clusterização + regras de associação (RF09).
 
 As regras de associação sozinhas respondem "o que costuma vir junto no restaurante inteiro". Com os perfis da
-clusterização, a comanda em andamento é associada ao perfil mais parecido e recebe as sugestões de três fontes,
-nesta ordem:
+clusterização, a comanda em andamento é associada ao perfil mais parecido e recebe as sugestões de três fontes:
 
 1. as **regras do perfil** — numa mesa com cara de família, o que costuma vir junto *nas famílias*;
 2. os **itens característicos do perfil** que a mesa ainda não pediu — "mesas como esta costumam pedir";
 3. as **regras gerais**, para completar.
 
-A segunda fonte é a que mais pesa: dentro de um perfil, os itens tendem a aparecer juntos por serem do perfil, e
-não por um puxar o outro, e nesse caso as regras do perfil saem com lift perto de 1 e são descartadas.
+As duas primeiras entram **juntas, ordenadas pela confiança**: as duas estimam a chance de a mesa pedir o item, e uma
+regra fraca não pode passar na frente de um item que quase toda mesa do perfil pede. Os itens característicos costumam
+pesar mais: dentro de um perfil, os itens aparecem juntos por serem do perfil, e não por um puxar o outro, e aí as
+regras do perfil saem com lift perto de 1 e são descartadas.
 
 Quando a clusterização não encontra estrutura, ou o perfil tem poucas comandas para gerar regras confiáveis, a
 recomendação fica exatamente como era: só as regras gerais.
@@ -61,26 +62,32 @@ class ModeloSegmentado:
         if do_perfil is None:
             return Recomendacao(self.geral.sugerir(itens, limite, disponiveis), None)
 
-        # Três fontes, nesta ordem: as regras do perfil ("nas mesas como esta, quem pediu A pede B"), os itens que
-        # caracterizam o perfil ("mesas como esta costumam pedir"), e as regras gerais para completar.
+        # Primeiro o que vem do perfil — as regras dele ("nas mesas como esta, quem pediu A pede B") e os itens que o
+        # caracterizam ("mesas como esta costumam pedir") —, juntos e do mais para o menos provável. As duas fontes
+        # medem a mesma coisa, a chance de a mesa pedir o item, e por isso disputam a mesma fila: com uma na frente
+        # da outra, uma regra fraca passaria um item que quase toda mesa do perfil pede. As regras gerais só completam.
         pedidos = set(itens)
         permitidos = set(disponiveis) if disponiveis is not None else None
-        sugestoes: list[Sugestao] = []
-        ja: set[int] = set()
 
-        def acrescentar(sugestao: Sugestao) -> None:
-            if len(sugestoes) < limite and sugestao.item_id not in ja:
+        do_proprio_perfil: dict[int, Sugestao] = {}
+        candidatas = do_perfil.sugerir(itens, len(self.perfis.itens), disponiveis) + [
+            Sugestao(marcante.item_id, marcante.presenca, marcante.destaque)
+            for marcante in self.perfis.caracteristicos(perfil)
+            if marcante.item_id not in pedidos and (permitidos is None or marcante.item_id in permitidos)
+        ]
+        for candidata in candidatas:
+            melhor = do_proprio_perfil.get(candidata.item_id)
+            if melhor is None or (candidata.confianca, candidata.lift) > (melhor.confianca, melhor.lift):
+                do_proprio_perfil[candidata.item_id] = candidata
+
+        sugestoes = sorted(do_proprio_perfil.values(), key=lambda s: (-s.confianca, -s.lift, s.item_id))[:limite]
+        ja = {s.item_id for s in sugestoes}
+        for sugestao in self.geral.sugerir(itens, limite + len(ja), disponiveis):
+            if len(sugestoes) >= limite:
+                break
+            if sugestao.item_id not in ja:
                 sugestoes.append(sugestao)
                 ja.add(sugestao.item_id)
-
-        for sugestao in do_perfil.sugerir(itens, limite, disponiveis):
-            acrescentar(sugestao)
-        for marcante in self.perfis.caracteristicos(perfil):
-            if marcante.item_id in pedidos or (permitidos is not None and marcante.item_id not in permitidos):
-                continue
-            acrescentar(Sugestao(marcante.item_id, marcante.presenca, marcante.destaque))
-        for sugestao in self.geral.sugerir(itens, limite + len(ja), disponiveis):
-            acrescentar(sugestao)
         return Recomendacao(sugestoes, perfil)
 
     def sugerir(

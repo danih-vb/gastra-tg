@@ -90,11 +90,18 @@ def main() -> None:
 
     # 2. Recomendação
     corte = int(len(comandas) * 0.7)
-    geral = taxa_de_acerto(treinar, comandas[:corte], comandas[corte:])
-    segmentada = taxa_de_acerto(treinar_segmentado, comandas[:corte], comandas[corte:])
-    print("\n## Recomendação\n")
-    print(f"Taxa de acerto no item escondido (top 3, 70% treino / 30% teste): regras gerais {geral:.1%}, "
-          f"segmentada {segmentada:.1%} ({(segmentada - geral) * 100:+.1f} pontos).\n")
+    print()
+    print("## Recomendação")
+    print()
+    print("Acerto no item escondido (70% treino / 30% teste):")
+    print()
+    print("| Recomendação | Na primeira sugestão | Entre as três |")
+    print("|---|---:|---:|")
+    for nome, treino in (("Só regras de associação", treinar), ("Segmentada por perfil", treinar_segmentado)):
+        primeira = taxa_de_acerto(treino, comandas[:corte], comandas[corte:], limite=1)
+        tres = taxa_de_acerto(treino, comandas[:corte], comandas[corte:], limite=3)
+        print(f"| {nome} | {primeira:.1%} | {tres:.1%} |")
+    print()
     moqueca = next(i for i, n in nomes.items() if n.startswith("Moqueca"))
     print("| Sugestão para a moqueca | Confiança | Lift |")
     print("|---|---:|---:|")
