@@ -73,18 +73,27 @@ nenhuma: é o perfil se mostrando nas regras gerais.
 
 ### 2.2 Recomendação segmentada por perfil
 
-A recomendação segmentada associa a comanda em andamento ao perfil mais parecido e sugere, nesta ordem, pelas
-regras do perfil, pelos itens característicos do perfil que a mesa ainda não pediu e pelas regras gerais.
+A recomendação segmentada associa a comanda em andamento ao perfil mais parecido e sugere pelas regras do perfil e
+pelos itens característicos do perfil que a mesa ainda não pediu — juntos, do mais para o menos provável — e, para
+completar, pelas regras gerais.
 
 Para medir se isso ajuda o garçom, cada comanda de teste teve um item escondido por vez, e conferiu-se se ele
-voltava entre as três sugestões feitas a partir dos demais (70% das comandas para treinar, 30% para testar):
+voltava na primeira sugestão e entre as três feitas a partir dos demais (70% das comandas para treinar, 30% para
+testar):
 
-| Recomendação | Acertou o item escondido |
-|---|---:|
-| Só regras de associação (gerais) | 76,2% |
-| **Segmentada por perfil (clusterização + regras)** | **83,2%** |
+| Recomendação | Acertou na primeira sugestão | Acertou entre as três |
+|---|---:|---:|
+| Só regras de associação (gerais) | 50,0% | 76,2% |
+| **Segmentada por perfil (clusterização + regras)** | **57,1%** | **83,1%** |
 
-✅ **Sete pontos a mais.** O exemplo que resume a diferença: numa mesa com salada e suco, as regras gerais sugerem
+> **Correção depois da primeira medição.** A primeira versão enfileirava as três fontes (regras do perfil, depois
+> itens característicos, depois regras gerais) e media só "entre as três": 83,2%. Num banco sem perfis nítidos, a
+> primeira sugestão para a moqueca saiu a caipirinha (confiança 0,75), com o arroz de coco (0,94) em terceiro — uma
+> regra fraca na frente de um item que quase toda mesa do perfil pede. As sugestões do perfil passaram a ser
+> ordenadas juntas pela confiança, e a primeira sugestão passou a ser medida
+> (teste `test_segmentada_ordena_pela_confianca_e_nao_pela_fonte`).
+
+✅ **Cerca de sete pontos a mais nas duas medidas.** O exemplo que resume a diferença: numa mesa com salada e suco, as regras gerais sugerem
 a porção infantil, porque o suco aparece muito com ela nas famílias; a segmentada reconhece o almoço executivo e
 sugere risoto, café e água com gás (teste `test_segmentada_sugere_o_que_mesas_do_mesmo_perfil_pedem`).
 
@@ -142,8 +151,10 @@ calor por hora os dois picos de um restaurante.
   propósito (de 0,70 a 1,42) — o que mais fatura ganha 2,2 vezes o que menos fatura. É o *problema* que a RN03
   existe para corrigir; se o semeador já entregasse Gini perto de zero, a alocação não teria o que mostrar.
 
-**Achado a acompanhar:** ainda não se mediu o Gini *depois* de sucessivos turnos alocados pelo próprio sistema
-sobre esta base (#221). Seria a prova mais forte da RN03: a curva caindo de 0,16 em direção ao valor da calibração.
+**O que acontece depois (#221).** Partindo deste estado e aplicando a alocação do sistema por sucessivos turnos, o
+Gini cai de 0,1555 para 0,0118 em 30 dias (−92%) e fica abaixo de 0,03; o rodízio simples fica perto de 0,13. A curva,
+as cinco políticas comparadas e os limites do experimento estão em
+[`GASTRA_Evolucao_Gini_RN03.md`](GASTRA_Evolucao_Gini_RN03.md).
 
 ---
 

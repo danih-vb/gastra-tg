@@ -414,9 +414,11 @@ abaixo de 0,25, considera-se que não há perfis de fato. Nenhum atributo do cli
 perfis são definidos apenas pelo que foi pedido.
 
 As duas técnicas trabalham juntas na recomendação segmentada. A comanda em andamento é associada ao perfil mais
-parecido com o que ela já tem e recebe sugestões de três fontes, nesta ordem: as regras de associação apuradas
-somente entre as comandas do perfil; os itens que caracterizam o perfil e que a mesa ainda não pediu; e, para
-completar, as regras gerais do restaurante. Quando a clusterização não encontra perfis, a recomendação usa apenas
+parecido com o que ela já tem e recebe sugestões de três fontes: as regras de associação apuradas somente entre as
+comandas do perfil; os itens que caracterizam o perfil e que a mesa ainda não pediu; e, para completar, as regras
+gerais do restaurante. As duas primeiras estimam a mesma coisa — a chance de a mesa pedir o item — e por isso são
+ordenadas juntas, pela confiança, de modo que uma regra fraca não passe à frente de um item que quase toda mesa do
+perfil pede. Quando a clusterização não encontra perfis, a recomendação usa apenas
 as regras gerais. Os perfis encontrados também são apresentados ao Gerente, nos relatórios de Business
 Intelligence.
 
