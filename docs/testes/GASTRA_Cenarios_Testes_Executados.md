@@ -3,10 +3,10 @@
 > **Gerado a partir da execução real dos testes automatizados** (`docs/testes/gerar_relatorio_testes.py`).
 > Não edite à mão: rode os testes e o script de novo.
 
-- **Execução:** 25/09/2026 12:50, commit `3bb7a75`.
+- **Execução:** 13/10/2026 19:10, commit `6a1db3d`.
 - **Ambiente:** MySQL 8.4 real (testes de views, triggers e restrições), serviço Python no ar (testes de contrato),
   .NET 10, Python 3.13 e Angular 22 sobre Vitest.
-- **Resultado:** 441 cenários e 489 casos executados: 489 passaram, 0 falharam e 0 foram ignorados.
+- **Resultado:** 465 cenários e 513 casos executados: 513 passaram, 0 falharam e 0 foram ignorados.
 
 Cobre o critério da issue #48 para os **testes automatizados**: pelo menos um cenário por bloco (comandas,
 alocação por programação linear, recomendação e LGPD), com o resultado executado. Cada bloco aparece nas três
@@ -20,9 +20,9 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 
 | Camada | Cenários | Casos | Passaram | Falharam | Ignorados |
 |---|---|---|---|---|---|
-| Backend .NET | 275 | 316 | 316 | 0 | 0 |
-| Analítica Python | 43 | 50 | 50 | 0 | 0 |
-| Frontend Angular | 123 | 123 | 123 | 0 | 0 |
+| Backend .NET | 280 | 321 | 321 | 0 | 0 |
+| Analítica Python | 59 | 66 | 66 | 0 | 0 |
+| Frontend Angular | 126 | 126 | 126 | 0 | 0 |
 
 ## Resumo por bloco
 
@@ -30,12 +30,12 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 |---|---|---|---|---|---|
 | Núcleo de comandas | 109 | 118 | 118 | 0 | 0 |
 | Cardápio e promoções | 53 | 72 | 72 | 0 | 0 |
-| Alocação de garçons (programação linear) | 58 | 64 | 64 | 0 | 0 |
-| Recomendação de pratos (ciência de dados) | 37 | 42 | 42 | 0 | 0 |
-| BI e índice de desempenho | 42 | 43 | 43 | 0 | 0 |
+| Alocação de garçons (programação linear) | 61 | 67 | 67 | 0 | 0 |
+| Recomendação de pratos (ciência de dados) | 50 | 55 | 55 | 0 | 0 |
+| BI e índice de desempenho | 49 | 50 | 50 | 0 | 0 |
 | LGPD, auditoria e segurança | 108 | 109 | 109 | 0 | 0 |
 | Banco de dados (views, triggers e restrições) | 14 | 14 | 14 | 0 | 0 |
-| Integração backend ↔ Python | 11 | 14 | 14 | 0 | 0 |
+| Integração backend ↔ Python | 12 | 15 | 15 | 0 | 0 |
 | Arquitetura e infraestrutura | 9 | 13 | 13 | 0 | 0 |
 
 ## Núcleo de comandas
@@ -263,15 +263,18 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 47 | Politicas de referencia ocupam todas as pracas sem estourar vagas | Analítica Python | `test_calibracao` | 1 | ✅ Passou |
 | 48 | Rn 03 com peso calibrado distribui melhor que deixar sem regra | Analítica Python | `test_calibracao` | 1 | ✅ Passou |
 | 49 | Simulacao e deterministica | Analítica Python | `test_calibracao` | 1 | ✅ Passou |
-| 50 | Com mais presentes que vagas, explica o problema e bloqueia a geração | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 51 | Começa pela presença, com todos marcados e as vagas à vista | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 52 | Confirma o turno e trava os ajustes (UC21) | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 53 | Erro da API aparece na tela | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 54 | Gera a sugestão da RN03 com quem está presente | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 55 | Mostra o motivo de cada garçom e marca a praça de alto movimento, sem valores | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 56 | Na praça cheia, exige escolher com quem trocar e envia a troca (#140) | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 57 | Sem o serviço de análise, todos ficam sem praça e a tela explica (D3) | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
-| 58 | Sem os fatores na resposta, não inventa motivo | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 50 | A curva comeca no gini do banco e tem um ponto por turno | Analítica Python | `test_evolucao` | 1 | ✅ Passou |
+| 51 | A rn 03 reduz a desigualdade mais que o rodizio | Analítica Python | `test_evolucao` | 1 | ✅ Passou |
+| 52 | Mesma semente mesma curva | Analítica Python | `test_evolucao` | 1 | ✅ Passou |
+| 53 | Com mais presentes que vagas, explica o problema e bloqueia a geração | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 54 | Começa pela presença, com todos marcados e as vagas à vista | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 55 | Confirma o turno e trava os ajustes (UC21) | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 56 | Erro da API aparece na tela | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 57 | Gera a sugestão da RN03 com quem está presente | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 58 | Mostra o motivo de cada garçom e marca a praça de alto movimento, sem valores | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 59 | Na praça cheia, exige escolher com quem trocar e envia a troca (#140) | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 60 | Sem o serviço de análise, todos ficam sem praça e a tela explica (D3) | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
+| 61 | Sem os fatores na resposta, não inventa motivo | Frontend Angular | `Alocação (UC15, UC21, UC22)` | 1 | ✅ Passou |
 
 ## Recomendação de pratos (ciência de dados)
 
@@ -289,78 +292,98 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 10 | Alocacao com pesos que nao somam um retorna 422 | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
 | 11 | Alocacao devolve uma praca para cada garcom | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
 | 12 | Alocacao sem vagas suficientes retorna 422 | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
-| 13 | Recomendacao aceita historico informado pelo backend | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
-| 14 | Recomendacao filtra pelos itens disponiveis | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
-| 15 | Recomendacao informa o motivo de usar o simulado | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
-| 16 | Recomendacao usa o historico do banco quando disponivel | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
-| 17 | Recomendacao usa o historico simulado quando nenhum e informado | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
-| 18 | Agrupa os itens por comanda | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
-| 19 | Configuracao usa valores padrao do ambiente local | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
-| 20 | Filtra a janela de historico | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
-| 21 | Sem senha no ambiente o banco fica desligado | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
-| 22 | Senha nao aparece na representacao da engine | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
-| 23 | Usuario analitico le a view | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
-| 24 | Usuario analitico nao le tabelas nem grava | Analítica Python | `test_historico_banco` | 4 | ✅ Passou |
-| 25 | Banco fora do ar nao derruba a recomendacao | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 26 | Historico real pequeno demais usa o simulado | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 27 | Historico real suficiente treina com o banco | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 28 | Invalidar forca nova leitura | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 29 | O modelo fica em cache e e recalculado depois do prazo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 30 | Sem banco configurado usa o simulado e diz o motivo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 31 | Descarta regras com lift abaixo de um | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 32 | Historico sem combinacoes nao gera regra | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 33 | Nao sugere item que ja esta na comanda | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 34 | Recupera a combinacao plantada no simulador | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 35 | Respeita a lista de itens disponiveis | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 36 | Respeita o limite de sugestoes | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 37 | Resultado e o mesmo para a mesma semente | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 13 | Perfis de consumo descrevem os grupos encontrados | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 14 | Recomendacao aceita historico informado pelo backend | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 15 | Recomendacao diz qual perfil de consumo usou | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 16 | Recomendacao filtra pelos itens disponiveis | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 17 | Recomendacao informa o motivo de usar o simulado | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 18 | Recomendacao usa o historico do banco quando disponivel | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 19 | Recomendacao usa o historico simulado quando nenhum e informado | Analítica Python | `test_api_analitica` | 1 | ✅ Passou |
+| 20 | Associa uma comanda em andamento ao perfil mais parecido | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 21 | Descreve cada perfil pelos itens que se destacam nele | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 22 | Escolhe pela silhueta a quantidade de perfis plantada | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 23 | Historico pequeno demais nao gera perfil | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 24 | Mesma semente mesmos perfis | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 25 | Redescobre os perfis plantados | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 26 | Segmentada acerta mais que as regras gerais | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 27 | Segmentada continua respeitando itens disponiveis e o que ja foi pedido | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 28 | Segmentada ordena pela confianca e nao pela fonte | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 29 | Segmentada sugere o que mesas do mesmo perfil pedem | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 30 | Sem estrutura a recomendacao fica so com as regras gerais | Analítica Python | `test_clusterizacao` | 1 | ✅ Passou |
+| 31 | Agrupa os itens por comanda | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
+| 32 | Configuracao usa valores padrao do ambiente local | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
+| 33 | Filtra a janela de historico | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
+| 34 | Sem senha no ambiente o banco fica desligado | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
+| 35 | Senha nao aparece na representacao da engine | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
+| 36 | Usuario analitico le a view | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
+| 37 | Usuario analitico nao le tabelas nem grava | Analítica Python | `test_historico_banco` | 4 | ✅ Passou |
+| 38 | Banco fora do ar nao derruba a recomendacao | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 39 | Historico real pequeno demais usa o simulado | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 40 | Historico real suficiente treina com o banco | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 41 | Invalidar forca nova leitura | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 42 | O modelo fica em cache e e recalculado depois do prazo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 43 | Sem banco configurado usa o simulado e diz o motivo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 44 | Descarta regras com lift abaixo de um | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 45 | Historico sem combinacoes nao gera regra | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 46 | Nao sugere item que ja esta na comanda | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 47 | Recupera a combinacao plantada no simulador | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 48 | Respeita a lista de itens disponiveis | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 49 | Respeita o limite de sugestoes | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 50 | Resultado e o mesmo para a mesma semente | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
 
 ## BI e índice de desempenho
 
 | # | Cenário | Camada | Origem | Casos | Resultado |
 |---|---|---|---|---|---|
-| 1 | Periodo invalido ou longo demais retorna 400 | Backend .NET | `IndicadoresControllerTests` | 2 | ✅ Passou |
-| 2 | Periodo sem filtro sao os ultimos 30 dias com fim inclusivo | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 3 | Ranking com avaliacoes usa a nota de quem tem o minimo e esconde a dos outros | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 4 | Ranking o garcom ve so a propria posicao sem nome dos colegas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 5 | Ranking o gerente ve todos | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 6 | Relatorio de avaliacoes sem nenhuma avaliacao nao divide por zero | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 7 | Relatorio de avaliacoes traz media e as cinco faixas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 8 | Relatorio de garcons calcula medias e totais com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 9 | Relatorio de horarios traz hora e dia da semana com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 10 | Relatorio de pracas mostra todas as pracas inclusive sem movimento | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 11 | Relatorio do cardapio agrupa por categoria com participacao | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 12 | Relatorios sao do gerente e registram a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 13 | Abaixo do minimo nota nao aparece e o garcom recebe a media geral | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 14 | Com avaliacoes pesos viram 40 30 30 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 15 | Compara por turno quem trabalhou mais nao ganha so por isso | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 16 | Empate no indice divide a posicao | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 17 | Media bayesiana poucas notas altas nao passam muitas notas quase altas | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 18 | Mesma venda e mesmas mesas avaliacao desempata | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 19 | Ninguem com o minimo avaliacao sai do indice como antes | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 20 | Quem lidera faturamento e mesas por turno faz 100 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 21 | Sem avaliacoes mesas atendidas pesam metade | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 22 | Sem turnos fica fora do ranking | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 23 | Avaliacoes por garcom somam as notas das comandas dele pelo dia do fechamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 24 | Faturamento medio por praca inclui praca sem movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 25 | Faturamento por hora e por dia da semana usam o horario de brasilia | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 26 | Faturamento por turno do garcom e a media dos turnos no intervalo com fim exclusivo | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 27 | Indicadores por garcom contam turnos mesas e minutos de atendimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 28 | Indicadores por item trazem categoria quantidade e faturamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 29 | Indicadores por praca somam comandas e turnos com movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 30 | Destaca como alto potencial a praça acima da média, pela mesma regra da RN03 | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 31 | Monta o mapa de calor por praça e hora, com o pico | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 32 | Mostra a média das avaliações e a distribuição, sem ligar nota a garçom (RF25) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 33 | Pede os seis relatórios com o mesmo período e mostra os totais | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 34 | Período sem comanda fechada explica em vez de mostrar zeros | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 35 | Ranking com os detalhes do garçom e itens ordenados pelo faturamento | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 36 | Sem avaliação no período, diz isso em vez de mostrar média zero | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 37 | Trocar o período pede os relatórios de novo | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 38 | Abaixo do mínimo, explica que entrou a média do restaurante em vez de mostrar a nota | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 39 | Com avaliações, mostra a nota do próprio garçom e o peso dela | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 40 | Mostra a posição do próprio garçom e o que entra no índice | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 41 | Sem turnos no período, explica em vez de mostrar tela vazia | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 42 | Inclui o dia de hoje em cada opção | Frontend Angular | `datas do período` | 1 | ✅ Passou |
+| 1 | Perfis de consumo com historico real traz os nomes do cardapio do mais comum ao menos e registra a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 2 | Perfis de consumo com historico simulado nao mostra perfis que nao sao deste restaurante | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 3 | Perfis de consumo com servico analitico fora responde 200 sem perfis | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 4 | Perfis de consumo sao do gerente | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 5 | Periodo invalido ou longo demais retorna 400 | Backend .NET | `IndicadoresControllerTests` | 2 | ✅ Passou |
+| 6 | Periodo sem filtro sao os ultimos 30 dias com fim inclusivo | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 7 | Ranking com avaliacoes usa a nota de quem tem o minimo e esconde a dos outros | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 8 | Ranking o garcom ve so a propria posicao sem nome dos colegas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 9 | Ranking o gerente ve todos | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 10 | Relatorio de avaliacoes sem nenhuma avaliacao nao divide por zero | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 11 | Relatorio de avaliacoes traz media e as cinco faixas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 12 | Relatorio de garcons calcula medias e totais com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 13 | Relatorio de horarios traz hora e dia da semana com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 14 | Relatorio de pracas mostra todas as pracas inclusive sem movimento | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 15 | Relatorio do cardapio agrupa por categoria com participacao | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 16 | Relatorios sao do gerente e registram a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 17 | Abaixo do minimo nota nao aparece e o garcom recebe a media geral | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 18 | Com avaliacoes pesos viram 40 30 30 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 19 | Compara por turno quem trabalhou mais nao ganha so por isso | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 20 | Empate no indice divide a posicao | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 21 | Media bayesiana poucas notas altas nao passam muitas notas quase altas | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 22 | Mesma venda e mesmas mesas avaliacao desempata | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 23 | Ninguem com o minimo avaliacao sai do indice como antes | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 24 | Quem lidera faturamento e mesas por turno faz 100 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 25 | Sem avaliacoes mesas atendidas pesam metade | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 26 | Sem turnos fica fora do ranking | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 27 | Avaliacoes por garcom somam as notas das comandas dele pelo dia do fechamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 28 | Faturamento medio por praca inclui praca sem movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 29 | Faturamento por hora e por dia da semana usam o horario de brasilia | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 30 | Faturamento por turno do garcom e a media dos turnos no intervalo com fim exclusivo | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 31 | Indicadores por garcom contam turnos mesas e minutos de atendimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 32 | Indicadores por item trazem categoria quantidade e faturamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 33 | Indicadores por praca somam comandas e turnos com movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 34 | Com histórico ainda simulado, explica em vez de mostrar perfis que não são deste restaurante | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 35 | Com o serviço de análise fora do ar, os perfis avisam e o resto do painel continua (D3) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 36 | Destaca como alto potencial a praça acima da média, pela mesma regra da RN03 | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 37 | Monta o mapa de calor por praça e hora, com o pico | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 38 | Mostra a média das avaliações e a distribuição, sem ligar nota a garçom (RF25) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 39 | Mostra os perfis de consumo com os itens que os caracterizam (RF09) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 40 | Pede os seis relatórios com o mesmo período e mostra os totais | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 41 | Período sem comanda fechada explica em vez de mostrar zeros | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 42 | Ranking com os detalhes do garçom e itens ordenados pelo faturamento | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 43 | Sem avaliação no período, diz isso em vez de mostrar média zero | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 44 | Trocar o período pede os relatórios de novo | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 45 | Abaixo do mínimo, explica que entrou a média do restaurante em vez de mostrar a nota | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 46 | Com avaliações, mostra a nota do próprio garçom e o peso dela | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 47 | Mostra a posição do próprio garçom e o que entra no índice | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 48 | Sem turnos no período, explica em vez de mostrar tela vazia | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 49 | Inclui o dia de hoje em cada opção | Frontend Angular | `datas do período` | 1 | ✅ Passou |
 
 ## LGPD, auditoria e segurança
 
@@ -505,10 +528,11 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 5 | Alocacao envia garcons pracas e pesos em snake case e le as designacoes | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
 | 6 | Cancelamento pedido por quem chamou nao eh tratado como falha do servico | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
 | 7 | Envia o contrato em snake case e le os ids na ordem | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
-| 8 | Resposta invalida vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 3 | ✅ Passou |
-| 9 | Resposta lenta estoura o tempo limite e vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
-| 10 | Servico fora do ar vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
-| 11 | Status de erro vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
+| 8 | Perfis de consumo le o contrato em snake case e marca se o historico e real | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
+| 9 | Resposta invalida vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 3 | ✅ Passou |
+| 10 | Resposta lenta estoura o tempo limite e vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
+| 11 | Servico fora do ar vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
+| 12 | Status de erro vira servico indisponivel | Backend .NET | `ServicoAnaliticoHttpTests` | 1 | ✅ Passou |
 
 ## Arquitetura e infraestrutura
 
