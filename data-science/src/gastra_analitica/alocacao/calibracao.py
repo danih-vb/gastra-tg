@@ -164,6 +164,11 @@ def politica_fixa(estado: EstadoDoTurno) -> dict[int, int]:
     return _preencher_em_ordem(estado.presentes, estado.pracas)
 
 
+def politica_fixa_invertida(estado: EstadoDoTurno) -> dict[int, int]:
+    """Sem regra, com a ordem ao contrário: os de número maior ficam sempre na praça forte."""
+    return _preencher_em_ordem(sorted(estado.presentes, reverse=True), estado.pracas)
+
+
 def politica_rodizio(estado: EstadoDoTurno) -> dict[int, int]:
     """Rodízio simples: a ordem dos garçons gira um passo a cada turno."""
     deslocamento = estado.indice % len(estado.presentes)
