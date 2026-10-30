@@ -1,7 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, switchMap } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
 import { Comanda, Mesa } from '../../../core/api/modelos';
 import { AvisoService } from '../../../shared/aviso/aviso.service';
@@ -46,24 +46,30 @@ export class FecharConta implements OnInit {
     return tempoRelativo(dataIso);
   }
 
-  /** RF04: a taxa entra por padrão e só sai a pedido do cliente. A API só tem o caminho de remover. */
-  protected removerTaxa(): void {
+  /** RF04: a taxa entra por padrão; sai e volta a pedido do cliente enquanto a conta está aberta. */
+  protected alternarTaxa(interruptor: HTMLInputElement): void {
     const comanda = this.comanda();
-    if (!comanda || comanda.taxaServicoRemovida || this.salvando()) {
+    if (!comanda || this.salvando()) {
       return;
     }
+    const recolocar = comanda.taxaServicoRemovida;
     this.salvando.set(true);
-    this.api.removerTaxaDeServico(comanda.id).subscribe({
-      next: (atualizada) => {
-        this.comanda.set(atualizada);
-        this.salvando.set(false);
-        this.avisos.mostrar('Taxa de serviço retirada a pedido do cliente');
-      },
-      error: (erro: unknown) => {
-        this.salvando.set(false);
-        this.erros.set(mensagensDeErro(erro));
-      },
-    });
+    this.erros.set([]);
+    (recolocar ? this.api.recolocarTaxaDeServico(comanda.id) : this.api.removerTaxaDeServico(comanda.id))
+      // A API responde sem corpo: os novos valores vêm da comanda relida, porque quem calcula é o domínio.
+      .pipe(switchMap(() => this.api.obterComanda(comanda.id)))
+      .subscribe({
+        next: (atualizada) => {
+          this.comanda.set(atualizada);
+          this.salvando.set(false);
+          this.avisos.mostrar(recolocar ? 'Taxa de serviço recolocada' : 'Taxa de serviço retirada');
+        },
+        error: (erro: unknown) => {
+          this.salvando.set(false);
+          this.erros.set(mensagensDeErro(erro));
+          interruptor.checked = !comanda.taxaServicoRemovida;
+        },
+      });
   }
 
   protected fechar(): void {

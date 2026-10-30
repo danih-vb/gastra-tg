@@ -171,7 +171,8 @@ Item cancelado sai da conta, mas não some do histórico.
 <img src="../ux-ui/telas/garcom-fechar.png" alt="Fechar a conta" width="320">
 
 A tela de fechamento mostra o subtotal, a **taxa de serviço de 10%** e o total. A taxa vem ligada por padrão e pode
-ser retirada a pedido do cliente, com um toque — é direito dele, e o sistema não esconde isso. O fechamento em si
+ser retirada a pedido do cliente, com um toque — é direito dele, e o sistema não esconde isso. Se ele mudar de ideia,
+outro toque recoloca, enquanto a conta estiver aberta. O fechamento em si
 pede confirmação, porque conta fechada não reabre.
 
 **A conta só fecha sem itens pendentes.** Se ainda houver item esperando, o sistema mostra quais são e não deixa
@@ -403,7 +404,7 @@ restrição para o sistema.
 
 <img src="../ux-ui/telas/cliente-conta.png" alt="Conta do cliente" width="320">
 
-O que já foi lançado, o subtotal, a taxa de serviço e o total. A tela se atualiza sozinha a cada 15 segundos
+O que já foi lançado, o subtotal, a taxa de serviço e o total. A tela se atualiza sozinha a cada segundo
 enquanto a mesa está aberta, e para quando a conta fecha. Item cancelado aparece riscado e marcado como **não
 cobrado**, para o cliente conferir que aquilo saiu mesmo da conta.
 

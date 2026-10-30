@@ -133,8 +133,13 @@ export class GastraApiService {
   }
 
   /** RF04 — tira a taxa de serviço a pedido do cliente. */
-  removerTaxaDeServico(comandaId: number): Observable<Comanda> {
-    return this.http.delete<Comanda>(`${this.api}/api/comandas/${comandaId}/taxa-servico`);
+  removerTaxaDeServico(comandaId: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/comandas/${comandaId}/taxa-servico`);
+  }
+
+  /** RF04 — o cliente mudou de ideia antes do fechamento. */
+  recolocarTaxaDeServico(comandaId: number): Observable<void> {
+    return this.http.post<void>(`${this.api}/api/comandas/${comandaId}/taxa-servico`, {});
   }
 
   /** UC14 — fecha a comanda; a API recusa se houver item pendente (RN02). */

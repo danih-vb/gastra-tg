@@ -28,10 +28,10 @@ public static class LimiteDeRequisicoes
             opcoes.AddPolicy(Autenticacao, contexto =>
                 PorIp(contexto, habilitado, secao.GetValue("AutenticacaoPorMinuto", 10)));
 
-            // A tela do cliente se atualiza a cada 15 segundos (4 por minuto); o limite deixa folga para
-            // vários celulares atrás do mesmo roteador.
+            // A tela do cliente se atualiza a cada segundo (RNF01), e todos os celulares do Wi-Fi do restaurante
+            // saem pelo mesmo IP: 60 por minuto × 20 mesas. O código tem 128 bits; o limite não é o que o protege.
             opcoes.AddPolicy(ConsultaCliente, contexto =>
-                PorIp(contexto, habilitado, secao.GetValue("ConsultaClientePorMinuto", 30)));
+                PorIp(contexto, habilitado, secao.GetValue("ConsultaClientePorMinuto", 1200)));
 
             opcoes.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             opcoes.OnRejected = async (contexto, cancelamento) =>

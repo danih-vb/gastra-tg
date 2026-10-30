@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Gastra.Api.Tests.Infraestrutura;
+using Gastra.Domain.Auditoria;
 using Gastra.Communication.Enums;
 using Gastra.Communication.Responses;
 using Gastra.Domain.Entidades;
@@ -199,6 +200,24 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
         Assert.Equal(8.99m, fechada.TaxaServico);
         Assert.Equal(98.89m, fechada.Total);
         Assert.NotNull(fechada.DataHoraFechamento);
+    }
+
+    [Fact]
+    public async Task RecolocarTaxaServico_VoltaACobrarNoFechamento()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarItem(comanda.Id, await factory.CriarItemCardapio(preco: 100m));
+        await _cliente.PatchAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/situacao",
+            new { situacao = "Entregue" }, Json);
+        await _cliente.DeleteAsync($"{Rota}/{comanda.Id}/taxa-servico");
+
+        var recolocada = await _cliente.PostAsync($"{Rota}/{comanda.Id}/taxa-servico", null);
+        var fechamento = await _cliente.PostAsync($"{Rota}/{comanda.Id}/fechamento", null);
+
+        Assert.Equal(HttpStatusCode.NoContent, recolocada.StatusCode);
+        var fechada = await fechamento.Content.ReadFromJsonAsync<ComandaResponse>(Json);
+        Assert.Equal(10m, fechada!.TaxaServico);
+        Assert.Single(await factory.Auditoria(EventoAuditoria.TaxaServicoRecolocada), r => r.IdEntidade == comanda.Id);
     }
 
     [Fact]
