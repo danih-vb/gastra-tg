@@ -39,6 +39,7 @@ public static class EventoAuditoria
     public const string ItemCancelado = "ITEM_CANCELADO";
     public const string RestricaoRegistrada = "RESTRICAO_REGISTRADA";
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";
+    public const string TaxaServicoRecolocada = "TAXA_SERVICO_RECOLOCADA";
     public const string ComandaFechada = "COMANDA_FECHADA";
 
     /// <summary>Sem ator: quem avalia não se identifica (RN08).</summary>

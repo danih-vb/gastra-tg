@@ -72,16 +72,13 @@
         <input
           type="checkbox"
           [checked]="!comanda.taxaServicoRemovida"
-          [disabled]="comanda.taxaServicoRemovida || salvando()"
-          (change)="removerTaxa()"
+          [disabled]="salvando()"
+          (change)="alternarTaxa($any($event.target))"
         />
         Taxa de serviço (10%)
       </label>
       <span>{{ comanda.taxaServico | currency: 'BRL' }}</span>
     </div>
-    <p class="suave pequeno">
-      Depois de retirada, não dá para colocar de volta.
-    </p>
     <div class="linha-total grande"><span>Total</span><span>{{ comanda.total | currency: 'BRL' }}</span></div>
   </section>
 

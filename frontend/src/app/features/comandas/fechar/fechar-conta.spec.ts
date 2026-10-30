@@ -58,19 +58,33 @@ describe('FecharConta (UC14)', () => {
     expect(pagina.querySelector<HTMLInputElement>('.interruptor input')!.checked).toBe(true);
   });
 
-  it('tira a taxa a pedido do cliente e não deixa recolocar', async () => {
-    const pagina = await renderizar({ itens: [itemDoPedido({ status: 'Entregue', valor: 100 })] });
+  it('tira a taxa e atualiza os valores na hora, com a resposta vazia da API (RF04)', async () => {
+    const itens = [itemDoPedido({ status: 'Entregue', valor: 100 })];
+    const pagina = await renderizar({ itens });
 
     pagina.querySelector<HTMLInputElement>('.interruptor input')!.click();
-    http.expectOne({ method: 'DELETE', url: `${API}/api/comandas/501/taxa-servico` }).flush(
-      comanda({ itens: [itemDoPedido({ status: 'Entregue', valor: 100 })], taxaServicoRemovida: true }),
-    );
+    // 204 sem corpo, como a API real: a tela não pode usar esta resposta como se fosse a comanda.
+    http.expectOne({ method: 'DELETE', url: `${API}/api/comandas/501/taxa-servico` }).flush(null, { status: 204, statusText: 'No Content' });
+    http.expectOne(`${API}/api/comandas/501`).flush(comanda({ itens, taxaServicoRemovida: true, taxaServico: 0, total: 100 }));
     await fixture.whenStable();
 
     const interruptor = pagina.querySelector<HTMLInputElement>('.interruptor input')!;
     expect(interruptor.checked).toBe(false);
-    expect(interruptor.disabled).toBe(true);
-    expect(texto(pagina)).toContain('R$ 100,00');
+    expect(interruptor.disabled).toBe(false);
+    expect(texto(pagina)).toContain('Fechar conta · R$ 100,00');
+  });
+
+  it('recoloca a taxa se o cliente mudar de ideia (RF04)', async () => {
+    const itens = [itemDoPedido({ status: 'Entregue', valor: 100 })];
+    const pagina = await renderizar({ itens, taxaServicoRemovida: true, taxaServico: 0, total: 100 });
+
+    pagina.querySelector<HTMLInputElement>('.interruptor input')!.click();
+    http.expectOne({ method: 'POST', url: `${API}/api/comandas/501/taxa-servico` }).flush(null, { status: 204, statusText: 'No Content' });
+    http.expectOne(`${API}/api/comandas/501`).flush(comanda({ itens, taxaServicoRemovida: false, taxaServico: 10, total: 110 }));
+    await fixture.whenStable();
+
+    expect(pagina.querySelector<HTMLInputElement>('.interruptor input')!.checked).toBe(true);
+    expect(texto(pagina)).toContain('Fechar conta · R$ 110,00');
   });
 
   it('fecha depois de confirmar', async () => {

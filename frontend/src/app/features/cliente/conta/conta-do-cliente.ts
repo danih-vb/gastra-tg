@@ -7,8 +7,8 @@ import { ComandaDoCliente, StatusItemPedido } from '../../../core/api/modelos';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Icone } from '../../../shared/icone/icone';
 
-/** De quanto em quanto tempo a conta se atualiza sozinha enquanto a mesa está aberta. */
-const INTERVALO_MS = 15_000;
+/** De quanto em quanto tempo a conta se atualiza sozinha enquanto a mesa está aberta: RNF01 pede até 2 segundos. */
+const INTERVALO_MS = 1_000;
 
 /**
  * UC20 — conta da mesa em tempo real (RF13), aberta pelo QR code. Tela pública: mostra só itens e valores daquela

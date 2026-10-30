@@ -146,6 +146,20 @@ public class ComandaTests
     }
 
     [Fact]
+    public void RecolocarTaxaServico_VoltaACobrar()
+    {
+        var comanda = AbrirComanda();
+        comanda.AdicionarItem(Item(100m), 1);
+        comanda.RemoverTaxaServico();
+
+        comanda.RecolocarTaxaServico();
+
+        Assert.False(comanda.TaxaServicoRemovida);
+        Assert.Equal(10m, comanda.CalcularTaxaServico());
+        Assert.Equal(110m, comanda.CalcularTotal());
+    }
+
+    [Fact]
     public void RemoverTaxaServico_ZeraATaxa()
     {
         var comanda = AbrirComanda();

@@ -114,6 +114,18 @@ public class ComandaController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>RF04 — Recolocar a taxa de serviço, se o cliente mudar de ideia antes do fechamento.</summary>
+    [Authorize(Roles = Garcom)]
+    [HttpPost("{id:int}/taxa-servico")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> RecolocarTaxaServico(int id, [FromServices] IRecolocarTaxaServicoUseCase useCase)
+    {
+        await useCase.Executar(id);
+        return NoContent();
+    }
+
     /// <summary>UC14 — Fechar a comanda e calcular o total (RN02, RF04).</summary>
     [Authorize(Roles = Garcom)]
     [HttpPost("{id:int}/fechamento")]

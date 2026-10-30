@@ -139,6 +139,13 @@ public class Comanda : EntidadeBase
         TaxaServicoRemovida = true;
     }
 
+    /// <summary>RF04: enquanto a comanda está aberta, o cliente pode mudar de ideia.</summary>
+    public void RecolocarTaxaServico()
+    {
+        GarantirAberta();
+        TaxaServicoRemovida = false;
+    }
+
     /// <summary>RN02: itens ainda pendentes impedem o fechamento e ficam visíveis como lembrete.</summary>
     public bool PossuiPendencias() => _itens.Any(i => i.Status == StatusItemPedido.Pendente);
 
