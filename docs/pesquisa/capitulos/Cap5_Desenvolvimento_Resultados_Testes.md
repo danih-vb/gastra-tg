@@ -16,7 +16,7 @@ Request: uma regra do repositório impede a integração na branch de desenvolvi
 integrante. Entre 17 de agosto e 13 de outubro de 2026, foram
 integrados 90 Pull Requests e fechadas 119 issues.
 
-A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions executa cinco
+A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions (GITHUB, 2026) executa cinco
 verificações independentes, cujo resultado aparece no próprio Pull Request para o revisor. A primeira compila o backend e
 executa os seus testes contra um MySQL real e contra o serviço analítico em execução, e falha também se algum
 teste tiver sido ignorado — o que impede que um teste de banco deixe de rodar sem que ninguém perceba. A segunda
@@ -152,7 +152,7 @@ variação de 25% no movimento de cada praça entre turnos e de 10% no desempenh
 testado. A cada turno, a alocação foi resolvida pela mesma função de programação linear usada pelo sistema em
 produção.
 
-Duas métricas foram medidas. A principal é a desigualdade, dada pelo coeficiente de Gini do faturamento médio por
+Duas métricas foram medidas. A principal é a desigualdade, dada pelo coeficiente de Gini (GINI, 1912) do faturamento médio por
 turno de cada garçom, em que zero significa todos iguais: é a dor que apareceu espontaneamente na pesquisa de
 campo. A secundária é a espera máxima: a maior sequência de turnos em que algum garçom trabalhou sem receber uma
 praça de alto potencial. Para comparação, duas políticas de referência rodaram nas mesmas sementes: uma sem regra,
