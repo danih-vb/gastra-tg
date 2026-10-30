@@ -1,9 +1,81 @@
 # Revisões dos capítulos 1 a 3 e referências novas
 
 Mudanças no texto já existente do `Gastra II.docx` (capítulos 1 a 3), escritas aqui para revisão linha a linha,
-como os capítulos 4 a 6: as seções 1.5 (issue #206) e 2.2 (issue #204), a seção 2.3 nova, a 1.6 e três correções
-pontuais. Os parágrafos sem marcação são os do documento, sem alteração; os marcados com **[novo]** ou
+como os capítulos 4 a 6: os elementos pré-textuais que faltam (resumo, abstract, folha de rosto e siglas), as
+seções 1.5 (issue #206) e 2.2 (issue #204), a seção 2.3 nova, a 1.6 e três correções pontuais. Os parágrafos sem marcação são os do documento, sem alteração; os marcados com **[novo]** ou
 **[alterado]** são os que mudam. No fim, as referências novas.
+
+## Elementos pré-textuais
+
+O documento ainda não tem resumo nem abstract, obrigatórios no trabalho final (ABNT NBR 14724), e a folha de rosto
+mantém o texto do projeto de pesquisa do TG I.
+
+### Folha de rosto **[alterado]**
+
+Trocar "Projeto de pesquisa apresentado ao Curso de Análise e Desenvolvimento de Sistemas da Faculdade de
+Tecnologia de Araraquara, como requisito parcial para desenvolvimento do Trabalho de Graduação" por:
+
+> Trabalho de Graduação apresentado ao Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas da
+> Faculdade de Tecnologia de Araraquara, como requisito parcial para obtenção do título de Tecnólogo em Análise e
+> Desenvolvimento de Sistemas.
+
+**[Conferir com o modelo da Fatec]** o nome exato do curso e do título, e se a faculdade fornece a folha de
+aprovação (com os nomes da banca e a data de 05/12), que vem logo depois da folha de rosto.
+
+### RESUMO **[novo, depois da folha de aprovação; parágrafo único, sem recuo]**
+
+A distribuição de garçons entre as praças de um restaurante à la carte costuma seguir critérios informais, como a
+antiguidade, e a sugestão de pratos ao cliente depende da experiência individual de cada profissional, sem apoio
+nos dados que a própria operação gera. Este trabalho apresenta o GASTRA, um sistema web de apoio à decisão para a
+gestão de restaurantes, que registra a operação do salão — abertura de mesa, pedidos e fechamento da conta — e usa
+esse registro em três frentes: relatórios de Business Intelligence para o gerente, recomendação de pratos ao
+garçom e sugestão de alocação dos garçons às praças. A recomendação combina regras de associação, obtidas pelo
+algoritmo Apriori, com a clusterização das comandas em perfis de consumo pelo K-Means; a alocação é modelada como
+um problema de designação e resolvida por programação linear, ponderando a diferença de faturamento entre os
+garçons e o tempo desde a última praça de maior movimento. Os requisitos foram levantados por entrevista e
+questionários com garçons e clientes, e o sistema foi construído com ASP.NET Core, Angular, Python e MySQL, em
+conformidade com a Lei Geral de Proteção de Dados: o cliente não é identificado, e as análises usam apenas dados
+agregados. Na ausência de histórico real, os algoritmos foram validados com dados simulados. A recomendação
+segmentada por perfil elevou o acerto das sugestões de 76,2% para 83,1%, e a alocação, aplicada turno a turno,
+reduziu em 92% a desigualdade de faturamento entre os garçons em 30 dias, medida pelo coeficiente de Gini. O
+sistema foi verificado por 513 casos de teste automatizados, todos aprovados. [Acrescentar uma frase com o
+resultado dos testes operacionais e da avaliação heurística, quando concluídos.]
+
+**Palavras-chave:** gestão de restaurantes; Business Intelligence; regras de associação; programação linear; LGPD.
+
+### ABSTRACT **[novo, em página própria, depois do resumo]**
+
+The assignment of waiters to the sections of an à la carte restaurant usually follows informal criteria, such as
+seniority, and suggesting dishes to customers depends on each professional's experience, with no support from the
+data the operation itself produces. This work presents GASTRA, a web-based decision support system for restaurant
+management that records the dining room operation — opening a table, placing orders and closing the bill — and
+uses this record in three ways: Business Intelligence reports for the manager, dish recommendations for the waiter
+and a suggested assignment of waiters to sections. The recommendation combines association rules, mined with the
+Apriori algorithm, with K-Means clustering of orders into consumption profiles; the assignment is modeled as an
+assignment problem and solved by linear programming, weighing the revenue gap between waiters and the time since
+each one last worked in a high-traffic section. Requirements were gathered through an interview and
+questionnaires with waiters and customers, and the system was built with ASP.NET Core, Angular, Python and MySQL,
+in compliance with the Brazilian General Data Protection Law (LGPD): customers are not identified, and the
+analyses use only aggregated data. In the absence of real historical data, the algorithms were validated on
+simulated data. Profile-based recommendation raised the hit rate of the suggestions from 76.2% to 83.1%, and the
+assignment, applied shift after shift, reduced revenue inequality among waiters by 92% in 30 days, as measured by
+the Gini coefficient. The system was verified by 513 automated test cases, all of which passed. [Add the sentence
+on operational tests and heuristic evaluation, translated, once the Portuguese one is written.]
+
+**Keywords:** restaurant management; Business Intelligence; association rules; linear programming; data protection.
+
+### LISTA DE ABREVIATURAS E SIGLAS **[alterado: siglas que os capítulos 4 a 6 passaram a usar]**
+
+Acrescentar, em ordem alfabética junto às existentes:
+
+DER – Diagrama Entidade-Relacionamento; HTML – HyperText Markup Language; IP – Internet Protocol; JSON – JavaScript
+Object Notation; JWT – JSON Web Token; KPI – Key Performance Indicator; MER – Modelo Entidade-Relacionamento;
+OWASP – Open Worldwide Application Security Project; RF – Requisito Funcional; RN – Regra de Negócio; RNF –
+Requisito Não Funcional; SQL – Structured Query Language; TG – Trabalho de Graduação; TOTP – Time-based One-Time
+Password; UC – Caso de Uso (Use Case); US – História de Usuário (User Story).
+
+Na revisão final, conferir se CI/CD, IA, SaaS e SSL, que já estão na lista, ainda aparecem no texto; sigla que não
+aparece sai da lista.
 
 ## 1.5 METODOLOGIA DA PESQUISA E DESENVOLVIMENTO
 
@@ -179,7 +251,7 @@ de adaptação dos sistemas às exigências legais e a importância de tratá-la
 não depois dele. O GASTRA seguiu esse caminho: a proteção de dados foi tratada como requisito de projeto. O cliente
 não é identificado, porque nenhuma funcionalidade precisa saber quem ele é; a restrição alimentar, que pode revelar
 dado referente à saúde — categoria que a lei classifica como dado pessoal sensível (BRASIL, 2018, art. 5º, inciso
-II) —, serve ao atendimento da mesa e não chega aos relatórios; e as análises usam somente dados agregados. As
+II) —, serve ao atendimento da mesa, não chega aos relatórios e é apagada no fechamento da comanda; e as análises usam somente dados agregados. As
 decisões e os testes que as verificam são apresentados nos capítulos 4 e 5.
 
 ## Correções pontuais
