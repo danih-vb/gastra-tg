@@ -70,7 +70,7 @@ Cada tropeço (porta ocupada, WSL2, passo faltando na documentação) vira corre
 | W4 | Lançar a moqueca e olhar a sugestão | Sugere arroz de coco entre as primeiras | | |
 | W5 | Registrar uma restrição alimentar na mesa | A restrição aparece para o garçom e não aparece para o Gerente | | |
 | W6 | Abrir A entregar e marcar um item como entregue | O item sai da lista | | |
-| W7 | Fechar a conta, retirando a taxa de serviço | Total sem os 10%, com o motivo registrado | | |
+| W7 | Fechar a conta: retirar a taxa, recolocar, retirar de novo e fechar | O total muda na hora a cada toque, e fecha sem os 10% | | |
 | W8 | Abrir Seu desempenho | O índice dele e a faixa, sem os valores dos colegas | | |
 | W9 | Digitar `/analises` na barra de endereço | Tela de sem permissão | | |
 
