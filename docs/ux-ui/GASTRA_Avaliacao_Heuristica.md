@@ -55,9 +55,9 @@ repete todo dia (um problema na tela de lançar item pesa mais que um na tela de
 | Cardápio | `/cardapio` | Criar um prato vegano com promoção e depois desativá-lo |
 | Salão | `/salao` | Criar uma mesa e mudar a quantidade de vagas de uma praça |
 | Usuários | `/usuarios` | Criar um garçom, trocar o papel dele e inativá-lo |
-| Início do cliente | `/cliente` | Entrar com o código da mesa |
+| Início do cliente | `/cliente` | Chegar ao cardápio |
 | Cardápio digital | `/cliente/cardapio` | Achar uma sobremesa sem lactose |
-| Conta do cliente | `/cliente/conta/:codigo` | Conferir o total e avaliar o atendimento depois do fechamento |
+| Conta do cliente | `/cliente/conta/:codigo` | Entrar pelo QR code da comanda, conferir o total e avaliar o atendimento depois do fechamento |
 
 ### #102: Garçom e Metre (avaliador: Daniel)
 

@@ -238,6 +238,13 @@ export class GastraApiService {
     return this.http.patch<void>(`${this.api}/api/cardapio/${id}/preco`, { preco });
   }
 
+  /** RF05 — importa a foto do computador e devolve o endereço para gravar no item. */
+  enviarFoto(arquivo: File): Observable<{ imagem: string }> {
+    const corpo = new FormData();
+    corpo.append('arquivo', arquivo);
+    return this.http.post<{ imagem: string }>(`${this.api}/api/cardapio/fotos`, corpo);
+  }
+
   alterarDisponibilidade(id: number, disponivel: boolean): Observable<void> {
     return this.http.patch<void>(`${this.api}/api/cardapio/${id}/disponibilidade`, { disponivel });
   }

@@ -111,6 +111,27 @@ describe('Gestão do cardápio (UC05–UC09)', () => {
     expect(alerta.textContent).toContain('O preço deve ser maior que zero.');
   });
 
+  it('importa a foto do computador e usa o endereço devolvido pela API (RF05)', async () => {
+    const pagina = await renderizar();
+
+    botao(pagina, 'Novo item').click();
+    await fixture.whenStable();
+    const campo = pagina.querySelector<HTMLInputElement>('.importar input[type=file]')!;
+    const foto = new File([new Uint8Array([1, 2, 3])], 'prato.png', { type: 'image/png' });
+    Object.defineProperty(campo, 'files', { value: [foto], configurable: true });
+    campo.dispatchEvent(new Event('change'));
+
+    const envio = http.expectOne({ method: 'POST', url: `${API}/api/cardapio/fotos` });
+    expect((envio.request.body as FormData).get('arquivo')).toBe(foto);
+    envio.flush({ imagem: '/api/cardapio/fotos/abc.png' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(pagina.querySelector<HTMLInputElement>('#item-foto')!.value).toBe('/api/cardapio/fotos/abc.png');
+    expect(pagina.querySelector('.previa-foto')!.getAttribute('src')).toBe('/api/cardapio/fotos/abc.png');
+  });
+
   it('cadastra o item com preço em reais, flags e foto', async () => {
     const pagina = await renderizar();
 

@@ -158,3 +158,41 @@ fieldset.campo {
     accent-color: var(--marinho);
   }
 }
+
+.campo-foto {
+  display: flex;
+  gap: 8px;
+
+  .entrada {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .importar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &.desabilitado {
+      opacity: 0.6;
+      cursor: progress;
+    }
+
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+  }
+}
+
+.previa-foto {
+  display: block;
+  max-width: 100%;
+  max-height: 160px;
+  margin-top: 8px;
+  border-radius: 8px;
+}

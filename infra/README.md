@@ -64,6 +64,8 @@ O que acontece na subida:
 - **Histórico real (D10):** com `MYSQL_ANALITICA_PASSWORD` no `.env` e o usuário criado (seção acima), o serviço
   analítico lê as views; sem isso, usa o histórico simulado.
 - **Imagens:** rodam com usuário sem privilégio de root, e nenhum segredo entra nelas; tudo vem do `.env`.
+- **Fotos do cardápio:** as importadas do computador ficam no volume `gastra_fotos`. O `down -v` apaga as fotos
+  junto com o banco.
 - **Mesma origem (D12):** as telas chamam `/api` no próprio endereço por onde a página foi aberta, e o nginx
   repassa para a API. Não há CORS para configurar, e **abrir pelo IP da máquina funciona no celular da mesma
   rede sem recompilar nada** — útil para demonstrar a parte do cliente num telefone de verdade.

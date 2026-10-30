@@ -2,6 +2,7 @@ using Gastra.Application.UseCases.Cardapio;
 using Gastra.Communication.Requests;
 using Gastra.Communication.Enums;
 using Gastra.Communication.Responses;
+using Gastra.Domain.Servicos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -89,6 +90,42 @@ public class CardapioController : ControllerBase
     {
         await useCase.Executar(id, request);
         return NoContent();
+    }
+
+    /// <summary>RF05 — Importar a foto do computador. Devolve o endereço, que o item grava como qualquer outra imagem.</summary>
+    [Authorize(Roles = Gestao)]
+    [HttpPost("fotos")]
+    [RequestSizeLimit(EnviarFotoUseCase.TamanhoMaximo + 1024 * 1024)]
+    [ProducesResponseType(typeof(FotoEnviadaResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EnviarFoto(IFormFile? arquivo, [FromServices] IEnviarFotoUseCase useCase)
+    {
+        using var memoria = new MemoryStream();
+        if (arquivo is not null)
+            await arquivo.CopyToAsync(memoria);
+
+        return Ok(await useCase.Executar(memoria.ToArray()));
+    }
+
+    /// <summary>Foto importada (pública): é o que o cardápio digital mostra ao cliente, que não faz login.</summary>
+    [AllowAnonymous]
+    [HttpGet("fotos/{nome}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult ObterFoto(string nome, [FromServices] IArmazenamentoDeFotos armazenamento)
+    {
+        var foto = armazenamento.Abrir(nome);
+        if (foto is null)
+            return NotFound();
+
+        var tipo = Path.GetExtension(nome) switch
+        {
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            _ => "image/jpeg",
+        };
+        Response.Headers.XContentTypeOptions = "nosniff";
+        return File(foto, tipo);
     }
 
     /// <summary>UC07 — Marcar item disponível/indisponível.</summary>

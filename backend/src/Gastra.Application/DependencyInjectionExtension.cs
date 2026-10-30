@@ -52,6 +52,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IAtualizarPrecoItemUseCase, AtualizarPrecoItemUseCase>();
         services.AddScoped<IAlterarDisponibilidadeItemUseCase, AlterarDisponibilidadeItemUseCase>();
         services.AddScoped<IAlterarImagemItemUseCase, AlterarImagemItemUseCase>();
+        services.AddScoped<IEnviarFotoUseCase, EnviarFotoUseCase>();
 
         services.AddScoped<IAutenticarUseCase, AutenticarUseCase>();
         services.AddScoped<IConfigurarSegundoFatorUseCase, ConfigurarSegundoFatorUseCase>();

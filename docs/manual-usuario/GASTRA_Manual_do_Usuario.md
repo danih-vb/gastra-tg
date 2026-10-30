@@ -297,7 +297,8 @@ movimento suficiente (pelo menos 50 comandas com dois itens ou mais), a tela avi
 
 <img src="../ux-ui/telas/gerente-cardapio.png" alt="Gestão do cardápio" width="520">
 
-Cadastrar item, editar, mudar preço, marcar como indisponível e pôr foto.
+Cadastrar item, editar, mudar preço, marcar como indisponível e pôr foto. A foto pode vir do computador, pelo botão
+**Importar** (JPG, PNG ou WEBP, até 5 MB), ou de um endereço na internet.
 
 <img src="../ux-ui/telas/gerente-preco.png" alt="Mudar preço" width="520">
 
