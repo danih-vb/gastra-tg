@@ -9,11 +9,19 @@ namespace Gastra.Api.Controllers;
 
 [ApiController]
 [Route("api/cardapio")]
-// RF19–RF21: gestão do cardápio só para Gerente e Coordenador.
-[Authorize(Roles = nameof(PapelUsuario.Gerente) + "," + nameof(PapelUsuario.Coordenador))]
+// Exigências de papel ficam em cada ação: quando o controller também traz [Authorize] com papéis, o ASP.NET Core
+// soma as duas condições, e o garçom seria barrado até na leitura.
+[Authorize]
 public class CardapioController : ControllerBase
 {
+    // RF19–RF21: gestão do cardápio só para Gerente e Coordenador.
+    private const string Gestao = nameof(PapelUsuario.Gerente) + "," + nameof(PapelUsuario.Coordenador);
+
+    // O garçom lê a lista completa para lançar pedidos e ver o que está indisponível (RF03); não altera nada.
+    private const string GestaoOuGarcom = Gestao + "," + nameof(PapelUsuario.Garcom);
+
     /// <summary>UC05 — Cadastrar item do cardápio.</summary>
+    [Authorize(Roles = Gestao)]
     [HttpPost]
     [ProducesResponseType(typeof(ItemCardapioResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
@@ -25,7 +33,8 @@ public class CardapioController : ControllerBase
         return CreatedAtAction(nameof(Obter), new { id = resposta.Id }, resposta);
     }
 
-    /// <summary>Gestão do cardápio: todos os itens, disponíveis ou não.</summary>
+    /// <summary>Todos os itens, disponíveis ou não: gestão do cardápio e lançamento de pedidos.</summary>
+    [Authorize(Roles = GestaoOuGarcom)]
     [HttpGet]
     [ProducesResponseType(typeof(List<ItemCardapioResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Listar([FromServices] IListarItensCardapioUseCase useCase)
@@ -53,6 +62,7 @@ public class CardapioController : ControllerBase
     }
 
     /// <summary>UC06 — Atualizar preço de item.</summary>
+    [Authorize(Roles = Gestao)]
     [HttpPatch("{id:int}/preco")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
@@ -67,6 +77,7 @@ public class CardapioController : ControllerBase
     }
 
     /// <summary>RF05 — Definir ou tirar a foto do item mostrada no cardápio digital.</summary>
+    [Authorize(Roles = Gestao)]
     [HttpPatch("{id:int}/imagem")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
@@ -81,6 +92,7 @@ public class CardapioController : ControllerBase
     }
 
     /// <summary>UC07 — Marcar item disponível/indisponível.</summary>
+    [Authorize(Roles = Gestao)]
     [HttpPatch("{id:int}/disponibilidade")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]

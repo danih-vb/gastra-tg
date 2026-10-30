@@ -151,6 +151,53 @@ public class CardapioControllerTests(GastraApiFactory factory) : IClassFixture<G
         Assert.Equal(["Seu perfil não tem permissão para esta ação."], await LerErros(resposta));
     }
 
+    private async Task<HttpClient> ClienteGarcom()
+    {
+        var email = $"garcom-{Guid.NewGuid():N}@gastra.test";
+        await factory.CriarUsuario(email, PapelUsuario.Garcom);
+        var garcom = factory.CreateClient();
+        Autenticar(garcom, await factory.Login(garcom, email));
+        return garcom;
+    }
+
+    // A tela da comanda carrega esta lista junto com a comanda: sem a leitura, o garçom não abre comanda nenhuma.
+    [Fact]
+    public async Task Listar_ComoGarcom_Retorna200InclusiveComItemIndisponivel()
+    {
+        var item = await Cadastrar("Item esgotado para o garçom");
+        await _cliente.PatchAsJsonAsync($"{Rota}/{item.Id}/disponibilidade", new { disponivel = false }, Json);
+        var garcom = await ClienteGarcom();
+
+        var resposta = await garcom.GetAsync(Rota);
+
+        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        var itens = await resposta.Content.ReadFromJsonAsync<List<ItemCardapioResponse>>(Json);
+        Assert.Contains(itens!, i => i.Id == item.Id && !i.Disponivel);
+    }
+
+    [Fact]
+    public async Task Listar_SemLogin_Retorna401()
+    {
+        var resposta = await factory.CreateClient().GetAsync(Rota);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task Alterar_ComoGarcom_Retorna403EmTodaAcaoDeGestao()
+    {
+        var item = await Cadastrar("Item que o garçom não altera");
+        var garcom = await ClienteGarcom();
+
+        var preco = await garcom.PatchAsJsonAsync($"{Rota}/{item.Id}/preco", new { preco = 1m }, Json);
+        var imagem = await garcom.PatchAsJsonAsync($"{Rota}/{item.Id}/imagem", new { imagem = (string?)null }, Json);
+        var disponibilidade = await garcom.PatchAsJsonAsync($"{Rota}/{item.Id}/disponibilidade", new { disponivel = false }, Json);
+
+        Assert.Equal(HttpStatusCode.Forbidden, preco.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, imagem.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, disponibilidade.StatusCode);
+    }
+
     [Fact]
     public async Task CardapioDigital_SemLogin_Retorna200()
     {
