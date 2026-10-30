@@ -115,7 +115,6 @@ describe('Gestão do salão (UC24)', () => {
     await fixture.whenStable();
 
     expect(pagina.querySelector('#mesa-praca')).toBeNull();
-    expect(pagina.querySelector('app-folha')?.textContent).toContain('A praça da mesa não muda');
 
     preencher(pagina, '#mesa-capacidade', '8');
     pagina.querySelector('app-folha form')!.dispatchEvent(new Event('submit'));

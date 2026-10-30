@@ -378,17 +378,14 @@ Como o Coordenador mexe em preço e em promoção, ele também usa a verificaç�
 
 ## 6. Cliente
 
-O cliente não faz login. Ele lê o **QR code da mesa** com a câmera do celular. A tela inicial oferece duas coisas:
-ver o cardápio ou acompanhar a conta.
-
-> **Hoje só o QR funciona.** A tela tem um campo para digitar o código da mesa, mas ele espera um código de seis
-> caracteres, e o que o sistema gera hoje tem trinta e dois. Enquanto a [#217](https://github.com/danih-vb/gastra-tg/issues/217)
-> não for resolvida, quem não conseguir ler o QR precisa pedir ajuda ao garçom.
+O cliente não faz login. Para acompanhar a conta, ele lê com a câmera do celular o **QR code que o garçom mostra**:
+na tela da comanda, em **Conta do cliente**. Cada comanda tem o seu código, então o QR muda a cada mesa aberta. O
+código não é digitado ([#217](https://github.com/danih-vb/gastra-tg/issues/217)). Sem QR, em `/cliente`, dá para ver
+o cardápio.
 
 <img src="../ux-ui/telas/cliente-inicio.png" alt="Início do cliente" width="320">
 
-O pedido continua sendo feito com o garçom — a tela diz isso, para o cliente não ficar esperando que o sistema
-mande o pedido para a cozinha.
+O pedido continua sendo feito com o garçom: nenhuma tela do cliente envia pedido.
 
 ### 6.1 Cardápio digital
 
@@ -425,8 +422,7 @@ comentário. É a única coisa que o código da mesa permite *escrever* no siste
   continua servindo para ver a conta, mas não para escrever.
 - Antes de a conta fechar a opção nem aparece: o atendimento ainda está acontecendo.
 
-Se o código não existir, a tela diz que não encontrou aquela mesa e sugere conferir o código — isso não é erro de
-sistema, é o caso normal de quem digitou errado.
+Se o código não existir, a tela diz que não encontrou a conta e pede o QR code ao garçom.
 
 ---
 
@@ -442,7 +438,7 @@ sistema, é o caso normal de quem digitou errado.
 | "E-mail ou senha não conferem" | Um dos dois está errado | Confira o e-mail. Se esqueceu a senha, o Gerente redefine (seção 4.5) |
 | "Esta conta já foi avaliada" | Cada conta aceita uma avaliação só | Nada a fazer: a nota anterior já foi registrada |
 | "O prazo para avaliar esta conta terminou" | Passaram mais de 24 horas do fechamento | A avaliação fica para a próxima visita |
-| "Não encontramos essa mesa" (cliente) | O código não existe ou a conta já fechou | Leia o QR de novo ou chame o garçom. Digitar o código ainda não funciona: ver [#217](https://github.com/danih-vb/gastra-tg/issues/217) |
+| "Não encontramos essa mesa" (cliente) | O código não existe ou a conta já fechou | Leia o QR de novo na tela da comanda, com o garçom: ver [#217](https://github.com/danih-vb/gastra-tg/issues/217) |
 | A pessoa foi desconectada de repente | A conta foi inativada, teve a senha redefinida ou o segundo fator zerado | Fale com o Gerente |
 | "Já existe uma praça com este código" / "com este número" | Código de praça e número de mesa não se repetem | Escolha outro, ou edite a que já existe |
 

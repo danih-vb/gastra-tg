@@ -104,11 +104,6 @@
     </div>
   </section>
 
-  <p class="suave pequeno">
-    <app-icone nome="info" /> Contas não são apagadas: inativar bloqueia o acesso na hora e mantém o histórico de
-    comandas e alocações. Na própria conta, o sistema não deixa inativar, redefinir a senha nem zerar a verificação em
-    duas etapas.
-  </p>
 }
 
 @switch (painel()) {
@@ -136,7 +131,6 @@
         <div class="campo">
           <label for="conta-email">E-mail</label>
           <input class="entrada" id="conta-email" name="email" type="email" maxlength="150" [(ngModel)]="formularioDaConta.email" />
-          <span class="ajuda">É o login da pessoa.</span>
         </div>
         <div class="campo">
           <label for="conta-papel">Papel</label>
@@ -164,7 +158,7 @@
           <div class="campo">
             <label for="conta-senha">Senha inicial</label>
             <input class="entrada" id="conta-senha" name="senha" type="password" autocomplete="new-password" [(ngModel)]="formularioDaConta.senha" />
-            <span class="ajuda">Pelo menos 8 caracteres. Entregue à pessoa pessoalmente.</span>
+            <span class="ajuda">Pelo menos 8 caracteres.</span>
           </div>
         }
         <div class="rodape-folha">
@@ -214,7 +208,7 @@
         <div class="campo">
           <label for="senha-nova">Senha nova</label>
           <input class="entrada" id="senha-nova" name="senha" type="password" autocomplete="new-password" [(ngModel)]="senhaNova" />
-          <span class="ajuda">Pelo menos 8 caracteres. Combine com a pessoa e peça para ela trocar depois.</span>
+          <span class="ajuda">Pelo menos 8 caracteres.</span>
         </div>
         <div class="alerta aviso">
           <app-icone nome="alerta" />

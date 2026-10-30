@@ -66,6 +66,18 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
 
   afterEach(() => http.verify());
 
+  it('oferece ao garçom o QR code e o link da conta do cliente (RF13)', async () => {
+    const pagina = await renderizar();
+    await responder({ codigoAcessoCliente: 'a1b2c3d4e5f60718293a4b5c6d7e8f90' });
+
+    const link = pagina.querySelector<HTMLAnchorElement>('.qr-da-conta a')!;
+    expect(link.href).toBe(`${window.location.origin}/cliente/conta/a1b2c3d4e5f60718293a4b5c6d7e8f90`);
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(pagina.querySelector('.qr-da-conta svg')).not.toBeNull();
+    });
+  });
+
   /** O formato de moeda usa espaço fixo entre "R$" e o valor; aqui o texto é normalizado para comparar. */
   function texto(pagina: HTMLElement): string {
     return (pagina.textContent ?? '').replace(/ /g, ' ');
@@ -146,7 +158,7 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     await responderRecarga({ itens: [itemDoPedido({ status: 'Cancelado', motivoCancelamento: 'ItemEmFalta' })] });
   });
 
-  it('registra a restrição com a observação e avisa que ela é apagada no fechamento (RF14)', async () => {
+  it('registra a restrição com a observação (RF14)', async () => {
     const pagina = await renderizar();
     await responder();
 
@@ -166,7 +178,6 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     await responderRecarga({ restricoes: [{ id: 1, categoria: 'Alergia', observacaoLivre: 'Camarão' }] });
 
     expect(texto(pagina)).toContain('Alergia: Camarão');
-    expect(texto(pagina)).toContain('Apagada no fechamento');
   });
 
   it('com o serviço de análise fora do ar, avisa e mantém o resto da comanda (D3)', async () => {

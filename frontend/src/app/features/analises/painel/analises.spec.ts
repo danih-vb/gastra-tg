@@ -197,7 +197,6 @@ describe('Análises (UC16, UC17)', () => {
     expect(texto(pagina)).toContain('4,3');
     expect(texto(pagina)).toContain('10 avaliações de clientes');
     expect(texto(pagina)).toContain('Como os clientes avaliaram');
-    expect(texto(pagina)).toContain('anônimo, sem comentário e sem garçom');
   });
 
   it('sem avaliação no período, diz isso em vez de mostrar média zero', async () => {
@@ -241,7 +240,6 @@ describe('Análises (UC16, UC17)', () => {
     expect(perfis).toContain('43% das mesas');
     expect(perfis).toContain('Moqueca de peixe');
     expect(perfis).toContain('em 74% das mesas');
-    expect(perfis).toContain('já usa o que é comum em cada perfil');
   });
 
   it('com histórico ainda simulado, explica em vez de mostrar perfis que não são deste restaurante', async () => {

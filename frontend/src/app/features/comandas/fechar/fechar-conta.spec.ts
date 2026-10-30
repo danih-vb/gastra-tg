@@ -73,7 +73,7 @@ describe('FecharConta (UC14)', () => {
     expect(texto(pagina)).toContain('R$ 100,00');
   });
 
-  it('fecha depois de confirmar e avisa que as restrições foram apagadas', async () => {
+  it('fecha depois de confirmar', async () => {
     const pagina = await renderizar({ itens: [itemDoPedido({ status: 'Entregue', valor: 100 })] });
 
     pagina.querySelector<HTMLButtonElement>('.rodape-fixo .botao')!.click();
@@ -87,7 +87,6 @@ describe('FecharConta (UC14)', () => {
     await fixture.whenStable();
 
     expect(texto(pagina)).toContain('Mesa 10 liberada');
-    expect(texto(pagina)).toContain('restrições alimentares e observações desta mesa foram apagadas');
   });
 
   it('erro da API no fechamento aparece na tela', async () => {

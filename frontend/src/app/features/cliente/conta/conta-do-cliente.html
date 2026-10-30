@@ -119,9 +119,6 @@
     </section>
   }
 
-  <p class="suave pequeno">
-    <app-icone nome="cadeado" /> Esta página mostra só os itens e valores da mesa. Nenhum dado pessoal é exibido.
-  </p>
 } @else if (carregando()) {
   <p class="carregando">Carregando sua conta…</p>
 } @else if (naoEncontrada()) {
@@ -132,7 +129,7 @@
   <div class="cartao pad vazio">
     <app-icone nome="alerta" />
     <h2>Não encontramos essa conta</h2>
-    <p class="suave">Confira o código <strong>{{ codigo() }}</strong> na mesa ou peça ajuda ao garçom.</p>
+    <p class="suave">Peça o QR code da mesa ao garçom.</p>
     <a class="botao secundario" routerLink="/cliente">Voltar ao início</a>
   </div>
 } @else {

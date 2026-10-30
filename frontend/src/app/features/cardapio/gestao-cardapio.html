@@ -156,10 +156,6 @@
         </article>
       }
     </div>
-    <p class="suave pequeno">
-      <app-icone nome="info" /> Se um item estiver em mais de uma promoção vigente, vale o maior desconto. O preço nunca fica
-      abaixo de R$ 0,01.
-    </p>
   } @else {
     <div class="cartao pad vazio">
       <h2>Nenhuma promoção</h2>
@@ -206,7 +202,6 @@
         <div class="campo">
           <label for="item-descricao">Descrição</label>
           <textarea class="entrada" id="item-descricao" name="descricao" maxlength="500" [(ngModel)]="novoItem.descricao"></textarea>
-          <span class="ajuda">Aparece no cardápio digital do cliente.</span>
         </div>
         <fieldset class="campo">
           <legend class="rotulo">Flags dietéticas</legend>
@@ -217,12 +212,10 @@
               </button>
             }
           </div>
-          <span class="ajuda">“Infantil” faz a mesa ser reconhecida como Família.</span>
         </fieldset>
         <div class="campo">
           <label for="item-foto">Foto (opcional)</label>
           <input class="entrada" id="item-foto" name="imagem" placeholder="https://… ou /fotos/…" [(ngModel)]="novoItem.imagem" />
-          <span class="ajuda">Endereço da imagem. Sem foto, o cardápio digital mostra um bloco na cor da categoria.</span>
         </div>
         <div class="rodape-folha">
           <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
@@ -255,10 +248,6 @@
             <input class="entrada" id="novo-preco" name="preco" inputmode="decimal" [(ngModel)]="novoPreco" />
           </div>
         </div>
-        <div class="alerta">
-          <app-icone nome="info" />
-          <div class="pequeno">Comandas já abertas mantêm o preço do momento em que o item foi lançado.</div>
-        </div>
         <div class="rodape-folha">
           <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
           <button class="botao" type="submit" [disabled]="salvando()">Salvar preço</button>
@@ -283,7 +272,6 @@
         <div class="campo">
           <label for="foto">Endereço da foto</label>
           <input class="entrada" id="foto" name="foto" placeholder="https://… ou /fotos/…" [(ngModel)]="novaFoto" />
-          <span class="ajuda">Link http(s) ou caminho começando com barra. Deixe vazio para tirar a foto.</span>
         </div>
         <div class="rodape-folha">
           <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>

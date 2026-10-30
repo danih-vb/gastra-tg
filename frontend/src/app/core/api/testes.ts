@@ -56,7 +56,7 @@ export function comanda(dados: Partial<Comanda> = {}): Comanda {
     composicao: 'Casal',
     composicaoAjustadaManualmente: false,
     taxaServicoRemovida: false,
-    codigoAcessoCliente: 'K7P2QX',
+    codigoAcessoCliente: 'a1b2c3d4e5f60718293a4b5c6d7e8f90',
     dataHoraAbertura: new Date().toISOString(),
     dataHoraFechamento: null,
     itens,

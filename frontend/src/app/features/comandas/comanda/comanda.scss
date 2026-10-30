@@ -96,3 +96,17 @@ details.cartao > summary {
     }
   }
 }
+
+.qr-da-conta {
+  summary {
+    cursor: pointer;
+  }
+
+  .qr-code {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0;
+    padding: 12px;
+    background: #fff;
+  }
+}

@@ -4,7 +4,6 @@
     <span class="selo"><app-icone nome="check" /></span>
     <h2>Mesa {{ mesa()?.numero ?? comanda()?.mesaId }} liberada</h2>
     <p class="num total-final">{{ comanda()!.total | currency: 'BRL' }}</p>
-    <p class="suave">As restrições alimentares e observações desta mesa foram apagadas.</p>
     <button class="botao largo" type="button" (click)="voltarAoSalao()">Voltar às mesas</button>
   </div>
 } @else if (comanda(); as comanda) {
@@ -81,7 +80,7 @@
       <span>{{ comanda.taxaServico | currency: 'BRL' }}</span>
     </div>
     <p class="suave pequeno">
-      A taxa é cobrada por padrão. Retire só se o cliente pedir; depois de retirada, não dá para colocar de volta.
+      Depois de retirada, não dá para colocar de volta.
     </p>
     <div class="linha-total grande"><span>Total</span><span>{{ comanda.total | currency: 'BRL' }}</span></div>
   </section>

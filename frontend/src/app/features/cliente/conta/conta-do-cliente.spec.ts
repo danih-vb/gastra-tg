@@ -77,7 +77,6 @@ describe('Conta do cliente (UC20)', () => {
     const pagina = await renderizar(CONTA);
 
     expect(texto(pagina)).toContain('A taxa de serviço é opcional');
-    expect(texto(pagina)).toContain('Nenhum dado pessoal é exibido');
   });
 
   it('com a conta fechada, agradece e mostra o total final', async () => {
@@ -93,7 +92,7 @@ describe('Conta do cliente (UC20)', () => {
     const pagina = await renderizar('nao-encontrada', 'XXXXXX');
 
     expect(texto(pagina)).toContain('Não encontramos essa conta');
-    expect(texto(pagina)).toContain('XXXXXX');
+    expect(texto(pagina)).toContain('Peça o QR code');
   });
 
   it('com a conta aberta, nao oferece avaliar: o atendimento ainda esta acontecendo', async () => {
