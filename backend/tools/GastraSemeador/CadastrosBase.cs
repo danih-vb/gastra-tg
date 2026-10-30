@@ -76,6 +76,25 @@ internal static class CadastrosBase
             "Sorvete artesanal, sem leite de vaca.", [FlagDietetica.Vegano, FlagDietetica.SemLactose, FlagDietetica.OpcaoInfantil]),
     ];
 
+    /// <summary>Fotos versionadas em frontend/public/fotos; origem e licença em docs/ux-ui/GASTRA_Fotos_do_Cardapio.md.</summary>
+    private static readonly Dictionary<string, string> Fotos = new()
+    {
+        ["Moqueca de peixe"] = "/fotos/moqueca.jpg",
+        ["Arroz de coco"] = "/fotos/arroz-de-coco.jpg",
+        ["Caipirinha"] = "/fotos/caipirinha.jpg",
+        ["Pudim de leite"] = "/fotos/pudim.jpg",
+        ["Salada da horta"] = "/fotos/salada.jpg",
+        ["Porção infantil de frango"] = "/fotos/porcao-infantil.jpg",
+        ["Suco natural de laranja"] = "/fotos/suco-de-laranja.jpg",
+        ["Café coado"] = "/fotos/cafe.jpg",
+        ["Bolinho de bacalhau (6 un.)"] = "/fotos/bolinho-de-bacalhau.jpg",
+        ["Bobó de camarão"] = "/fotos/bobo-de-camarao.jpg",
+        ["Risoto de cogumelos"] = "/fotos/risoto.jpg",
+        ["Petit gâteau"] = "/fotos/petit-gateau.jpg",
+        ["Água com gás"] = "/fotos/agua-com-gas.jpg",
+        ["Sorvete de tapioca"] = "/fotos/sorvete.jpg",
+    };
+
     /// <summary>
     /// Cria o que ainda não existe e devolve o que está no banco. É idempotente de propósito: rodar duas
     /// vezes seguidas não duplica praça nem conta, e quem já semeou pode rodar de novo sem medo.
@@ -130,10 +149,16 @@ internal static class CadastrosBase
         var itens = await contexto.ItensCardapio.ToListAsync();
         foreach (var item in Cardapio)
         {
-            if (itens.Any(i => i.Nome == item.Nome))
+            var existente = itens.FirstOrDefault(i => i.Nome == item.Nome);
+            if (existente is not null)
+            {
+                // Banco semeado antes das fotos: completa sem trocar a foto que alguém tenha escolhido na tela.
+                if (existente.Imagem is null)
+                    existente.DefinirImagem(Fotos[item.Nome]);
                 continue;
+            }
 
-            var novo = new ItemDoCardapio(item.Nome, item.Categoria, item.Preco, item.Descricao, item.Flags);
+            var novo = new ItemDoCardapio(item.Nome, item.Categoria, item.Preco, item.Descricao, item.Flags, Fotos[item.Nome]);
             contexto.ItensCardapio.Add(novo);
             itens.Add(novo);
         }
