@@ -64,8 +64,10 @@ Os resultados deste trabalho devem ser lidos com as limitações abaixo, registr
 - **A avaliação do atendimento pelo cliente entrou no fim do desenvolvimento** e não tem dado de uso; por isso, o
   mínimo de cinco avaliações por garçom para que a nota entre no índice de desempenho é uma escolha de projeto, e
   não um valor calibrado.
-- **[A avaliação heurística teve dois avaliadores, que também projetaram as telas]** — condição que tende a deixar
-  passar problemas que um avaliador externo encontraria.
+- **A avaliação heurística teve dois avaliadores.** A avaliação foi cruzada, e ninguém avaliou o próprio desenho,
+  mas os dois conhecem o sistema por dentro e são menos do que os três a cinco recomendados (NIELSEN, 1994), o que
+  tende a deixar passar problemas que avaliadores externos e usuários reais encontrariam. [Ajustar se houver
+  avaliador externo.]
 - **Os requisitos não funcionais de tempo de resposta [foram / não foram] medidos no sistema em operação**
   [conforme os testes operacionais da seção 5.6].
 

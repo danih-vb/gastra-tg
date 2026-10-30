@@ -350,7 +350,7 @@ executa os algoritmos de recomendação e de alocação; e o MySQL. O princípio
 backend é o único dono das regras de negócio e o único componente que grava no banco: o frontend apenas apresenta
 e coleta dados, e o serviço analítico apenas calcula e devolve o resultado.
 
-A Figura 7 apresenta o diagrama de implantação. Os quatro componentes são executados em contêineres Docker e
+A Figura 7 apresenta o diagrama de implantação. Os quatro componentes são executados em contêineres Docker (DOCKER, 2026) e
 sobem juntos com um único comando, o que permite executar o sistema completo em qualquer máquina, sem instalar as
 plataformas de cada um. O contêiner do frontend, com o servidor nginx, entrega os arquivos da aplicação e repassa
 ao backend as chamadas à interface de programação, de modo que o navegador fala com uma única origem.
@@ -396,8 +396,8 @@ Fonte: elaborado pelos autores.
 
 ### 4.4.3 Camada analítica
 
-A camada analítica é um serviço HTTP em FastAPI. A recomendação de pratos (RF09) combina duas técnicas de ciência de
-dados. A primeira são as regras de associação, obtidas pelo algoritmo Apriori da biblioteca mlxtend sobre o
+A camada analítica é um serviço HTTP em FastAPI (RAMÍREZ, 2026). A recomendação de pratos (RF09) combina duas técnicas de ciência de
+dados. A primeira são as regras de associação, obtidas pelo algoritmo Apriori (AGRAWAL; SRIKANT, 1994), da biblioteca mlxtend (RASCHKA, 2018), sobre o
 histórico de itens pedidos juntos em cada comanda: uma regra "quem pede A costuma pedir B" só é usada com suporte mínimo de 5%, confiança mínima de 30% e
 lift acima de 1, porque um lift abaixo de 1 indica itens que se evitam, e sugeri-los seria pior do que não sugerir
 nada. O histórico é lido das views do banco por um usuário que não tem permissão de escrita nem acesso às
@@ -407,9 +407,9 @@ na resposta.
 A segunda técnica é a clusterização. Cada comanda do histórico é representada por um vetor com o valor 1 nos itens
 que ela levou e 0 nos demais, normalizado pelo próprio tamanho, de modo que a distância entre duas comandas passa a
 medir a proporção do consumo que elas compartilham (similaridade do cosseno), e não a quantidade de itens. O
-algoritmo K-Means, da biblioteca scikit-learn, agrupa as comandas parecidas em perfis de consumo. Como o K-Means
+algoritmo K-Means (MACQUEEN, 1967), da biblioteca scikit-learn (PEDREGOSA et al., 2011), agrupa as comandas parecidas em perfis de consumo. Como o K-Means
 precisa saber quantos grupos procurar, testam-se de dois a seis, e escolhe-se a quantidade com maior coeficiente de
-silhueta, medida que compara, para cada comanda, a distância ao próprio grupo com a distância ao grupo vizinho;
+silhueta (ROUSSEEUW, 1987), medida que compara, para cada comanda, a distância ao próprio grupo com a distância ao grupo vizinho;
 abaixo de 0,25, considera-se que não há perfis de fato. Nenhum atributo do cliente entra no cálculo (RN05): os
 perfis são definidos apenas pelo que foi pedido.
 
@@ -423,7 +423,7 @@ as regras gerais. Os perfis encontrados também são apresentados ao Gerente, no
 Intelligence.
 
 A alocação de garçons (RF06) foi modelada como um problema de designação, caso particular do problema de
-transporte em programação linear (HILLIER; LIEBERMAN, 2006), e resolvida com a biblioteca PuLP. A variável de
+transporte em programação linear (HILLIER; LIEBERMAN, 2006), e resolvida com a biblioteca PuLP (MITCHELL; O'SULLIVAN; DUNNING, 2011). A variável de
 decisão indica se um garçom é alocado a uma praça; a função objetivo minimiza a soma dos custos das designações,
 em que o custo combina, com os pesos w1 e w2 da RN03, o desequilíbrio de faturamento e o tempo desde a última
 praça de alto potencial, ambos normalizados entre zero e um; as restrições garantem que cada garçom receba
@@ -445,7 +445,7 @@ o custo aceito, para que a escolha pudesse ser revista com o seu contexto. O Qua
 | D3 | Núcleo de comandas independente do serviço analítico | Consultar o Python ao abrir mesa ou lançar item | RNF05: sem o Python, só as sugestões ficam indisponíveis |
 | D5 | Banco gerado por migrations (Code First) | Escrever o esquema em SQL | O esquema é versionado e revisado junto do código |
 | D6 | Regras de negócio no domínio, sem stored procedures | Procedures para fechamento e taxa | A regra fica em um só lugar e é testada sem banco |
-| D7 | Autenticação por JWT com chave de sessão | Sessão em cookie no servidor | A chave de sessão permite invalidar o token no logoff e na inativação |
+| D7 | Autenticação por JWT (JONES; BRADLEY; SAKIMURA, 2015) com chave de sessão | Sessão em cookie no servidor | A chave de sessão permite invalidar o token no logoff e na inativação |
 | D10 | Serviço analítico lê o histórico só por views, com usuário somente leitura | Enviar todo o histórico a cada chamada | A view entrega só colunas agregadas, sem dado pessoal |
 | D11 | Dados simulados gerados por ferramenta que grava pelo domínio | Script SQL direto | Os dados respeitam as mesmas regras do sistema real |
 | D12 | nginx serve o frontend e repassa as chamadas à API | Origens separadas com CORS | Uma única origem; o celular na rede local acessa sem recompilar |
@@ -472,7 +472,27 @@ Fonte: elaborado pelos autores.
 
 ### 4.4.6 Avaliação heurística
 
-> **[A PREENCHER depois da avaliação de Nielsen — issues #101 e #102.]** Descrever: as dez heurísticas usadas; os
-> avaliadores (a dupla, com a limitação de que quem avalia também desenhou as telas, e de que dois avaliadores
-> encontram só parte dos problemas); o método de registro (tela, heurística violada, severidade de 0 a 4); o
-> resultado em números (quantos problemas, por severidade); e o que foi corrigido antes das telas em Angular.
+As telas foram desenhadas primeiro em um protótipo navegável em HTML, importado no Figma, e implementadas em
+Angular a partir dele. As telas implementadas foram submetidas a uma avaliação heurística, método de inspeção em
+que avaliadores percorrem a interface e confrontam cada tela com um conjunto de princípios reconhecidos de
+usabilidade (NIELSEN, 1994). Avaliou-se a tela implementada, e não o protótipo, porque é ela que o usuário vai
+usar, e porque as correções passam a valer no sistema entregue. Foram usadas as dez heurísticas de Nielsen (1994): visibilidade do
+estado do sistema; correspondência entre o sistema e o mundo real; controle e liberdade do usuário; consistência e
+padrões; prevenção de erros; reconhecimento em vez de memorização; flexibilidade e eficiência de uso; estética e
+design minimalista; ajuda para reconhecer, diagnosticar e corrigir erros; e ajuda e documentação.
+
+A avaliação foi cruzada: cada integrante avaliou as telas desenhadas pelo outro — um, as do Gerente e do Cliente;
+o outro, as do Garçom e do Metre —, para que ninguém avaliasse o próprio desenho. Cada problema foi registrado
+com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta pelo autor: zero quando não
+chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é menor, três quando é grave e
+quatro quando impede o uso. Os problemas de severidade três e quatro foram corrigidos no código antes da entrega;
+os demais foram corrigidos ou aceitos com justificativa.
+
+O método tem uma limitação conhecida: um único avaliador encontra, em média, cerca de um terço dos problemas de
+uma interface, e são necessários de três a cinco para encontrar a maior parte deles (NIELSEN, 1994). Com dois
+avaliadores, parte dos problemas certamente não foi encontrada; por isso a avaliação heurística complementa, e não
+substitui, a observação de garçons e clientes usando o sistema no salão, que fica como trabalho futuro (capítulo 6).
+
+> **[A PREENCHER depois da avaliação — issues #101 e #102.]** O resultado em números (quantos problemas, por
+> severidade e por heurística), dois ou três exemplos com a correção feita, e o que foi aceito sem correção. Se
+> houver avaliador externo, ajustar o segundo e o terceiro parágrafos.
