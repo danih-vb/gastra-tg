@@ -9,8 +9,7 @@ analítico, todos em contêineres, como na entrega.
 ## Como executar
 
 1. **Preparar:** dentro de `infra/`, `./resetar-ambiente.sh`. Toda rodada começa do mesmo estado: histórico de
-   70 dias, turno de hoje montado e **não confirmado**, 6 mesas abertas. Anote o código de mesa que o semeador
-   imprime no fim; é o que o cliente usa.
+   70 dias, turno de hoje montado e **não confirmado**, 6 mesas abertas.
 2. **Contas:** as do semeador (`roberta.gerente@`, `marcos.coordenador@`, `helena.metre@`, `carla@`, `joao@`...
    `@gastra.local`), todas com a senha de `GASTRA_SEMEADOR_SENHA`. Não anote senha neste arquivo.
 3. **Aparelhos:** garçom e cliente no celular, pela mesma rede (`http://IP-DA-MÁQUINA:4200`); Metre e Gerente
@@ -79,11 +78,11 @@ Cada tropeço (porta ocupada, WSL2, passo faltando na documentação) vira corre
 
 | Nº | Passo | Resultado esperado | P/F | Observação |
 |---|---|---|---|---|
-| C1 | Abrir `/cliente` e digitar o código da mesa | Abre a conta da mesa | | |
-| C2 | Abrir o cardápio e filtrar por sem glúten | Só itens marcados como sem glúten | | |
+| C1 | Na comanda do garçom, abrir **Conta do cliente** e ler o QR code com o celular do cliente | Abre a conta da mesa, sem login | | |
+| C2 | Abrir `/cliente`, ir ao cardápio e filtrar por sem glúten | Só itens marcados como sem glúten | | |
 | C3 | Com a conta aberta, o garçom lança um item | O item aparece em até **2 segundos** (RNF01) | | Tempo: |
 | C4 | Depois do fechamento, avaliar o atendimento | A avaliação é aceita uma única vez | | |
-| C5 | Tentar um código inventado | Mensagem de código inválido, sem dizer se a mesa existe | | |
+| C5 | Abrir `/cliente/conta/` com um código inventado | "Não encontramos essa conta", sem dizer se a mesa existe | | |
 
 ### Segurança e falhas
 
