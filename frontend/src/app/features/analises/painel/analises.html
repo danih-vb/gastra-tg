@@ -75,7 +75,6 @@
       <section class="cartao" aria-labelledby="t-avaliacoes">
         <header>
           <h2 id="t-avaliacoes">Como os clientes avaliaram</h2>
-          <span class="acoes suave pequeno">anônimo, sem comentário e sem garçom</span>
         </header>
         <div class="corpo barras">
           @for (faixa of dados.avaliacoes.distribuicao; track faixa.nota) {
@@ -88,17 +87,12 @@
             </div>
           }
         </div>
-        <p class="suave pequeno" style="padding: 0 16px 14px">
-          <app-icone nome="cadeado" /> A nota não é ligada ao garçom nem à mesa: a avaliação é anônima, e apontar
-          uma nota para um atendimento específico desfaria isso.
-        </p>
       </section>
     }
 
     <section class="cartao" aria-labelledby="t-perfis">
       <header>
         <h2 id="t-perfis">Perfis de consumo</h2>
-        <span class="acoes suave pequeno">mesas agrupadas pelo que pedem, sem nenhum dado do cliente</span>
       </header>
       @if (perfis(); as perfis) {
         @if (!perfis.servicoDisponivel) {
@@ -131,13 +125,6 @@
               </article>
             }
           </div>
-          <p class="suave pequeno" style="padding: 0 16px 14px">
-            Encontrados pelo algoritmo K-Means em {{ perfis.comandasAnalisadas | number }} comandas do último ano, só
-            pelos itens pedidos.
-            @if (perfis.segmentaARecomendacao) {
-              A sugestão de pratos ao garçom já usa o que é comum em cada perfil.
-            }
-          </p>
         }
       } @else {
         <p class="corpo suave">Carregando os perfis…</p>
@@ -153,7 +140,12 @@
         <div class="corpo barras">
           @for (praca of pracas(); track praca.pracaId) {
             <div class="barra" [class.destaque]="praca.altoPotencial">
-              <strong>Praça {{ praca.codigo }}</strong>
+              <strong>
+                Praça {{ praca.codigo }}
+                @if (praca.altoPotencial) {
+                  <span class="etiqueta marca">Alto potencial</span>
+                }
+              </strong>
               <div class="trilho" role="img" [attr.aria-label]="(praca.faturamentoPorTurno | currency: 'BRL') + ' por turno'">
                 <div class="preenchido" [style.width.%]="praca.largura"></div>
               </div>
@@ -163,7 +155,6 @@
               </span>
             </div>
           }
-          <p class="legenda"><span class="etiqueta marca">laranja</span> acima da média: alto potencial na alocação (RN03)</p>
         </div>
       </section>
 
@@ -232,7 +223,7 @@
             @if (dados.ranking.pesoAvaliacao > 0) {
               e <strong>{{ dados.ranking.pesoAvaliacao * 100 | number: '1.0-0' }}%</strong> da avaliação dos clientes
             }
-            (RF11: não é só venda). Faturamento e mesas são comparados com o melhor do período, que vale 100. Por ser por
+            — e faturamento e mesas são comparados com o melhor do período, que vale 100. Por ser por
             turno, quem trabalhou menos dias não fica atrás só por isso. O garçom vê apenas a própria posição.
           </p>
           @if (dados.ranking.pesoAvaliacao > 0) {
@@ -240,7 +231,7 @@
               A nota é uma média que puxa quem tem poucas avaliações para a média do restaurante, para cinco notas 5 não
               valerem mais que quarenta notas 4,8. Com menos de {{ dados.ranking.minimoDeAvaliacoes }} avaliações no
               período, a nota do garçom não aparece e ele recebe a média do restaurante: com tão poucas, dava para saber
-              a nota que cada mesa deu (RN08).
+              a nota que cada mesa deu.
             </p>
           }
         </div>

@@ -38,7 +38,6 @@
         @for (restricao of comanda.restricoes; track restricao.id) {
           <div>{{ RESTRICOES[restricao.categoria] }}{{ restricao.observacaoLivre ? ': ' + restricao.observacaoLivre : '' }}</div>
         }
-        <div class="pequeno" style="margin-top: 4px">Visível só enquanto a mesa está aberta. Apagada no fechamento.</div>
       </div>
     </section>
   }
@@ -105,9 +104,7 @@
               <div>A mesa tem restrição que o cardápio não confere sozinho: confirme os ingredientes com o cliente antes de oferecer.</div>
             </div>
           }
-          @if (sugestoes.itens.length) {
-            <p class="suave pequeno">Costumam ser pedidos junto com o que já está na mesa.</p>
-          } @else {
+          @if (!sugestoes.itens.length) {
             <p class="suave pequeno">Sem sugestão para esta mesa por enquanto.</p>
           }
         }
@@ -208,9 +205,13 @@
     </details>
   }
 
-  <p class="suave pequeno">
-    <app-icone nome="qr" /> Código para o cliente acompanhar a conta: <strong>{{ comanda.codigoAcessoCliente }}</strong>
-  </p>
+  <details class="qr-da-conta">
+    <summary><app-icone nome="qr" /> Conta do cliente</summary>
+    @if (qrCode(); as svg) {
+      <div class="qr-code" role="img" aria-label="QR code da conta do cliente"><span [innerHTML]="svg"></span></div>
+    }
+    <a [href]="linkDoCliente()" target="_blank" rel="noopener">Abrir a conta do cliente</a>
+  </details>
 
   <div class="rodape-fixo">
     <div class="total">
@@ -271,9 +272,6 @@
 @if (itemParaCancelar(); as item) {
   <app-folha titulo="Cancelar item" [subtitulo]="item.quantidade + ' × ' + item.nome" (fechar)="itemParaCancelar.set(null)">
     <p id="rotulo-motivo"><strong>Qual o motivo?</strong></p>
-    <p class="suave pequeno" style="margin-bottom: 10px">
-      Obrigatório: o item cancelado sai da conta, mas fica registrado.
-    </p>
     <div class="chips" role="radiogroup" aria-labelledby="rotulo-motivo">
       @for (opcao of motivosPossiveis; track opcao) {
         <button class="chip" type="button" role="radio" [attr.aria-checked]="motivo() === opcao" (click)="motivo.set(opcao)">

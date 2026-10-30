@@ -77,10 +77,6 @@
     </section>
 
     <div class="rodape-acoes">
-      <p class="texto suave pequeno">
-        A sugestão equilibra o faturamento por turno de cada garçom e o tempo desde a última praça de alto potencial
-        (RN03). Você revisa antes de confirmar.
-      </p>
       <button
         class="botao"
         type="button"
@@ -105,16 +101,6 @@
         <div>
           <strong>Não foi possível calcular a sugestão agora</strong>
           O serviço de análise não respondeu. Distribua os garçons manualmente; o restante funciona normalmente.
-        </div>
-      </div>
-    } @else {
-      <div class="alerta">
-        <app-icone nome="info" />
-        <div class="pequeno">
-          <strong>Como a sugestão foi feita</strong>
-          Quem faturou menos por turno nos últimos 30 dias e quem está há mais tempo sem praça de alto potencial tem
-          prioridade nas praças de maior movimento (pesos 0,6 e 0,4, calibrados por simulação). Embaixo de cada nome
-          está o motivo; as vendas aparecem só como faixa, comparadas com a equipe do turno.
         </div>
       </div>
     }

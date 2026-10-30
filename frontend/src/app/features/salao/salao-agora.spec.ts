@@ -61,7 +61,7 @@ describe('Salão agora (painel do Metre)', () => {
     expect(texto(pagina)).toContain('R$ 100');
   });
 
-  it('abre a comanda só para leitura, com as restrições e o aviso de privacidade (RN04)', async () => {
+  it('abre a comanda só para leitura, com as restrições (RN04)', async () => {
     const pagina = await renderizar();
 
     [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.trim() === 'Ver')!.click();
@@ -71,7 +71,6 @@ describe('Salão agora (painel do Metre)', () => {
     expect(folha.textContent).toContain('Mesa 10');
     expect(folha.textContent).toContain('Alergia: Amendoim');
     expect(folha.textContent).toContain('A entregar');
-    expect(folha.textContent).toContain('só enquanto a mesa está aberta');
     // Painel de leitura: nada de entregar, cancelar ou fechar por aqui.
     expect([...folha.querySelectorAll('button')].some((b) => /Entregue|Cancelar|Fechar/.test(b.textContent ?? ''))).toBe(false);
   });

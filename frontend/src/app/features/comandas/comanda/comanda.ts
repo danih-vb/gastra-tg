@@ -1,7 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
+import { toString as qrCodeSvg } from 'qrcode';
 import { catchError, forkJoin, of } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
 import {
@@ -32,6 +34,7 @@ export class Comanda implements OnInit {
   private readonly api = inject(GastraApiService);
   private readonly avisos = inject(AvisoService);
   private readonly router = inject(Router);
+  private readonly sanitizador = inject(DomSanitizer);
 
   /** Id vindo da rota /comandas/:id (withComponentInputBinding). */
   readonly id = input.required<string>();
@@ -39,6 +42,9 @@ export class Comanda implements OnInit {
   protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);
   protected readonly erros = signal<string[]>([]);
+  /** RF13 — desenhado no próprio navegador: o endereço carrega o código de acesso à conta da mesa. */
+  protected readonly qrCode = signal<SafeHtml | null>(null);
+  protected readonly linkDoCliente = signal('');
   protected readonly comanda = signal<ComandaDaApi | null>(null);
   protected readonly cardapio = signal<ItemCardapio[]>([]);
   private readonly mesas = signal<Mesa[]>([]);
@@ -184,6 +190,18 @@ export class Comanda implements OnInit {
     void this.router.navigate(['/comandas', this.id(), 'fechar']);
   }
 
+  private desenharQrCode(codigo: string): void {
+    // A origem da própria página: aberta pelo IP da máquina, o QR funciona no celular do cliente.
+    const link = `${window.location.origin}/cliente/conta/${encodeURIComponent(codigo)}`;
+    if (link === this.linkDoCliente()) {
+      return;
+    }
+    this.linkDoCliente.set(link);
+    void qrCodeSvg(link, { type: 'svg', margin: 1, width: 180, errorCorrectionLevel: 'M' })
+      .then((svg) => this.qrCode.set(this.sanitizador.bypassSecurityTrustHtml(svg)))
+      .catch(() => this.qrCode.set(null));
+  }
+
   protected carregar(): void {
     this.carregando.set(true);
     this.erros.set([]);
@@ -199,6 +217,7 @@ export class Comanda implements OnInit {
     }).subscribe({
       next: ({ comanda, cardapio, mesas, sugestoes }) => {
         this.comanda.set(comanda);
+        this.desenharQrCode(comanda.codigoAcessoCliente);
         this.cardapio.set(cardapio);
         this.mesas.set(mesas);
         this.sugestoes.set(sugestoes);

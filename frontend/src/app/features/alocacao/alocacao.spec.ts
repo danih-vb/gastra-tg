@@ -102,7 +102,7 @@ describe('Alocação (UC15, UC21, UC22)', () => {
     requisicao.flush(turno([[11, 1], [12, 1], [13, 2]]));
     await fixture.whenStable();
 
-    expect(pagina.textContent).toContain('Como a sugestão foi feita');
+    expect(pagina.textContent).not.toContain('Não foi possível calcular a sugestão agora');
     expect([...pagina.querySelectorAll('.coluna')].length).toBe(2);
     expect(pagina.querySelector('.coluna')?.textContent).toContain('2/2');
   });

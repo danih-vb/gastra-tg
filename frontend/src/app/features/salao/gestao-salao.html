@@ -99,12 +99,10 @@
         <div class="campo">
           <label for="praca-codigo">Código</label>
           <input class="entrada" id="praca-codigo" name="codigo" maxlength="20" [(ngModel)]="formularioDaPraca.codigo" />
-          <span class="ajuda">Como a equipe chama a praça. Ex.: A, Varanda.</span>
         </div>
         <div class="campo">
           <label for="praca-garcons">Garçons por turno</label>
           <input class="entrada" id="praca-garcons" name="garcons" type="number" min="1" [(ngModel)]="formularioDaPraca.garcons" />
-          <span class="ajuda">Vagas usadas na alocação do metre.</span>
         </div>
       </div>
       <div class="rodape-folha">
@@ -146,9 +144,6 @@
         <div class="campo">
           <span class="rotulo">Praça</span>
           <span>Praça {{ pracaDaMesaEmEdicao() }}</span>
-          <span class="ajuda">
-            <app-icone nome="cadeado" /> A praça da mesa não muda: o histórico de faturamento por praça perderia o sentido.
-          </span>
         </div>
       } @else {
         <div class="campo">

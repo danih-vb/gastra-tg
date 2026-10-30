@@ -94,7 +94,6 @@
     </section>
   }
 
-  <p class="suave pequeno"><app-icone nome="info" /> Mesa tracejada está livre: toque para abrir a comanda.</p>
 }
 
 @if (mesaParaAbrir(); as mesa) {
@@ -104,9 +103,6 @@
     (fechar)="mesaParaAbrir.set(null)"
   >
     <p class="rotulo" id="rotulo-pessoas"><strong>Quantas pessoas?</strong></p>
-    <p class="suave pequeno" style="margin-bottom: 10px">
-      O sistema sugere a composição da mesa. Tocar no número abre a comanda.
-    </p>
     <div class="pessoas" role="group" aria-labelledby="rotulo-pessoas">
       @for (pessoas of pessoasPossiveis; track pessoas) {
         <button
@@ -120,8 +116,5 @@
         </button>
       }
     </div>
-    <p class="suave pequeno" style="margin-top: 12px">
-      <app-icone nome="info" /> “Família” é reconhecida sozinha quando um prato infantil for lançado.
-    </p>
   </app-folha>
 }
