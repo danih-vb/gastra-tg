@@ -98,3 +98,8 @@ docker compose down -v
 docker compose up -d
 ```
 ⚠️ O `-v` apaga o volume — só use se não houver dado de teste importante ainda.
+
+Para voltar ao estado inicial dos testes operacionais, com os dados simulados já semeados, use
+`./resetar-ambiente.sh`: ele faz o `down -v`, sobe os quatro serviços, espera as migrations, cria o usuário da
+camada analítica e roda o semeador. Pede confirmação antes de apagar o banco (`--sim` pula a pergunta) e precisa
+do SDK do .NET na máquina, por causa do semeador.
