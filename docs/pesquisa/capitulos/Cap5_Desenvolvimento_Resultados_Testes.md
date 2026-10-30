@@ -5,7 +5,7 @@ descreve como o desenvolvimento foi conduzido; a seção 5.2 apresenta o sistema
 a seção 5.3 reúne os testes automatizados; e as seções 5.4 e 5.5 apresentam os dois estudos feitos sobre os
 algoritmos: a calibração dos pesos da alocação de garçons e a validação dos blocos analíticos sobre um histórico
 simulado. A seção 5.6 trata dos testes operacionais. Os números deste capítulo correspondem ao estado do
-repositório em 25 de setembro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
+repositório em 13 de outubro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
 
 ## 5.1 PROCESSO DE DESENVOLVIMENTO
 
@@ -13,8 +13,8 @@ O trabalho foi organizado em dez marcos no quadro de projeto do GitHub, do levan
 defesa (M10), e executado em sprints semanais, conforme descrito na seção 1.5. Cada tarefa foi registrada como
 issue, com critérios de aceite, prioridade, marco e sprint, e cada mudança no repositório entrou por Pull
 Request: uma regra do repositório impede a integração na branch de desenvolvimento sem a aprovação do outro
-integrante. Entre 17 de agosto e 25 de setembro de 2026, foram
-integrados 84 Pull Requests e fechadas 114 issues.
+integrante. Entre 17 de agosto e 13 de outubro de 2026, foram
+integrados 90 Pull Requests e fechadas 119 issues.
 
 A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions executa cinco
 verificações independentes, cujo resultado aparece no próprio Pull Request para o revisor. A primeira compila o backend e
@@ -114,19 +114,19 @@ conjuntos de dados.
 |---|---:|---:|---:|
 | Núcleo de comandas | 109 | 118 | 118 |
 | Cardápio e promoções | 53 | 72 | 72 |
-| Alocação de garçons (programação linear) | 58 | 64 | 64 |
-| Recomendação de pratos (ciência de dados) | 37 | 42 | 42 |
-| BI e índice de desempenho | 42 | 43 | 43 |
+| Alocação de garçons (programação linear) | 61 | 67 | 67 |
+| Recomendação de pratos (ciência de dados) | 50 | 55 | 55 |
+| BI e índice de desempenho | 49 | 50 | 50 |
 | LGPD, auditoria e segurança | 108 | 109 | 109 |
 | Banco de dados (views, triggers e restrições) | 14 | 14 | 14 |
-| Integração backend e serviço analítico | 11 | 14 | 14 |
+| Integração backend e serviço analítico | 12 | 15 | 15 |
 | Arquitetura e infraestrutura | 9 | 13 | 13 |
-| **Total** | **441** | **489** | **489** |
+| **Total** | **465** | **513** | **513** |
 
-Fonte: elaborado pelos autores, a partir da execução de 25/09/2026 (script `gerar_relatorio_testes.py`).
+Fonte: elaborado pelos autores, a partir da execução de 13/10/2026 (script `gerar_relatorio_testes.py`).
 
-Os 489 casos foram aprovados, nenhum falhou e nenhum foi ignorado. Por camada, são 316 casos no backend, 50 na
-camada analítica e 123 no frontend. Cada bloco do trabalho é verificado nas três camadas: a mesma regra de
+Os 513 casos foram aprovados, nenhum falhou e nenhum foi ignorado. Por camada, são 321 casos no backend, 66 na
+camada analítica e 126 no frontend. Cada bloco do trabalho é verificado nas três camadas: a mesma regra de
 negócio é testada no domínio, na interface de programação e na tela que a apresenta ao usuário. O bloco de
 proteção de dados é o segundo maior, porque cada restrição da LGPD foi traduzida em ao menos um teste que falha se
 ela for violada — por exemplo, o que verifica que nenhuma view expõe dado pessoal, o que verifica que o Gerente
@@ -240,19 +240,23 @@ encontrados e os embutidos, medida pelo índice de Rand ajustado — em que 1 in
 o acaso produziria —, ficou entre 0,84 e 0,88 em três sementes diferentes.
 
 Para medir se a segmentação ajuda o garçom, adotou-se a avaliação por item escondido: 70% das comandas treinaram
-os modelos, e, em cada comanda restante, um item foi escondido por vez, verificando-se se ele voltava entre as três
-sugestões feitas a partir dos demais. O resultado está na Tabela 5.
+os modelos, e, em cada comanda restante, um item foi escondido por vez, verificando-se se ele voltava na primeira
+sugestão e entre as três sugestões feitas a partir dos demais. O resultado está na Tabela 5.
 
 **Tabela 5 – Acerto da recomendação de pratos na avaliação por item escondido**
 
-| Recomendação | Acerto entre as três sugestões |
-|---|---:|
-| Somente regras de associação | 76,2% |
-| Segmentada por perfil (clusterização e regras de associação) | 83,2% |
+| Recomendação | Acerto na primeira sugestão | Acerto entre as três sugestões |
+|---|---:|---:|
+| Somente regras de associação | 50,0% | 76,2% |
+| Segmentada por perfil (clusterização e regras de associação) | 57,1% | 83,1% |
 
 Fonte: elaborado pelos autores, com 70% das comandas para treino e 30% para teste.
 
-A recomendação segmentada acertou 7 pontos percentuais a mais. A diferença aparece com clareza em uma mesa que
+A recomendação segmentada acertou cerca de 7 pontos percentuais a mais nas duas medidas. A primeira sugestão é a que
+mais importa no salão, por ser a que o garçom tende a oferecer; foi a observação dela, em um histórico sem perfis
+nítidos, que revelou um defeito na primeira versão da recomendação segmentada — as três fontes de sugestão eram
+apenas enfileiradas, e uma regra fraca passava à frente de um item que quase toda mesa do perfil pedia —, corrigido
+ordenando-se as sugestões do perfil pela confiança. A diferença aparece com clareza em uma mesa que
 pediu salada e suco: as regras gerais sugerem a porção infantil, porque o suco aparece com frequência junto dela
 nas famílias, enquanto a recomendação segmentada reconhece o almoço executivo e sugere risoto, café e água. As
 combinações embutidas também foram reencontradas pelas regras de associação: para uma comanda que tinha apenas a
@@ -287,11 +291,44 @@ Uma divergência foi registrada como achado. O coeficiente de Gini do faturament
 0,1555, muito acima dos valores da calibração. A diferença é esperada, porque as duas medidas não medem a mesma
 coisa: a calibração mede a desigualdade depois de 120 turnos aplicando a RN03, e o histórico simulado é o estado
 inicial, com garçons de desempenho propositalmente diferente — o que mais fatura ganha 2,2 vezes o que menos
-fatura — e distribuídos por rodízio neutro. É o problema que a RN03 existe para corrigir. A demonstração mais forte
-da regra seria medir o Gini depois de sucessivos turnos alocados pelo próprio sistema sobre essa base,
-acompanhando a queda a partir de 0,16; esse experimento ficou registrado como trabalho a realizar.
+fatura — e distribuídos por rodízio neutro. É o problema que a RN03 existe para corrigir.
 
-> **[ATUALIZAR se o experimento da issue #221 for feito antes da entrega: incluir a curva do Gini por turno.]**
+Para verificar se a regra de fato o corrige, e não apenas escolhe bem um turno isolado, mediu-se a desigualdade ao
+longo do tempo a partir desse estado inicial. O ponto de partida foi lido das views do banco: o faturamento de cada
+garçom por turno nos últimos 30 dias, os turnos de espera de cada um, o movimento médio de cada praça e o fator de
+venda de cada garçom, estimado pela razão entre o ticket médio das suas comandas e o ticket médio do restaurante. A
+partir daí, simularam-se 120 turnos, o equivalente a 60 dias, com cinco políticas de alocação, nas mesmas 20
+sementes, resolvendo-se a cada turno a mesma programação linear usada pelo sistema. A cada turno, calculou-se o
+Gini do faturamento médio por turno de cada garçom nos 30 dias anteriores, que é a desigualdade percebida pela
+equipe e a janela usada pela própria RN03. Os resultados estão na Figura 16 e na Tabela 7.
+
+**Figura 16 – Desigualdade entre os garçons, turno a turno, conforme a política de alocação**
+
+![Evolução do Gini por turno](../../analises/evolucao_gini_rn03.png)
+
+Fonte: elaborado pelos autores (script `evolucao_gini_rn03.py`).
+
+**Tabela 7 – Coeficiente de Gini do faturamento por turno, conforme a política de alocação**
+
+| Política | Início | Após 30 dias | Após 60 dias |
+|---|---:|---:|---:|
+| RN03 do sistema (w1 = 0,6) | 0,1555 | 0,0118 | 0,0153 |
+| Somente a espera (w1 = 0) | 0,1555 | 0,1383 | 0,1317 |
+| Rodízio simples | 0,1555 | 0,1296 | 0,1259 |
+| Sem regra, com quem vende menos fixo na praça de maior movimento | 0,1555 | 0,0899 | 0,0867 |
+| Sem regra, com quem vende mais fixo na praça de maior movimento | 0,1555 | 0,1495 | 0,1525 |
+
+Fonte: elaborado pelos autores, com a média de 20 sementes para cada política.
+
+Com a RN03, a desigualdade caiu 92% em 30 dias e permaneceu abaixo de 0,03 dali em diante. O rodízio simples e a
+política que considera somente a espera quase não a reduziram: dar a todos a mesma chance de ocupar a praça de maior
+movimento não compensa a diferença de desempenho individual, e é o primeiro fator da regra — levar quem faturou
+menos para onde há mais movimento — que o faz. A ausência de regra mostrou-se uma loteria: a mesma política fixa
+terminou com Gini de 0,087 ou de 0,153, conforme quem estava fixo na praça de maior movimento. Na primeira rodada do
+experimento, apenas a primeira dessas ordens havia sido testada, e ela pareceu superior ao rodízio; a inversão da
+ordem mostrou que o resultado vinha de uma coincidência dos dados, e não da política. Cabe notar que o objetivo da
+regra não é levar o Gini a zero: quem vende mais deve ganhar mais, e a RN03 corrige a parcela da desigualdade que vem
+da praça, cabendo ao índice de desempenho (RF11) reconhecer o desempenho individual.
 
 ## 5.6 TESTES OPERACIONAIS
 

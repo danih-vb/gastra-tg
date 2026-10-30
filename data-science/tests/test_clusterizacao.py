@@ -2,12 +2,14 @@
 
 from collections import Counter
 
+import numpy as np
+
 from sklearn.metrics import adjusted_rand_score
 
 from gastra_analitica.dados.simulador import gerar_historico
-from gastra_analitica.recomendacao.clusterizacao import agrupar
-from gastra_analitica.recomendacao.regras_associacao import treinar
-from gastra_analitica.recomendacao.segmentada import taxa_de_acerto, treinar_segmentado
+from gastra_analitica.recomendacao.clusterizacao import ModeloDePerfis, Perfil, agrupar
+from gastra_analitica.recomendacao.regras_associacao import ModeloRecomendacao, Regra, treinar
+from gastra_analitica.recomendacao.segmentada import ModeloSegmentado, taxa_de_acerto, treinar_segmentado
 
 # Ids do simulador usados nos exemplos.
 MOQUECA, PUDIM, SALADA, PORCAO_INFANTIL, SUCO, RISOTO, AGUA = 1, 4, 5, 6, 7, 11, 13
@@ -104,3 +106,25 @@ def test_sem_estrutura_a_recomendacao_fica_so_com_as_regras_gerais():
 
     assert modelo.por_perfil == {}
     assert modelo.recomendar([1]).perfil is None
+
+
+def test_segmentada_ordena_pela_confianca_e_nao_pela_fonte():
+    # Perfil montado à mão: 98% das mesas pedem o item 2 (característico), e existe uma regra fraca 1 -> 3 (35%).
+    # A regra "1 -> 2" não existe porque, com quase todo mundo pedindo o 2, o lift dela dentro do perfil é 1.
+    perfis = ModeloDePerfis(
+        itens=[1, 2, 3],
+        centros=np.array([[0.9, 1.0, 0.3]]),
+        perfis=[Perfil(0, 100, 1.0, ())],
+        rotulos=[0] * 100,
+        silhueta=0.5,
+        silhuetas_testadas={},
+        presenca=np.array([[0.92, 0.98, 0.32]]),
+        destaque=np.array([[1.0, 1.5, 1.2]]),
+    )
+    regra_fraca = ModeloRecomendacao([Regra(frozenset({1}), 3, suporte=0.3, confianca=0.35, lift=1.09)])
+    modelo = ModeloSegmentado(ModeloRecomendacao([]), perfis, {0: regra_fraca})
+
+    sugeridos = [s.item_id for s in modelo.recomendar([1]).sugestoes]
+
+    # O item que quase toda mesa do perfil pede vem antes da regra fraca, e não depois por ser de outra fonte.
+    assert sugeridos == [2, 3]
