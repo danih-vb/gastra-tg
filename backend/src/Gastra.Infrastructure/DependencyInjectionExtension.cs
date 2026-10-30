@@ -1,6 +1,7 @@
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
 using Gastra.Domain.Servicos;
+using Gastra.Infrastructure.Armazenamento;
 using Gastra.Infrastructure.DataAccess;
 using Gastra.Infrastructure.DataAccess.Repositorios;
 using Gastra.Infrastructure.Seguranca;
@@ -50,6 +51,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IRepositorioAlocacao, RepositorioAlocacao>();
         services.AddScoped<IRepositorioIndicadores, RepositorioIndicadores>();
         services.AddScoped<IRepositorioPromocao, RepositorioPromocao>();
+        services.AddSingleton<IArmazenamentoDeFotos, ArmazenamentoDeFotosEmDisco>();
     }
 
     private static void AddSeguranca(IServiceCollection services, IConfiguration configuration)

@@ -9,6 +9,7 @@
   <data name="DescricaoMuitoLonga" xml:space="preserve"><value>A descrição deve ter no máximo 500 caracteres.</value></data>
   <data name="PrecoInvalido" xml:space="preserve"><value>O preço deve ser maior que zero.</value></data>
   <data name="CategoriaInvalida" xml:space="preserve"><value>Categoria inválida.</value></data>
+  <data name="FotoInvalida" xml:space="preserve"><value>A foto deve ser JPG, PNG ou WEBP, com até 5 MB.</value></data>
   <data name="ImagemInvalida" xml:space="preserve"><value>A imagem deve ser um endereço http(s) ou um caminho começando com barra, com até 300 caracteres.</value></data>
   <data name="FlagDieteticaInvalida" xml:space="preserve"><value>Flag dietética inválida.</value></data>
   <data name="ItemCardapioNaoEncontrado" xml:space="preserve"><value>Item do cardápio não encontrado.</value></data>

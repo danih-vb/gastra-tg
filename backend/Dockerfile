@@ -27,6 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf 
 
 COPY --from=build /publicado .
 
+# Pasta das fotos do cardápio: o volume herda este dono, e sem isso o usuário abaixo não grava nela.
+RUN mkdir -p /app/fotos && chown $APP_UID /app/fotos
+
 # Usuário sem privilégio de root, que já vem na imagem oficial.
 USER $APP_UID
 ENV ASPNETCORE_URLS=http://+:8080

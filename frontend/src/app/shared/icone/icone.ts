@@ -26,6 +26,7 @@ const CAMINHOS: Record<string, string> = {
   atualizar: '<path d="M20 12a8 8 0 11-2.3-5.7M20 4v5h-5"/>',
   cardapio: '<path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
   avancar: '<path d="M9 5l7 7-7 7"/>',
+  importar: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
 };
 
 @Component({

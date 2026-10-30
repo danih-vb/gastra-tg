@@ -44,7 +44,8 @@ public static class ValidadorItemCardapio
     }
 
     /// <summary>
-    /// A API guarda o endereço da foto, e não o arquivo (decisão da #141). Aceita link externo (http/https) ou
+    /// O item guarda o endereço da foto, e não o arquivo; a foto importada do computador também vira um endereço
+    /// (/api/cardapio/fotos/...). Aceita link externo (http/https) ou
     /// caminho do próprio servidor; qualquer outra coisa (javascript:, data:) fica de fora, porque o endereço vai
     /// direto para o navegador do cliente no cardápio digital.
     /// </summary>

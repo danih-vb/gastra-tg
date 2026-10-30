@@ -215,7 +215,21 @@
         </fieldset>
         <div class="campo">
           <label for="item-foto">Foto (opcional)</label>
-          <input class="entrada" id="item-foto" name="imagem" placeholder="https://… ou /fotos/…" [(ngModel)]="novoItem.imagem" />
+          <div class="campo-foto">
+            <input class="entrada" id="item-foto" name="imagem" placeholder="https://…" [(ngModel)]="novoItem.imagem" />
+            <label class="botao secundario importar" [class.desabilitado]="enviandoFoto()">
+              <app-icone nome="importar" /> Importar
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                [disabled]="enviandoFoto()"
+                (change)="importarFoto($any($event.target), 'novo-item')"
+              />
+            </label>
+          </div>
+          @if (novoItem.imagem.trim()) {
+            <img class="previa-foto" [src]="novoItem.imagem.trim()" alt="Prévia da foto" />
+          }
         </div>
         <div class="rodape-folha">
           <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
@@ -270,8 +284,22 @@
           </div>
         }
         <div class="campo">
-          <label for="foto">Endereço da foto</label>
-          <input class="entrada" id="foto" name="foto" placeholder="https://… ou /fotos/…" [(ngModel)]="novaFoto" />
+          <label for="foto">Foto</label>
+          <div class="campo-foto">
+            <input class="entrada" id="foto" name="foto" placeholder="https://…" [(ngModel)]="novaFoto" />
+            <label class="botao secundario importar" [class.desabilitado]="enviandoFoto()">
+              <app-icone nome="importar" /> Importar
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                [disabled]="enviandoFoto()"
+                (change)="importarFoto($any($event.target), 'item')"
+              />
+            </label>
+          </div>
+          @if (novaFoto.trim()) {
+            <img class="previa-foto" [src]="novaFoto.trim()" alt="Prévia da foto" />
+          }
         </div>
         <div class="rodape-folha">
           <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>

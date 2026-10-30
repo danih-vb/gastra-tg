@@ -198,6 +198,72 @@ public class CardapioControllerTests(GastraApiFactory factory) : IClassFixture<G
         Assert.Equal(HttpStatusCode.Forbidden, disponibilidade.StatusCode);
     }
 
+    private static readonly byte[] Png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3, 4];
+
+    private static MultipartFormDataContent Arquivo(byte[] conteudo, string nome = "foto.png")
+    {
+        var corpo = new ByteArrayContent(conteudo);
+        corpo.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+        return new MultipartFormDataContent { { corpo, "arquivo", nome } };
+    }
+
+    [Fact]
+    public async Task EnviarFoto_GuardaEOClienteVeSemLogin()
+    {
+        var envio = await _cliente.PostAsync($"{Rota}/fotos", Arquivo(Png));
+
+        Assert.Equal(HttpStatusCode.OK, envio.StatusCode);
+        var foto = await envio.Content.ReadFromJsonAsync<FotoEnviadaResponse>(Json);
+        var leitura = await factory.CreateClient().GetAsync(foto!.Imagem);
+        Assert.Equal(HttpStatusCode.OK, leitura.StatusCode);
+        Assert.Equal("image/png", leitura.Content.Headers.ContentType!.MediaType);
+        Assert.Equal(Png, await leitura.Content.ReadAsByteArrayAsync());
+
+        var item = await Cadastrar("Prato com foto importada");
+        var gravacao = await _cliente.PatchAsJsonAsync($"{Rota}/{item.Id}/imagem", new { imagem = foto.Imagem }, Json);
+        Assert.Equal(HttpStatusCode.NoContent, gravacao.StatusCode);
+    }
+
+    [Fact]
+    public async Task EnviarFoto_ComTextoDisfarcadoDePng_Retorna400()
+    {
+        var resposta = await _cliente.PostAsync($"{Rota}/fotos", Arquivo("<svg onload=alert(1)>"u8.ToArray(), "foto.png"));
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+        Assert.Equal(["A foto deve ser JPG, PNG ou WEBP, com até 5 MB."], await LerErros(resposta));
+    }
+
+    [Fact]
+    public async Task EnviarFoto_AcimaDoTamanho_Retorna400()
+    {
+        var grande = new byte[5 * 1024 * 1024 + 1];
+        Png.CopyTo(grande, 0);
+
+        var resposta = await _cliente.PostAsync($"{Rota}/fotos", Arquivo(grande));
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task EnviarFoto_ComoGarcomOuSemLogin_EBarrado()
+    {
+        var garcom = await ClienteGarcom();
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await garcom.PostAsync($"{Rota}/fotos", Arquivo(Png))).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await factory.CreateClient().PostAsync($"{Rota}/fotos", Arquivo(Png))).StatusCode);
+    }
+
+    [Theory]
+    [InlineData("..%2Fappsettings.json")]
+    [InlineData("nao-existe.png")]
+    [InlineData("00000000000000000000000000000000.png")]
+    public async Task ObterFoto_ComNomeQueNaoEDeFotoGuardada_Retorna404(string nome)
+    {
+        var resposta = await factory.CreateClient().GetAsync($"{Rota}/fotos/{nome}");
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+    }
+
     [Fact]
     public async Task CardapioDigital_SemLogin_Retorna200()
     {

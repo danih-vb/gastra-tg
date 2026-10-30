@@ -62,6 +62,7 @@ export class GestaoCardapio {
   protected readonly flagsDoNovoItem = signal<FlagDietetica[]>([]);
   protected novoPreco = '';
   protected novaFoto = '';
+  protected readonly enviandoFoto = signal(false);
 
   // Formulário de promoção
   protected novaPromocao = { descricao: '', valor: '', inicio: dataDeHoje(), fim: '' };
@@ -179,6 +180,30 @@ export class GestaoCardapio {
       rotulo: 'Desfazer',
       executar: () => this.salvar(this.api.atualizarPreco(item.id, anterior), `${item.nome}: preço anterior de volta`),
     }));
+  }
+
+  /** RF05 — o arquivo vai para a API na hora; o item só muda quando o formulário for salvo. */
+  protected importarFoto(campo: HTMLInputElement, destino: 'novo-item' | 'item'): void {
+    const arquivo = campo.files?.[0];
+    campo.value = ''; // Sem isto, escolher o mesmo arquivo de novo não dispara nada.
+    if (!arquivo) return;
+
+    this.enviandoFoto.set(true);
+    this.errosDoPainel.set([]);
+    this.api.enviarFoto(arquivo).subscribe({
+      next: ({ imagem }) => {
+        if (destino === 'novo-item') {
+          this.novoItem.imagem = imagem;
+        } else {
+          this.novaFoto = imagem;
+        }
+        this.enviandoFoto.set(false);
+      },
+      error: (erro: unknown) => {
+        this.enviandoFoto.set(false);
+        this.errosDoPainel.set(mensagensDeErro(erro));
+      },
+    });
   }
 
   protected salvarFoto(): void {
