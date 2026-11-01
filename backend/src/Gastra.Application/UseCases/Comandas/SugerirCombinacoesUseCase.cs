@@ -30,6 +30,20 @@ public class SugerirCombinacoesUseCase(
             ConfirmarRestricaoComCliente = comanda.Restricoes.Any(r => !r.VerificavelPeloCardapio),
         };
 
+        var restricoes = comanda.Restricoes.Select(r => r.Categoria).ToList();
+        var disponiveis = await repositorioCardapio.ListarDisponiveis();
+        resposta.ItensForaDaRestricao = disponiveis
+            .Select(item => new ItemForaDaRestricaoResponse
+            {
+                ItemDoCardapioId = item.Id,
+                Restricoes = restricoes
+                    .Where(r => !item.AtendeRestricao(r))
+                    .Select(r => r.Adapt<ComunicacaoEnums.CategoriaRestricao>())
+                    .ToList(),
+            })
+            .Where(fora => fora.Restricoes.Count > 0)
+            .ToList();
+
         // Só padrão de consumo observável entra no cálculo: os itens pedidos, nunca dado do cliente (RN05).
         var pedidos = comanda.Itens
             .Where(i => i.Status != StatusItemPedido.Cancelado)
@@ -42,8 +56,7 @@ public class SugerirCombinacoesUseCase(
             return resposta;
 
         // O backend decide o que pode ser oferecido; o Python só ordena dentro disso.
-        var restricoes = comanda.Restricoes.Select(r => r.Categoria).ToList();
-        var permitidos = (await repositorioCardapio.ListarDisponiveis())
+        var permitidos = disponiveis
             .Where(item => !pedidos.Contains(item.Id))
             .Where(item => restricoes.All(item.AtendeRestricao))
             .ToDictionary(item => item.Id);

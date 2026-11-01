@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
@@ -7,13 +7,16 @@ import { SessaoService } from '../../../core/sessao/sessao.service';
 import { AvisoService } from '../../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Icone } from '../../../shared/icone/icone';
-import { minutosDesde, tempoRelativo } from '../../../shared/rotulos';
+import { atrasado, minutosDesde, tempoRelativo } from '../../../shared/rotulos';
+
+const INTERVALO_MS = 30_000;
 
 interface Pendencia {
   comanda: Comanda;
   item: ItemDoPedido;
   mesa: string;
   minutos: number;
+  atrasado: boolean;
 }
 
 /** RF03 — a lista de pendências visível: tudo que o garçom ainda deve levar, do mais antigo para o mais novo. */
@@ -24,7 +27,7 @@ interface Pendencia {
   templateUrl: './pendencias.html',
   styleUrl: './pendencias.scss',
 })
-export class Pendencias {
+export class Pendencias implements OnDestroy {
   private readonly api = inject(GastraApiService);
   private readonly sessao = inject(SessaoService);
   private readonly avisos = inject(AvisoService);
@@ -48,13 +51,21 @@ export class Pendencias {
             item,
             mesa: this.mesas().find((m) => m.id === comanda.mesaId)?.numero ?? String(comanda.mesaId),
             minutos: minutosDesde(item.dataHoraRegistro, agora),
+            atrasado: atrasado(item.dataHoraRegistro, agora),
           })),
       )
       .sort((a, b) => b.minutos - a.minutos);
   });
 
+  // Tela que fica aberta no bolso do garçom: o item precisa virar "atrasado" sem ninguém recarregar.
+  private readonly relogio = setInterval(() => this.carregar(true), INTERVALO_MS);
+
   constructor() {
     this.carregar();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.relogio);
   }
 
   protected tempo(dataIso: string): string {
@@ -79,8 +90,8 @@ export class Pendencias {
     });
   }
 
-  protected carregar(): void {
-    this.carregando.set(true);
+  protected carregar(emSegundoPlano = false): void {
+    this.carregando.set(!emSegundoPlano);
     forkJoin({ comandas: this.api.listarComandasAbertas(), mesas: this.api.listarMesas() }).subscribe({
       next: ({ comandas, mesas }) => {
         this.comandas.set(comandas);

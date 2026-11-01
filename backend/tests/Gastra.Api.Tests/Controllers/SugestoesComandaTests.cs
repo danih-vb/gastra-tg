@@ -139,6 +139,34 @@ public class SugestoesComandaTests(GastraApiFactory factory) : IClassFixture<Gas
         Assert.Empty(factory.ServicoAnalitico.Chamadas);
     }
 
+    [Fact]
+    public async Task RestricaoQueOCardapioConfere_ApontaOsItensQueNaoAtendem()
+    {
+        var comum = await factory.CriarItemCardapio();
+        var semGluten = await factory.CriarItemCardapio(flags: FlagDietetica.SemGluten);
+        var comanda = await AbrirComanda();
+        await RegistrarRestricao(comanda, "SemGluten");
+
+        // Vale mesmo sem nada pedido: o aviso é justamente para antes do primeiro lançamento.
+        var fora = (await Sugestoes(comanda)).ItensForaDaRestricao;
+
+        var item = Assert.Single(fora, f => f.ItemDoCardapioId == comum);
+        Assert.Equal([CategoriaRestricao.SemGluten], item.Restricoes);
+        Assert.DoesNotContain(fora, f => f.ItemDoCardapioId == semGluten);
+    }
+
+    [Theory]
+    [InlineData("Alergia")]
+    [InlineData("Outro")]
+    public async Task RestricaoQueOCardapioNaoConfere_NaoApontaItem(string categoria)
+    {
+        await factory.CriarItemCardapio();
+        var comanda = await AbrirComanda();
+        await RegistrarRestricao(comanda, categoria);
+
+        Assert.Empty((await Sugestoes(comanda)).ItensForaDaRestricao);
+    }
+
     [Theory]
     [InlineData("Alergia", true)]
     [InlineData("Outro", true)]

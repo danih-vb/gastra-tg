@@ -13,6 +13,7 @@ const SUGESTOES: SugestoesDaComanda = {
   servicoDisponivel: true,
   confirmarRestricaoComCliente: false,
   itens: [{ itemDoCardapioId: 2, nome: 'Caipirinha de limão', categoria: 'Bebida', preco: 24 }],
+  itensForaDaRestricao: [],
 };
 
 describe('Comanda (UC12, UC13, UC18, UC23)', () => {
@@ -65,6 +66,31 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
   }
 
   afterEach(() => http.verify());
+
+  it('avisa antes de lançar um item que não atende à restrição da mesa, sem impedir (RF14)', async () => {
+    const pagina = await renderizar();
+    await responder({}, { ...SUGESTOES, itensForaDaRestricao: [{ itemDoCardapioId: 1, restricoes: ['SemGluten'] }] });
+
+    [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Pratos'))?.click();
+    await fixture.whenStable();
+    const linha = [...pagina.querySelectorAll<HTMLElement>('.lista.cardapio li')].find((l) => l.textContent?.includes('Risoto'))!;
+    expect(linha.textContent).toContain('Não é Sem glúten');
+
+    linha.querySelector<HTMLButtonElement>('button')!.click();
+    await fixture.whenStable();
+    const folha = pagina.querySelector('app-folha')!;
+    expect(folha.textContent).toContain('A mesa pediu Sem glúten, e este item não é.');
+    expect(folha.querySelector<HTMLButtonElement>('.rodape-folha .botao')!.disabled).toBe(false);
+  });
+
+  it('marca como atrasado o item pendente que passou do limite', async () => {
+    const pagina = await renderizar();
+    await responder({
+      itens: [itemDoPedido({ dataHoraRegistro: new Date(Date.now() - 20 * 60_000).toISOString() })],
+    });
+
+    expect(pagina.textContent).toContain('Atrasado');
+  });
 
   it('oferece ao garçom o QR code e o link da conta do cliente (RF13)', async () => {
     const pagina = await renderizar();

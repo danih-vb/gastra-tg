@@ -25,7 +25,12 @@
           <a class="etiqueta" [routerLink]="['/comandas', pendencia.comanda.id]">Mesa {{ pendencia.mesa }}</a>
           <div class="principal-item">
             <strong>{{ pendencia.item.quantidade }} × {{ pendencia.item.nome }}</strong>
-            <span class="pequeno suave">{{ tempo(pendencia.item.dataHoraRegistro) }}</span>
+            <span class="pequeno suave">
+              {{ tempo(pendencia.item.dataHoraRegistro) }}
+              @if (pendencia.atrasado) {
+                <span class="etiqueta erro"><app-icone nome="relogio" /> Atrasado</span>
+              }
+            </span>
           </div>
           <button
             class="botao compacto"

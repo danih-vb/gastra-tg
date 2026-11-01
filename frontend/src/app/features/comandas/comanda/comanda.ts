@@ -20,7 +20,7 @@ import { AvisoService } from '../../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Folha } from '../../../shared/folha/folha';
 import { Icone } from '../../../shared/icone/icone';
-import { CATEGORIAS, COMPOSICOES, FLAGS, MOTIVOS, RESTRICOES, composicaoSugerida, tempoRelativo } from '../../../shared/rotulos';
+import { CATEGORIAS, COMPOSICOES, FLAGS, MOTIVOS, RESTRICOES, atrasado, composicaoSugerida, tempoRelativo } from '../../../shared/rotulos';
 
 /** UC12, UC13, UC18 e UC23 — a tela em que o garçom passa o atendimento inteiro. */
 @Component({
@@ -95,6 +95,16 @@ export class Comanda implements OnInit {
   protected totalDoLancamento(): number {
     const item = this.itemParaLancar();
     return item ? this.precoDe(item) * this.quantidade() : 0;
+  }
+
+  /** RF14 — restrições da mesa que o item não atende. Quem decide é o domínio; aqui é só avisar, não impedir. */
+  protected restricoesQueNaoAtende(item: ItemCardapio): string[] {
+    const fora = this.sugestoes()?.itensForaDaRestricao.find((f) => f.itemDoCardapioId === item.id);
+    return fora?.restricoes.map((r) => RESTRICOES[r]) ?? [];
+  }
+
+  protected atrasado(dataIso: string): boolean {
+    return atrasado(dataIso);
   }
 
   protected abrirLancamento(item: ItemCardapio | undefined): void {
@@ -213,7 +223,7 @@ export class Comanda implements OnInit {
       // D3: sem o serviço de análise, o atendimento continua; só as sugestões somem.
       sugestoes: this.api
         .obterSugestoes(id)
-        .pipe(catchError(() => of<SugestoesDaComanda>({ servicoDisponivel: false, confirmarRestricaoComCliente: false, itens: [] }))),
+        .pipe(catchError(() => of<SugestoesDaComanda>({ servicoDisponivel: false, confirmarRestricaoComCliente: false, itens: [], itensForaDaRestricao: [] }))),
     }).subscribe({
       next: ({ comanda, cardapio, mesas, sugestoes }) => {
         this.comanda.set(comanda);
@@ -252,7 +262,7 @@ export class Comanda implements OnInit {
     this.api.obterComanda(id).subscribe({ next: (comanda) => this.comanda.set(comanda) });
     this.api
       .obterSugestoes(id)
-      .pipe(catchError(() => of<SugestoesDaComanda>({ servicoDisponivel: false, confirmarRestricaoComCliente: false, itens: [] })))
+      .pipe(catchError(() => of<SugestoesDaComanda>({ servicoDisponivel: false, confirmarRestricaoComCliente: false, itens: [], itensForaDaRestricao: [] })))
       .subscribe({ next: (sugestoes) => this.sugestoes.set(sugestoes) });
   }
 }

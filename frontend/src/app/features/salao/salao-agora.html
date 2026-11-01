@@ -56,6 +56,9 @@
               @if (linha.comanda.restricoes.length) {
                 <span class="etiqueta aviso"><app-icone nome="escudo" /> restrição</span>
               }
+              @if (linha.atrasados) {
+                <span class="etiqueta erro"><app-icone nome="relogio" /> {{ linha.atrasados }} {{ linha.atrasados === 1 ? 'atrasado' : 'atrasados' }}</span>
+              }
               @if (linha.pendentes) {
                 <span class="etiqueta aviso">{{ linha.pendentes }} a entregar</span>
               } @else {

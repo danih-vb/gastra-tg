@@ -6,13 +6,14 @@ import { Comanda, Mesa, Praca } from '../../core/api/modelos';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
-import { COMPOSICOES, MOTIVOS, RESTRICOES, minutosDesde } from '../../shared/rotulos';
+import { COMPOSICOES, MOTIVOS, RESTRICOES, atrasado, minutosDesde } from '../../shared/rotulos';
 
 interface LinhaDoSalao {
   comanda: Comanda;
   mesa: string;
   pendentes: number;
   minutos: number;
+  atrasados: number;
 }
 
 /**
@@ -63,6 +64,7 @@ export class SalaoAgora {
         mesa: this.numeroDaMesa(comanda.mesaId),
         pendentes: comanda.itens.filter((i) => i.status === 'Pendente').length,
         minutos: minutosDesde(comanda.dataHoraAbertura, agora),
+        atrasados: comanda.itens.filter((i) => i.status === 'Pendente' && atrasado(i.dataHoraRegistro, agora)).length,
       }))
       .sort((a, b) => a.mesa.localeCompare(b.mesa));
   }

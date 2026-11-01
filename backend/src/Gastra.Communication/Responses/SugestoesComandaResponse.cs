@@ -17,6 +17,15 @@ public class SugestoesComandaResponse
     public bool ConfirmarRestricaoComCliente { get; set; }
 
     public List<ItemSugeridoResponse> Itens { get; set; } = [];
+
+    /// <summary>Itens que não atendem a uma restrição que o cardápio confere: o garçom é avisado antes de lançar.</summary>
+    public List<ItemForaDaRestricaoResponse> ItensForaDaRestricao { get; set; } = [];
+}
+
+public class ItemForaDaRestricaoResponse
+{
+    public int ItemDoCardapioId { get; set; }
+    public List<CategoriaRestricao> Restricoes { get; set; } = [];
 }
 
 public class ItemSugeridoResponse
