@@ -30,6 +30,14 @@
     </div>
   }
 
+  @if (comanda.atendimentoChamadoEm) {
+    <div class="alerta erro" role="alert">
+      <app-icone nome="sino" />
+      <div><strong>A mesa está chamando</strong> {{ tempo(comanda.atendimentoChamadoEm) }}</div>
+      <button class="botao compacto" type="button" [disabled]="salvando()" (click)="atenderChamado()">Atendi</button>
+    </div>
+  }
+
   @if (comanda.restricoes.length) {
     <section class="alerta aviso" aria-label="Restrições alimentares da mesa">
       <app-icone nome="escudo" />

@@ -27,6 +27,7 @@ const CAMINHOS: Record<string, string> = {
   cardapio: '<path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
   avancar: '<path d="M9 5l7 7-7 7"/>',
   importar: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  sino: '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
 };
 
 @Component({

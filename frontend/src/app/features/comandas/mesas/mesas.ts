@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
@@ -18,6 +18,7 @@ interface MesaNaTela {
   minha: boolean;
   pendentes: number;
   minutos: number;
+  chamando: boolean;
 }
 
 /** UC10 — ponto de partida do garçom: o salão com as mesas livres e as ocupadas. */
@@ -28,7 +29,7 @@ interface MesaNaTela {
   templateUrl: './mesas.html',
   styleUrl: './mesas.scss',
 })
-export class Mesas {
+export class Mesas implements OnDestroy {
   private readonly api = inject(GastraApiService);
   private readonly sessao = inject(SessaoService);
   private readonly avisos = inject(AvisoService);
@@ -73,8 +74,15 @@ export class Mesas {
 
   protected readonly emConsumo = computed(() => this.minhasComandas().reduce((total, c) => total + c.subtotal, 0));
 
+  // O garçom precisa ver quem está chamando sem recarregar a tela.
+  private readonly relogio = setInterval(() => this.carregar(true), 15_000);
+
   constructor() {
     this.carregar();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.relogio);
   }
 
   protected mesasDaPraca(praca: Praca): MesaNaTela[] {
@@ -90,6 +98,7 @@ export class Mesas {
           minha: comanda?.garcomId === meuId,
           pendentes: comanda?.itens.filter((i) => i.status === 'Pendente').length ?? 0,
           minutos: comanda ? minutosDesde(comanda.dataHoraAbertura, agora) : 0,
+          chamando: Boolean(comanda?.atendimentoChamadoEm),
         };
       });
   }
@@ -134,9 +143,11 @@ export class Mesas {
     });
   }
 
-  protected carregar(): void {
-    this.carregando.set(true);
-    this.erros.set([]);
+  protected carregar(emSegundoPlano = false): void {
+    if (!emSegundoPlano) {
+      this.carregando.set(true);
+      this.erros.set([]);
+    }
     forkJoin({
       pracas: this.api.listarPracas(),
       mesas: this.api.listarMesas(),
@@ -151,7 +162,9 @@ export class Mesas {
         this.mesas.set(mesas);
         this.comandas.set(comandas);
         this.alocacao.set(alocacao);
-        this.filtro.set(this.minhaPraca() ? 'minha' : 'todas');
+        if (!emSegundoPlano) {
+          this.filtro.set(this.minhaPraca() ? 'minha' : 'todas');
+        }
         this.carregando.set(false);
       },
       error: (erro: unknown) => {

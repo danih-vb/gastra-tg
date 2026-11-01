@@ -16,6 +16,7 @@ const CONTA: ComandaDoCliente = {
     { nome: 'Suco de laranja 400 ml', quantidade: 1, valor: 13, situacao: 'Cancelado' },
     { nome: 'Picanha na chapa', quantidade: 1, valor: 119, situacao: 'Entregue' },
   ],
+  garcomChamado: false,
   subtotal: 191,
   taxaServico: 19.1,
   total: 210.1,
@@ -58,6 +59,27 @@ describe('Conta do cliente (UC20)', () => {
   afterEach(() => {
     http.verify();
     fixture.destroy(); // encerra a atualização automática
+  });
+
+  it('chama o garçom e mostra que o chamado foi feito', async () => {
+    const pagina = await renderizar(CONTA);
+    const botao = () => pagina.querySelector<HTMLButtonElement>('.chamar')!;
+
+    expect(botao().disabled).toBe(false);
+    botao().click();
+
+    http.expectOne({ method: 'POST', url: `${API}/api/comandas/consulta/M3R8TD/chamado` }).flush(null, { status: 204, statusText: 'No Content' });
+    http.expectOne(`${API}/api/comandas/consulta/M3R8TD`).flush({ ...CONTA, garcomChamado: true });
+    await fixture.whenStable();
+
+    expect(botao().disabled).toBe(true);
+    expect(botao().textContent).toContain('Garçom chamado');
+  });
+
+  it('com a conta fechada, não oferece chamar', async () => {
+    const pagina = await renderizar({ ...CONTA, fechada: true });
+
+    expect(pagina.querySelector('.chamar')).toBeNull();
   });
 
   it('divide o total entre as pessoas, a partir de duas', async () => {

@@ -146,6 +146,40 @@ public class ComandaTests
     }
 
     [Fact]
+    public void ChamarGarcom_DeNovo_MantemAHoraDoPrimeiroChamado()
+    {
+        var comanda = AbrirComanda();
+        var primeiro = new DateTime(2026, 11, 1, 20, 0, 0, DateTimeKind.Utc);
+
+        comanda.ChamarGarcom(primeiro);
+        comanda.ChamarGarcom(primeiro.AddMinutes(5));
+
+        Assert.Equal(primeiro, comanda.AtendimentoChamadoEm);
+    }
+
+    [Fact]
+    public void AtenderChamado_LimpaOChamado()
+    {
+        var comanda = AbrirComanda();
+        comanda.ChamarGarcom(DateTime.UtcNow);
+
+        comanda.AtenderChamado();
+
+        Assert.Null(comanda.AtendimentoChamadoEm);
+    }
+
+    [Fact]
+    public void Fechar_LimpaOChamado()
+    {
+        var comanda = AbrirComanda();
+        comanda.ChamarGarcom(DateTime.UtcNow);
+
+        comanda.Fechar();
+
+        Assert.Null(comanda.AtendimentoChamadoEm);
+    }
+
+    [Fact]
     public void RecolocarTaxaServico_VoltaACobrar()
     {
         var comanda = AbrirComanda();

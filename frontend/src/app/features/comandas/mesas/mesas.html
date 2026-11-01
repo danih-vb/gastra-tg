@@ -76,7 +76,9 @@
             "
             (click)="selecionar(linha)"
           >
-            @if (linha.minha && linha.pendentes) {
+            @if (linha.chamando) {
+              <span class="etiqueta erro chamando"><app-icone nome="sino" /> Chamando</span>
+            } @else if (linha.minha && linha.pendentes) {
               <span class="etiqueta aviso pendentes">{{ linha.pendentes }} a entregar</span>
             }
             <span class="numero">{{ linha.mesa.numero }}</span>

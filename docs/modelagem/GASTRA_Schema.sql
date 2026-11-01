@@ -97,6 +97,7 @@ CREATE TABLE `comanda` (
     `garcom_id` int NOT NULL,
     `data_hora_abertura` datetime(6) NOT NULL,
     `data_hora_fechamento` datetime(6) NULL,
+    `atendimento_chamado_em` datetime(6) NULL,
     `status` varchar(10) CHARACTER SET utf8mb4 NOT NULL,
     `quantidade_pessoas` int NOT NULL,
     `composicao` varchar(20) CHARACTER SET utf8mb4 NOT NULL,

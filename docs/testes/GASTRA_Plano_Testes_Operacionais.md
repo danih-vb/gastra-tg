@@ -49,6 +49,7 @@ Cada tropeço (porta ocupada, WSL2, passo faltando na documentação) vira corre
 | G7 | Trocar o papel dessa conta | A aba aberta com o papel antigo perde o acesso | | |
 | G8 | Inativar a conta | Ela não entra mais | | |
 | G9 | Sair | Voltar no navegador não reabre a tela | | |
+| G10 | Em Análises, olhar Engenharia de cardápio | Cada item em um dos quatro grupos, e os grupos fazem sentido | | |
 
 ### Metre
 
@@ -73,6 +74,8 @@ Cada tropeço (porta ocupada, WSL2, passo faltando na documentação) vira corre
 | W7 | Fechar a conta: retirar a taxa, recolocar, retirar de novo e fechar | O total muda na hora a cada toque, e fecha sem os 10% | | |
 | W8 | Abrir Seu desempenho | O índice dele e a faixa, sem os valores dos colegas | | |
 | W9 | Digitar `/analises` na barra de endereço | Tela de sem permissão | | |
+| W10 | Em uma mesa com restrição de glúten, abrir um item sem essa marcação | Avisa antes de lançar, sem impedir | | |
+| W11 | Deixar um item pendente por 15 minutos | Aparece como Atrasado para o garçom e o Metre | | |
 
 ### Cliente (no celular, sem login)
 
@@ -82,6 +85,8 @@ Cada tropeço (porta ocupada, WSL2, passo faltando na documentação) vira corre
 | C2 | Abrir `/cliente`, ir ao cardápio e filtrar por sem glúten | Só itens marcados como sem glúten | | |
 | C3 | Com a conta aberta, o garçom lança um item | O item aparece em até **2 segundos** (RNF01) | | Tempo: |
 | C4 | Depois do fechamento, avaliar o atendimento | A avaliação é aceita uma única vez | | |
+| C6 | Na conta, tocar em Chamar o garçom | Em até 15 s, a mesa aparece chamando para o garçom; ele toca em Atendi e o botão volta | | |
+| C7 | Na conta, dividir entre 3 pessoas | Mostra o total dividido por 3 | | |
 | C5 | Abrir `/cliente/conta/` com um código inventado | "Não encontramos essa conta", sem dizer se a mesa existe | | |
 
 ### Segurança e falhas
@@ -126,9 +131,9 @@ RNF02, os defeitos com a correção de cada um e o resultado da máquina limpa.
 | Papel | Passos | Passou | Falhou |
 |---|---|---|---|
 | Máquina limpa | 6 | | |
-| Gerente | 9 | | |
+| Gerente | 10 | | |
 | Metre | 5 | | |
-| Garçom | 9 | | |
-| Cliente | 5 | | |
+| Garçom | 11 | | |
+| Cliente | 7 | | |
 | Segurança e falhas | 4 | | |
-| **Total** | **38** | | |
+| **Total** | **43** | | |

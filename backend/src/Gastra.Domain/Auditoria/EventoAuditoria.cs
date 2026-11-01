@@ -41,6 +41,10 @@ public static class EventoAuditoria
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";
     public const string TaxaServicoRecolocada = "TAXA_SERVICO_RECOLOCADA";
     public const string ComandaFechada = "COMANDA_FECHADA";
+    public const string ChamadoAtendido = "CHAMADO_ATENDIDO";
+
+    /// <summary>Sem ator: quem chama não se identifica.</summary>
+    public const string GarcomChamado = "GARCOM_CHAMADO";
 
     /// <summary>Sem ator: quem avalia não se identifica (RN08).</summary>
     public const string AvaliacaoRecebida = "AVALIACAO_RECEBIDA";

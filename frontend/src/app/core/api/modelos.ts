@@ -64,6 +64,7 @@ export interface Comanda {
   mesaId: number;
   garcomId: number;
   garcomNome: string;
+  atendimentoChamadoEm: string | null;
   status: StatusComanda;
   quantidadePessoas: number;
   composicao: ComposicaoMesa;
@@ -160,6 +161,7 @@ export interface ComandaDoCliente {
   /** RF25: a tela só oferece avaliar com a conta fechada, sem avaliação e dentro do prazo. */
   podeAvaliar: boolean;
   avaliacaoEnviada: boolean;
+  garcomChamado: boolean;
 }
 
 /** UC15 — garçom que pode entrar no turno (só id e nome, RNF03). */

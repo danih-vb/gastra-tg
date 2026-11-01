@@ -9,7 +9,7 @@ import { mensagensDeErro } from '../../../shared/erros';
 import { Icone } from '../../../shared/icone/icone';
 import { atrasado, minutosDesde, tempoRelativo } from '../../../shared/rotulos';
 
-const INTERVALO_MS = 30_000;
+const INTERVALO_MS = 15_000;
 
 interface Pendencia {
   comanda: Comanda;
@@ -66,6 +66,32 @@ export class Pendencias implements OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.relogio);
+  }
+
+  /** Mesas do garçom que chamaram pelo celular, de quem espera há mais tempo. */
+  protected readonly chamados = computed(() => {
+    const meuId = this.sessao.usuario()?.id;
+    return this.comandas()
+      .filter((c) => c.garcomId === meuId && c.atendimentoChamadoEm)
+      .sort((a, b) => a.atendimentoChamadoEm!.localeCompare(b.atendimentoChamadoEm!))
+      .map((comanda) => ({
+        comanda,
+        mesa: this.mesas().find((m) => m.id === comanda.mesaId)?.numero ?? String(comanda.mesaId),
+      }));
+  });
+
+  protected atender(comandaId: number): void {
+    this.salvando.set(true);
+    this.api.atenderChamado(comandaId).subscribe({
+      next: () => {
+        this.salvando.set(false);
+        this.carregar(true);
+      },
+      error: (erro: unknown) => {
+        this.salvando.set(false);
+        this.erros.set(mensagensDeErro(erro));
+      },
+    });
   }
 
   protected tempo(dataIso: string): string {

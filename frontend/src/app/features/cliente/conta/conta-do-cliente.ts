@@ -73,6 +73,22 @@ export class ContaDoCliente implements OnInit, OnDestroy {
     }
   }
 
+  protected readonly chamando = signal(false);
+
+  protected chamarGarcom(): void {
+    this.chamando.set(true);
+    this.api.chamarGarcom(this.codigo()).subscribe({
+      next: () => {
+        this.chamando.set(false);
+        this.carregar(true);
+      },
+      error: (erro: unknown) => {
+        this.chamando.set(false);
+        this.erros.set(mensagensDeErro(erro));
+      },
+    });
+  }
+
   protected readonly pessoasNaDivisao = signal(2);
 
   protected dividirEntre(pessoas: number): void {
