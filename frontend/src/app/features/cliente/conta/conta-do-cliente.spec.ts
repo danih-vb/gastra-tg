@@ -60,6 +60,19 @@ describe('Conta do cliente (UC20)', () => {
     fixture.destroy(); // encerra a atualização automática
   });
 
+  it('divide o total entre as pessoas, a partir de duas', async () => {
+    const pagina = await renderizar(CONTA);
+    const porPessoa = (n: number) => `${(CONTA.total / n).toFixed(2).replace('.', ',')} cada`;
+
+    expect(pagina.querySelector('.por-pessoa')!.textContent).toContain(porPessoa(2));
+    expect(pagina.querySelector<HTMLButtonElement>('[aria-label="Menos pessoas"]')!.disabled).toBe(true);
+
+    pagina.querySelector<HTMLButtonElement>('[aria-label="Mais pessoas"]')!.click();
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.por-pessoa')!.textContent).toContain(porPessoa(3));
+  });
+
   it('mostra os itens com a situação de cada um e os totais', async () => {
     const pagina = await renderizar(CONTA);
 

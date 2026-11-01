@@ -59,6 +59,25 @@
       <span>{{ comanda.fechada ? 'Total' : 'Total parcial' }}</span>
       <span>{{ comanda.total | currency: 'BRL' }}</span>
     </div>
+    @if (comanda.total > 0) {
+      <div class="dividir" role="group" aria-label="Dividir a conta">
+        <span>Dividir entre</span>
+        <button
+          class="botao-icone"
+          type="button"
+          aria-label="Menos pessoas"
+          [disabled]="pessoasNaDivisao() === 2"
+          (click)="dividirEntre(pessoasNaDivisao() - 1)"
+        >
+          <app-icone nome="menos" />
+        </button>
+        <output aria-live="polite">{{ pessoasNaDivisao() }}</output>
+        <button class="botao-icone" type="button" aria-label="Mais pessoas" (click)="dividirEntre(pessoasNaDivisao() + 1)">
+          <app-icone nome="mais" />
+        </button>
+        <strong class="por-pessoa">{{ comanda.total / pessoasNaDivisao() | currency: 'BRL' }} cada</strong>
+      </div>
+    }
   </section>
 
   @if (comanda.avaliacaoEnviada) {

@@ -73,6 +73,12 @@ export class ContaDoCliente implements OnInit, OnDestroy {
     }
   }
 
+  protected readonly pessoasNaDivisao = signal(2);
+
+  protected dividirEntre(pessoas: number): void {
+    this.pessoasNaDivisao.set(Math.max(2, pessoas));
+  }
+
   protected atualizarAgora(): void {
     this.carregar();
   }

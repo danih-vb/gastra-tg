@@ -289,6 +289,9 @@ GOOGLE. Angular. [S. l.], 2026. Disponível em: https://angular.dev/. Acesso em:
 JONES, Michael B.; BRADLEY, John; SAKIMURA, Nat. JSON Web Token (JWT). RFC 7519. [S. l.]: Internet Engineering
 Task Force, 2015. Disponível em: https://www.rfc-editor.org/rfc/rfc7519. Acesso em: 30 out. 2026.
 
+KASAVANA, Michael L.; SMITH, Donald I. Menu engineering: a practical guide to menu analysis. Lansing: Hospitality
+Publications, 1982.
+
 MACQUEEN, James B. Some methods for classification and analysis of multivariate observations. In: BERKELEY
 SYMPOSIUM ON MATHEMATICAL STATISTICS AND PROBABILITY, 5., 1967, Berkeley. Proceedings [...]. Berkeley: University
 of California Press, 1967. v. 1, p. 281-297.

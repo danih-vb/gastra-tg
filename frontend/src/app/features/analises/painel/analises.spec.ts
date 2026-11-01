@@ -34,8 +34,8 @@ const CARDAPIO: RelatorioCardapio = {
   periodo: PERIODO,
   categorias: [],
   itens: [
-    { itemCardapioId: 17, nome: 'Caipirinha de limão', categoria: 'Bebida', quantidade: 1102, faturamento: 26448, participacaoPercentual: 15.9 },
-    { itemCardapioId: 4, nome: 'Picanha na chapa', categoria: 'PratoPrincipal', quantidade: 418, faturamento: 49742, participacaoPercentual: 29.9 },
+    { itemCardapioId: 17, nome: 'Caipirinha de limão', categoria: 'Bebida', quantidade: 1102, faturamento: 26448, participacaoPercentual: 15.9, classificacao: 'Estrela' },
+    { itemCardapioId: 4, nome: 'Picanha na chapa', categoria: 'PratoPrincipal', quantidade: 418, faturamento: 49742, participacaoPercentual: 29.9, classificacao: 'Estrela' },
   ],
 };
 const HORARIOS: RelatorioHorarios = {
@@ -122,12 +122,13 @@ describe('Análises (UC16, UC17)', () => {
     garcons: RelatorioGarcons = GARCONS,
     avaliacoes = AVALIACOES,
     perfis: PerfisDeConsumo = SEM_PERFIS,
+    cardapio: RelatorioCardapio = CARDAPIO,
   ): Promise<void> {
     const pedido = (nome: string) => http.expectOne((r) => r.url === `${API}/api/indicadores/${nome}`);
     pedido('perfis-consumo').flush(perfis);
     pedido('garcons').flush(garcons);
     pedido('pracas').flush(PRACAS);
-    pedido('cardapio').flush(CARDAPIO);
+    pedido('cardapio').flush(cardapio);
     pedido('horarios').flush(HORARIOS);
     pedido('desempenho').flush(RANKING);
     pedido('avaliacoes').flush(avaliacoes);
@@ -249,6 +250,19 @@ describe('Análises (UC16, UC17)', () => {
     const perfis = pagina.querySelector('[aria-labelledby="t-perfis"]')?.textContent ?? '';
     expect(perfis).toContain('Os perfis aparecem a partir de 50 comandas');
     expect(perfis).not.toContain('Perfil 1');
+  });
+
+  it('separa os itens nos quatro grupos da engenharia de cardápio', async () => {
+    const pagina = await renderizar();
+    await responder(GARCONS, AVALIACOES, SEM_PERFIS, {
+      ...CARDAPIO,
+      itens: CARDAPIO.itens.map((item, i) => ({ ...item, classificacao: i === 0 ? ('Estrela' as const) : ('Cao' as const) })),
+    });
+
+    const grupo = (chave: string) => pagina.querySelector(`[data-grupo="${chave}"]`)!.textContent ?? '';
+    expect(grupo('Estrela')).toContain(CARDAPIO.itens[0].nome);
+    expect(grupo('Cao')).not.toContain(CARDAPIO.itens[0].nome);
+    expect(grupo('BurroDeCarga')).toContain('—');
   });
 
   it('com o serviço de análise fora do ar, os perfis avisam e o resto do painel continua (D3)', async () => {

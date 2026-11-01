@@ -162,3 +162,31 @@
     gap: 4px;
   }
 }
+
+.quadrantes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.quadrante {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+
+  &[data-grupo='Estrela'] {
+    border-color: var(--laranja-forte);
+    background: var(--laranja-suave);
+  }
+
+  ul {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 4px;
+  }
+}

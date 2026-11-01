@@ -303,5 +303,24 @@
         </table>
       </div>
     </section>
+
+    <section class="cartao" aria-labelledby="t-engenharia">
+      <header><h2 id="t-engenharia">Engenharia de cardápio</h2></header>
+      <div class="corpo quadrantes">
+        @for (quadrante of quadrantes(); track quadrante.chave) {
+          <div class="quadrante" [attr.data-grupo]="quadrante.chave">
+            <strong>{{ quadrante.titulo }}</strong>
+            <span class="suave pequeno">{{ quadrante.eixos }}</span>
+            <ul>
+              @for (item of quadrante.itens; track item.itemCardapioId) {
+                <li>{{ item.nome }}</li>
+              } @empty {
+                <li class="suave">—</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </section>
   }
 }

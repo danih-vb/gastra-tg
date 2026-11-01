@@ -1,3 +1,4 @@
+using Gastra.Domain.Servicos;
 using Gastra.Application.Auditoria;
 using Gastra.Communication.Responses;
 using Gastra.Domain.Auditoria;
@@ -156,6 +157,7 @@ public class RelatorioCardapioUseCase(
         var linhas = await indicadores.ObterIndicadoresPorItem(periodo.Inicio, periodo.Fim);
         var nomes = (await repositorioCardapio.ListarPorIds(linhas.Select(l => l.ItemCardapioId))).ToDictionary(i => i.Id, i => i.Nome);
         var total = linhas.Sum(l => l.Faturamento);
+        var porCategoria = linhas.GroupBy(l => l.Categoria).ToDictionary(g => g.Key, g => g.ToList());
 
         await RelatorioGarconsUseCase.Auditar(auditoria, unitOfWork, "cardapio", periodo.Resposta);
 
@@ -172,6 +174,12 @@ public class RelatorioCardapioUseCase(
                     Quantidade = l.Quantidade,
                     Faturamento = l.Faturamento,
                     ParticipacaoPercentual = PeriodoDeRelatorio.Dividir(100 * l.Faturamento, total, 1),
+                    Classificacao = EngenhariaDeCardapio.Classificar(
+                        l.Quantidade,
+                        l.Faturamento,
+                        porCategoria[l.Categoria].Count,
+                        porCategoria[l.Categoria].Sum(i => i.Quantidade),
+                        porCategoria[l.Categoria].Sum(i => i.Faturamento)).ToString(),
                 })
                 .ToList(),
             Categorias = linhas

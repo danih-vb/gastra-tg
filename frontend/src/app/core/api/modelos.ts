@@ -239,6 +239,7 @@ export interface IndicadorItem {
   quantidade: number;
   faturamento: number;
   participacaoPercentual: number;
+  classificacao: 'Estrela' | 'BurroDeCarga' | 'QuebraCabeca' | 'Cao';
 }
 
 export interface RelatorioCardapio {
