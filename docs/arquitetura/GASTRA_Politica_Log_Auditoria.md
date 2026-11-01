@@ -119,7 +119,7 @@ Dados do cardápio e do salão não são pessoais: podem ser registrados com os 
 | Comanda consultada por QR code | UC20 | somente em log **técnico**: data/hora e resultado (encontrada / não encontrada) | **código de acesso completo**, IP do cliente (o limite por IP do #230 guarda o IP só em memória, como chave de um contador que some em um minuto) |
 | **Avaliação recebida** | UC25 | `id_comanda` e a nota, **sem ator** | **comentário**, código de acesso, IP do cliente |
 
-> A avaliação é a única escrita anônima do sistema, e o log acompanha isso: o registro fica sem
+> A avaliação e o chamado do garçom são as únicas escritas anônimas do sistema, e o log acompanha isso: o registro fica sem
 > `usuario_id` de propósito (RN08). Gravar quem avaliou seria justamente o que a regra proíbe. A nota entra
 > porque não identifica ninguém; o comentário é texto livre do cliente e fica só na tabela.
 
