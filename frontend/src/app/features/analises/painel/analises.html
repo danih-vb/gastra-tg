@@ -97,12 +97,11 @@
       @if (perfis(); as perfis) {
         @if (!perfis.servicoDisponivel) {
           <p class="corpo suave">
-            O serviço de análise está fora do ar agora. Os perfis voltam com ele; o resto das análises não depende dele.
+            Perfis indisponíveis agora.
           </p>
         } @else if (!perfis.historicoSuficiente) {
           <p class="corpo suave">
-            Ainda não há movimento suficiente para encontrar os perfis deste restaurante. Eles aparecem quando houver
-            pelo menos 50 comandas fechadas com dois itens ou mais.
+            Os perfis aparecem a partir de 50 comandas fechadas com dois itens ou mais.
           </p>
         } @else {
           <div class="corpo perfis">
@@ -223,17 +222,8 @@
             @if (dados.ranking.pesoAvaliacao > 0) {
               e <strong>{{ dados.ranking.pesoAvaliacao * 100 | number: '1.0-0' }}%</strong> da avaliação dos clientes
             }
-            — e faturamento e mesas são comparados com o melhor do período, que vale 100. Por ser por
-            turno, quem trabalhou menos dias não fica atrás só por isso. O garçom vê apenas a própria posição.
           </p>
-          @if (dados.ranking.pesoAvaliacao > 0) {
-            <p>
-              A nota é uma média que puxa quem tem poucas avaliações para a média do restaurante, para cinco notas 5 não
-              valerem mais que quarenta notas 4,8. Com menos de {{ dados.ranking.minimoDeAvaliacoes }} avaliações no
-              período, a nota do garçom não aparece e ele recebe a média do restaurante: com tão poucas, dava para saber
-              a nota que cada mesa deu.
-            </p>
-          }
+          <p>Faturamento e mesas são comparados com o melhor do período, que vale 100.</p>
         </div>
       }
       <div class="rolagem-horizontal">

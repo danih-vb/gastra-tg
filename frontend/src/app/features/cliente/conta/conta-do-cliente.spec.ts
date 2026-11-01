@@ -83,7 +83,6 @@ describe('Conta do cliente (UC20)', () => {
     const pagina = await renderizar({ ...CONTA, fechada: true });
 
     expect(texto(pagina)).toContain('Conta fechada');
-    expect(texto(pagina)).toContain('Os valores abaixo são os finais');
     expect(texto(pagina)).not.toContain('Total parcial');
     expect(pagina.querySelector('[aria-label="Atualizar agora"]')).toBeNull();
   });

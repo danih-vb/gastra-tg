@@ -73,10 +73,9 @@ describe('Desempenho (UC17)', () => {
     expect(texto(pagina)).toContain('4,59 / 5');
   });
 
-  it('abaixo do mínimo, explica que entrou a média do restaurante em vez de mostrar a nota', async () => {
+  it('abaixo do mínimo, não mostra a nota', async () => {
     const pagina = await renderizar(COM_AVALIACAO);
 
-    expect(texto(pagina)).toContain('com menos de 5 avaliações, entra a média do restaurante');
     expect(texto(pagina)).not.toContain('/ 5');
   });
 

@@ -1,7 +1,6 @@
 <header class="topo">
   <div>
     <h1>Salão</h1>
-    <div class="sub">Praças, vagas de garçom por turno e mesas.</div>
   </div>
   <div class="acoes">
     <button class="botao secundario" type="button" (click)="abrirPraca(null)"><app-icone nome="mais" /> Nova praça</button>
@@ -29,7 +28,6 @@
     <app-icone nome="info" />
     <div class="pequeno">
       <strong>As vagas somam {{ vagasTotais() }} {{ vagasTotais() === 1 ? 'garçom' : 'garçons' }} por turno</strong>
-      A alocação do metre não aceita mais garçons presentes do que esse total.
     </div>
   </div>
 

@@ -64,9 +64,6 @@
             <strong>Avaliação dos clientes</strong>
             <span class="pequeno suave">
               vale {{ ranking()!.pesoAvaliacao * 100 | number: '1.0-0' }}% do índice
-              @if (minha.notaConsiderada === null) {
-                · com menos de {{ ranking()!.minimoDeAvaliacoes }} avaliações, entra a média do restaurante
-              }
             </span>
           </div>
           <span class="num">
