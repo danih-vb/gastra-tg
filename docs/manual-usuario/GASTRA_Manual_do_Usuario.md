@@ -416,7 +416,7 @@ registradas pela mesa.
 ### 6.3 Avaliar o atendimento
 
 Depois que a conta fecha, a mesma tela oferece dar uma **nota de 1 a 5** e, se o cliente quiser, escrever um
-comentário. É a única coisa que o código da mesa permite *escrever* no sistema.
+comentário. Junto com o chamado do garçom, é o que o código da mesa permite *escrever* no sistema.
 
 - **A avaliação é anônima.** O sistema não tem onde guardar quem avaliou, e o registro de auditoria dessa
   ação fica de propósito sem autor. A tela pede para o cliente não escrever o próprio nome no comentário,
