@@ -2,7 +2,6 @@
   <a class="botao-icone" routerLink="/cliente" aria-label="Voltar"><app-icone nome="voltar" /></a>
   <div>
     <h1>Cardápio</h1>
-    <div class="sub">Preços e opções da casa</div>
   </div>
 </header>
 
@@ -80,7 +79,6 @@
   } @empty {
     <div class="cartao pad vazio">
       <p><strong>Nenhum prato com todos esses filtros</strong></p>
-      <p class="suave">Tente tirar um dos filtros ou pergunte ao garçom: a cozinha pode adaptar alguns pratos.</p>
       @if (filtros().length) {
         <button class="botao secundario" type="button" (click)="limparFiltros()">Limpar filtros</button>
       }
@@ -90,7 +88,7 @@
   <div class="alerta">
     <app-icone nome="info" />
     <div class="pequeno">
-      Para pedir, chame o garçom. Alergia? Avise antes do pedido: as etiquetas não substituem a confirmação com a cozinha.
+      Para pedir, chame o garçom. Tem alergia? Avise antes do pedido.
     </div>
   </div>
 }

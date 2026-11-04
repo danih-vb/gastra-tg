@@ -53,7 +53,7 @@ describe('Cardápio digital (UC19)', () => {
     const pagina = await renderizar();
 
     expect(texto(pagina)).toContain('Para pedir, chame o garçom');
-    expect(texto(pagina)).toContain('Alergia?');
+    expect(texto(pagina)).toContain('Tem alergia?');
   });
 
   it('os filtros combinam entre si', async () => {

@@ -95,13 +95,13 @@
         @if (!sugestoes.servicoDisponivel) {
           <div class="alerta">
             <app-icone nome="info" />
-            <div>Sugestões indisponíveis agora. O atendimento segue normalmente.</div>
+            <div>Sugestões indisponíveis agora.</div>
           </div>
         } @else {
           @if (sugestoes.confirmarRestricaoComCliente) {
             <div class="alerta aviso">
               <app-icone nome="alerta" />
-              <div>A mesa tem restrição que o cardápio não confere sozinho: confirme os ingredientes com o cliente antes de oferecer.</div>
+              <div>Mesa com restrição: confirme os ingredientes antes de oferecer.</div>
             </div>
           }
           @if (!sugestoes.itens.length) {
@@ -291,7 +291,6 @@
 @if (registrandoRestricao()) {
   <app-folha
     titulo="Restrição ou preferência"
-    subtitulo="Só o que o cliente informar por vontade própria."
     (fechar)="registrandoRestricao.set(false)"
   >
     <p id="rotulo-categoria"><strong>Categoria</strong></p>
@@ -312,7 +311,7 @@
       <label for="observacao">Detalhe (opcional)</label>
       <textarea class="entrada" id="observacao" maxlength="200" [(ngModel)]="observacaoDaRestricao" placeholder="Ex.: alergia a camarão"></textarea>
       <span class="ajuda">
-        <app-icone nome="cadeado" /> Não anote nome, saúde ou outro dado pessoal. O detalhe é apagado quando a conta fecha.
+        <app-icone nome="cadeado" /> Não anote nome nem outro dado pessoal.
       </span>
     </div>
     <div class="rodape-folha">
@@ -326,7 +325,6 @@
 @if (ajustandoComposicao()) {
   <app-folha
     titulo="Composição da mesa"
-    subtitulo="Confirme ou ajuste o que o sistema sugeriu."
     (fechar)="ajustandoComposicao.set(false)"
   >
     <p><strong>Pessoas</strong></p>

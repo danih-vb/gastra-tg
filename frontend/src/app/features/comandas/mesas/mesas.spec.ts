@@ -81,7 +81,7 @@ describe('Mesas (UC10)', () => {
     responder({ alocado: false });
     await fixture.whenStable();
 
-    expect(pagina.textContent).toContain('alocação deste turno ainda não foi confirmada');
+    expect(pagina.textContent).toContain('Alocação do turno ainda não confirmada');
     expect(pagina.querySelectorAll('.mesa').length).toBe(3);
   });
 

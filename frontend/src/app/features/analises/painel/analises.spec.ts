@@ -247,7 +247,7 @@ describe('Análises (UC16, UC17)', () => {
     await responder();
 
     const perfis = pagina.querySelector('[aria-labelledby="t-perfis"]')?.textContent ?? '';
-    expect(perfis).toContain('Ainda não há movimento suficiente');
+    expect(perfis).toContain('Os perfis aparecem a partir de 50 comandas');
     expect(perfis).not.toContain('Perfil 1');
   });
 
@@ -255,7 +255,7 @@ describe('Análises (UC16, UC17)', () => {
     const pagina = await renderizar();
     await responder(GARCONS, AVALIACOES, { ...SEM_PERFIS, servicoDisponivel: false });
 
-    expect(pagina.querySelector('[aria-labelledby="t-perfis"]')?.textContent).toContain('fora do ar');
+    expect(pagina.querySelector('[aria-labelledby="t-perfis"]')?.textContent).toContain('Perfis indisponíveis agora');
     expect(texto(pagina)).toContain('R$ 80.130');
   });
 });

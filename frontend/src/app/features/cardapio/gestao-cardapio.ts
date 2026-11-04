@@ -217,7 +217,7 @@ export class GestaoCardapio {
     const disponivel = !item.disponivel;
     this.salvar(
       this.api.alterarDisponibilidade(item.id, disponivel),
-      disponivel ? `${item.nome}: disponível` : `${item.nome}: indisponível (sai do cardápio digital e das comandas)`,
+      disponivel ? `${item.nome}: disponível` : `${item.nome}: indisponível`,
       () => ({ rotulo: 'Desfazer', executar: () => this.salvar(this.api.alterarDisponibilidade(item.id, !disponivel), `${item.nome}: como estava`) }),
     );
   }

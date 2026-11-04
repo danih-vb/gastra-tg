@@ -1,7 +1,6 @@
 <header class="topo">
   <div>
     <h1>Alocação de garçons</h1>
-    <div class="sub">Distribuição dos garçons pelas praças no turno.</div>
   </div>
 </header>
 
@@ -69,7 +68,7 @@
             <app-icone nome="alerta" />
             <div>
               Há mais garçons presentes do que vagas. Desmarque {{ presentes().length - vagasTotais() }} ou aumente as
-              vagas de uma praça (o gerente faz isso em Salão).
+              vagas em Salão.
             </div>
           </div>
         }
@@ -92,7 +91,7 @@
         <app-icone nome="check" />
         <div>
           <strong>Alocação confirmada</strong>
-          Os garçons já veem a própria praça no celular. Depois de confirmada, não aceita mais ajustes.
+          Não aceita mais ajustes.
         </div>
       </div>
     } @else if (servicoFalhou()) {
@@ -100,7 +99,7 @@
         <app-icone nome="alerta" />
         <div>
           <strong>Não foi possível calcular a sugestão agora</strong>
-          O serviço de análise não respondeu. Distribua os garçons manualmente; o restante funciona normalmente.
+          Distribua os garçons manualmente.
         </div>
       </div>
     }

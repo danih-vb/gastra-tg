@@ -1,7 +1,6 @@
 <header class="topo">
   <div>
     <h1>Cardápio</h1>
-    <div class="sub">Itens usados nas comandas, no cardápio digital e nas sugestões.</div>
   </div>
   <div class="acoes">
     @if (aba() === 'itens') {
@@ -410,7 +409,7 @@
           </div>
         </div>
       }
-      <p>Os itens voltam ao preço normal no cardápio e nas próximas comandas. Itens já lançados mantêm o preço cobrado.</p>
+      <p>Os itens voltam ao preço normal. O que já foi lançado mantém o preço cobrado.</p>
       <div class="rodape-folha">
         <button class="botao secundario" type="button" (click)="fecharPainel()">Manter promoção</button>
         <button class="botao perigo" type="button" [disabled]="salvando()" (click)="removerPromocao()">Remover</button>

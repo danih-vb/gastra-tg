@@ -19,7 +19,7 @@
   @if (comanda.fechada) {
     <div class="alerta sucesso" role="status">
       <app-icone nome="check" />
-      <div><strong>Conta fechada. Obrigado pela visita!</strong>Os valores abaixo são os finais.</div>
+      <div><strong>Conta fechada. Obrigado pela visita!</strong></div>
     </div>
   } @else {
     <p class="ao-vivo" aria-live="polite">
@@ -65,7 +65,6 @@
     <section class="cartao pad avaliacao enviada" aria-label="Avaliação">
       <app-icone nome="check" />
       <h2>Obrigado pela avaliação</h2>
-      <p class="suave">Sua nota chegou sem nome nenhum junto. Boa refeição!</p>
     </section>
   } @else if (comanda.podeAvaliar) {
     <section class="cartao pad avaliacao" aria-label="Avaliar o atendimento">
@@ -109,7 +108,7 @@
           [(ngModel)]="comentario"
         ></textarea>
         <span class="ajuda">
-          Não escreva seu nome nem nenhum dado seu — a avaliação é anônima e assim ela continua.
+          A avaliação é anônima: não escreva seu nome.
         </span>
       </div>
 

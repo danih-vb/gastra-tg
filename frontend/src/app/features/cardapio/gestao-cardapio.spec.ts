@@ -217,7 +217,7 @@ describe('Gestão do cardápio (UC05–UC09)', () => {
     botao(pagina.querySelector('.promocao')!, 'Remover').click();
     await fixture.whenStable();
 
-    expect(texto(pagina)).toContain('Itens já lançados mantêm o preço cobrado');
+    expect(texto(pagina)).toContain('O que já foi lançado mantém o preço cobrado');
     botao(pagina.querySelector('app-folha')!, 'Remover').click();
     http.expectOne({ method: 'DELETE', url: `${API}/api/promocoes/7` }).flush(null);
     responderLista();

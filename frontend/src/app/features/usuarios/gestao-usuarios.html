@@ -1,7 +1,6 @@
 <header class="topo">
   <div>
     <h1>Usuários</h1>
-    <div class="sub">Contas de acesso e o papel de cada pessoa.</div>
   </div>
   <div class="acoes">
     <button class="botao" type="button" (click)="abrirConta(null)"><app-icone nome="mais" /> Novo usuário</button>
@@ -146,13 +145,9 @@
               <option [value]="papel">{{ PAPEIS[papel] }}</option>
             }
           </select>
-          <span class="ajuda">
-            @if (usuarioEmFoco()?.id === meuId()) {
-              Você não pode alterar o próprio papel.
-            } @else {
-              Gerente e Coordenador precisam do aplicativo autenticador no primeiro acesso.
-            }
-          </span>
+          @if (usuarioEmFoco()?.id === meuId()) {
+            <span class="ajuda">Você não pode alterar o próprio papel.</span>
+          }
         </div>
         @if (!usuarioEmFoco()) {
           <div class="campo">
@@ -182,8 +177,7 @@
         </div>
       }
       <p>
-        A pessoa perde o acesso <strong>na hora</strong>, inclusive se estiver com o sistema aberto. O histórico dela
-        continua nos relatórios, e dá para reativar depois.
+        A pessoa perde o acesso <strong>na hora</strong>. Dá para reativar depois.
       </p>
       <div class="rodape-folha">
         <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
@@ -213,8 +207,7 @@
         <div class="alerta aviso">
           <app-icone nome="alerta" />
           <div class="pequeno">
-            As sessões abertas dessa conta caem na hora, e a senha antiga deixa de valer. Você não fica sabendo a senha
-            anterior: o sistema guarda só o resumo criptografado dela.
+            A senha antiga deixa de valer, e as sessões abertas dessa conta caem na hora.
           </div>
         </div>
         <div class="rodape-folha">
@@ -242,8 +235,7 @@
         </div>
       }
       <p>
-        Use quando a pessoa perdeu o celular. No próximo login ela vincula o aplicativo autenticador de novo, com uma
-        chave nova; a antiga é descartada e não aparece mais. As sessões abertas dessa conta caem.
+        No próximo login, a pessoa vincula o aplicativo autenticador de novo. As sessões abertas dessa conta caem.
       </p>
       <div class="rodape-folha">
         <button class="botao secundario" type="button" (click)="fecharPainel()">Cancelar</button>
