@@ -12,12 +12,28 @@ que o Git não resolve.
 
 ## Convenções
 
-- Título de seção (`##`, `###`) no mesmo formato do documento: `4.1 REQUISITOS`, `4.1.1 Requisitos funcionais`.
+- Estrutura e títulos do modelo oficial da Fatec (Modelo_Estrutura_TGII_ADS_Atualizado): o capítulo 5 tem só
+  5.1 Apresentação do produto e telas e 5.2 Testes e validação do software, e a avaliação heurística fica em
+  5.2.5, porque avaliou as telas já construídas.
+- Título de seção (`##`, `###`) no mesmo formato do documento: `4.1 LEVANTAMENTO E ESPECIFICAÇÃO DE REQUISITOS`,
+  `4.1.1 Requisitos funcionais`.
 - Legenda acima, em negrito: `**Quadro 1 – …**`, `**Tabela 2 – …**`, `**Figura 5 – …**`; fonte abaixo:
   `Fonte: …`. Quadro para conteúdo textual, tabela para números (ABNT). A numeração continua a do capítulo 3
   (Figura 1 e Tabela 1 já existem).
 - Citações só de obras que já estão nas referências do documento.
 - Trechos marcados com **[A PREENCHER]**, **[SUBSTITUIR]** ou **[ATUALIZAR]** dependem de trabalho ainda não feito.
+
+## Guia de inserção
+
+`gerar_guia_de_insercao.py` gera `docs/pesquisa/GASTRA_TGII_Guia_de_Insercao.docx` sem tocar no `Gastra II.docx`:
+o que falta no documento em relação ao modelo oficial, as entregas do cronograma, e o texto pronto de cada parte
+(pré-textuais, capítulos 1 a 6, referências e apêndice), com a instrução de onde colar. O guia usa os estilos do
+próprio documento, então o texto colado chega formatado. O mesmo script atualiza
+`docs/pesquisa/referencias/GASTRA_Referencias_Bibliograficas.docx` com a lista completa de referências.
+
+```
+python docs/pesquisa/capitulos/gerar_guia_de_insercao.py
+```
 
 ## Depois da revisão
 

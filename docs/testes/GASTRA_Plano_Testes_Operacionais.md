@@ -1,6 +1,6 @@
 # Plano de testes operacionais
 
-Issues #208 (roteiro ponta a ponta), #211 (plano) e #177 (máquina limpa). O resultado alimenta a seção 5.6 do
+Issues #208 (roteiro ponta a ponta), #211 (plano) e #177 (máquina limpa). O resultado alimenta a seção 5.2.6 do
 documento e a medição dos RNF01 e RNF02, que os testes automatizados não alcançam.
 
 Diferente dos testes automatizados, aqui não há dublê: o navegador fala com a API, a API com o MySQL e com o serviço
@@ -123,7 +123,7 @@ diferentes, inclusive uma mesa com restrição registrada.
 |---|---|---|---|---|---|
 | | | | | | |
 
-## E. Resumo para a seção 5.6
+## E. Resumo para a seção 5.2.6
 
 Preencher no fim, com a quantidade de passos executados e aprovados por papel, os tempos do RNF01, os toques do
 RNF02, os defeitos com a correção de cada um e o resultado da máquina limpa.

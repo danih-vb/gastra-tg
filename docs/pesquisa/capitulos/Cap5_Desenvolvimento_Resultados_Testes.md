@@ -1,39 +1,13 @@
 # 5 DESENVOLVIMENTO, RESULTADOS E TESTES
 
 Este capítulo apresenta o produto construído e as evidências de que ele cumpre o que foi especificado. A seção 5.1
-descreve como o desenvolvimento foi conduzido; a seção 5.2 apresenta o sistema do ponto de vista de cada usuário;
-a seção 5.3 reúne os testes automatizados; e as seções 5.4 e 5.5 apresentam os dois estudos feitos sobre os
-algoritmos: a calibração dos pesos da alocação de garçons e a validação dos blocos analíticos sobre um histórico
-simulado. A seção 5.6 trata dos testes operacionais. Os números deste capítulo correspondem ao estado do
+apresenta o sistema do ponto de vista de cada usuário. A seção 5.2 reúne a validação: o processo de desenvolvimento e
+a integração contínua (5.2.1), os testes automatizados (5.2.2), os dois estudos feitos sobre os algoritmos — a
+calibração dos pesos da alocação de garçons (5.2.3) e a validação dos blocos analíticos sobre um histórico simulado
+(5.2.4) —, a avaliação heurística das telas (5.2.5) e os testes operacionais (5.2.6). Os números deste capítulo correspondem ao estado do
 repositório em 13 de outubro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
 
-## 5.1 PROCESSO DE DESENVOLVIMENTO
-
-O trabalho foi organizado em dez marcos no quadro de projeto do GitHub, do levantamento de requisitos (M1) à
-defesa (M10), e executado em sprints semanais, conforme descrito na seção 1.5. Cada tarefa foi registrada como
-issue, com critérios de aceite, prioridade, marco e sprint, e cada mudança no repositório entrou por Pull
-Request: uma regra do repositório impede a integração na branch de desenvolvimento sem a aprovação do outro
-integrante. Entre 17 de agosto e 13 de outubro de 2026, foram
-integrados 90 Pull Requests e fechadas 119 issues.
-
-A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions (GITHUB, 2026) executa cinco
-verificações independentes, cujo resultado aparece no próprio Pull Request para o revisor. A primeira compila o backend e
-executa os seus testes contra um MySQL real e contra o serviço analítico em execução, e falha também se algum
-teste tiver sido ignorado — o que impede que um teste de banco deixe de rodar sem que ninguém perceba. A segunda
-executa os testes da camada analítica; a terceira compila o frontend e executa os seus testes; a quarta constrói
-a imagem Docker do frontend e verifica que ela sobe, responde e se declara saudável; e a quinta varre o
-repositório em busca de segredos, como senhas e chaves, que não devem ser versionados.
-
-Esse conjunto de verificações encontrou defeitos que a revisão humana deixaria passar. Um exemplo registrado no
-projeto é o da imagem do frontend: o servidor nginx recusava-se a iniciar quando o backend ainda não estava no ar,
-porque tentava resolver o nome do serviço na partida, e o problema só apareceu na integração contínua, que sobe a
-imagem sozinha. Outro exemplo mostra o limite da própria verificação: o contêiner do frontend respondia
-normalmente pela porta publicada, mas a sua checagem de saúde interna falhava, porque, dentro do contêiner, o nome
-"localhost" resolvia para o endereço IPv6, que o servidor não escutava. A integração contínua, que testava apenas
-por fora, não o detectou; o defeito foi encontrado durante a execução do sistema completo, corrigido e passou a
-ser verificado também pela integração contínua.
-
-## 5.2 O SISTEMA CONSTRUÍDO
+## 5.1 APRESENTAÇÃO DO PRODUTO E TELAS
 
 O GASTRA é uma aplicação web única, que apresenta a cada papel apenas as telas que lhe cabem. Esta seção percorre
 o sistema pela perspectiva de cada usuário; o funcionamento detalhado de cada tela está no manual do usuário, no
@@ -92,7 +66,35 @@ alimentar, e acompanha a própria conta em tempo real, com a situação de cada 
 
 Fonte: elaborado pelos autores.
 
-## 5.3 TESTES AUTOMATIZADOS
+## 5.2 TESTES E VALIDAÇÃO DO SOFTWARE
+
+### 5.2.1 Processo de desenvolvimento e integração contínua
+
+O trabalho foi organizado em dez marcos no quadro de projeto do GitHub, do levantamento de requisitos (M1) à
+defesa (M10), e executado em sprints semanais, conforme descrito na seção 1.5. Cada tarefa foi registrada como
+issue, com critérios de aceite, prioridade, marco e sprint, e cada mudança no repositório entrou por Pull
+Request: uma regra do repositório impede a integração na branch de desenvolvimento sem a aprovação do outro
+integrante. Entre 17 de agosto e 13 de outubro de 2026, foram
+integrados 90 Pull Requests e fechadas 119 issues.
+
+A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions (GITHUB, 2026) executa cinco
+verificações independentes, cujo resultado aparece no próprio Pull Request para o revisor. A primeira compila o backend e
+executa os seus testes contra um MySQL real e contra o serviço analítico em execução, e falha também se algum
+teste tiver sido ignorado — o que impede que um teste de banco deixe de rodar sem que ninguém perceba. A segunda
+executa os testes da camada analítica; a terceira compila o frontend e executa os seus testes; a quarta constrói
+a imagem Docker do frontend e verifica que ela sobe, responde e se declara saudável; e a quinta varre o
+repositório em busca de segredos, como senhas e chaves, que não devem ser versionados.
+
+Esse conjunto de verificações encontrou defeitos que a revisão humana deixaria passar. Um exemplo registrado no
+projeto é o da imagem do frontend: o servidor nginx recusava-se a iniciar quando o backend ainda não estava no ar,
+porque tentava resolver o nome do serviço na partida, e o problema só apareceu na integração contínua, que sobe a
+imagem sozinha. Outro exemplo mostra o limite da própria verificação: o contêiner do frontend respondia
+normalmente pela porta publicada, mas a sua checagem de saúde interna falhava, porque, dentro do contêiner, o nome
+"localhost" resolvia para o endereço IPv6, que o servidor não escutava. A integração contínua, que testava apenas
+por fora, não o detectou; o defeito foi encontrado durante a execução do sistema completo, corrigido e passou a
+ser verificado também pela integração contínua.
+
+### 5.2.2 Testes automatizados
 
 A verificação do GASTRA apoia-se em testes automatizados escritos junto do código, em todas as camadas. No
 backend, os testes de unidade verificam as regras do domínio sem banco nem rede — a composição da mesa, o cálculo
@@ -138,9 +140,9 @@ Os requisitos não funcionais foram verificados da forma que cada um permite. O 
 tela de mesas, que abre uma mesa em dois toques. O RNF05 é verificado pelos testes que derrubam o serviço
 analítico e conferem que a comanda continua aceitando pedidos e que o Metre consegue alocar manualmente. O RNF03 e
 o RNF04 são verificados pelos testes de permissão de cada papel e de proteção de dados. O RNF01, que limita a dois
-segundos o tempo para um pedido aparecer na comanda, depende do sistema em operação e é tratado na seção 5.6.
+segundos o tempo para um pedido aparecer na comanda, depende do sistema em operação e é tratado na seção 5.2.6.
 
-## 5.4 CALIBRAÇÃO DOS PESOS DA ALOCAÇÃO
+### 5.2.3 Calibração dos pesos da alocação
 
 A RN03 combina dois fatores com os pesos w1, para o equilíbrio de faturamento, e w2, para o tempo desde a última
 praça de alto potencial, com w1 + w2 = 1. Como o restaurante colaborador não forneceu histórico e o sistema ainda
@@ -202,7 +204,7 @@ trabalhado, tanto no backend quanto no serviço analítico, e a Tabela 3 já cor
 episódio mostra o valor de simular antes de operar: o defeito não seria visível em um teste de unidade, porque a
 fórmula estava implementada exatamente como especificada.
 
-## 5.5 VALIDAÇÃO SOBRE DADOS SIMULADOS
+### 5.2.4 Validação sobre dados simulados
 
 Para verificar os blocos analíticos em funcionamento, e não apenas isoladamente, o banco foi preenchido com um
 histórico simulado por uma ferramenta que grava pelas mesmas entidades do domínio usadas pelo sistema (decisão
@@ -330,7 +332,34 @@ ordem mostrou que o resultado vinha de uma coincidência dos dados, e não da po
 regra não é levar o Gini a zero: quem vende mais deve ganhar mais, e a RN03 corrige a parcela da desigualdade que vem
 da praça, cabendo ao índice de desempenho (RF11) reconhecer o desempenho individual.
 
-## 5.6 TESTES OPERACIONAIS
+### 5.2.5 Avaliação heurística
+
+As telas foram desenhadas primeiro em um protótipo navegável em HTML, importado no Figma, e implementadas em
+Angular a partir dele. As telas implementadas foram submetidas a uma avaliação heurística, método de inspeção em
+que avaliadores percorrem a interface e confrontam cada tela com um conjunto de princípios reconhecidos de
+usabilidade (NIELSEN, 1994). Avaliou-se a tela implementada, e não o protótipo, porque é ela que o usuário vai
+usar, e porque as correções passam a valer no sistema entregue. Foram usadas as dez heurísticas de Nielsen (1994): visibilidade do
+estado do sistema; correspondência entre o sistema e o mundo real; controle e liberdade do usuário; consistência e
+padrões; prevenção de erros; reconhecimento em vez de memorização; flexibilidade e eficiência de uso; estética e
+design minimalista; ajuda para reconhecer, diagnosticar e corrigir erros; e ajuda e documentação.
+
+A avaliação foi cruzada: cada integrante avaliou as telas desenhadas pelo outro — um, as do Gerente e do Cliente;
+o outro, as do Garçom e do Metre —, para que ninguém avaliasse o próprio desenho. Cada problema foi registrado
+com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta pelo autor: zero quando não
+chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é menor, três quando é grave e
+quatro quando impede o uso. Os problemas de severidade três e quatro foram corrigidos no código antes da entrega;
+os demais foram corrigidos ou aceitos com justificativa.
+
+O método tem uma limitação conhecida: um único avaliador encontra, em média, cerca de um terço dos problemas de
+uma interface, e são necessários de três a cinco para encontrar a maior parte deles (NIELSEN, 1994). Com dois
+avaliadores, parte dos problemas certamente não foi encontrada; por isso a avaliação heurística complementa, e não
+substitui, a observação de garçons e clientes usando o sistema no salão, que fica como trabalho futuro (capítulo 6).
+
+> **[A PREENCHER depois da avaliação — issues #101 e #102.]** O resultado em números (quantos problemas, por
+> severidade e por heurística), dois ou três exemplos com a correção feita, e o que foi aceito sem correção. Se
+> houver avaliador externo, ajustar o segundo e o terceiro parágrafos.
+
+### 5.2.6 Testes operacionais
 
 > **[A PREENCHER depois da Sprint 5 — issues #207 a #211.]** Descrever os cenários de ponta a ponta executados
 > com o sistema completo em contêineres (navegador contra a API e o banco reais, sem dublês): um roteiro por papel,
