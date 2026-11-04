@@ -59,6 +59,7 @@ export function comanda(dados: Partial<Comanda> = {}): Comanda {
     codigoAcessoCliente: 'a1b2c3d4e5f60718293a4b5c6d7e8f90',
     dataHoraAbertura: new Date().toISOString(),
     dataHoraFechamento: null,
+    atendimentoChamadoEm: null,
     itens,
     restricoes: [],
     subtotal,

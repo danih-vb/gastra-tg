@@ -16,6 +16,9 @@ public class ComandaResponse
     public ComposicaoMesa Composicao { get; set; }
     public bool ComposicaoAjustadaManualmente { get; set; }
     public bool TaxaServicoRemovida { get; set; }
+
+    /// <summary>Quando a mesa chamou o garçom pelo celular; nulo se não há chamado.</summary>
+    public DateTime? AtendimentoChamadoEm { get; set; }
     public string CodigoAcessoCliente { get; set; } = string.Empty;
     public DateTime DataHoraAbertura { get; set; }
     public DateTime? DataHoraFechamento { get; set; }

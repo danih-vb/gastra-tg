@@ -126,6 +126,18 @@ public class ComandaController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>O garçom foi até a mesa que chamou.</summary>
+    [Authorize(Roles = Garcom)]
+    [HttpDelete("{id:int}/chamado")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> AtenderChamado(int id, [FromServices] IAtenderChamadoUseCase useCase)
+    {
+        await useCase.Executar(id);
+        return NoContent();
+    }
+
     /// <summary>UC14 — Fechar a comanda e calcular o total (RN02, RF04).</summary>
     [Authorize(Roles = Garcom)]
     [HttpPost("{id:int}/fechamento")]
@@ -186,8 +198,21 @@ public class ComandaController : ControllerBase
         return Ok(await useCase.Executar(codigoAcesso));
     }
 
+    /// <summary>O cliente chama o garçom pelo celular, sem login, com o código de acesso da própria conta.</summary>
+    [AllowAnonymous]
+    [HttpPost("consulta/{codigoAcesso}/chamado")]
+    [EnableRateLimiting(LimiteDeRequisicoes.ConsultaCliente)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> ChamarGarcom(string codigoAcesso, [FromServices] IChamarGarcomUseCase useCase)
+    {
+        await useCase.Executar(codigoAcesso);
+        return NoContent();
+    }
+
     /// <summary>
-    /// UC25 — Avaliação do atendimento pelo cliente, sem login (RF25). É a única escrita que o código de
+    /// UC25 — Avaliação do atendimento pelo cliente, sem login (RF25). Além do chamado, é a única escrita que o código de
     /// acesso permite, e só depois de a conta fechar, uma vez e dentro da janela (RN08).
     /// </summary>
     [AllowAnonymous]

@@ -27,6 +27,9 @@ public class RepositorioComanda(GastraDbContext contexto) : IRepositorioComanda
             .Include(c => c.Avaliacao)
             .FirstOrDefaultAsync(c => c.CodigoAcessoCliente == codigoAcesso);
 
+    public async Task<Comanda?> ObterParaChamada(string codigoAcesso) =>
+        await contexto.Comandas.FirstOrDefaultAsync(c => c.CodigoAcessoCliente == codigoAcesso);
+
     public async Task<List<Comanda>> ListarAbertas() =>
         await contexto.Comandas
             .Include(c => c.Itens)

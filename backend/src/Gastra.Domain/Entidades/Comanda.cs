@@ -24,6 +24,9 @@ public class Comanda : EntidadeBase
     public int GarcomId { get; private set; }
     public DateTime DataHoraAbertura { get; private set; }
     public DateTime? DataHoraFechamento { get; private set; }
+
+    /// <summary>Quando a mesa chamou o garçom pelo celular; nulo depois de atendida.</summary>
+    public DateTime? AtendimentoChamadoEm { get; private set; }
     public StatusComanda Status { get; private set; }
     public int QuantidadePessoas { get; private set; }
     public ComposicaoMesa Composicao { get; private set; }
@@ -146,6 +149,19 @@ public class Comanda : EntidadeBase
         TaxaServicoRemovida = false;
     }
 
+    /// <summary>Chamar de novo não muda a hora: a fila é de quem espera há mais tempo.</summary>
+    public void ChamarGarcom(DateTime agoraUtc)
+    {
+        GarantirAberta();
+        AtendimentoChamadoEm ??= agoraUtc;
+    }
+
+    public void AtenderChamado()
+    {
+        GarantirAberta();
+        AtendimentoChamadoEm = null;
+    }
+
     /// <summary>RN02: itens ainda pendentes impedem o fechamento e ficam visíveis como lembrete.</summary>
     public bool PossuiPendencias() => _itens.Any(i => i.Status == StatusItemPedido.Pendente);
 
@@ -172,6 +188,7 @@ public class Comanda : EntidadeBase
 
         Status = StatusComanda.Fechada;
         DataHoraFechamento = DateTime.UtcNow;
+        AtendimentoChamadoEm = null;
     }
 
     /// <summary>

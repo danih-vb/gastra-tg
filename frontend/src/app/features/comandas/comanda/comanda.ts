@@ -97,6 +97,13 @@ export class Comanda implements OnInit {
     return item ? this.precoDe(item) * this.quantidade() : 0;
   }
 
+  protected atenderChamado(): void {
+    const comanda = this.comanda();
+    if (comanda) {
+      this.executar(this.api.atenderChamado(comanda.id), () => undefined);
+    }
+  }
+
   /** RF14 — restrições da mesa que o item não atende. Quem decide é o domínio; aqui é só avisar, não impedir. */
   protected restricoesQueNaoAtende(item: ItemCardapio): string[] {
     const fora = this.sugestoes()?.itensForaDaRestricao.find((f) => f.itemDoCardapioId === item.id);

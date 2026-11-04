@@ -49,6 +49,12 @@
     </div>
   </section>
 
+  @if (!comanda.fechada) {
+    <button class="botao largo chamar" type="button" [disabled]="comanda.garcomChamado || chamando()" (click)="chamarGarcom()">
+      <app-icone nome="sino" /> {{ comanda.garcomChamado ? 'Garçom chamado' : 'Chamar o garçom' }}
+    </button>
+  }
+
   <section class="cartao pad" aria-label="Valores">
     <div class="linha-total"><span>Subtotal</span><span>{{ comanda.subtotal | currency: 'BRL' }}</span></div>
     <div class="linha-total"><span>Taxa de serviço (10%)</span><span>{{ comanda.taxaServico | currency: 'BRL' }}</span></div>

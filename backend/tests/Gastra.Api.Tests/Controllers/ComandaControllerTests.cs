@@ -203,6 +203,59 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
     }
 
     [Fact]
+    public async Task ChamarGarcom_SemLogin_AparecePraEquipeESomeAoAtender()
+    {
+        var comanda = await AbrirComanda();
+        var rotaDoCliente = $"{Rota}/consulta/{comanda.CodigoAcessoCliente}";
+        var semLogin = factory.CreateClient();
+
+        var chamada = await semLogin.PostAsync($"{rotaDoCliente}/chamado", null);
+        await semLogin.PostAsync($"{rotaDoCliente}/chamado", null);
+
+        Assert.Equal(HttpStatusCode.NoContent, chamada.StatusCode);
+        var conta = await semLogin.GetFromJsonAsync<ComandaClienteResponse>(rotaDoCliente, Json);
+        Assert.True(conta!.GarcomChamado);
+        var abertas = await _cliente.GetFromJsonAsync<List<ComandaResponse>>(Rota, Json);
+        Assert.NotNull(abertas!.Single(c => c.Id == comanda.Id).AtendimentoChamadoEm);
+        Assert.Single(await factory.Auditoria(EventoAuditoria.GarcomChamado), r => r.IdEntidade == comanda.Id);
+
+        var atendimento = await _cliente.DeleteAsync($"{Rota}/{comanda.Id}/chamado");
+
+        Assert.Equal(HttpStatusCode.NoContent, atendimento.StatusCode);
+        conta = await semLogin.GetFromJsonAsync<ComandaClienteResponse>(rotaDoCliente, Json);
+        Assert.False(conta!.GarcomChamado);
+    }
+
+    [Fact]
+    public async Task ChamarGarcom_ComCodigoInexistente_Retorna404()
+    {
+        var resposta = await factory.CreateClient().PostAsync($"{Rota}/consulta/codigo-que-nao-existe/chamado", null);
+
+        Assert.Equal(HttpStatusCode.NotFound, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task ChamarGarcom_ComContaFechada_Retorna422()
+    {
+        var comanda = await AbrirComanda();
+        await _cliente.PostAsync($"{Rota}/{comanda.Id}/fechamento", null);
+
+        var resposta = await factory.CreateClient().PostAsync($"{Rota}/consulta/{comanda.CodigoAcessoCliente}/chamado", null);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task AtenderChamado_SemLogin_Retorna401()
+    {
+        var comanda = await AbrirComanda();
+
+        var resposta = await factory.CreateClient().DeleteAsync($"{Rota}/{comanda.Id}/chamado");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, resposta.StatusCode);
+    }
+
+    [Fact]
     public async Task RecolocarTaxaServico_VoltaACobrarNoFechamento()
     {
         var comanda = await AbrirComanda();

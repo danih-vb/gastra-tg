@@ -27,6 +27,7 @@ internal static class MapeadorComanda
         CodigoAcessoCliente = comanda.CodigoAcessoCliente,
         DataHoraAbertura = comanda.DataHoraAbertura,
         DataHoraFechamento = comanda.DataHoraFechamento,
+        AtendimentoChamadoEm = comanda.AtendimentoChamadoEm,
         Itens = comanda.Itens.Select(i => MontarItem(i, nomesDosItens)).ToList(),
         Restricoes = comanda.RestricoesVisiveisPara(papel).Select(r => new RestricaoAlimentarResponse
         {
@@ -68,6 +69,7 @@ internal static class MapeadorComanda
         Subtotal = comanda.CalcularSubtotal(),
         TaxaServico = comanda.CalcularTaxaServico(),
         Total = comanda.CalcularTotal(),
+        GarcomChamado = comanda.AtendimentoChamadoEm is not null,
         PodeAvaliar = comanda.PodeSerAvaliada(DateTime.UtcNow),
         AvaliacaoEnviada = comanda.Avaliacao is not null,
     };

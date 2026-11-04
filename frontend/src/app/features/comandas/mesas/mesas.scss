@@ -60,6 +60,7 @@
   }
 
   .pendentes { position: absolute; top: 8px; right: 8px; }
+  .chamando { position: absolute; top: 8px; right: 8px; }
 
   &.livre { border-style: dashed; border-color: var(--borda-forte); background: transparent; }
   &.minha { border: 2px solid var(--marinho); }

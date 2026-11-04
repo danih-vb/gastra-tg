@@ -137,6 +137,14 @@ export class GastraApiService {
     return this.http.delete<void>(`${this.api}/api/comandas/${comandaId}/taxa-servico`);
   }
 
+  chamarGarcom(codigoAcesso: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/api/comandas/consulta/${encodeURIComponent(codigoAcesso)}/chamado`, {});
+  }
+
+  atenderChamado(comandaId: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/comandas/${comandaId}/chamado`);
+  }
+
   /** RF04 — o cliente mudou de ideia antes do fechamento. */
   recolocarTaxaDeServico(comandaId: number): Observable<void> {
     return this.http.post<void>(`${this.api}/api/comandas/${comandaId}/taxa-servico`, {});

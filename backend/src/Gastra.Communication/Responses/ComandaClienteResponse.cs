@@ -14,6 +14,9 @@ public class ComandaClienteResponse
     public decimal TaxaServico { get; set; }
     public decimal Total { get; set; }
 
+    /// <summary>Para a tela mostrar que o chamado já foi feito.</summary>
+    public bool GarcomChamado { get; set; }
+
     /// <summary>RF25: a tela só oferece avaliar quando a conta fechou, ninguém avaliou ainda e o prazo não passou.</summary>
     public bool PodeAvaliar { get; set; }
 

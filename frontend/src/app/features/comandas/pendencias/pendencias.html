@@ -15,6 +15,14 @@
   </div>
 }
 
+@for (chamado of chamados(); track chamado.comanda.id) {
+  <div class="alerta erro chamado" role="alert">
+    <app-icone nome="sino" />
+    <div><strong>Mesa {{ chamado.mesa }} chamando</strong> {{ tempo(chamado.comanda.atendimentoChamadoEm!) }}</div>
+    <button class="botao compacto" type="button" [disabled]="salvando()" (click)="atender(chamado.comanda.id)">Atendi</button>
+  </div>
+}
+
 @if (carregando()) {
   <p class="carregando">Carregando as pendências…</p>
 } @else if (pendencias().length) {

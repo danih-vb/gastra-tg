@@ -111,6 +111,10 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("AtendimentoChamadoEm")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("atendimento_chamado_em");
+
                     b.Property<string>("CodigoAcessoCliente")
                         .IsRequired()
                         .HasMaxLength(32)

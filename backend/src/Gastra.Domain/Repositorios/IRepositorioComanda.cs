@@ -18,6 +18,9 @@ public interface IRepositorioComanda
     /// </summary>
     Task<Comanda?> ObterParaAvaliacao(string codigoAcesso);
 
+    /// <summary>Com rastreamento, para gravar: a consulta do cliente é só leitura.</summary>
+    Task<Comanda?> ObterParaChamada(string codigoAcesso);
+
     Task<List<Comanda>> ListarAbertas();
 
     Task<bool> ExisteAbertaNaMesa(int mesaId);

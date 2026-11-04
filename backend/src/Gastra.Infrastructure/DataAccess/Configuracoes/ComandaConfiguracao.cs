@@ -20,6 +20,7 @@ public class ComandaConfiguracao : IEntityTypeConfiguration<Comanda>
         builder.Property(c => c.GarcomId).HasColumnName("garcom_id").IsRequired();
         builder.Property(c => c.DataHoraAbertura).HasColumnName("data_hora_abertura").IsRequired();
         builder.Property(c => c.DataHoraFechamento).HasColumnName("data_hora_fechamento");
+        builder.Property(c => c.AtendimentoChamadoEm).HasColumnName("atendimento_chamado_em");
         builder.Property(c => c.Status).HasColumnName("status").HasConversion<string>().HasMaxLength(10).IsRequired();
         builder.Property(c => c.QuantidadePessoas).HasColumnName("quantidade_pessoas").IsRequired();
         builder.Property(c => c.Composicao).HasColumnName("composicao").HasConversion<string>().HasMaxLength(20).IsRequired();
