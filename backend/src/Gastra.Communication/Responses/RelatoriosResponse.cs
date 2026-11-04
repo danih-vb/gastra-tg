@@ -71,6 +71,9 @@ public class IndicadorItemResponse
     public decimal Quantidade { get; set; }
     public decimal Faturamento { get; set; }
     public decimal ParticipacaoPercentual { get; set; }
+
+    /// <summary>Estrela, BurroDeCarga, QuebraCabeca ou Cao, dentro da categoria do item.</summary>
+    public string Classificacao { get; set; } = string.Empty;
 }
 
 public class IndicadorCategoriaResponse

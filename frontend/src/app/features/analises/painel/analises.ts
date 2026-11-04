@@ -111,6 +111,17 @@ export class Analises {
     [...(this.dados()?.cardapio.itens ?? [])].sort((a, b) => b.faturamento - a.faturamento).slice(0, 10),
   );
 
+  /** Engenharia de cardápio: quem decide o grupo é a API; aqui só se separa para mostrar. */
+  protected readonly quadrantes = computed(() => {
+    const itens = this.dados()?.cardapio.itens ?? [];
+    return [
+      { chave: 'Estrela', titulo: 'Estrela', eixos: 'Sai muito · valor alto' },
+      { chave: 'BurroDeCarga', titulo: 'Burro de carga', eixos: 'Sai muito · valor baixo' },
+      { chave: 'QuebraCabeca', titulo: 'Quebra-cabeça', eixos: 'Sai pouco · valor alto' },
+      { chave: 'Cao', titulo: 'Cão', eixos: 'Sai pouco · valor baixo' },
+    ].map((q) => ({ ...q, itens: itens.filter((i) => i.classificacao === q.chave) }));
+  });
+
   constructor() {
     this.carregar();
     this.api.perfisDeConsumo().subscribe({

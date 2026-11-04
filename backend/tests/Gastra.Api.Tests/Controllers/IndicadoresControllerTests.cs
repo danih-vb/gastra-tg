@@ -129,6 +129,26 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
     }
 
     [Fact]
+    public async Task RelatorioDoCardapio_ClassificaCadaItemDentroDaPropriaCategoria()
+    {
+        var caro = await factory.CriarItemCardapio(preco: 100m);
+        var barato = await factory.CriarItemCardapio(preco: 10m);
+        var suco = await factory.CriarItemCardapio(preco: 10m);
+        factory.Indicadores.Itens.Clear();
+        factory.Indicadores.Itens.Add(new IndicadorItemCardapio(caro, "PratoPrincipal", Quantidade: 50, Faturamento: 5000m));
+        factory.Indicadores.Itens.Add(new IndicadorItemCardapio(barato, "PratoPrincipal", Quantidade: 50, Faturamento: 500m));
+        factory.Indicadores.Itens.Add(new IndicadorItemCardapio(suco, "Bebida", Quantidade: 10, Faturamento: 100m));
+
+        var relatorio = await Ler<RelatorioCardapioResponse>(_gerente, $"{Rota}/cardapio");
+        string Classe(int id) => relatorio.Itens.Single(i => i.ItemCardapioId == id).Classificacao;
+
+        Assert.Equal("Estrela", Classe(caro));
+        Assert.Equal("BurroDeCarga", Classe(barato));
+        // Barato perto de um prato, mas é a única bebida: a comparação é na categoria.
+        Assert.Equal("Estrela", Classe(suco));
+    }
+
+    [Fact]
     public async Task RelatorioDeAvaliacoes_TrazMediaEAsCincoFaixas()
     {
         factory.Indicadores.Avaliacoes.Add(new LinhaAvaliacao(Nota: 5, Quantidade: 6));
