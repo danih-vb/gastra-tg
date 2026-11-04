@@ -1,6 +1,6 @@
 # Avaliação heurística de Nielsen
 
-Issues #101 (telas do Gerente e do Cliente) e #102 (telas do Garçom e do Metre). O resultado vai para a seção 4.4.6
+Issues #101 (telas do Gerente e do Cliente) e #102 (telas do Garçom e do Metre). O resultado vai para a seção 5.2.5
 do documento, cujo método já está escrito: este arquivo é onde a avaliação é feita e registrada.
 
 ## Como avaliar
@@ -102,7 +102,7 @@ problema.
 | Alocação | | | | | | | | | | |
 | Salão agora | | | | | | | | | | |
 
-## Resumo para a seção 4.4.6
+## Resumo para a seção 5.2.5
 
 | Severidade | Encontrados | Corrigidos | Aceitos com justificativa |
 |---|---|---|---|

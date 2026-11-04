@@ -30,18 +30,18 @@ A aplicação web foi construída com backend em ASP.NET Core e frontend em Angu
 Business Intelligence por praça, por garçom, por horário e por item. A distribuição de garçons foi modelada como
 um problema de designação e resolvida por programação linear, com pesos calibrados por simulação; sobre o histórico
 simulado, a alocação combinou os dois fatores da regra, levando a praça de maior potencial a quem faturava pouco e
-esperava havia mais tempo por ela (seções 5.4 e 5.5), e, aplicada por sucessivos turnos a partir desse histórico, reduziu em 92% a
+esperava havia mais tempo por ela (seções 5.2.3 e 5.2.4), e, aplicada por sucessivos turnos a partir desse histórico, reduziu em 92% a
 desigualdade de faturamento entre os garçons em 30 dias. A conformidade com a LGPD foi tratada como requisito de projeto, e não como
 funcionalidade adicional: o cliente não é identificado em nenhuma tabela, o único dado sensível é apagado no
 fechamento da comanda, e cada proteção foi traduzida em teste automatizado. Por fim, o sistema foi validado por 513
 casos de teste automatizados, todos aprovados, nas três camadas de software [e pelos testes operacionais descritos
-na seção 5.6].
+na seção 5.2.6].
 
 A recomendação de pratos combinou as duas técnicas previstas no objetivo específico. A clusterização agrupou as
 comandas em perfis de consumo e, sobre o histórico simulado, redescobriu os três perfis nele embutidos sem receber
 nenhuma informação além dos itens pedidos; as regras de associação redescobriram as combinações embutidas. Juntas,
 na recomendação segmentada por perfil, elevaram o acerto das sugestões de 76,2% para 83,1% na avaliação por item
-escondido (seção 5.5). Durante o desenvolvimento, verificou-se que essa parte do objetivo havia ficado de fora da
+escondido (seção 5.2.4). Durante o desenvolvimento, verificou-se que essa parte do objetivo havia ficado de fora da
 primeira implementação, que só tinha as regras de associação; a lacuna foi identificada na revisão dos capítulos e
 corrigida antes da entrega.
 
@@ -58,7 +58,7 @@ Os resultados deste trabalho devem ser lidos com as limitações abaixo, registr
   especificação, mas não permitem generalizar para o setor.
 - **A calibração considerou uma única configuração de salão.** Restaurantes com mais praças de alto potencial, ou
   com praças de potencial semelhante, podem exigir outros pesos.
-- **A queda da desigualdade foi medida em simulação.** O experimento da seção 5.5 parte do estado do banco e aplica
+- **A queda da desigualdade foi medida em simulação.** O experimento da seção 5.2.4 parte do estado do banco e aplica
   a programação linear do sistema, mas o faturamento de cada turno seguinte é simulado, com o fator de venda de cada
   garçom mantido constante. Em operação real, o desempenho de cada um muda com o tempo e com a praça.
 - **A avaliação do atendimento pelo cliente entrou no fim do desenvolvimento** e não tem dado de uso; por isso, o
@@ -69,7 +69,7 @@ Os resultados deste trabalho devem ser lidos com as limitações abaixo, registr
   tende a deixar passar problemas que avaliadores externos e usuários reais encontrariam. [Ajustar se houver
   avaliador externo.]
 - **Os requisitos não funcionais de tempo de resposta [foram / não foram] medidos no sistema em operação**
-  [conforme os testes operacionais da seção 5.6].
+  [conforme os testes operacionais da seção 5.2.6].
 
 ## 6.3 TRABALHOS FUTUROS
 
@@ -77,8 +77,8 @@ As limitações apontam os próximos passos mais diretos. O primeiro é operar o
 o consentimento adequado, e refazer a calibração dos pesos e dos limiares a partir do histórico acumulado — a
 arquitetura já prevê isso, porque o serviço analítico passa a usar o histórico do banco assim que ele atinge o
 volume mínimo. O segundo é acompanhar, nessa operação, a evolução da desigualdade entre os garçons, para confirmar
-com dados reais a queda observada em simulação (seção 5.5). O terceiro é avaliar a recomendação segmentada com
-o uso real: a taxa de acerto da seção 5.5 foi medida sobre dados simulados, e o indicador que importa ao
+com dados reais a queda observada em simulação (seção 5.2.4). O terceiro é avaliar a recomendação segmentada com
+o uso real: a taxa de acerto da seção 5.2.4 foi medida sobre dados simulados, e o indicador que importa ao
 restaurante é quantas sugestões o garçom de fato oferece e quantas o cliente aceita.
 
 Do ponto de vista do produto, algumas evoluções foram identificadas e registradas durante o desenvolvimento: o

@@ -8,7 +8,7 @@ citados estão versionados no repositório do projeto, junto do código que os i
 esse código antes de entrarem neste documento: quando o sistema e a documentação divergiram, a divergência foi
 registrada e corrigida em um dos dois lados, e não apenas neste texto.
 
-## 4.1 REQUISITOS
+## 4.1 LEVANTAMENTO E ESPECIFICAÇÃO DE REQUISITOS
 
 Os requisitos do GASTRA resultam do cruzamento das duas frentes de levantamento descritas na seção 1.5 — os
 questionários aplicados a clientes (n = 13) e a garçons (n = 2) e a entrevista semiestruturada com um garçom de
@@ -127,7 +127,7 @@ domínio; as regras RN06 a RN09 registram decisões de segurança e privacidade 
 
 Fonte: elaborado pelos autores.
 
-## 4.2 CASOS DE USO E HISTÓRIAS DE USUÁRIO
+## 4.2 MODELAGEM DO SISTEMA (CASOS DE USO / HISTÓRIAS DE USUÁRIO)
 
 Os requisitos funcionais foram detalhados em 25 casos de uso, organizados em seis grupos, cada um com o seu
 diagrama na notação da UML (Quadro 4). Os atores são os quatro papéis de funcionário — Gerente, Coordenador,
@@ -228,7 +228,7 @@ e os seus resultados são discutidos no capítulo 5.
 
 Fonte: elaborado pelos autores.
 
-## 4.3 MODELAGEM DE DADOS
+## 4.3 MODELAGEM DE DADOS (MER / DER)
 
 A modelagem de dados percorreu os três níveis clássicos de abstração: o modelo conceitual, que descreve o domínio
 independentemente de tecnologia; o modelo lógico, que o traduz em tabelas, chaves e relacionamentos; e o modelo
@@ -340,7 +340,7 @@ passou a entregá-la somente ao Garçom e ao Metre, com a comanda aberta. Dois p
 com o orientador: o prazo final de retenção da auditoria e a anonimização de nome e e-mail de funcionário
 desligado, cuja conta não pode ser excluída sem apagar também o histórico que a referencia.
 
-## 4.4 ARQUITETURA E PROTOTIPAÇÃO
+## 4.4 ARQUITETURA E PROTOTIPAÇÃO (UI/UX)
 
 ### 4.4.1 Visão geral e implantação
 
@@ -469,30 +469,3 @@ durante o expediente.
 ![Protótipo da comanda do Garçom](../../ux-ui/telas/garcom-comanda.png)
 
 Fonte: elaborado pelos autores.
-
-### 4.4.6 Avaliação heurística
-
-As telas foram desenhadas primeiro em um protótipo navegável em HTML, importado no Figma, e implementadas em
-Angular a partir dele. As telas implementadas foram submetidas a uma avaliação heurística, método de inspeção em
-que avaliadores percorrem a interface e confrontam cada tela com um conjunto de princípios reconhecidos de
-usabilidade (NIELSEN, 1994). Avaliou-se a tela implementada, e não o protótipo, porque é ela que o usuário vai
-usar, e porque as correções passam a valer no sistema entregue. Foram usadas as dez heurísticas de Nielsen (1994): visibilidade do
-estado do sistema; correspondência entre o sistema e o mundo real; controle e liberdade do usuário; consistência e
-padrões; prevenção de erros; reconhecimento em vez de memorização; flexibilidade e eficiência de uso; estética e
-design minimalista; ajuda para reconhecer, diagnosticar e corrigir erros; e ajuda e documentação.
-
-A avaliação foi cruzada: cada integrante avaliou as telas desenhadas pelo outro — um, as do Gerente e do Cliente;
-o outro, as do Garçom e do Metre —, para que ninguém avaliasse o próprio desenho. Cada problema foi registrado
-com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta pelo autor: zero quando não
-chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é menor, três quando é grave e
-quatro quando impede o uso. Os problemas de severidade três e quatro foram corrigidos no código antes da entrega;
-os demais foram corrigidos ou aceitos com justificativa.
-
-O método tem uma limitação conhecida: um único avaliador encontra, em média, cerca de um terço dos problemas de
-uma interface, e são necessários de três a cinco para encontrar a maior parte deles (NIELSEN, 1994). Com dois
-avaliadores, parte dos problemas certamente não foi encontrada; por isso a avaliação heurística complementa, e não
-substitui, a observação de garçons e clientes usando o sistema no salão, que fica como trabalho futuro (capítulo 6).
-
-> **[A PREENCHER depois da avaliação — issues #101 e #102.]** O resultado em números (quantos problemas, por
-> severidade e por heurística), dois ou três exemplos com a correção feita, e o que foi aceito sem correção. Se
-> houver avaliador externo, ajustar o segundo e o terceiro parágrafos.

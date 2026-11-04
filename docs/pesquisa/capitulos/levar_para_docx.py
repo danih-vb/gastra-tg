@@ -13,7 +13,7 @@ O que o Markdown pode ter, e no que vira:
 |---|---|
 | `## 4.1 TÍTULO`, `### 4.1.1 Título` | Título 2, Título 3 |
 | parágrafo | Normal (recuo de primeira linha, justificado, 1,5) |
-| `**Quadro 1 – Título**`, `**Tabela 2 – …**`, `**Figura 3 – …**` | Legenda, com numeração automática (campo SEQ) |
+| `**Quadro 1 – Título**`, `**Tabela 2 – …**`, `**Figura 3 – …**` | Legenda "Figura 3 – Título", como no modelo da Fatec, com numeração automática (campo SEQ) |
 | tabela em `|` | tabela no estilo Grade, 10 pt, cabeçalho em negrito e repetido |
 | `![texto](caminho)` | imagem centralizada, até 16 cm de largura e 13 cm de altura |
 | `Fonte: …` | linha centralizada em 10 pt |
@@ -207,8 +207,8 @@ def repetir_cabecalho(linha) -> None:
     tr_pr.append(cabecalho)
 
 
-def escrever(documento, ancora, bloco_md: list[tuple], pasta_do_md: Path) -> None:
-    """Insere os blocos logo depois de `ancora`, na ordem."""
+def escrever(documento, ancora, bloco_md: list[tuple], pasta_do_md: Path):
+    """Insere os blocos logo depois de `ancora`, na ordem, e devolve o último elemento inserido."""
     def depois(elemento):
         nonlocal ancora
         ancora.addnext(elemento)
@@ -244,7 +244,7 @@ def escrever(documento, ancora, bloco_md: list[tuple], pasta_do_md: Path) -> Non
             manter_com_o_proximo(p)
             p.add_run(f"{rotulo} ")
             campo_seq(p, rotulo, numero)
-            texto_com_marcas(p, f" - {titulo}")
+            texto_com_marcas(p, f" – {titulo}")
             depois(p._p)
         elif tipo == "imagem":
             _, descricao, caminho = bloco
@@ -289,6 +289,7 @@ def escrever(documento, ancora, bloco_md: list[tuple], pasta_do_md: Path) -> Non
             # Linha em branco depois da fonte, como no capítulo 3.
             vazio = documento.add_paragraph()
             depois(vazio._p)
+    return ancora
 
 
 def eh_titulo_1(elemento) -> bool:

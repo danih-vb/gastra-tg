@@ -2,27 +2,46 @@
 
 Mudanças no texto já existente do `Gastra II.docx` (capítulos 1 a 3), escritas aqui para revisão linha a linha,
 como os capítulos 4 a 6: os elementos pré-textuais que faltam (resumo, abstract, folha de rosto e siglas), as
-seções 1.5 (issue #206) e 2.2 (issue #204), a seção 2.3 nova, a 1.6 e três correções pontuais. Os parágrafos sem marcação são os do documento, sem alteração; os marcados com **[novo]** ou
+seções 1.5 (issue #206) e 2.2 (issue #204), com os fundamentos dos blocos do sistema, a 1.6 e três correções
+pontuais. A estrutura segue o modelo oficial do TG II da Fatec Araraquara (Modelo_Estrutura_TGII_ADS_Atualizado). Os parágrafos sem marcação são os do documento, sem alteração; os marcados com **[novo]** ou
 **[alterado]** são os que mudam. No fim, as referências novas.
 
 ## Elementos pré-textuais
 
-O documento ainda não tem resumo nem abstract, obrigatórios no trabalho final (ABNT NBR 14724), e a folha de rosto
-mantém o texto do projeto de pesquisa do TG I.
+O documento ainda não tem capa separada, agradecimentos, resumo nem abstract, que o modelo oficial pede, e a folha
+de rosto mantém o texto do projeto de pesquisa do TG I.
+
+### Capa **[nova, primeira página]**
+
+Como no modelo: instituição e curso no alto; os dois nomes; o título com subtítulo; e, embaixo, "Araraquara – SP" e
+"2º semestre / 2026". Título proposto:
+
+> GASTRA: SISTEMA DE APOIO À DECISÃO PARA A GESTÃO DE RESTAURANTES À LA CARTE
 
 ### Folha de rosto **[alterado]**
 
-Trocar "Projeto de pesquisa apresentado ao Curso de Análise e Desenvolvimento de Sistemas da Faculdade de
-Tecnologia de Araraquara, como requisito parcial para desenvolvimento do Trabalho de Graduação" por:
+O mesmo título com subtítulo, e o texto do modelo no lugar de "Projeto de pesquisa apresentado ao Curso de Análise
+e Desenvolvimento de Sistemas da Faculdade de Tecnologia de Araraquara, como requisito parcial para desenvolvimento
+do Trabalho de Graduação":
 
-> Trabalho de Graduação apresentado ao Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas da
-> Faculdade de Tecnologia de Araraquara, como requisito parcial para obtenção do título de Tecnólogo em Análise e
-> Desenvolvimento de Sistemas.
+> Trabalho apresentado como exigência parcial para a conclusão do Curso de Graduação em Análise e
+> Desenvolvimento de Sistemas pela Faculdade de Tecnologia de Araraquara – FATEC Araraquara.
+>
+> Orientador: Prof. Me. Leonardo José de Lima Ferrucci
 
-**[Conferir com o modelo da Fatec]** o nome exato do curso e do título, e se a faculdade fornece a folha de
-aprovação (com os nomes da banca e a data de 05/12), que vem logo depois da folha de rosto.
+Trocar também "Araraquara" por "Araraquara – SP" e "6º semestre/2026" por "2º semestre / 2026", como no modelo.
 
-### RESUMO **[novo, depois da folha de aprovação; parágrafo único, sem recuo]**
+### AGRADECIMENTOS **[novo; o modelo não o marca como opcional]**
+
+**[Rascunho para a dupla reescrever com as próprias palavras.]** Agradecemos ao Prof. Me. Leonardo José de Lima
+Ferrucci, pela orientação ao longo dos dois semestres; ao Prof. Me. Wdson de Oliveira, pela coordenação dos
+trabalhos de graduação; aos profissionais do restaurante que participaram da entrevista e aos clientes que
+responderam ao questionário, sem os quais os requisitos deste trabalho não teriam origem no uso real; e às nossas
+famílias, pelo apoio durante o curso.
+
+Dedicatória e epígrafe são opcionais no modelo.
+
+### RESUMO **[novo, depois dos agradecimentos; parágrafo único, sem recuo]**
 
 A distribuição de garçons entre as praças de um restaurante à la carte costuma seguir critérios informais, como a
 antiguidade, e a sugestão de pratos ao cliente depende da experiência individual de cada profissional, sem apoio
@@ -41,7 +60,7 @@ reduziu em 92% a desigualdade de faturamento entre os garçons em 30 dias, medid
 sistema foi verificado por 513 casos de teste automatizados, todos aprovados. [Acrescentar uma frase com o
 resultado dos testes operacionais e da avaliação heurística, quando concluídos.]
 
-**Palavras-chave:** gestão de restaurantes; Business Intelligence; regras de associação; programação linear; LGPD.
+**Palavras-chave:** Análise e Desenvolvimento de Sistemas. Engenharia de Software. Business Intelligence. Programação linear.
 
 ### ABSTRACT **[novo, em página própria, depois do resumo]**
 
@@ -62,7 +81,7 @@ assignment, applied shift after shift, reduced revenue inequality among waiters 
 the Gini coefficient. The system was verified by 513 automated test cases, all of which passed. [Add the sentence
 on operational tests and heuristic evaluation, translated, once the Portuguese one is written.]
 
-**Keywords:** restaurant management; Business Intelligence; association rules; linear programming; data protection.
+**Keywords:** Systems Analysis and Development. Software Engineering. Business Intelligence. Linear programming.
 
 ### LISTA DE ABREVIATURAS E SIGLAS **[alterado: siglas que os capítulos 4 a 6 passaram a usar]**
 
@@ -98,7 +117,7 @@ seguiram a abordagem Code First, com o esquema físico gerado a partir de migrat
 validado por engenharia reversa contra o modelo conceitual. A aplicação web foi desenvolvida com backend em ASP.NET
 Core, organizado em arquitetura de camadas com regra de dependência verificada por teste automatizado, e frontend
 em Angular. As telas foram desenhadas primeiro em um protótipo navegável, e as telas implementadas passaram por
-avaliação heurística (NIELSEN, 1994), descrita na seção 4.4.6. A camada analítica, em Python, expõe os algoritmos
+avaliação heurística (NIELSEN, 1994), descrita na seção 5.2.5. A camada analítica, em Python, expõe os algoritmos
 de recomendação de pratos, de segmentação das comandas em perfis de consumo e de alocação de garçons por meio de um
 serviço HTTP consumido pelo backend.
 
@@ -116,10 +135,12 @@ segmentação e a desigualdade de faturamento entre os garçons — são apresen
 **[alterado: duas frases]** No segundo capítulo, trocar "apresenta os conceitos e regras de negócio do domínio de
 restaurantes, a fundamentação teórica das tecnologias e da arquitetura escolhidas, e a comparação do GASTRA com
 trabalhos correlatos" por: "apresenta os conceitos e regras de negócio do domínio de restaurantes, a fundamentação
-teórica das tecnologias e da arquitetura escolhidas, os fundamentos de cada bloco do sistema — Business
-Intelligence, ciência de dados, programação linear e proteção de dados — e a comparação do GASTRA com trabalhos
-correlatos". No quarto capítulo, trocar o título "Engenharia de Software e Desenvolvimento do Produto" por
-"Engenharia de Software e Projeto do Sistema", que é o título do capítulo.
+teórica das tecnologias, da arquitetura e de cada bloco do sistema — Business Intelligence, ciência de dados,
+programação linear e proteção de dados — e a comparação do GASTRA com trabalhos correlatos". No quarto capítulo,
+trocar o título "Engenharia de Software e Desenvolvimento do Produto" por "Engenharia de Software e Projeto do
+Sistema", que é o título do capítulo no modelo. No quinto, trocar "com as principais telas do sistema, e os
+procedimentos e resultados dos testes realizados" por "com as telas do sistema em funcionamento, e os testes e a
+validação do software".
 
 ## 2.2 TECNOLOGIAS E ARQUITETURA
 
@@ -157,7 +178,10 @@ um segundo fator, o código de um aplicativo autenticador. A revisão de seguran
 10 (OWASP FOUNDATION, 2021), lista dos riscos mais críticos de segurança em aplicações web: para cada risco
 aplicável, a documentação de arquitetura do repositório registra como o sistema o trata.
 
-## 2.3 FUNDAMENTOS DOS BLOCOS DO SISTEMA **[nova; a atual 2.3 passa a ser 2.4]**
+### Fundamentos dos blocos do sistema **[novo, no fim da 2.2, antes da 2.3]**
+
+O modelo fixa a 2.3 como trabalhos correlatos; por isso os fundamentos entram como subseções da 2.2, que
+fundamenta as técnicas e tecnologias escolhidas. O primeiro parágrafo abaixo vem logo depois do último da 2.2.
 
 O GASTRA apoia-se em quatro eixos teóricos, um para cada bloco do sistema: o Business Intelligence, base dos
 relatórios gerenciais; a ciência de dados, com as regras de associação e a clusterização que sustentam a
@@ -166,7 +190,7 @@ Proteção de Dados, que orienta o tratamento das informações em todos os outr
 fundamentos de cada eixo e a sua relação com a solução. O texto parte do referencial teórico do TG I, revisto para
 corresponder ao que foi de fato construído.
 
-### 2.3.1 Business Intelligence e apoio à decisão
+### 2.2.1 Business Intelligence e apoio à decisão
 
 O Business Intelligence (BI) é o conjunto de técnicas e ferramentas voltadas à coleta, organização, análise e
 apresentação de informações que subsidiam a tomada de decisão gerencial. Segundo Santos e Gibertoni (2022), o BI
@@ -182,7 +206,7 @@ faturamento por praça e por período, os itens mais vendidos e o índice de des
 junto com a pergunta de gestão que ele responde e o critério com que é calculado, registrados na documentação de
 requisitos do projeto.
 
-### 2.3.2 Ciência de dados: regras de associação e clusterização
+### 2.2.2 Ciência de dados: regras de associação e clusterização
 
 A ciência de dados amplia as possibilidades do BI ao aplicar técnicas de mineração sobre os dados operacionais. No
 contexto de restaurantes, Huallpa Tapia et al. (2019) aplicam mineração de dados e técnicas de classificação para
@@ -210,11 +234,11 @@ adequado a cada perfil, e Syed Marzuki, Hall e Ballantine (2014) empregam análi
 restaurantes, para agrupar perfis de gestores a partir de questionários.
 
 O GASTRA combina as duas técnicas, como propõe Cavique (2003), com uma diferença deliberada: os grupos são de
-comandas, e não de clientes. Como o cliente não é identificado (seção 2.3.4), o perfil é definido apenas pelo que
+comandas, e não de clientes. Como o cliente não é identificado (seção 2.2.4), o perfil é definido apenas pelo que
 foi pedido na mesa, e a recomendação passa a considerar, além das regras gerais, as regras próprias do perfil de
 consumo a que a comanda em andamento se assemelha.
 
-### 2.3.3 Programação linear e o problema de designação
+### 2.2.3 Programação linear e o problema de designação
 
 A programação linear trata da alocação de recursos limitados entre atividades concorrentes, otimizando uma função
 objetivo linear sujeita a restrições também lineares (HILLIER; LIEBERMAN, 2006). Um de seus casos particulares é o
@@ -237,7 +261,7 @@ coeficiente de Gini (GINI, 1912), medida clássica de concentração, vale zero 
 se aproxima de um quando um único elemento concentra o total. No capítulo 5, ele é aplicado ao faturamento médio
 por turno dos garçons, para comparar a regra do sistema com a distribuição sem critério.
 
-### 2.3.4 Proteção de dados e a LGPD
+### 2.2.4 Proteção de dados e a LGPD
 
 Por tratar dados de clientes e funcionários, o GASTRA deve observar a Lei Geral de Proteção de Dados Pessoais
 (LGPD), Lei nº 13.709/2018, cujo princípio da necessidade estabelece a:
@@ -259,7 +283,7 @@ decisões e os testes que as verificam são apresentados nos capítulos 4 e 5.
 - **3.2, depois do parágrafo que começa "A stack do GASTRA":** apagar a linha "Azure Pricing 2026: Real Costs,
   Plans & Cheaper Options • Kuberns +2", que é resto de uma página copiada do navegador. A fonte da Tabela 1 já
   cita Kuberns (2026).
-- **2.4 (atual 2.3), parágrafo do Saipos:** a obra não é citada no texto. Trocar "O Saipos é um sistema de gestão"
+- **2.3, parágrafo do Saipos:** a obra não é citada no texto. Trocar "O Saipos é um sistema de gestão"
   por "O Saipos (SAIPOS, [20--]) é um sistema de gestão".
 - **3.1, fonte do Canvas:** o texto diz "Strategyzer (2026)", mas a referência não tem ano. Trocar por
   "Strategyzer ([20--])".
