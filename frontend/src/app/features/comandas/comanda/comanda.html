@@ -57,6 +57,9 @@
             <span class="nome">
               <strong>{{ item.nome }}</strong>
               <small>lançado {{ tempo(item.dataHoraRegistro) }}</small>
+              @if (atrasado(item.dataHoraRegistro)) {
+                <span class="etiqueta erro"><app-icone nome="relogio" /> Atrasado</span>
+              }
             </span>
             <span class="acoes-item">
               <button
@@ -164,6 +167,9 @@
                 Indisponível agora
               }
             </span>
+            @if (item.disponivel && restricoesQueNaoAtende(item).length) {
+              <span class="etiqueta aviso"><app-icone nome="escudo" /> Não é {{ restricoesQueNaoAtende(item).join(', ') }}</span>
+            }
           </div>
           @if (item.disponivel) {
             <div class="preco">
@@ -245,6 +251,17 @@
     }
     @if (item.precoPromocional !== null) {
       <p class="etiqueta marca" style="margin-top: 8px"><app-icone nome="etiqueta" /> Em promoção hoje</p>
+    }
+    @if (restricoesQueNaoAtende(item).length) {
+      <div class="alerta aviso" role="alert" style="margin-top: 8px">
+        <app-icone nome="escudo" />
+        <div>A mesa pediu {{ restricoesQueNaoAtende(item).join(', ') }}, e este item não é.</div>
+      </div>
+    } @else if (sugestoes()?.confirmarRestricaoComCliente) {
+      <div class="alerta aviso" role="alert" style="margin-top: 8px">
+        <app-icone nome="escudo" />
+        <div>Mesa com restrição: confirme os ingredientes.</div>
+      </div>
     }
     <div class="seletor-qtd" role="group" aria-label="Quantidade">
       <button

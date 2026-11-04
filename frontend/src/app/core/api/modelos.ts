@@ -121,6 +121,8 @@ export interface SugestoesDaComanda {
   /** A mesa tem alergia ou "outro": o cardápio não confere sozinho, o garçom confirma com o cliente. */
   confirmarRestricaoComCliente: boolean;
   itens: ItemSugerido[];
+  /** Itens que não atendem a uma restrição da mesa: o garçom é avisado antes de lançar. */
+  itensForaDaRestricao: { itemDoCardapioId: number; restricoes: CategoriaRestricao[] }[];
 }
 
 /** Onde as vendas por turno do garçom ficam em relação à equipe do turno: a faixa, nunca o valor. */

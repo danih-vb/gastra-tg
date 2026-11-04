@@ -70,6 +70,13 @@ export function minutosDesde(dataIso: string, agora = Date.now()): number {
   return Math.max(0, Math.floor((agora - new Date(dataIso).getTime()) / 60000));
 }
 
+/** Item pendente há mais do que isto aparece como atrasado. A demora foi a maior queixa da pesquisa com clientes. */
+export const MINUTOS_PARA_ATRASO = 15;
+
+export function atrasado(dataIso: string, agora = Date.now()): boolean {
+  return minutosDesde(dataIso, agora) >= MINUTOS_PARA_ATRASO;
+}
+
 export function tempoRelativo(dataIso: string, agora = Date.now()): string {
   const minutos = minutosDesde(dataIso, agora);
   if (minutos < 1) return 'agora';

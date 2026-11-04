@@ -41,6 +41,34 @@ describe('Salão agora (painel do Metre)', () => {
 
   afterEach(() => http.verify());
 
+  it('mostra quantos itens da mesa estão atrasados', async () => {
+    await TestBed.configureTestingModule({
+      imports: [SalaoAgora],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provedoresDeLocalizacao()],
+    }).compileComponents();
+    http = TestBed.inject(HttpTestingController);
+    fixture = TestBed.createComponent(SalaoAgora);
+    await fixture.whenStable();
+
+    http.expectOne(`${API}/api/pracas`).flush([praca(1, 'A')]);
+    http.expectOne(`${API}/api/mesas`).flush([mesa(10, '10', 1)]);
+    http.expectOne(`${API}/api/comandas`).flush([
+      comanda({
+        id: 501,
+        mesaId: 10,
+        itens: [
+          itemDoPedido({ id: 1, dataHoraRegistro: new Date(Date.now() - 20 * 60_000).toISOString() }),
+          itemDoPedido({ id: 2 }),
+        ],
+      }),
+    ]);
+    await fixture.whenStable();
+
+    const pagina = fixture.nativeElement as HTMLElement;
+    expect(pagina.textContent).toContain('1 atrasado');
+    expect(pagina.textContent).toContain('2 a entregar');
+  });
+
   it('agrupa as mesas por praça, com garçom, pendências e restrição', async () => {
     const pagina = await renderizar();
 
