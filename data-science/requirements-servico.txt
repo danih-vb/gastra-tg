@@ -1,0 +1,24 @@
+# GASTRA — dependências do serviço HTTP da camada analítica (o que roda no contêiner).
+# requirements.txt inclui este arquivo e acrescenta as ferramentas de desenvolvimento (notebooks, gráficos, testes).
+
+# Manipulação de dados (todos os blocos)
+pandas==3.0.5
+
+# Ciência de Dados — clusterização (RF09)
+scikit-learn==1.9.1
+
+# Ciência de Dados — regras de associação / Apriori (RF09)
+mlxtend==0.25.0
+
+# Programação Linear — alocação de garçons (RF06, RN03)
+# O extra [cbc] instala o solver CBC (pacote cbcbox). O solver embutido antigo
+# (PULP_CBC_CMD) será removido no PuLP 4.0 — ver README, seção "Solver".
+pulp[cbc]==3.3.2
+
+# Leitura do histórico pelas views (decisão D10)
+sqlalchemy==2.0.52
+pymysql==1.2.0
+
+# Serviço HTTP consumido pelo backend em C# (src/gastra_analitica/api/)
+fastapi==0.141.1
+uvicorn==0.53.0

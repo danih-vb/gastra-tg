@@ -1,0 +1,89 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: gastra-mysql
+    restart: unless-stopped
+    # Permite que o usuário da aplicação crie os triggers das migrations. Sem isso, com o log
+    # binário ligado (padrão do 8.4), o MySQL exige privilégio SUPER. Os triggers do GASTRA são
+    # determinísticos (só bloqueiam a operação), então não há risco para a replicação.
+    command: --log-bin-trust-function-creators=ON
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      - gastra_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------------------------------------
+  # Sistema inteiro (issue #135): só sobe com o perfil "app".
+  #   docker compose --profile app up -d --build
+  # Sem o perfil, o comando de sempre continua subindo só o MySQL.
+  # ---------------------------------------------------------------------------------------------------------
+
+  analitica:
+    profiles: [app]
+    build: ../data-science
+    container_name: gastra-analitica
+    restart: unless-stopped
+    environment:
+      # Leitura do histórico real pelas views (D10). Sem a senha, o serviço usa o histórico simulado.
+      GASTRA_ANALITICA_BANCO_HOST: mysql
+      GASTRA_ANALITICA_BANCO_PORTA: "3306"
+      GASTRA_ANALITICA_BANCO_NOME: ${MYSQL_DATABASE}
+      GASTRA_ANALITICA_BANCO_SENHA: ${MYSQL_ANALITICA_PASSWORD:-}
+    ports:
+      - "${ANALITICA_PORT:-8000}:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  api:
+    profiles: [app]
+    build: ../backend
+    container_name: gastra-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${API_AMBIENTE:-Production}
+      ConnectionStrings__Gastra: Server=mysql;Port=3306;Database=${MYSQL_DATABASE};User ID=${MYSQL_USER};Password=${MYSQL_PASSWORD}
+      Banco__AplicarMigrationsAoIniciar: "true"
+      # Sem a chave, a API não sobe e avisa no log (OpcoesJwt). Fica sem "?" para não travar o perfil só com MySQL.
+      Jwt__ChaveAssinatura: ${JWT_CHAVE_ASSINATURA:-}
+      ServicoAnalitico__UrlBase: http://analitica:8000
+      Fotos__Diretorio: /app/fotos
+      Administrador__Nome: ${ADMIN_NOME:-Administrador}
+      Administrador__Email: ${ADMIN_EMAIL:-}
+      Administrador__Senha: ${ADMIN_SENHA:-}
+    volumes:
+      - gastra_fotos:/app/fotos
+    ports:
+      # Só na própria máquina: de fora, o caminho é o nginx do frontend (D12). Aberta para a rede, a API aceitaria
+      # conexão direta vinda da rede do Docker, em que ela confia para ler o X-Forwarded-For (#230).
+      - "127.0.0.1:${API_PORT:-5019}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      analitica:
+        condition: service_healthy
+
+  web:
+    profiles: [app]
+    build: ../frontend
+    container_name: gastra-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-4200}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  gastra_fotos:
+  gastra_mysql_data:

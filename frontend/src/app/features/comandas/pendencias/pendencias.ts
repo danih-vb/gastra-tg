@@ -1,0 +1,133 @@
+import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { GastraApiService } from '../../../core/api/gastra-api.service';
+import { Comanda, ItemDoPedido, Mesa } from '../../../core/api/modelos';
+import { SessaoService } from '../../../core/sessao/sessao.service';
+import { AvisoService } from '../../../shared/aviso/aviso.service';
+import { mensagensDeErro } from '../../../shared/erros';
+import { Icone } from '../../../shared/icone/icone';
+import { atrasado, minutosDesde, tempoRelativo } from '../../../shared/rotulos';
+
+const INTERVALO_MS = 15_000;
+
+interface Pendencia {
+  comanda: Comanda;
+  item: ItemDoPedido;
+  mesa: string;
+  minutos: number;
+  atrasado: boolean;
+}
+
+/** RF03 — a lista de pendências visível: tudo que o garçom ainda deve levar, do mais antigo para o mais novo. */
+@Component({
+  selector: 'app-pendencias',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink, Icone],
+  templateUrl: './pendencias.html',
+  styleUrl: './pendencias.scss',
+})
+export class Pendencias implements OnDestroy {
+  private readonly api = inject(GastraApiService);
+  private readonly sessao = inject(SessaoService);
+  private readonly avisos = inject(AvisoService);
+
+  protected readonly carregando = signal(true);
+  protected readonly salvando = signal(false);
+  protected readonly erros = signal<string[]>([]);
+  private readonly comandas = signal<Comanda[]>([]);
+  private readonly mesas = signal<Mesa[]>([]);
+
+  protected readonly pendencias = computed<Pendencia[]>(() => {
+    const meuId = this.sessao.usuario()?.id;
+    const agora = Date.now();
+    return this.comandas()
+      .filter((c) => c.garcomId === meuId)
+      .flatMap((comanda) =>
+        comanda.itens
+          .filter((item) => item.status === 'Pendente')
+          .map((item) => ({
+            comanda,
+            item,
+            mesa: this.mesas().find((m) => m.id === comanda.mesaId)?.numero ?? String(comanda.mesaId),
+            minutos: minutosDesde(item.dataHoraRegistro, agora),
+            atrasado: atrasado(item.dataHoraRegistro, agora),
+          })),
+      )
+      .sort((a, b) => b.minutos - a.minutos);
+  });
+
+  // Tela que fica aberta no bolso do garçom: o item precisa virar "atrasado" sem ninguém recarregar.
+  private readonly relogio = setInterval(() => this.carregar(true), INTERVALO_MS);
+
+  constructor() {
+    this.carregar();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.relogio);
+  }
+
+  /** Mesas do garçom que chamaram pelo celular, de quem espera há mais tempo. */
+  protected readonly chamados = computed(() => {
+    const meuId = this.sessao.usuario()?.id;
+    return this.comandas()
+      .filter((c) => c.garcomId === meuId && c.atendimentoChamadoEm)
+      .sort((a, b) => a.atendimentoChamadoEm!.localeCompare(b.atendimentoChamadoEm!))
+      .map((comanda) => ({
+        comanda,
+        mesa: this.mesas().find((m) => m.id === comanda.mesaId)?.numero ?? String(comanda.mesaId),
+      }));
+  });
+
+  protected atender(comandaId: number): void {
+    this.salvando.set(true);
+    this.api.atenderChamado(comandaId).subscribe({
+      next: () => {
+        this.salvando.set(false);
+        this.carregar(true);
+      },
+      error: (erro: unknown) => {
+        this.salvando.set(false);
+        this.erros.set(mensagensDeErro(erro));
+      },
+    });
+  }
+
+  protected tempo(dataIso: string): string {
+    return tempoRelativo(dataIso);
+  }
+
+  protected entregar(pendencia: Pendencia): void {
+    if (this.salvando()) {
+      return;
+    }
+    this.salvando.set(true);
+    this.api.atualizarSituacaoDoItem(pendencia.comanda.id, pendencia.item.id, 'Entregue').subscribe({
+      next: () => {
+        this.salvando.set(false);
+        this.avisos.mostrar(`${pendencia.item.nome}: entregue`);
+        this.carregar();
+      },
+      error: (erro: unknown) => {
+        this.salvando.set(false);
+        this.erros.set(mensagensDeErro(erro));
+      },
+    });
+  }
+
+  protected carregar(emSegundoPlano = false): void {
+    this.carregando.set(!emSegundoPlano);
+    forkJoin({ comandas: this.api.listarComandasAbertas(), mesas: this.api.listarMesas() }).subscribe({
+      next: ({ comandas, mesas }) => {
+        this.comandas.set(comandas);
+        this.mesas.set(mesas);
+        this.carregando.set(false);
+      },
+      error: (erro: unknown) => {
+        this.erros.set(mensagensDeErro(erro));
+        this.carregando.set(false);
+      },
+    });
+  }
+}

@@ -1,0 +1,94 @@
+# 6 CONSIDERAÇÕES FINAIS
+
+> **[Rascunho para a dupla reescrever com a própria voz.]** Este capítulo avalia o trabalho, e a avaliação é de
+> quem o fez: os fatos abaixo estão conferidos no repositório, mas a forma, a ênfase e as reflexões sobre as
+> dificuldades devem ser da dupla. Os trechos entre colchetes dependem de trabalho ainda não concluído.
+
+Este trabalho partiu de uma pergunta: como apoiar a tomada de decisão em um restaurante a partir dos próprios dados
+gerados pela operação? O GASTRA responde a ela com um sistema que registra a operação do salão — a abertura da
+mesa, os pedidos, o fechamento da conta — e usa esse registro para três finalidades que, no restaurante estudado,
+dependiam da intuição ou da hierarquia informal: distribuir os garçons entre as praças, sugerir combinações de
+pratos e acompanhar o desempenho da operação. A resposta vem acompanhada de uma condição que atravessou todo o
+projeto: fazer isso sem identificar o cliente e tratando os dados dos funcionários com o mínimo necessário.
+
+## 6.1 CUMPRIMENTO DOS OBJETIVOS
+
+O objetivo geral — desenvolver um sistema de apoio à decisão que combine relatórios de Business Intelligence,
+recomendação de pratos por ciência de dados e distribuição de garçons por programação linear, alimentado por um
+módulo operacional de pedidos e em conformidade com a LGPD — foi atingido. Os objetivos específicos são avaliados
+um a um a seguir.
+
+O levantamento de requisitos por entrevista e questionários foi realizado e formalizado em 24 requisitos
+funcionais aprovados, cinco não funcionais e nove regras de negócio, cada um rastreado até a sua fonte, aos casos
+de uso e aos testes que o verificam (seção 4.1). O banco de dados relacional foi modelado do nível conceitual ao
+físico, validado por engenharia reversa e verificado quanto às formas normais, com uma única exceção consciente e
+protegida por restrição no próprio banco (seção 4.3). O módulo operacional de comandas foi implementado e é o
+alicerce do sistema: é ele que gera os dados que os blocos analíticos consomem, e ele continua funcionando mesmo
+quando o serviço analítico está indisponível.
+
+A aplicação web foi construída com backend em ASP.NET Core e frontend em Angular, incluindo os relatórios de
+Business Intelligence por praça, por garçom, por horário e por item. A distribuição de garçons foi modelada como
+um problema de designação e resolvida por programação linear, com pesos calibrados por simulação; sobre o histórico
+simulado, a alocação combinou os dois fatores da regra, levando a praça de maior potencial a quem faturava pouco e
+esperava havia mais tempo por ela (seções 5.2.3 e 5.2.4), e, aplicada por sucessivos turnos a partir desse histórico, reduziu em 92% a
+desigualdade de faturamento entre os garçons em 30 dias. A conformidade com a LGPD foi tratada como requisito de projeto, e não como
+funcionalidade adicional: o cliente não é identificado em nenhuma tabela, o único dado sensível é apagado no
+fechamento da comanda, e cada proteção foi traduzida em teste automatizado. Por fim, o sistema foi validado por 513
+casos de teste automatizados, todos aprovados, nas três camadas de software [e pelos testes operacionais descritos
+na seção 5.2.6].
+
+A recomendação de pratos combinou as duas técnicas previstas no objetivo específico. A clusterização agrupou as
+comandas em perfis de consumo e, sobre o histórico simulado, redescobriu os três perfis nele embutidos sem receber
+nenhuma informação além dos itens pedidos; as regras de associação redescobriram as combinações embutidas. Juntas,
+na recomendação segmentada por perfil, elevaram o acerto das sugestões de 76,2% para 83,1% na avaliação por item
+escondido (seção 5.2.4). Durante o desenvolvimento, verificou-se que essa parte do objetivo havia ficado de fora da
+primeira implementação, que só tinha as regras de associação; a lacuna foi identificada na revisão dos capítulos e
+corrigida antes da entrega.
+
+## 6.2 LIMITAÇÕES
+
+Os resultados deste trabalho devem ser lidos com as limitações abaixo, registradas ao longo do desenvolvimento.
+
+- **Os algoritmos foram validados com dados simulados.** O restaurante colaborador não forneceu histórico, e os
+  dados pessoais reais não poderiam ser usados sem as salvaguardas que a LGPD exige. As premissas da simulação
+  estão explícitas, mas nenhuma delas substitui a operação de um restaurante de verdade. Tanto a calibração dos
+  pesos da alocação quanto os limiares das regras de associação precisam ser refeitos com movimento real.
+- **A amostra da pesquisa de campo é pequena.** O questionário de garçons teve dois respondentes e foi tratado
+  como indício qualitativo, aprofundado pela entrevista; o de clientes teve treze. Os achados orientaram a
+  especificação, mas não permitem generalizar para o setor.
+- **A calibração considerou uma única configuração de salão.** Restaurantes com mais praças de alto potencial, ou
+  com praças de potencial semelhante, podem exigir outros pesos.
+- **A queda da desigualdade foi medida em simulação.** O experimento da seção 5.2.4 parte do estado do banco e aplica
+  a programação linear do sistema, mas o faturamento de cada turno seguinte é simulado, com o fator de venda de cada
+  garçom mantido constante. Em operação real, o desempenho de cada um muda com o tempo e com a praça.
+- **A avaliação do atendimento pelo cliente entrou no fim do desenvolvimento** e não tem dado de uso; por isso, o
+  mínimo de cinco avaliações por garçom para que a nota entre no índice de desempenho é uma escolha de projeto, e
+  não um valor calibrado.
+- **A avaliação heurística teve dois avaliadores.** A avaliação foi cruzada, e ninguém avaliou o próprio desenho,
+  mas os dois conhecem o sistema por dentro e são menos do que os três a cinco recomendados (NIELSEN, 1994), o que
+  tende a deixar passar problemas que avaliadores externos e usuários reais encontrariam. [Ajustar se houver
+  avaliador externo.]
+- **Os requisitos não funcionais de tempo de resposta [foram / não foram] medidos no sistema em operação**
+  [conforme os testes operacionais da seção 5.2.6].
+
+## 6.3 TRABALHOS FUTUROS
+
+As limitações apontam os próximos passos mais diretos. O primeiro é operar o sistema em um restaurante real, com
+o consentimento adequado, e refazer a calibração dos pesos e dos limiares a partir do histórico acumulado — a
+arquitetura já prevê isso, porque o serviço analítico passa a usar o histórico do banco assim que ele atinge o
+volume mínimo. O segundo é acompanhar, nessa operação, a evolução da desigualdade entre os garçons, para confirmar
+com dados reais a queda observada em simulação (seção 5.2.4). O terceiro é avaliar a recomendação segmentada com
+o uso real: a taxa de acerto da seção 5.2.4 foi medida sobre dados simulados, e o indicador que importa ao
+restaurante é quantas sugestões o garçom de fato oferece e quantas o cliente aceita.
+
+Do ponto de vista do produto, algumas evoluções foram identificadas e registradas durante o desenvolvimento: o
+funcionamento do aplicativo do garçom com conexão instável, instalável no celular; a impressão dos códigos QR
+fixos de cada mesa; e a publicação do sistema em um provedor de nuvem, cujos custos foram estimados na seção 3.2.
+
+## 6.4 CONSIDERAÇÕES DA DUPLA
+
+> **[A ESCREVER pela dupla.]** Sugestões de pontos, a partir do que o repositório registra: o que mudou na visão
+> do problema depois da entrevista; a decisão de não identificar o cliente, que simplificou a LGPD e eliminou o
+> RF12; o achado da calibração (o faturamento acumulado punia quem faltava e premiava de volta), que só apareceu
+> simulando; a disciplina de Pull Request com revisão e integração contínua em uma dupla; e o que cada um levou do
+> trabalho para a formação.

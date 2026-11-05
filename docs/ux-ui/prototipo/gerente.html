@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GASTRA · Gerente (protótipo)</title>
+  <link rel="stylesheet" href="assets/prototipo.css">
+  <style>
+    .segmentado { display: inline-flex; flex-wrap: wrap; padding: 3px; background: var(--marinho-suave); border-radius: 10px; }
+    .segmentado button { min-height: 40px; padding: 6px 14px; background: none; border: 0; border-radius: 8px; cursor: pointer; color: var(--marinho); }
+    .segmentado button[aria-pressed="true"] { background: var(--superficie); font-weight: 600; box-shadow: var(--sombra); }
+
+    .indice { display: flex; align-items: center; gap: 8px; min-width: 140px; }
+    .indice .trilho { flex: 1; height: 8px; background: var(--marinho-suave); border-radius: 4px; overflow: hidden; }
+    .indice .trilho div { height: 100%; background: var(--laranja); }
+    .posicao { display: inline-grid; place-items: center; width: 28px; height: 28px; font-weight: 700; font-size: 0.875rem; color: var(--marinho); background: var(--marinho-suave); border-radius: 50%; }
+    .posicao.podio { color: #fff; background: var(--laranja-forte); }
+
+    .calor { display: grid; grid-template-columns: 48px repeat(6, 1fr); gap: 4px; font-size: 0.8125rem; }
+    .calor .cab { text-align: center; color: var(--texto-suave); }
+    .calor .praca { display: flex; align-items: center; font-weight: 600; }
+    .calor .celula { display: grid; place-items: center; height: 44px; border-radius: 6px; font-variant-numeric: tabular-nums; font-size: 0.75rem; }
+    .legenda { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--texto-suave); }
+    .legenda .escala { width: 120px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, #f3f5f8, #2b3a4e); }
+
+    .barra { grid-template-columns: 70px 1fr 150px; }
+    .barra .valor small { display: block; color: var(--texto-suave); font-size: 0.75rem; }
+
+    .barra-ferramentas { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--borda); }
+    .barra-ferramentas .busca { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+    .barra-ferramentas .busca .icone { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--texto-suave); }
+    .barra-ferramentas .busca input { padding-left: 38px; }
+
+    .nome-item strong { display: block; }
+    .nome-item span { display: block; font-size: 0.8125rem; color: var(--texto-suave); max-width: 360px; }
+    .preco-celula s { display: block; font-size: 0.75rem; color: var(--texto-suave); }
+    .preco-celula .promo { color: var(--laranja-forte); font-weight: 600; }
+
+    .promocoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+    .promocao .corpo { display: flex; flex-direction: column; gap: 10px; }
+    .promocao .desconto { font-size: 1.5rem; font-weight: 700; color: var(--laranja-forte); }
+    .promocao.encerrada { opacity: 0.75; }
+    .item-preco { display: flex; justify-content: space-between; gap: 8px; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+
+    .grade-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; max-height: 220px; overflow-y: auto; padding: 4px; border: 1px solid var(--borda); border-radius: var(--raio-pequeno); }
+    .grade-checks label { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+    .grade-checks label:hover { background: var(--marinho-suave); }
+    .grade-checks input, .checks-flags input { width: 18px; height: 18px; accent-color: var(--marinho); }
+    .checks-flags { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    .checks-flags label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+    .erros-form { margin: 0; padding-left: 18px; }
+    .fundo-folha.dialogo .folha { max-width: 620px; }
+    .entrada[aria-invalid="true"] { border-color: var(--erro); }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <aside class="lateral" aria-label="Menu">
+      <div class="marca"><img src="assets/logo.png" alt="" width="32" height="32"><strong>GASTRA</strong></div>
+      <nav aria-label="Principal" style="display:contents" id="menu"></nav>
+      <div class="usuario" id="usuario"></div>
+    </aside>
+    <main class="principal" id="app"></main>
+  </div>
+
+  <script src="assets/base.js"></script>
+  <script src="assets/cenas.js"></script>
+  <script src="assets/dados.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { icone, moeda, numero, escapar, rota, navegar, abrirFolha, fecharFolha, avisar, estados } = G;
+    const D = DADOS;
+    const app = document.getElementById('app');
+    const PAPEL = new URLSearchParams(location.search).get('papel') === 'Coordenador' ? 'Coordenador' : 'Gerente';
+    const EU = D.usuarios.find((u) => u.papel === PAPEL);
+
+    const MENU = [
+      { rota: '/analises', nome: 'Análises', icone: 'grafico', papeis: ['Gerente'] },
+      { rota: '/cardapio', nome: 'Cardápio', icone: 'cardapio', papeis: ['Gerente', 'Coordenador'] },
+      { rota: '/salao', nome: 'Salão', icone: 'salao', papeis: ['Gerente'] },
+      { rota: '/usuarios', nome: 'Usuários', icone: 'usuarios', papeis: ['Gerente'] },
+    ].filter((m) => m.papeis.includes(PAPEL));
+
+    document.getElementById('menu').innerHTML = MENU.map((m) => `<a href="#${m.rota}" data-nav="${m.rota}" data-toque>${icone(m.icone)} ${m.nome}</a>`).join('');
+    document.getElementById('usuario').innerHTML = `<strong>${escapar(EU.nome)}</strong>${PAPEL}<br><button type="button" data-sair>Sair</button>`;
+    document.querySelector('[data-sair]').addEventListener('click', () => { location.href = 'acesso.html#/login?sessao=encerrada'; });
+
+    const permitido = (r) => MENU.some((m) => m.rota === r);
+    function exige(r) {
+      if (permitido(r)) return true;
+      app.innerHTML = `<div class="cartao pad" style="max-width:520px;margin:48px auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center">
+        ${icone('cadeado')}<h1>Sem permissão</h1><p class="suave">Seu perfil (${PAPEL}) não tem acesso a esta tela.</p>
+        <a class="botao" href="#${MENU[0].rota}">Ir para ${MENU[0].nome}</a></div>`;
+      return false;
+    }
+
+    // Validação de formulário: mensagens iguais às da API (Gastra.Exceptions/MensagensErro.resx).
+    function mostrarErros(folha, erros) {
+      const caixa = folha.querySelector('[data-erros]');
+      folha.querySelectorAll('[aria-invalid]').forEach((c) => c.removeAttribute('aria-invalid'));
+      if (!erros.length) { caixa.innerHTML = ''; return true; }
+      erros.forEach((e) => e.campo && folha.querySelector(e.campo)?.setAttribute('aria-invalid', 'true'));
+      caixa.innerHTML = `<div class="alerta erro" role="alert" tabindex="-1">${icone('alerta')}<div><strong>Corrija para salvar</strong><ul class="erros-form">${erros.map((e) => `<li>${e.msg}</li>`).join('')}</ul></div></div>`;
+      caixa.firstElementChild.focus();
+      return false;
+    }
+    const lerPreco = (texto) => {
+      const t = String(texto).trim();
+      if (!t) return NaN;
+      return /^\d+\.\d{1,2}$/.test(t) ? Number(t) : Number(t.replace(/\./g, '').replace(',', '.'));
+    };
+    const dataBR = (iso) => iso.split('-').reverse().join('/');
+
+    // ================= UC16, UC17 — Análises =================
+    let periodoAnalise = '30';
+    rota('/analises', () => {
+      if (!exige('/analises')) return;
+      const ranking = D.ranking();
+      const totalFat = D.indicadoresGarcons.reduce((s, g) => s + g.faturamento, 0);
+      const totalCom = D.indicadoresGarcons.reduce((s, g) => s + g.comandas, 0);
+      const tempo = D.indicadoresGarcons.reduce((s, g) => s + g.tempoMedio * g.comandas, 0) / totalCom;
+      const maxPraca = Math.max(...D.indicadoresPracas.map((p) => p.faturamentoPorTurno));
+      const maxHora = Math.max(...Object.values(D.porHora).flat());
+      const fatCardapio = totalFat;
+      const vazio = estados.semMovimento;
+
+      app.innerHTML = `
+        <div class="cabecalho">
+          <div><h1>Análises</h1><p class="suave">${periodoAnalise === '7' ? '10/09 a 16/09/2026' : periodoAnalise === '30' ? '18/08 a 16/09/2026' : '01/09 a 16/09/2026'} · até ontem</p></div>
+          <div class="acoes">
+            <div class="segmentado" role="group" aria-label="Período">
+              ${[['7', 'Últimos 7 dias'], ['30', 'Últimos 30 dias'], ['mes', 'Este mês']].map(([k, v]) => `<button type="button" data-periodo="${k}" aria-pressed="${periodoAnalise === k}" data-toque>${v}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+        ${vazio ? `<div class="cartao pad" style="text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;padding:48px">
+            ${icone('grafico')}<h2>Sem movimento no período</h2><p class="suave">Nenhuma comanda foi fechada entre essas datas. Escolha outro período.</p></div>` : `
+        <section class="kpis" aria-label="Totais do período">
+          <div class="cartao kpi"><div class="rotulo">Faturamento</div><div class="valor">${moeda(totalFat).replace(/,\d\d$/, '')}</div><div class="detalhe">comandas fechadas, sem taxa de serviço</div></div>
+          <div class="cartao kpi"><div class="rotulo">Comandas</div><div class="valor">${numero(totalCom)}</div><div class="detalhe">${numero(totalCom / 30, 0)} por dia</div></div>
+          <div class="cartao kpi"><div class="rotulo">Ticket médio</div><div class="valor">${moeda(totalFat / totalCom)}</div><div class="detalhe">por comanda</div></div>
+          <div class="cartao kpi"><div class="rotulo">Tempo médio de atendimento</div><div class="valor">${numero(tempo)} min</div><div class="detalhe">da abertura ao fechamento</div></div>
+        </section>
+
+        <div class="grade-2">
+          <section class="cartao" aria-labelledby="t-pracas">
+            <header><h2 id="t-pracas">Faturamento por praça</h2><span class="acoes suave pequeno">média por turno com movimento</span></header>
+            <div class="corpo barras">
+              ${D.indicadoresPracas.map((p) => `
+                <div class="barra ${p.faturamentoPorTurno > D.indicadoresPracas.reduce((s, x) => s + x.faturamentoPorTurno, 0) / D.indicadoresPracas.length ? 'destaque' : ''}">
+                  <strong>Praça ${p.codigo}</strong>
+                  <div class="trilho" role="img" aria-label="${moeda(p.faturamentoPorTurno)} por turno"><div class="preenchido" style="width:${(p.faturamentoPorTurno / maxPraca) * 100}%"></div></div>
+                  <span class="valor">${moeda(p.faturamentoPorTurno).replace(/,\d\d$/, '')}<small>${moeda(p.faturamento).replace(/,\d\d$/, '')} em ${p.turnosComMovimento} turnos</small></span>
+                </div>`).join('')}
+              <p class="legenda"><span class="etiqueta marca">laranja</span> acima da média: alto potencial na alocação (RN03)</p>
+            </div>
+          </section>
+
+          <section class="cartao" aria-labelledby="t-calor">
+            <header><h2 id="t-calor">Faturamento por horário</h2><span class="acoes suave pequeno">soma do período, em R$ mil</span></header>
+            <div class="corpo" style="display:flex;flex-direction:column;gap:12px">
+              <div class="calor" role="table" aria-label="Faturamento por praça e hora">
+                <div role="row" style="display:contents"><span></span>${D.HORAS.map((h) => `<span class="cab" role="columnheader">${h}h</span>`).join('')}</div>
+                ${Object.entries(D.porHora).map(([praca, valores]) => `
+                  <div role="row" style="display:contents"><span class="praca" role="rowheader">${praca}</span>
+                  ${valores.map((v, i) => {
+                    const t = v / maxHora;
+                    return `<span class="celula" role="cell" title="Praça ${praca}, ${D.HORAS[i]}h: ${moeda(v)}" style="background:rgb(43 58 78 / ${Math.max(0.06, t)});color:${t > 0.45 ? '#fff' : 'var(--texto)'}">${numero(v / 1000, 1)}</span>`;
+                  }).join('')}</div>`).join('')}
+              </div>
+              <div class="legenda"><span>menor</span><span class="escala"></span><span>maior</span><span style="margin-left:auto">Pico: 21h na praça A</span></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="cartao" aria-labelledby="t-ranking">
+          <header><h2 id="t-ranking">Desempenho dos garçons</h2>
+            <span class="acoes"><button class="botao compacto fantasma" type="button" data-explicar data-toque>${icone('info')} Como o índice é calculado</button></span></header>
+          <div class="tabela-rolagem"><table class="tabela">
+            <thead><tr><th>#</th><th>Garçom</th><th>Índice</th><th class="direita">Faturamento por turno</th><th class="direita">Mesas por turno</th><th class="direita">Turnos</th><th class="direita">Ticket médio</th><th class="direita">Tempo médio</th></tr></thead>
+            <tbody>${ranking.map((g) => `<tr>
+              <td><span class="posicao ${g.posicao <= 3 ? 'podio' : ''}">${g.posicao}</span></td>
+              <td><strong>${escapar(g.nome)}</strong></td>
+              <td><div class="indice"><span class="num">${numero(g.indice, 1)}</span><span class="trilho" aria-hidden="true"><div style="width:${g.indice}%"></div></span></div></td>
+              <td class="direita num">${moeda(g.faturamentoPorTurno)}</td>
+              <td class="direita num">${numero(g.mesasPorTurno, 1)}</td>
+              <td class="direita num">${g.turnos}</td>
+              <td class="direita num">${moeda(g.ticketMedio)}</td>
+              <td class="direita num">${g.tempoMedio} min</td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </section>
+
+        <section class="cartao" aria-labelledby="t-itens">
+          <header><h2 id="t-itens">Itens mais vendidos</h2></header>
+          <div class="tabela-rolagem"><table class="tabela">
+            <thead><tr><th>Item</th><th>Categoria</th><th class="direita">Quantidade</th><th class="direita">Faturamento</th><th>Participação</th></tr></thead>
+            <tbody>${D.indicadoresCardapio.map((i) => `<tr>
+              <td><strong>${escapar(i.nome)}</strong></td>
+              <td>${D.CATEGORIAS.find((k) => k.chave === i.categoria).nome}</td>
+              <td class="direita num">${numero(i.quantidade)}</td>
+              <td class="direita num">${moeda(i.faturamento)}</td>
+              <td><div class="indice"><span class="num" style="min-width:44px">${numero((i.faturamento / fatCardapio) * 100, 1)}%</span><span class="trilho" aria-hidden="true"><div style="width:${(i.faturamento / D.indicadoresCardapio[0].faturamento) * 100}%;background:var(--marinho)"></div></span></div></td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </section>`}`;
+
+      app.querySelectorAll('[data-periodo]').forEach((b) => b.addEventListener('click', () => { periodoAnalise = b.dataset.periodo; navegar('/analises'); }));
+      app.querySelector('[data-explicar]')?.addEventListener('click', () => abrirFolha(`
+        <header><div><h2>Índice de desempenho</h2><p class="suave pequeno">RF11: não é só venda.</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px">
+          <li><strong>Metade</strong> vem do faturamento por turno trabalhado, e a <strong>outra metade</strong> das mesas atendidas por turno.</li>
+          <li>Cada parte é comparada com o melhor do período (o melhor vale 100).</li>
+          <li>É por turno: quem trabalhou menos dias não fica atrás só por isso.</li>
+          <li>O garçom vê apenas a própria posição, sem os números dos colegas.</li>
+        </ul>`, { dialogo: true, rotulo: 'Índice de desempenho', aoMontar: (f) => f.querySelector('[data-fechar]').addEventListener('click', fecharFolha) }));
+    });
+
+    // ================= UC05–UC09 — Cardápio e promoções =================
+    let abaCardapio = 'itens';
+    let busca = '';
+    let filtroCategoria = 'todas';
+
+    rota('/cardapio', () => {
+      if (!exige('/cardapio')) return;
+      app.innerHTML = `
+        <div class="cabecalho">
+          <div><h1>Cardápio</h1><p class="suave">Itens usados nas comandas, no cardápio digital e nas sugestões.</p></div>
+          <div class="acoes">
+            ${abaCardapio === 'itens'
+              ? `<button class="botao" type="button" data-novo-item data-toque>${icone('mais')} Novo item</button>`
+              : `<button class="botao" type="button" data-nova-promo data-toque>${icone('mais')} Nova promoção</button>`}
+          </div>
+        </div>
+        <div class="abas" role="tablist">
+          <button type="button" role="tab" data-aba="itens" aria-selected="${abaCardapio === 'itens'}" data-toque>Itens (${D.cardapio.length})</button>
+          <button type="button" role="tab" data-aba="promocoes" aria-selected="${abaCardapio === 'promocoes'}" data-toque>Promoções (${D.promocoes.filter((p) => p.ativa).length})</button>
+        </div>
+        ${abaCardapio === 'itens' ? listaItens() : listaPromocoes()}`;
+
+      app.querySelectorAll('[data-aba]').forEach((b) => b.addEventListener('click', () => { abaCardapio = b.dataset.aba; navegar('/cardapio'); }));
+      app.querySelector('[data-novo-item]')?.addEventListener('click', () => formularioItem());
+      app.querySelector('[data-nova-promo]')?.addEventListener('click', () => formularioPromocao());
+      ligarItens();
+      ligarPromocoes();
+    });
+
+    function listaItens() {
+      const termo = busca.trim().toLowerCase();
+      const itens = D.cardapio.filter((i) => (filtroCategoria === 'todas' || i.categoria === filtroCategoria) && (!termo || i.nome.toLowerCase().includes(termo)));
+      return `
+        <section class="cartao">
+          <div class="barra-ferramentas">
+            <div class="busca">${icone('filtro')}<label class="sr" for="busca">Buscar item</label><input class="entrada" id="busca" type="search" placeholder="Buscar item" value="${escapar(busca)}"></div>
+            <div class="chips" role="group" aria-label="Categoria">
+              <button class="chip" type="button" data-cat="todas" aria-pressed="${filtroCategoria === 'todas'}" data-toque>Todas</button>
+              ${D.CATEGORIAS.map((k) => `<button class="chip" type="button" data-cat="${k.chave}" aria-pressed="${filtroCategoria === k.chave}" data-toque>${k.nome}</button>`).join('')}
+            </div>
+          </div>
+          ${itens.length ? `<div class="tabela-rolagem"><table class="tabela">
+            <thead><tr><th>Item</th><th>Categoria</th><th>Flags dietéticas</th><th class="direita">Preço</th><th>Disponível</th><th><span class="sr">Ações</span></th></tr></thead>
+            <tbody>${itens.map((i) => {
+              const promo = D.precoPromocional(i);
+              return `<tr class="${i.disponivel ? '' : 'inativo'}">
+                <td class="nome-item"><strong>${escapar(i.nome)}</strong><span>${escapar(i.descricao)}</span></td>
+                <td>${D.CATEGORIAS.find((k) => k.chave === i.categoria).nome}</td>
+                <td><div class="chips" style="gap:4px">${i.flags.map((f) => `<span class="etiqueta">${D.FLAGS[f]}</span>`).join('') || '<span class="suave">—</span>'}</div></td>
+                <td class="direita preco-celula num">${promo ? `<s>${moeda(i.preco)}</s><span class="promo">${moeda(promo)}</span>` : moeda(i.preco)}</td>
+                <td><label class="interruptor"><input type="checkbox" data-disp="${i.id}" ${i.disponivel ? 'checked' : ''} data-toque><span class="sr">Disponível: ${escapar(i.nome)}</span><span class="pequeno">${i.disponivel ? 'Sim' : 'Não'}</span></label></td>
+                <td class="direita"><button class="botao compacto secundario" type="button" data-preco="${i.id}" data-toque>${icone('lapis')} Preço</button></td>
+              </tr>`;
+            }).join('')}</tbody></table></div>`
+          : `<div class="corpo suave" style="text-align:center;padding:32px">Nenhum item encontrado${termo ? ` para “${escapar(busca)}”` : ''}.</div>`}
+        </section>`;
+    }
+
+    function ligarItens() {
+      const campo = app.querySelector('#busca');
+      if (!campo) return;
+      campo.addEventListener('input', () => {
+        busca = campo.value;
+        const pos = campo.selectionStart;
+        navegar('/cardapio');
+        const novo = app.querySelector('#busca');
+        novo.focus(); novo.setSelectionRange(pos, pos);
+      });
+      app.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => { filtroCategoria = b.dataset.cat; navegar('/cardapio'); }));
+      app.querySelectorAll('[data-disp]').forEach((c) => c.addEventListener('change', () => {
+        const i = D.cardapio.find((x) => x.id === Number(c.dataset.disp));
+        i.disponivel = c.checked;
+        navegar('/cardapio');
+        avisar(i.disponivel ? `${i.nome}: disponível` : `${i.nome}: indisponível (sai do cardápio digital e das comandas)`, {
+          acao: 'Desfazer', aoAgir: () => { i.disponivel = !i.disponivel; navegar('/cardapio'); },
+        });
+      }));
+      app.querySelectorAll('[data-preco]').forEach((b) => b.addEventListener('click', () => formularioPreco(D.cardapio.find((x) => x.id === Number(b.dataset.preco)))));
+    }
+
+    function formularioItem() {
+      abrirFolha(`
+        <header><div><h2>Novo item do cardápio</h2></div><button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <form novalidate style="display:flex;flex-direction:column;gap:14px">
+          <div data-erros></div>
+          <div class="campo"><label for="f-nome">Nome</label><input class="entrada" id="f-nome" maxlength="100" autofocus></div>
+          <div class="linha-campos">
+            <div class="campo"><label for="f-cat">Categoria</label>
+              <select class="entrada" id="f-cat"><option value="">Escolha</option>${D.CATEGORIAS.map((k) => `<option value="${k.chave}">${k.nome}</option>`).join('')}</select></div>
+            <div class="campo"><label for="f-preco">Preço (R$)</label><input class="entrada" id="f-preco" inputmode="decimal" placeholder="0,00"></div>
+          </div>
+          <div class="campo"><label for="f-desc">Descrição</label><textarea class="entrada" id="f-desc" maxlength="500"></textarea>
+            <span class="ajuda">Aparece no cardápio digital do cliente.</span></div>
+          <fieldset class="campo" style="border:0;padding:0;margin:0"><legend class="rotulo" style="margin-bottom:6px">Flags dietéticas</legend>
+            <div class="checks-flags">${Object.entries(D.FLAGS).map(([k, v]) => `<label><input type="checkbox" value="${k}"> ${v}</label>`).join('')}</div>
+            <span class="ajuda">Ajudam o cliente a filtrar o cardápio. “Infantil” faz a mesa ser reconhecida como Família.</span></fieldset>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="submit" data-toque>Cadastrar item</button></div>
+        </form>`,
+      { dialogo: true, rotulo: 'Novo item', aoMontar: (f) => {
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelector('form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const nome = f.querySelector('#f-nome').value.trim();
+          const categoria = f.querySelector('#f-cat').value;
+          const preco = lerPreco(f.querySelector('#f-preco').value);
+          const erros = [];
+          if (!nome) erros.push({ campo: '#f-nome', msg: 'O nome é obrigatório.' });
+          if (!categoria) erros.push({ campo: '#f-cat', msg: 'Escolha a categoria.' });
+          if (!(preco > 0)) erros.push({ campo: '#f-preco', msg: 'O preço deve ser maior que zero.' });
+          if (!mostrarErros(f, erros)) return;
+          const novo = { id: Math.max(...D.cardapio.map((i) => i.id)) + 1, nome, categoria, preco, descricao: f.querySelector('#f-desc').value.trim(),
+            flags: [...f.querySelectorAll('.checks-flags input:checked')].map((c) => c.value), disponivel: true };
+          D.cardapio.push(novo);
+          busca = ''; filtroCategoria = 'todas';
+          navegar('/cardapio');
+          avisar(`${nome} cadastrado`);
+        });
+      } });
+    }
+
+    function formularioPreco(item) {
+      const promo = D.precoPromocional(item);
+      abrirFolha(`
+        <header><div><h2>Atualizar preço</h2><p class="suave pequeno">${escapar(item.nome)}</p></div><button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <form novalidate style="display:flex;flex-direction:column;gap:14px">
+          <div data-erros></div>
+          <div class="linha-campos">
+            <div class="campo"><span class="rotulo">Preço atual</span><span class="num" style="font-size:1.25rem">${moeda(item.preco)}</span></div>
+            <div class="campo"><label for="f-novo">Novo preço (R$)</label><input class="entrada" id="f-novo" inputmode="decimal" value="${numero(item.preco, 2)}" autofocus></div>
+          </div>
+          <div class="alerta">${icone('info')}<div class="pequeno">Comandas já abertas mantêm o preço do momento em que o item foi lançado.${promo ? ' A promoção vigente é recalculada sobre o novo preço.' : ''}</div></div>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="submit" data-toque>Salvar preço</button></div>
+        </form>`,
+      { dialogo: true, rotulo: 'Atualizar preço', aoMontar: (f) => {
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelector('form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const preco = lerPreco(f.querySelector('#f-novo').value);
+          if (!mostrarErros(f, preco > 0 ? [] : [{ campo: '#f-novo', msg: 'O preço deve ser maior que zero.' }])) return;
+          const anterior = item.preco;
+          item.preco = preco;
+          navegar('/cardapio');
+          avisar(`${item.nome}: ${moeda(anterior)} → ${moeda(preco)}`, { acao: 'Desfazer', aoAgir: () => { item.preco = anterior; navegar('/cardapio'); } });
+        });
+      } });
+    }
+
+    function situacaoPromocao(p) {
+      if (!p.ativa) return { rotulo: 'Removida', classe: '' };
+      if (D.vigente(p)) return { rotulo: 'Vigente hoje', classe: 'sucesso' };
+      if (p.inicio > D.HOJE) return { rotulo: 'Agendada', classe: 'aviso' };
+      return { rotulo: 'Encerrada', classe: '' };
+    }
+
+    function listaPromocoes() {
+      const ativas = D.promocoes.filter((p) => p.ativa);
+      return ativas.length ? `
+        <div class="promocoes">${ativas.map((p) => {
+          const s = situacaoPromocao(p);
+          return `<article class="cartao promocao ${s.rotulo === 'Encerrada' ? 'encerrada' : ''}" aria-labelledby="p-${p.id}">
+            <header><h3 id="p-${p.id}">${escapar(p.descricao)}</h3><span class="acoes"><span class="etiqueta ${s.classe}">${s.rotulo}</span></span></header>
+            <div class="corpo">
+              <div class="desconto">${p.tipo === 'Percentual' ? `${numero(p.valor)}% de desconto` : `${moeda(p.valor)} de desconto`}</div>
+              <p class="suave pequeno">${icone('calendario')} ${dataBR(p.inicio)} a ${dataBR(p.fim)}</p>
+              ${p.itens.map((id) => { const i = D.cardapio.find((x) => x.id === id); return `<div class="item-preco"><span>${escapar(i.nome)}</span><span><s class="suave">${moeda(i.preco)}</s> → <strong>${moeda(D.precoComDesconto(i, p))}</strong></span></div>`; }).join('')}
+              <div><button class="botao compacto secundario" type="button" data-remover="${p.id}" data-toque>${icone('lixeira')} Remover</button></div>
+            </div>
+          </article>`;
+        }).join('')}</div>
+        <p class="suave pequeno">${icone('info')} Se um item estiver em mais de uma promoção vigente, vale o maior desconto. O preço nunca fica abaixo de R$ 0,01.</p>`
+        : `<div class="cartao pad" style="text-align:center;padding:40px"><h2>Nenhuma promoção</h2><p class="suave">Crie uma promoção para dar desconto em itens por um período.</p></div>`;
+    }
+
+    function ligarPromocoes() {
+      app.querySelectorAll('[data-remover]').forEach((b) => b.addEventListener('click', () => {
+        const p = D.promocoes.find((x) => x.id === Number(b.dataset.remover));
+        abrirFolha(`
+          <header><div><h2>Remover “${escapar(p.descricao)}”?</h2></div></header>
+          <p>Os itens voltam ao preço normal no cardápio e nas próximas comandas. Itens já lançados mantêm o preço cobrado.</p>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Manter promoção</button><button class="botao perigo" type="button" data-ok data-toque>Remover</button></div>`,
+        { dialogo: true, rotulo: 'Remover promoção', aoMontar: (f) => {
+          f.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+          f.querySelector('[data-ok]').addEventListener('click', () => { p.ativa = false; navegar('/cardapio'); avisar(`Promoção “${p.descricao}” removida`); });
+        } });
+      }));
+    }
+
+    function formularioPromocao() {
+      let tipo = 'Percentual';
+      const render = (f) => {
+        f.querySelectorAll('[data-tipo]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.tipo === tipo));
+        f.querySelector('#r-valor').textContent = tipo === 'Percentual' ? 'Desconto (%)' : 'Desconto (R$)';
+        const valor = lerPreco(f.querySelector('#p-valor').value);
+        const ids = [...f.querySelectorAll('.grade-checks input:checked')].map((c) => Number(c.value));
+        f.querySelector('[data-previa]').innerHTML = ids.length && valor > 0
+          ? ids.map((id) => { const i = D.cardapio.find((x) => x.id === id); return `<div class="item-preco"><span>${escapar(i.nome)}</span><span><s class="suave">${moeda(i.preco)}</s> → <strong>${moeda(D.precoComDesconto(i, { tipo, valor }))}</strong></span></div>`; }).join('')
+          : '<p class="suave pequeno">Escolha o desconto e os itens para ver os novos preços.</p>';
+      };
+      abrirFolha(`
+        <header><div><h2>Nova promoção</h2></div><button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <form novalidate style="display:flex;flex-direction:column;gap:14px">
+          <div data-erros></div>
+          <div class="campo"><label for="p-desc">Descrição</label><input class="entrada" id="p-desc" maxlength="200" placeholder="Ex.: Happy hour da caipirinha" autofocus></div>
+          <div class="linha-campos">
+            <div class="campo"><span class="rotulo">Tipo</span><div class="segmentado" role="group" aria-label="Tipo de desconto">
+              <button type="button" data-tipo="Percentual">Percentual</button><button type="button" data-tipo="ValorFixo">Valor fixo</button></div></div>
+            <div class="campo"><label for="p-valor" id="r-valor">Desconto (%)</label><input class="entrada" id="p-valor" inputmode="decimal"></div>
+          </div>
+          <div class="linha-campos">
+            <div class="campo"><label for="p-ini">Início</label><input class="entrada" id="p-ini" type="date" value="${D.HOJE}"></div>
+            <div class="campo"><label for="p-fim">Fim</label><input class="entrada" id="p-fim" type="date"></div>
+          </div>
+          <fieldset class="campo" style="border:0;padding:0;margin:0"><legend class="rotulo" style="margin-bottom:6px">Itens</legend>
+            <div class="grade-checks" id="p-itens">${D.cardapio.map((i) => `<label><input type="checkbox" value="${i.id}"> ${escapar(i.nome)}</label>`).join('')}</div></fieldset>
+          <div class="campo"><span class="rotulo">Prévia dos preços</span><div data-previa style="display:flex;flex-direction:column;gap:6px"></div></div>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="submit" data-toque>Criar promoção</button></div>
+        </form>`,
+      { dialogo: true, rotulo: 'Nova promoção', aoMontar: (f) => {
+        render(f);
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelectorAll('[data-tipo]').forEach((b) => b.addEventListener('click', () => { tipo = b.dataset.tipo; render(f); }));
+        f.querySelector('#p-valor').addEventListener('input', () => render(f));
+        f.querySelectorAll('.grade-checks input').forEach((c) => c.addEventListener('change', () => render(f)));
+        f.querySelector('form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const descricao = f.querySelector('#p-desc').value.trim();
+          const valor = lerPreco(f.querySelector('#p-valor').value);
+          const inicio = f.querySelector('#p-ini').value;
+          const fim = f.querySelector('#p-fim').value;
+          const itens = [...f.querySelectorAll('.grade-checks input:checked')].map((c) => Number(c.value));
+          const erros = [];
+          if (!descricao) erros.push({ campo: '#p-desc', msg: 'A descrição da promoção é obrigatória.' });
+          if (!(valor > 0) || (tipo === 'Percentual' && valor >= 100)) erros.push({ campo: '#p-valor', msg: 'O desconto precisa ser maior que zero e, em percentual, menor que 100.' });
+          else if (tipo === 'ValorFixo' && itens.some((id) => D.cardapio.find((x) => x.id === id).preco <= valor)) erros.push({ campo: '#p-valor', msg: 'O desconto fixo precisa ser menor que o preço de cada item da promoção.' });
+          if (!inicio || !fim || fim < inicio) erros.push({ campo: '#p-fim', msg: 'Informe as datas de início e fim da promoção, com o fim igual ou depois do início.' });
+          if (!itens.length) erros.push({ campo: '#p-itens', msg: 'A promoção precisa de pelo menos um item do cardápio.' });
+          if (!mostrarErros(f, erros)) return;
+          D.promocoes.push({ id: Math.max(...D.promocoes.map((p) => p.id)) + 1, descricao, tipo, valor, inicio, fim, itens, ativa: true });
+          navegar('/cardapio');
+          avisar(`Promoção “${descricao}” criada`);
+        });
+      } });
+    }
+
+    // ================= UC24 — Praças e mesas =================
+    rota('/salao', () => {
+      if (!exige('/salao')) return;
+      const vagas = D.pracas.reduce((s, p) => s + p.garcons, 0);
+      app.innerHTML = `
+        <div class="cabecalho">
+          <div><h1>Salão</h1><p class="suave">Praças, vagas de garçom por turno e mesas.</p></div>
+          <div class="acoes">
+            <button class="botao secundario" type="button" data-nova-praca data-toque>${icone('mais')} Nova praça</button>
+            <button class="botao" type="button" data-nova-mesa data-toque>${icone('mais')} Nova mesa</button>
+          </div>
+        </div>
+        <div class="alerta">${icone('info')}<div class="pequeno">As vagas somam <strong>${vagas} garçons por turno</strong>. A alocação só aceita até esse número de garçons presentes.</div></div>
+        <div class="grade-2" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+        ${D.pracas.map((p) => {
+          const mesas = D.mesas.filter((m) => m.pracaId === p.id);
+          return `<section class="cartao" aria-labelledby="pr-${p.id}">
+            <header><h2 id="pr-${p.id}">Praça ${escapar(p.codigo)}</h2>
+              <span class="acoes"><span class="etiqueta">${p.garcons} ${p.garcons === 1 ? 'vaga' : 'vagas'} de garçom</span>
+              <button class="botao-icone" type="button" data-editar-praca="${p.id}" aria-label="Editar praça ${escapar(p.codigo)}" data-toque>${icone('lapis')}</button></span></header>
+            <ul class="lista">${mesas.map((m) => `<li>
+              <div class="principal-item"><strong>Mesa ${escapar(m.numero)}</strong><span class="pequeno suave">${m.capacidade} lugares</span></div>
+              <button class="botao compacto fantasma" type="button" data-editar-mesa="${m.id}" data-toque>Editar</button></li>`).join('')}</ul>
+            <div class="corpo pequeno suave" style="border-top:1px solid var(--borda)">${mesas.length} mesas · ${mesas.reduce((s, m) => s + m.capacidade, 0)} lugares</div>
+          </section>`;
+        }).join('')}
+        </div>`;
+
+      app.querySelector('[data-nova-praca]').addEventListener('click', () => formularioPraca());
+      app.querySelectorAll('[data-editar-praca]').forEach((b) => b.addEventListener('click', () => formularioPraca(D.pracas.find((p) => p.id === Number(b.dataset.editarPraca)))));
+      app.querySelector('[data-nova-mesa]').addEventListener('click', () => formularioMesa());
+      app.querySelectorAll('[data-editar-mesa]').forEach((b) => b.addEventListener('click', () => formularioMesa(D.mesas.find((m) => m.id === Number(b.dataset.editarMesa)))));
+    });
+
+    function formularioPraca(praca) {
+      abrirFolha(`
+        <header><div><h2>${praca ? `Editar praça ${escapar(praca.codigo)}` : 'Nova praça'}</h2></div><button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <form novalidate style="display:flex;flex-direction:column;gap:14px">
+          <div data-erros></div>
+          <div class="linha-campos">
+            <div class="campo"><label for="pr-cod">Código</label><input class="entrada" id="pr-cod" maxlength="20" value="${praca ? escapar(praca.codigo) : ''}" autofocus><span class="ajuda">Como a equipe chama a praça. Ex.: A, Varanda.</span></div>
+            <div class="campo"><label for="pr-vagas">Garçons por turno</label><input class="entrada" id="pr-vagas" type="number" min="1" value="${praca ? praca.garcons : 1}"><span class="ajuda">Vagas usadas na alocação.</span></div>
+          </div>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="submit" data-toque>Salvar</button></div>
+        </form>`,
+      { dialogo: true, rotulo: 'Praça', aoMontar: (f) => {
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelector('form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const codigo = f.querySelector('#pr-cod').value.trim();
+          const garcons = Number(f.querySelector('#pr-vagas').value);
+          const erros = [];
+          if (!codigo) erros.push({ campo: '#pr-cod', msg: 'O código da praça é obrigatório.' });
+          else if (D.pracas.some((p) => p !== praca && p.codigo.toLowerCase() === codigo.toLowerCase())) erros.push({ campo: '#pr-cod', msg: 'Já existe uma praça com este código.' });
+          if (!(garcons >= 1)) erros.push({ campo: '#pr-vagas', msg: 'A praça precisa de pelo menos um garçom.' });
+          if (!mostrarErros(f, erros)) return;
+          if (praca) Object.assign(praca, { codigo, garcons });
+          else D.pracas.push({ id: Math.max(...D.pracas.map((p) => p.id)) + 1, codigo, garcons });
+          navegar('/salao');
+          avisar(`Praça ${codigo} salva`);
+        });
+      } });
+    }
+
+    function formularioMesa(mesa) {
+      abrirFolha(`
+        <header><div><h2>${mesa ? `Editar mesa ${escapar(mesa.numero)}` : 'Nova mesa'}</h2></div><button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <form novalidate style="display:flex;flex-direction:column;gap:14px">
+          <div data-erros></div>
+          <div class="linha-campos">
+            <div class="campo"><label for="m-num">Número</label><input class="entrada" id="m-num" maxlength="10" value="${mesa ? escapar(mesa.numero) : ''}" autofocus></div>
+            <div class="campo"><label for="m-cap">Lugares</label><input class="entrada" id="m-cap" type="number" min="1" value="${mesa ? mesa.capacidade : 4}"></div>
+          </div>
+          ${mesa
+            ? `<div class="campo"><span class="rotulo">Praça</span><span>Praça ${escapar(D.pracas.find((p) => p.id === mesa.pracaId).codigo)}</span>
+                 <span class="ajuda">${icone('cadeado')} A praça da mesa não muda: o histórico de faturamento da praça perderia o sentido.</span></div>`
+            : `<div class="campo"><label for="m-praca">Praça</label><select class="entrada" id="m-praca"><option value="">Escolha</option>${D.pracas.map((p) => `<option value="${p.id}">Praça ${escapar(p.codigo)}</option>`).join('')}</select>
+                 <span class="ajuda">${icone('alerta')} Não dá para mudar depois. Confira antes de salvar.</span></div>`}
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="submit" data-toque>Salvar</button></div>
+        </form>`,
+      { dialogo: true, rotulo: 'Mesa', aoMontar: (f) => {
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelector('form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const numero = f.querySelector('#m-num').value.trim();
+          const capacidade = Number(f.querySelector('#m-cap').value);
+          const pracaId = mesa ? mesa.pracaId : Number(f.querySelector('#m-praca').value);
+          const erros = [];
+          if (!numero) erros.push({ campo: '#m-num', msg: 'O número da mesa é obrigatório.' });
+          else if (D.mesas.some((m) => m !== mesa && m.numero === numero)) erros.push({ campo: '#m-num', msg: 'Já existe uma mesa com este número.' });
+          if (!(capacidade >= 1)) erros.push({ campo: '#m-cap', msg: 'A mesa precisa comportar pelo menos uma pessoa.' });
+          if (!pracaId) erros.push({ campo: '#m-praca', msg: 'Praça não encontrada.' });
+          if (!mostrarErros(f, erros)) return;
+          if (mesa) Object.assign(mesa, { numero, capacidade });
+          else D.mesas.push({ id: Math.max(...D.mesas.map((m) => m.id)) + 1, numero, capacidade, pracaId });
+          navegar('/salao');
+          avisar(`Mesa ${numero} salva`);
+        });
+      } });
+    }
+
+    // ================= UC04 — Usuários =================
+    let filtroUsuarios = 'ativos';
+    rota('/usuarios', () => {
+      if (!exige('/usuarios')) return;
+      const lista = D.usuarios.filter((u) => filtroUsuarios === 'todos' || (filtroUsuarios === 'ativos' ? u.ativo : !u.ativo));
+      const exige2fa = (u) => u.papel === 'Gerente' || u.papel === 'Coordenador';
+      app.innerHTML = `
+        <div class="cabecalho">
+          <div><h1>Usuários</h1><p class="suave">Contas de acesso e o papel de cada pessoa.</p></div>
+          <div class="acoes"><button class="botao" type="button" data-novo-usuario data-toque>${icone('mais')} Novo usuário</button></div>
+        </div>
+        <section class="cartao">
+          <div class="barra-ferramentas"><div class="chips" role="group" aria-label="Situação">
+            ${[['ativos', 'Ativos'], ['inativos', 'Inativos'], ['todos', 'Todos']].map(([k, v]) => `<button class="chip" type="button" data-filtro="${k}" aria-pressed="${filtroUsuarios === k}" data-toque>${v} (${D.usuarios.filter((u) => k === 'todos' || (k === 'ativos' ? u.ativo : !u.ativo)).length})</button>`).join('')}
+          </div></div>
+          <div class="tabela-rolagem"><table class="tabela">
+            <thead><tr><th>Nome</th><th>Papel</th><th>Verificação em duas etapas</th><th>Situação</th><th><span class="sr">Ações</span></th></tr></thead>
+            <tbody>${lista.map((u) => `<tr class="${u.ativo ? '' : 'inativo'}">
+              <td class="nome-item"><strong>${escapar(u.nome)}${u.id === EU.id ? ' <span class="etiqueta">você</span>' : ''}</strong><span>${escapar(u.email)}</span></td>
+              <td>${D.PAPEIS[u.papel]}</td>
+              <td>${exige2fa(u) ? (u.segundoFator ? `<span class="etiqueta sucesso">${icone('check')} Configurada</span>` : '<span class="etiqueta aviso">No primeiro acesso</span>') : '<span class="suave pequeno">Não exigida</span>'}</td>
+              <td>${u.ativo ? '<span class="etiqueta sucesso">Ativo</span>' : '<span class="etiqueta">Inativo</span>'}</td>
+              <td class="direita" style="white-space:nowrap">
+                <button class="botao compacto fantasma" type="button" data-editar="${u.id}" data-toque>${icone('lapis')} Editar</button>
+                ${u.id === EU.id ? '' : `<button class="botao compacto ${u.ativo ? 'secundario' : 'fantasma'}" type="button" data-situacao="${u.id}" data-toque>${u.ativo ? 'Inativar' : 'Reativar'}</button>`}
+              </td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </section>
+        <p class="suave pequeno">${icone('info')} Contas não são apagadas: inativar bloqueia o acesso e mantém o histórico de comandas e alocações.</p>`;
+
+      app.querySelectorAll('[data-filtro]').forEach((b) => b.addEventListener('click', () => { filtroUsuarios = b.dataset.filtro; navegar('/usuarios'); }));
+      app.querySelector('[data-novo-usuario]').addEventListener('click', () => formularioUsuario());
+      app.querySelectorAll('[data-editar]').forEach((b) => b.addEventListener('click', () => formularioUsuario(D.usuarios.find((u) => u.id === Number(b.dataset.editar)))));
+      app.querySelectorAll('[data-situacao]').forEach((b) => b.addEventListener('click', () => {
+        const u = D.usuarios.find((x) => x.id === Number(b.dataset.situacao));
+        if (!u.ativo) { u.ativo = true; navegar('/usuarios'); avisar(`${u.nome} reativado`); return; }
+        abrirFolha(`
+          <header><div><h2>Inativar ${escapar(u.nome)}?</h2></div></header>
+          <p>A pessoa perde o acesso <strong>na hora</strong>, inclusive se estiver com o sistema aberto. O histórico dela continua nos relatórios. Dá para reativar depois.</p>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao perigo" type="button" data-ok data-toque>Inativar</button></div>`,
+        { dialogo: true, rotulo: 'Inativar usuário', aoMontar: (f) => {
+          f.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+          f.querySelector('[data-ok]').addEventListener('click', () => { u.ativo = false; navegar('/usuarios'); avisar(`${u.nome} inativado`, { acao: 'Desfazer', aoAgir: () => { u.ativo = true; navegar('/usuarios'); } }); });
+        } });
+      }));
+    });
+
+    function formularioUsuario(usuario) {
+      const proprio = usuario && usuario.id === EU.id;
+      abrirFolha(`
+        <header><div><h2>${usuario ? `Editar ${escapar(usuario.nome)}` : 'Novo usuário'}</h2></div><button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <form novalidate style="display:flex;flex-direction:column;gap:14px">
+          <div data-erros></div>
+          <div class="campo"><label for="u-nome">Nome</label><input class="entrada" id="u-nome" maxlength="100" value="${usuario ? escapar(usuario.nome) : ''}" autofocus></div>
+          <div class="campo"><label for="u-email">E-mail</label><input class="entrada" id="u-email" type="email" maxlength="150" value="${usuario ? escapar(usuario.email) : ''}"><span class="ajuda">É o login da pessoa.</span></div>
+          <div class="campo"><label for="u-papel">Papel</label>
+            <select class="entrada" id="u-papel" ${proprio ? 'disabled' : ''}><option value="">Escolha</option>${Object.entries(D.PAPEIS).map(([k, v]) => `<option value="${k}" ${usuario && usuario.papel === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+            <span class="ajuda">${proprio ? 'Você não pode alterar o próprio papel.' : 'Gerente e Coordenador precisam de aplicativo autenticador no primeiro acesso.'}</span></div>
+          ${usuario ? '' : `<div class="campo"><label for="u-senha">Senha inicial</label><input class="entrada" id="u-senha" type="password" autocomplete="new-password"><span class="ajuda">Pelo menos 8 caracteres. Entregue à pessoa pessoalmente.</span></div>`}
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="submit" data-toque>${usuario ? 'Salvar' : 'Cadastrar'}</button></div>
+        </form>`,
+      { dialogo: true, rotulo: 'Usuário', aoMontar: (f) => {
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelector('form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const nome = f.querySelector('#u-nome').value.trim();
+          const email = f.querySelector('#u-email').value.trim();
+          const papel = f.querySelector('#u-papel').value;
+          const senha = usuario ? null : f.querySelector('#u-senha').value;
+          const erros = [];
+          if (!nome) erros.push({ campo: '#u-nome', msg: 'O nome é obrigatório.' });
+          if (!email) erros.push({ campo: '#u-email', msg: 'O e-mail é obrigatório.' });
+          else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) erros.push({ campo: '#u-email', msg: 'O e-mail informado é inválido.' });
+          else if (D.usuarios.some((u) => u !== usuario && u.email.toLowerCase() === email.toLowerCase())) erros.push({ campo: '#u-email', msg: 'Já existe uma conta com este e-mail.' });
+          if (!papel) erros.push({ campo: '#u-papel', msg: 'Escolha o papel.' });
+          if (!usuario && !senha) erros.push({ campo: '#u-senha', msg: 'A senha é obrigatória.' });
+          else if (!usuario && senha.length < 8) erros.push({ campo: '#u-senha', msg: 'A senha deve ter pelo menos 8 caracteres.' });
+          if (!mostrarErros(f, erros)) return;
+          if (usuario) Object.assign(usuario, { nome, email, papel });
+          else D.usuarios.push({ id: Math.max(...D.usuarios.map((u) => u.id)) + 1, nome, email, papel, ativo: true, segundoFator: false });
+          filtroUsuarios = 'ativos';
+          navegar('/usuarios');
+          avisar(`${nome} ${usuario ? 'atualizado' : 'cadastrado'}`);
+        });
+      } });
+    }
+
+    if (!location.hash || location.hash === '#/') history.replaceState(null, '', `${location.pathname}${location.search}#${MENU[0].rota}`);
+    G.iniciar({
+      aoMudarRota: (caminho) => document.querySelectorAll('[data-nav]').forEach((a) => (caminho.startsWith(a.dataset.nav) ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'))),
+      instrumento: { alternativas: [{ chave: 'semMovimento', rotulo: 'Período sem movimento (Análises)' }] },
+    });
+  })();
+  </script>
+</body>
+</html>

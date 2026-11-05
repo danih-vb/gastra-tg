@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Gera o diagrama de classes a partir do código compilado (issue #125). Fica fora da solução de propósito:
+    não entra no build nem nos testes da API.
+    Uso (dentro de backend/): dotnet run -\-project tools/GeradorDiagramaClasses -\- ../docs
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Gastra.Infrastructure\Gastra.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

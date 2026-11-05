@@ -1,0 +1,16 @@
+# GASTRA — dependências da camada analítica (Python 3.13)
+# Instalação: ver data-science/README.md
+
+# Serviço HTTP e algoritmos (o mesmo conjunto que vai para o contêiner)
+-r requirements-servico.txt
+
+# Gráficos para BI e para o texto do TG
+matplotlib==3.11.2
+
+# Notebooks de exploração (data-science/notebooks/)
+jupyterlab==4.6.3
+
+# Testes (pytest + TestClient do FastAPI)
+# httpx2 no lugar de httpx: o TestClient do Starlette marca o uso do httpx como obsoleto.
+pytest==9.1.1
+httpx2==2.13.0

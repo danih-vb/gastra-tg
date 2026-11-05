@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="NomeObrigatorio" xml:space="preserve"><value>Name is required.</value></data>
+  <data name="NomeMuitoLongo" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="DescricaoMuitoLonga" xml:space="preserve"><value>Description must be at most 500 characters.</value></data>
+  <data name="PrecoInvalido" xml:space="preserve"><value>Price must be greater than zero.</value></data>
+  <data name="CategoriaInvalida" xml:space="preserve"><value>Invalid category.</value></data>
+  <data name="FotoInvalida" xml:space="preserve"><value>The photo must be JPG, PNG or WEBP, up to 5 MB.</value></data>
+  <data name="ImagemInvalida" xml:space="preserve"><value>The image must be an http(s) address or a path starting with a slash, up to 300 characters.</value></data>
+  <data name="FlagDieteticaInvalida" xml:space="preserve"><value>Invalid dietary flag.</value></data>
+  <data name="ItemCardapioNaoEncontrado" xml:space="preserve"><value>Menu item not found.</value></data>
+  <data name="RequisicaoInvalida" xml:space="preserve"><value>Invalid request.</value></data>
+  <data name="ErroInesperado" xml:space="preserve"><value>An unexpected error occurred.</value></data>
+  <data name="EmailObrigatorio" xml:space="preserve"><value>Email is required.</value></data>
+  <data name="SenhaObrigatoria" xml:space="preserve"><value>Password is required.</value></data>
+  <data name="CredenciaisInvalidas" xml:space="preserve"><value>Invalid email or password. After 5 failed attempts in a row, access is blocked for 15 minutes.</value></data>
+  <data name="TokenSegundoFatorInvalido" xml:space="preserve"><value>Verification step expired or invalid. Please log in again.</value></data>
+  <data name="CodigoSegundoFatorInvalido" xml:space="preserve"><value>Invalid verification code.</value></data>
+  <data name="AcessoBloqueadoTemporariamente" xml:space="preserve"><value>Too many failed attempts in a row. Access is blocked for 15 minutes.</value></data>
+  <data name="MuitasRequisicoes" xml:space="preserve"><value>Too many requests in a short time. Wait a minute and try again.</value></data>
+  <data name="SegundoFatorJaConfigurado" xml:space="preserve"><value>The authenticator app is already set up for this user.</value></data>
+  <data name="SegundoFatorNaoConfigurado" xml:space="preserve"><value>Set up the authenticator app before confirming the code.</value></data>
+  <data name="NaoAutenticado" xml:space="preserve"><value>You must log in.</value></data>
+  <data name="AcessoNegado" xml:space="preserve"><value>Your role is not allowed to perform this action.</value></data>
+  <data name="EmailInvalido" xml:space="preserve"><value>The email address is invalid.</value></data>
+  <data name="EmailMuitoLongo" xml:space="preserve"><value>Email must have at most 150 characters.</value></data>
+  <data name="SenhaCurta" xml:space="preserve"><value>Password must have at least 8 characters.</value></data>
+  <data name="SenhaLonga" xml:space="preserve"><value>Password is too long.</value></data>
+  <data name="PapelInvalido" xml:space="preserve"><value>Invalid user role.</value></data>
+  <data name="EmailJaCadastrado" xml:space="preserve"><value>An account with this email already exists.</value></data>
+  <data name="UsuarioNaoEncontrado" xml:space="preserve"><value>User not found.</value></data>
+  <data name="AlterarProprioPapel" xml:space="preserve"><value>You cannot change your own role.</value></data>
+  <data name="InativarPropriaConta" xml:space="preserve"><value>You cannot deactivate your own account.</value></data>
+  <data name="RedefinirPropriaSenha" xml:space="preserve"><value>You cannot reset your own password here.</value></data>
+  <data name="ReiniciarProprioSegundoFator" xml:space="preserve"><value>You cannot reset your own two-step verification. Ask another manager.</value></data>
+  <data name="PapelSemSegundoFator" xml:space="preserve"><value>This role does not use two-step verification.</value></data>
+  <data name="ComandaNaoEncontrada" xml:space="preserve"><value>Order not found.</value></data>
+  <data name="MesaNaoEncontrada" xml:space="preserve"><value>Table not found.</value></data>
+  <data name="ItemPedidoNaoEncontrado" xml:space="preserve"><value>Order item not found in this tab.</value></data>
+  <data name="ComandaNaoEstaAberta" xml:space="preserve"><value>The tab is not open.</value></data>
+  <data name="QuantidadePessoasInvalida" xml:space="preserve"><value>The table must have at least one person.</value></data>
+  <data name="QuantidadeItemInvalida" xml:space="preserve"><value>Quantity must be greater than zero.</value></data>
+  <data name="ComposicaoInvalida" xml:space="preserve"><value>Invalid table composition.</value></data>
+  <data name="CategoriaRestricaoInvalida" xml:space="preserve"><value>Invalid dietary restriction category.</value></data>
+  <data name="ObservacaoMuitoLonga" xml:space="preserve"><value>The note must have at most 200 characters.</value></data>
+  <data name="SituacaoItemInvalida" xml:space="preserve"><value>State whether the item was delivered or cancelled.</value></data>
+  <data name="MotivoCancelamentoObrigatorio" xml:space="preserve"><value>Cancelling requires a reason.</value></data>
+  <data name="MotivoCancelamentoInvalido" xml:space="preserve"><value>Invalid cancellation reason.</value></data>
+  <data name="ItemNaoEstaPendente" xml:space="preserve"><value>This item was already delivered or cancelled.</value></data>
+  <data name="ItemCardapioIndisponivel" xml:space="preserve"><value>The menu item is unavailable.</value></data>
+  <data name="ComandaComItensPendentes" xml:space="preserve"><value>There are pending items: deliver or cancel each one before closing.</value></data>
+  <data name="PracaNaoEncontrada" xml:space="preserve"><value>Section not found.</value></data>
+  <data name="CodigoPracaObrigatorio" xml:space="preserve"><value>The section code is required.</value></data>
+  <data name="CodigoPracaMuitoLongo" xml:space="preserve"><value>The section code must have at most 20 characters.</value></data>
+  <data name="CodigoPracaJaCadastrado" xml:space="preserve"><value>A section with this code already exists.</value></data>
+  <data name="QuantidadeGarconsInvalida" xml:space="preserve"><value>The section needs at least one waiter.</value></data>
+  <data name="NumeroMesaObrigatorio" xml:space="preserve"><value>The table number is required.</value></data>
+  <data name="NumeroMesaMuitoLongo" xml:space="preserve"><value>The table number must have at most 10 characters.</value></data>
+  <data name="NumeroMesaJaCadastrado" xml:space="preserve"><value>A table with this number already exists.</value></data>
+  <data name="CapacidadeMesaInvalida" xml:space="preserve"><value>The table must seat at least one person.</value></data>
+  <data name="AlocacaoSemGarcons" xml:space="preserve"><value>Provide at least one waiter present in the shift.</value></data>
+  <data name="AlocacaoGarcomInvalido" xml:space="preserve"><value>One of the waiters does not exist, is inactive or does not have the Waiter role.</value></data>
+  <data name="AlocacaoSemPracas" xml:space="preserve"><value>Register at least one section before allocating waiters.</value></data>
+  <data name="AlocacaoSemVagas" xml:space="preserve"><value>The sections do not have room for all the waiters provided.</value></data>
+  <data name="AlocacaoJaConfirmada" xml:space="preserve"><value>This shift's allocation has already been confirmed and can no longer change.</value></data>
+  <data name="AlocacaoNaoEncontrada" xml:space="preserve"><value>There is no allocation for this shift.</value></data>
+  <data name="PracaSemVaga" xml:space="preserve"><value>The chosen section is already full in this shift. To adjust, swap with one of its waiters.</value></data>
+  <data name="TrocaComOProprioGarcom" xml:space="preserve"><value>Choose another waiter for the swap.</value></data>
+  <data name="GarcomDaTrocaForaDaPraca" xml:space="preserve"><value>The waiter chosen for the swap is not in the destination section in this shift.</value></data>
+  <data name="TrocaNaMesmaPraca" xml:space="preserve"><value>Both waiters are already in the same section.</value></data>
+  <data name="PeriodoInvalido" xml:space="preserve"><value>Invalid period: use Almoco or Jantar.</value></data>
+  <data name="DataAlocacaoObrigatoria" xml:space="preserve"><value>Provide the shift date.</value></data>
+  <data name="PeriodoRelatorioInvalido" xml:space="preserve"><value>The report start date cannot be after the end date.</value></data>
+  <data name="PeriodoRelatorioLongoDemais" xml:space="preserve"><value>The report period can have at most 366 days.</value></data>
+  <data name="DescricaoPromocaoObrigatoria" xml:space="preserve"><value>The promotion description is required.</value></data>
+  <data name="DescricaoPromocaoMuitoLonga" xml:space="preserve"><value>The promotion description must have at most 200 characters.</value></data>
+  <data name="TipoDescontoInvalido" xml:space="preserve"><value>Invalid discount type: use Percentual or ValorFixo.</value></data>
+  <data name="ValorDescontoInvalido" xml:space="preserve"><value>The discount must be greater than zero and, as a percentage, less than 100.</value></data>
+  <data name="PeriodoPromocaoInvalido" xml:space="preserve"><value>Provide the promotion start and end dates, with the end on or after the start.</value></data>
+  <data name="PromocaoSemItens" xml:space="preserve"><value>The promotion needs at least one menu item.</value></data>
+  <data name="DescontoFixoMaiorQuePreco" xml:space="preserve"><value>The fixed discount must be less than the price of each item in the promotion.</value></data>
+  <data name="PromocaoNaoEncontrada" xml:space="preserve"><value>Promotion not found.</value></data>
+  <data name="PromocaoJaDesativada" xml:space="preserve"><value>The promotion has already been removed.</value></data>
+  <data name="NotaAvaliacaoInvalida" xml:space="preserve"><value>The rating must be a number from 1 to 5.</value></data>
+  <data name="ComentarioMuitoLongo" xml:space="preserve"><value>The comment must be at most 280 characters long.</value></data>
+  <data name="ComandaJaAvaliada" xml:space="preserve"><value>This bill has already been rated. Thank you!</value></data>
+  <data name="AvaliacaoForaDoPrazo" xml:space="preserve"><value>The window to rate this bill has closed.</value></data>
+</root>

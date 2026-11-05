@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GASTRA · Cliente (protótipo)</title>
+  <link rel="stylesheet" href="assets/prototipo.css">
+  <style>
+    .topo.cliente { background: var(--superficie); color: var(--marinho-forte); border-bottom: 1px solid var(--borda); }
+    .topo.cliente h1 { color: var(--marinho-forte); }
+    .topo.cliente .sub { color: var(--texto-suave); }
+    .topo.cliente .botao-icone { color: var(--marinho); }
+
+    .boas-vindas { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 16px 8px; text-align: center; }
+    .boas-vindas img { width: 72px; height: 72px; }
+    .opcao-grande { display: flex; align-items: center; gap: 14px; padding: 18px 16px; color: inherit; text-decoration: none; }
+    .opcao-grande .icone-grande { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; color: var(--laranja-forte); background: var(--laranja-suave); }
+    .opcao-grande .icone-grande .icone { width: 26px; height: 26px; }
+    .opcao-grande div { flex: 1; }
+    .opcao-grande strong { display: block; font-size: 1.0625rem; }
+
+    .categorias { position: sticky; top: 60px; z-index: 4; display: flex; gap: 4px; overflow-x: auto; padding: 8px 16px; background: var(--fundo); border-bottom: 1px solid var(--borda); scrollbar-width: none; }
+    .categorias a { flex: none; padding: 8px 12px; font-weight: 600; color: var(--texto-suave); text-decoration: none; border-radius: 999px; }
+    .categorias a[aria-current="true"] { color: #fff; background: var(--marinho); }
+
+    .prato { display: grid; grid-template-columns: 1fr 96px; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--borda); }
+    .prato:first-of-type { border-top: 0; }
+    .prato h3 { font-size: 1rem; }
+    .prato p { margin-top: 4px; font-size: 0.875rem; color: var(--texto-suave); }
+    .prato .rodape-prato { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+    .prato .valor { font-weight: 700; font-variant-numeric: tabular-nums; margin-right: 4px; }
+    .prato .valor s { font-weight: 400; color: var(--texto-suave); margin-right: 4px; }
+    .foto { width: 96px; height: 96px; border-radius: 12px; display: grid; place-items: center; color: rgb(255 255 255 / 85%); }
+    .foto .icone { width: 36px; height: 36px; }
+    .foto.Entrada { background: linear-gradient(135deg, #e7a15a, #c46a2b); }
+    .foto.PratoPrincipal { background: linear-gradient(135deg, #b5653c, #7c3b20); }
+    .foto.Sobremesa { background: linear-gradient(135deg, #e9b9a4, #b86f72); }
+    .foto.Bebida { background: linear-gradient(135deg, #7fb2c9, #3e6f8c); }
+
+    .item-conta { display: grid; grid-template-columns: 32px 1fr auto; gap: 4px 10px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--borda); }
+    .item-conta:first-child { border-top: 0; }
+    .item-conta .qtd { font-weight: 700; color: var(--marinho); font-variant-numeric: tabular-nums; }
+    .item-conta .valor { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .item-conta .situacao { grid-column: 2 / 4; }
+    .item-conta.cancelado .nome, .item-conta.cancelado .valor { text-decoration: line-through; color: var(--texto-suave); }
+    .linha-total { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+    .linha-total.grande { font-size: 1.5rem; font-weight: 700; border-top: 1px solid var(--borda); margin-top: 6px; padding-top: 12px; }
+    .ao-vivo { display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--texto-suave); }
+    .ao-vivo .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--sucesso); box-shadow: 0 0 0 4px var(--sucesso-suave); }
+    .codigo { letter-spacing: 0.3em; text-transform: uppercase; font-size: 1.25rem; text-align: center; }
+  </style>
+</head>
+<body class="moldura-celular">
+  <div class="celular" id="app"></div>
+
+  <script src="assets/base.js"></script>
+  <script src="assets/cenas.js"></script>
+  <script src="assets/dados.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { icone, moeda, escapar, rota, navegar, avisar, estados } = G;
+    const D = DADOS;
+    const app = document.getElementById('app');
+    const ICONE_CATEGORIA = { Entrada: 'prato', PratoPrincipal: 'prato', Sobremesa: 'prato', Bebida: 'copo' };
+    let filtros = [];
+    let segundos = 0;
+    let relogio = null;
+
+    function tela({ titulo, sub = '', voltar = null, acoes = '', corpo, antes = '' }) {
+      clearInterval(relogio);
+      app.innerHTML = `
+        <header class="topo cliente">
+          ${voltar ? `<a class="botao-icone" href="#${voltar}" aria-label="Voltar" data-toque>${icone('voltar')}</a>` : '<img src="assets/logo.png" alt="" width="32" height="32">'}
+          <div><h1>${titulo}</h1>${sub ? `<div class="sub">${sub}</div>` : ''}</div>
+          <div class="acoes">${acoes}</div>
+        </header>
+        ${antes}
+        <main class="conteudo">${corpo}</main>`;
+    }
+
+    // ---------------- Início (aberto pelo QR code da mesa) ----------------
+    rota('/', () => {
+      tela({
+        titulo: 'GASTRA',
+        sub: 'Cardápio e conta da mesa',
+        corpo: `
+          <div class="boas-vindas">
+            <img src="assets/logo.png" alt="">
+            <h2>Boa noite! Você está na mesa 12.</h2>
+            <p class="suave">Veja o cardápio ou acompanhe o que já foi lançado na sua conta.</p>
+          </div>
+          <a class="cartao opcao-grande" href="#/cardapio" data-toque>
+            <span class="icone-grande">${icone('cardapio')}</span>
+            <div><strong>Ver o cardápio</strong><span class="suave pequeno">Pratos, preços e opções vegetarianas, sem glúten e mais</span></div>${icone('avancar')}</a>
+          <a class="cartao opcao-grande" href="#/conta/M3R8TD" data-toque>
+            <span class="icone-grande">${icone('comanda')}</span>
+            <div><strong>Acompanhar minha conta</strong><span class="suave pequeno">Itens lançados e valor parcial, em tempo real</span></div>${icone('avancar')}</a>
+          <a class="botao fantasma" href="#/codigo" data-toque>Tenho um código de conta</a>
+          <p class="suave pequeno" style="text-align:center">${icone('info')} Pedidos são feitos com o garçom.</p>`,
+      });
+    });
+
+    // ---------------- UC19 — Cardápio digital ----------------
+    rota('/cardapio', () => {
+      const disponiveis = D.cardapio.filter((i) => i.disponivel && filtros.every((f) => i.flags.includes(f)));
+      const grupos = D.CATEGORIAS.map((k) => ({ ...k, itens: disponiveis.filter((i) => i.categoria === k.chave) })).filter((g) => g.itens.length);
+      tela({
+        titulo: 'Cardápio',
+        sub: 'Mesa 12',
+        voltar: '/',
+        antes: `<nav class="categorias" aria-label="Categorias">${grupos.map((g, i) => `<a href="#/cardapio" data-ir="${g.chave}" ${i === 0 ? 'aria-current="true"' : ''} data-toque>${g.nome}</a>`).join('')}</nav>`,
+        corpo: `
+          <section aria-labelledby="t-filtros">
+            <h2 id="t-filtros" class="sr">Filtros</h2>
+            <div class="chips rolagem" role="group" aria-label="Mostrar só opções">
+              ${Object.entries(D.FLAGS).map(([k, v]) => `<button class="chip" type="button" data-flag="${k}" aria-pressed="${filtros.includes(k)}" data-toque>${filtros.includes(k) ? icone('check') : ''}${v}</button>`).join('')}
+            </div>
+            ${filtros.length ? `<p class="suave pequeno" style="margin-top:8px">${disponiveis.length} ${disponiveis.length === 1 ? 'opção' : 'opções'} ${filtros.length > 1 ? 'com todos os filtros' : ''} · <button type="button" class="botao fantasma compacto" data-limpar data-toque>Limpar filtros</button></p>` : ''}
+          </section>
+          ${grupos.length ? grupos.map((g) => `
+            <section class="cartao" id="cat-${g.chave}" aria-labelledby="h-${g.chave}" style="scroll-margin-top:120px">
+              <header><h2 id="h-${g.chave}">${g.nome}</h2></header>
+              ${g.itens.map((i) => {
+                const promo = D.precoPromocional(i);
+                return `<article class="prato" aria-labelledby="i-${i.id}">
+                  <div>
+                    <h3 id="i-${i.id}">${escapar(i.nome)}</h3>
+                    ${i.descricao ? `<p>${escapar(i.descricao)}</p>` : ''}
+                    <div class="rodape-prato">
+                      <span class="valor">${promo ? `<s>${moeda(i.preco)}</s>${moeda(promo)}` : moeda(i.preco)}</span>
+                      ${promo ? `<span class="etiqueta marca">${icone('etiqueta')} Promoção</span>` : ''}
+                      ${i.flags.map((f) => `<span class="etiqueta">${D.FLAGS[f]}</span>`).join('')}
+                    </div>
+                  </div>
+                  <div class="foto ${i.categoria}" aria-hidden="true">${icone(ICONE_CATEGORIA[i.categoria])}</div>
+                </article>`;
+              }).join('')}
+            </section>`).join('') : `
+            <div class="cartao pad" style="text-align:center;display:flex;flex-direction:column;gap:8px">
+              <strong>Nenhum prato com todos esses filtros</strong>
+              <p class="suave">Tente tirar um dos filtros ou pergunte ao garçom: a cozinha pode adaptar alguns pratos.</p>
+              <button class="botao secundario" type="button" data-limpar data-toque>Limpar filtros</button>
+            </div>`}
+          <div class="alerta">${icone('info')}<div class="pequeno">Para pedir, chame o garçom. Alergia? Avise o garçom antes do pedido: as etiquetas não substituem a confirmação com a cozinha.</div></div>`,
+      });
+      app.querySelectorAll('[data-flag]').forEach((b) => b.addEventListener('click', () => {
+        const f = b.dataset.flag;
+        filtros = filtros.includes(f) ? filtros.filter((x) => x !== f) : [...filtros, f];
+        navegar('/cardapio');
+      }));
+      app.querySelectorAll('[data-limpar]').forEach((b) => b.addEventListener('click', () => { filtros = []; navegar('/cardapio'); }));
+      app.querySelectorAll('[data-ir]').forEach((a) => a.addEventListener('click', (e) => {
+        e.preventDefault();
+        app.querySelectorAll('[data-ir]').forEach((x) => x.setAttribute('aria-current', x === a));
+        document.getElementById(`cat-${a.dataset.ir}`).scrollIntoView({ behavior: 'smooth' });
+      }));
+    });
+
+    // ---------------- Código digitado ----------------
+    rota('/codigo', () => {
+      tela({
+        titulo: 'Código da conta',
+        voltar: '/',
+        corpo: `
+          <form class="cartao pad" style="display:flex;flex-direction:column;gap:14px" novalidate>
+            <div class="campo">
+              <label for="codigo">Digite o código impresso na mesa</label>
+              <input class="entrada codigo" id="codigo" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="ABC123" autofocus>
+              <span class="ajuda">São 6 letras e números. Se preferir, aponte a câmera para o QR code da mesa.</span>
+              <span class="erro-campo" data-erro aria-live="polite"></span>
+            </div>
+            <button class="botao" type="submit" data-toque>Ver minha conta</button>
+          </form>`,
+      });
+      app.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const codigo = app.querySelector('#codigo').value.trim().toUpperCase();
+        if (codigo.length !== 6) { app.querySelector('[data-erro]').textContent = 'O código tem 6 caracteres.'; return; }
+        navegar(`/conta/${codigo}`);
+      });
+    });
+
+    // ---------------- UC20 — Conta em tempo real ----------------
+    rota('/conta/:codigo', ({ codigo }) => {
+      const c = D.comandas.find((x) => x.codigo === codigo.toUpperCase());
+      if (!c) {
+        tela({
+          titulo: 'Conta não encontrada',
+          voltar: '/',
+          corpo: `<div class="cartao pad" style="text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center">
+            ${icone('alerta')}<h2>Não encontramos essa conta</h2>
+            <p class="suave">Confira o código <strong>${escapar(codigo.toUpperCase())}</strong> na mesa ou peça ajuda ao garçom.</p>
+            <a class="botao secundario" href="#/codigo" data-toque>Digitar de novo</a></div>`,
+        });
+        return;
+      }
+      const fechada = !!estados.contaFechada;
+      const m = D.mesas.find((x) => x.id === c.mesaId);
+      const t = D.totais(c);
+      const SITUACAO = { Pendente: ['A caminho', 'aviso'], Entregue: ['Entregue', 'sucesso'], Cancelado: ['Cancelado · não cobrado', ''] };
+      tela({
+        titulo: `Sua conta · Mesa ${m.numero}`,
+        sub: fechada ? 'Fechada às 21:10' : 'Aberta às 19:38',
+        voltar: '/',
+        acoes: fechada ? '' : `<button class="botao-icone" type="button" data-atualizar aria-label="Atualizar agora" data-toque>${icone('atualizar')}</button>`,
+        corpo: `
+          ${fechada
+            ? `<div class="alerta sucesso" role="status">${icone('check')}<div><strong>Conta fechada. Obrigado pela visita!</strong>Os valores abaixo são os finais.</div></div>`
+            : `<p class="ao-vivo" aria-live="polite"><span class="ponto" aria-hidden="true"></span><span data-segundos>Atualizado agora</span></p>`}
+          <section class="cartao" aria-labelledby="t-itens">
+            <header><h2 id="t-itens">Itens lançados</h2><span class="acoes suave pequeno">${c.itens.length}</span></header>
+            <div>${c.itens.map((i) => `
+              <div class="item-conta ${i.status === 'Cancelado' ? 'cancelado' : ''}">
+                <span class="qtd">${i.quantidade}×</span>
+                <span class="nome">${escapar(i.nome)}</span>
+                <span class="valor">${moeda(i.precoUnitario * i.quantidade)}</span>
+                <span class="situacao"><span class="etiqueta ${SITUACAO[i.status][1]}">${SITUACAO[i.status][0]}</span></span>
+              </div>`).join('') || '<p class="corpo suave">Nada lançado ainda.</p>'}</div>
+          </section>
+          <section class="cartao pad" aria-label="Valores">
+            <div class="linha-total"><span>Subtotal</span><span>${moeda(t.subtotal)}</span></div>
+            <div class="linha-total"><span>Taxa de serviço (10%)</span><span>${moeda(t.taxa)}</span></div>
+            <p class="suave pequeno">A taxa de serviço é opcional. Se não quiser pagar, avise o garçom antes de fechar a conta.</p>
+            <div class="linha-total grande"><span>${fechada ? 'Total' : 'Total parcial'}</span><span>${moeda(t.total)}</span></div>
+          </section>
+          <p class="suave pequeno">${icone('cadeado')} Esta página mostra só os itens e valores da mesa. Nenhum dado pessoal é exibido.</p>`,
+      });
+      if (fechada) return;
+      segundos = 0;
+      const rotulo = app.querySelector('[data-segundos]');
+      relogio = setInterval(() => {
+        segundos += 5;
+        rotulo.textContent = `Atualizado há ${segundos} s`;
+      }, 5000);
+      app.querySelector('[data-atualizar]').addEventListener('click', () => { navegar(`/conta/${codigo}`); avisar('Conta atualizada', { icone: 'atualizar' }); });
+    });
+
+    G.iniciar({
+      instrumento: { alternativas: [{ chave: 'contaFechada', rotulo: 'Conta já fechada (UC20)' }] },
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GASTRA · Metre (protótipo)</title>
+  <link rel="stylesheet" href="assets/prototipo.css">
+  <style>
+    .turno { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .segmentado { display: inline-flex; padding: 3px; background: var(--marinho-suave); border-radius: 10px; }
+    .segmentado button { min-height: 40px; padding: 6px 16px; background: none; border: 0; border-radius: 8px; cursor: pointer; color: var(--marinho); }
+    .segmentado button[aria-pressed="true"] { background: var(--superficie); font-weight: 600; box-shadow: var(--sombra); }
+
+    .etapas { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+    .etapas li { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; font-size: 0.875rem; color: var(--texto-suave); background: var(--superficie); border: 1px solid var(--borda); border-radius: 999px; }
+    .etapas li span { display: grid; place-items: center; width: 24px; height: 24px; font-weight: 700; font-size: 0.75rem; background: var(--marinho-suave); border-radius: 50%; }
+    .etapas li[aria-current="step"] { color: var(--marinho-forte); font-weight: 600; border-color: var(--marinho); }
+    .etapas li[aria-current="step"] span { color: #fff; background: var(--marinho); }
+    .etapas li.feita span { color: #fff; background: var(--sucesso); }
+
+    .presenca { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+    .presenca label { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px; background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio-pequeno); cursor: pointer; }
+    .presenca label:has(input:checked) { border-color: var(--marinho); background: var(--marinho-suave); }
+    .presenca input { width: 20px; height: 20px; accent-color: var(--marinho); }
+
+    .quadro { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; align-items: start; }
+    .coluna { background: #eceae5; border-radius: var(--raio); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .coluna > header { display: flex; flex-direction: column; gap: 4px; padding: 4px 4px 6px; }
+    .coluna > header .linha { display: flex; align-items: center; gap: 8px; }
+    .coluna > header .vagas { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .coluna.sem-praca { background: var(--aviso-suave); }
+    .garcom { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio-pequeno); box-shadow: var(--sombra); }
+    .garcom .linha { display: flex; align-items: center; gap: 8px; }
+    .garcom .linha strong { flex: 1; }
+    .garcom dl { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; margin: 0; font-size: 0.8125rem; }
+    .garcom dt { color: var(--texto-suave); }
+    .garcom dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+    .vazia { padding: 12px; text-align: center; font-size: 0.875rem; color: var(--texto-suave); border: 1px dashed var(--borda-forte); border-radius: var(--raio-pequeno); }
+
+    .opcoes-praca { display: flex; flex-direction: column; gap: 8px; }
+    .opcoes-praca button { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px; text-align: left; background: var(--superficie); border: 1px solid var(--borda-forte); border-radius: var(--raio-pequeno); cursor: pointer; }
+    .opcoes-praca button[aria-pressed="true"] { border: 2px solid var(--marinho); background: var(--marinho-suave); }
+    .opcoes-praca button span:first-child { flex: 1; }
+    .rodape-acoes { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 16px; background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); box-shadow: var(--sombra-alta); }
+    .rodape-acoes .texto { flex: 1; min-width: 200px; }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <aside class="lateral" aria-label="Menu">
+      <div class="marca"><img src="assets/logo.png" alt="" width="32" height="32"><strong>GASTRA</strong></div>
+      <nav aria-label="Principal" style="display:contents">
+        <a href="#/alocacao" data-nav="/alocacao" data-toque>Alocação</a>
+        <a href="#/salao" data-nav="/salao" data-toque>Salão agora</a>
+      </nav>
+      <div class="usuario"><strong>Sérgio Nogueira</strong>Metre<br><button type="button" data-sair>Sair</button></div>
+    </aside>
+    <main class="principal" id="app"></main>
+  </div>
+
+  <script src="assets/base.js"></script>
+  <script src="assets/cenas.js"></script>
+  <script src="assets/dados.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { icone, moeda, numero, escapar, rota, navegar, abrirFolha, fecharFolha, avisar, estados } = G;
+    const D = DADOS;
+    const app = document.getElementById('app');
+
+    document.querySelector('[data-nav="/alocacao"]').innerHTML = `${icone('alocacao')} Alocação`;
+    document.querySelector('[data-nav="/salao"]').innerHTML = `${icone('salao')} Salão agora`;
+
+    const garcom = (id) => D.usuarios.find((u) => u.id === id);
+    const praca = (id) => D.pracas.find((p) => p.id === id);
+    const indicador = (id) => D.indicadoresGarcons.find((g) => g.garcomId === id);
+    const faturamentoMedio = Object.fromEntries(D.indicadoresPracas.map((p) => [p.pracaId, p.faturamentoPorTurno]));
+    const media = Object.values(faturamentoMedio).reduce((s, v) => s + v, 0) / D.pracas.length;
+    const altoPotencial = (pracaId) => faturamentoMedio[pracaId] > media;
+    // Turnos desde a última vez em praça de alto potencial (fator w2 da RN03).
+    const espera = { 11: 5, 12: 0, 13: 1, 14: 4, 15: 0, 16: 2, 17: 3, 18: 6 };
+    // Sugestão da RN03 para o jantar (o serviço analítico devolve isto).
+    const SUGESTAO = { 11: 2, 12: 4, 13: 3, 14: 1, 15: 3, 16: 1, 17: 2, 18: 1 };
+
+    const turnos = {
+      'Almoco': { etapa: 'confirmada', presentes: [11, 12, 13, 14, 15, 16], designacoes: { 11: 1, 12: 1, 13: 2, 14: 2, 15: 3, 16: 1 }, sugerida: { 11: 1, 12: 1, 13: 2, 14: 2, 15: 3, 16: 1 }, confirmadaAs: '10:52' },
+      'Jantar': { etapa: 'presenca', presentes: [11, 12, 13, 14, 15, 16, 17, 18], designacoes: {}, sugerida: {}, confirmadaAs: null },
+    };
+    let periodo = 'Jantar';
+    const vagasTotais = D.pracas.reduce((s, p) => s + p.garcons, 0);
+
+    function etapas(t) {
+      const ordem = ['presenca', 'sugestao', 'confirmada'];
+      const nomes = { presenca: 'Quem está no turno', sugestao: 'Revisar sugestão', confirmada: 'Confirmada' };
+      const atual = ordem.indexOf(t.etapa);
+      return `<ol class="etapas" aria-label="Etapas">${ordem.map((e, i) =>
+        `<li ${i === atual ? 'aria-current="step"' : ''} class="${i < atual || t.etapa === 'confirmada' ? 'feita' : ''}"><span>${i < atual || t.etapa === 'confirmada' ? '✓' : i + 1}</span>${nomes[e]}</li>`).join('')}</ol>`;
+    }
+
+    // ---------------- UC15, UC21, UC22 ----------------
+    rota('/alocacao', () => {
+      const t = turnos[periodo];
+      app.innerHTML = `
+        <div class="cabecalho">
+          <div><h1>Alocação de garçons</h1><p class="suave">Distribuição dos garçons pelas praças no turno (RN03).</p></div>
+          <div class="acoes turno">
+            <label class="sr" for="data">Data</label>
+            <input class="entrada" id="data" type="date" value="${D.HOJE}" style="width:auto">
+            <div class="segmentado" role="group" aria-label="Período">
+              <button type="button" data-periodo="Almoco" aria-pressed="${periodo === 'Almoco'}" data-toque>Almoço</button>
+              <button type="button" data-periodo="Jantar" aria-pressed="${periodo === 'Jantar'}" data-toque>Jantar</button>
+            </div>
+          </div>
+        </div>
+        ${etapas(t)}
+        ${t.etapa === 'presenca' ? presenca(t) : quadro(t)}`;
+
+      app.querySelectorAll('[data-periodo]').forEach((b) => b.addEventListener('click', () => { periodo = b.dataset.periodo; navegar('/alocacao'); }));
+      ligarPresenca(t);
+      ligarQuadro(t);
+    });
+
+    function presenca(t) {
+      const lista = D.garcons();
+      const excesso = t.presentes.length > vagasTotais;
+      return `
+        <section class="cartao" aria-labelledby="t-pres">
+          <header><h2 id="t-pres">Quem está no turno?</h2>
+            <span class="acoes"><button class="botao compacto fantasma" type="button" data-todos data-toque>Marcar todos</button></span></header>
+          <div class="corpo" style="display:flex;flex-direction:column;gap:14px">
+            <div class="presenca">${lista.map((g) => `
+              <label><input type="checkbox" value="${g.id}" ${t.presentes.includes(g.id) ? 'checked' : ''} data-toque> ${escapar(g.nome)}</label>`).join('')}</div>
+            <p class="${excesso ? '' : 'suave'}" aria-live="polite">
+              <strong>${t.presentes.length}</strong> presentes · <strong>${vagasTotais}</strong> vagas nas praças
+              (${D.pracas.map((p) => `${p.codigo}: ${p.garcons}`).join(', ')})
+            </p>
+            ${excesso ? `<div class="alerta erro" role="alert">${icone('alerta')}<div>Há mais garçons presentes do que vagas. Desmarque ${t.presentes.length - vagasTotais} ou aumente as vagas de uma praça em <em>Salão</em> (Gerente).</div></div>` : ''}
+            ${!t.presentes.length ? `<div class="alerta erro" role="alert">${icone('alerta')}<div>Marque ao menos um garçom.</div></div>` : ''}
+          </div>
+        </section>
+        <div class="rodape-acoes">
+          <p class="texto suave pequeno">A sugestão equilibra o faturamento por turno de cada garçom e o tempo desde a última praça de alto potencial. Você revisa antes de confirmar.</p>
+          <button class="botao" type="button" data-gerar ${excesso || !t.presentes.length ? 'disabled' : ''} data-toque>${icone('faisca')} Gerar sugestão</button>
+        </div>`;
+    }
+
+    function ligarPresenca(t) {
+      if (t.etapa !== 'presenca') return;
+      app.querySelectorAll('.presenca input').forEach((c) => c.addEventListener('change', () => {
+        t.presentes = [...app.querySelectorAll('.presenca input:checked')].map((x) => Number(x.value));
+        navegar('/alocacao');
+      }));
+      app.querySelector('[data-todos]').addEventListener('click', () => { t.presentes = D.garcons().map((g) => g.id); navegar('/alocacao'); });
+      app.querySelector('[data-gerar]').addEventListener('click', () => {
+        t.etapa = 'sugestao';
+        t.servicoFalhou = !!estados.servicoIndisponivel;
+        t.sugerida = t.servicoFalhou ? {} : Object.fromEntries(t.presentes.map((id) => [id, SUGESTAO[id]]));
+        t.designacoes = { ...t.sugerida };
+        navegar('/alocacao');
+      });
+    }
+
+    function cartaoGarcom(t, id) {
+      const ind = indicador(id);
+      const ajustado = t.sugerida[id] && t.designacoes[id] !== t.sugerida[id];
+      return `
+        <article class="garcom" aria-label="${escapar(garcom(id).nome)}">
+          <div class="linha"><strong>${escapar(garcom(id).nome)}</strong>${ajustado ? '<span class="etiqueta marca">Ajustado</span>' : ''}</div>
+          <dl>
+            <dt>Faturamento por turno</dt><dd>${moeda(ind.faturamentoPorTurno).replace(/,\d\d$/, '')}</dd>
+            <dt>Última praça de alto potencial</dt><dd>${espera[id] === 0 ? 'último turno' : `há ${espera[id]} turnos`}</dd>
+            ${ajustado ? `<dt>Sugerido</dt><dd>Praça ${praca(t.sugerida[id]).codigo}</dd>` : ''}
+          </dl>
+          ${t.etapa === 'sugestao' ? `<button class="botao compacto secundario" type="button" data-mudar="${id}" data-toque>${t.designacoes[id] ? 'Mudar praça' : 'Escolher praça'}</button>` : ''}
+        </article>`;
+    }
+
+    function quadro(t) {
+      const semPraca = t.presentes.filter((id) => !t.designacoes[id]);
+      const ajustes = t.presentes.filter((id) => t.sugerida[id] && t.designacoes[id] !== t.sugerida[id]).length;
+      const confirmada = t.etapa === 'confirmada';
+      return `
+        ${confirmada ? `<div class="alerta sucesso" role="status">${icone('check')}<div><strong>Alocação confirmada às ${t.confirmadaAs}</strong>Os garçons já veem a própria praça no celular. Depois de confirmada, não aceita mais ajustes.</div></div>` : ''}
+        ${!confirmada && t.servicoFalhou ? `<div class="alerta aviso" role="alert">${icone('alerta')}<div><strong>Não foi possível calcular a sugestão agora</strong>O serviço de análise não respondeu. Distribua os garçons manualmente; o restante funciona normalmente.</div></div>` : ''}
+        ${!confirmada && !t.servicoFalhou ? `<div class="alerta">${icone('info')}<div class="pequeno"><strong>Como a sugestão foi feita</strong>Quem faturou menos por turno nos últimos 30 dias e quem está há mais tempo sem praça de alto potencial tem prioridade nas praças A e B (pesos 0,6 e 0,4, calibrados por simulação).</div></div>` : ''}
+        <div class="quadro">
+          ${semPraca.length ? `<section class="coluna sem-praca" aria-label="Sem praça"><header><div class="linha"><h3>Sem praça</h3><span class="vagas">${semPraca.length}</span></div></header>${semPraca.map((id) => cartaoGarcom(t, id)).join('')}</section>` : ''}
+          ${D.pracas.map((p) => {
+            const nela = t.presentes.filter((id) => t.designacoes[id] === p.id);
+            return `<section class="coluna" aria-labelledby="col-${p.id}">
+              <header>
+                <div class="linha"><h3 id="col-${p.id}">Praça ${p.codigo}</h3><span class="vagas" aria-label="${nela.length} de ${p.garcons} vagas">${nela.length}/${p.garcons}</span></div>
+                <div class="linha pequeno">${altoPotencial(p.id) ? '<span class="etiqueta marca">Alto potencial</span>' : '<span class="etiqueta">Movimento menor</span>'}
+                  <span class="suave">${moeda(faturamentoMedio[p.id]).replace(/,\d\d$/, '')}/turno</span></div>
+              </header>
+              ${nela.map((id) => cartaoGarcom(t, id)).join('') || '<div class="vazia">Nenhum garçom</div>'}
+            </section>`;
+          }).join('')}
+        </div>
+        ${confirmada ? '' : `
+        <div class="rodape-acoes">
+          <p class="texto">${semPraca.length ? `<strong>${semPraca.length} sem praça.</strong> Escolha a praça de cada um para confirmar.` : `${ajustes ? `<strong>${ajustes} ${ajustes === 1 ? 'ajuste' : 'ajustes'}</strong> em relação à sugestão.` : 'Sugestão sem ajustes.'} Revise e confirme.`}</p>
+          <button class="botao secundario" type="button" data-refazer data-toque>${icone('voltar')} Voltar à presença</button>
+          <button class="botao" type="button" data-confirmar ${semPraca.length ? 'disabled' : ''} data-toque>${icone('check')} Confirmar alocação</button>
+        </div>`}`;
+    }
+
+    function ligarQuadro(t) {
+      if (t.etapa !== 'sugestao') return;
+      app.querySelectorAll('[data-mudar]').forEach((b) => b.addEventListener('click', () => mudarPraca(t, Number(b.dataset.mudar))));
+      app.querySelector('[data-refazer]').addEventListener('click', () => { t.etapa = 'presenca'; navegar('/alocacao'); });
+      app.querySelector('[data-confirmar]').addEventListener('click', () => {
+        abrirFolha(`
+          <header><div><h2>Confirmar a alocação do jantar?</h2></div></header>
+          <p>Os garçons passam a ver a própria praça no celular, e a alocação <strong>não poderá mais ser ajustada</strong> neste turno.</p>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Revisar mais</button><button class="botao" type="button" data-ok data-toque>Confirmar</button></div>`,
+        { dialogo: true, rotulo: 'Confirmar alocação', aoMontar: (f) => {
+          f.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+          f.querySelector('[data-ok]').addEventListener('click', () => { t.etapa = 'confirmada'; t.confirmadaAs = '17:42'; navegar('/alocacao'); avisar('Alocação confirmada'); });
+        } });
+      });
+    }
+
+    // UC22 — mudar de praça; se a praça estiver cheia, trocar com alguém de lá (#140).
+    function mudarPraca(t, id) {
+      let destino = null;
+      let trocarCom = null;
+      const render = (f) => {
+        const ocupantes = destino ? t.presentes.filter((g) => g !== id && t.designacoes[g] === destino) : [];
+        const cheia = destino && ocupantes.length >= praca(destino).garcons;
+        f.querySelector('.opcoes-praca').innerHTML = D.pracas.map((p) => {
+          const ocupadas = t.presentes.filter((g) => g !== id && t.designacoes[g] === p.id).length;
+          const atual = t.designacoes[id] === p.id;
+          return `<button type="button" data-destino="${p.id}" aria-pressed="${destino === p.id}" ${atual ? 'disabled' : ''} data-toque>
+            <span><strong>Praça ${p.codigo}</strong>${atual ? ' · atual' : ''}${t.sugerida[id] === p.id && !atual ? ' · sugerida' : ''}</span>
+            ${atual ? '' : `<span class="etiqueta ${ocupadas >= p.garcons ? 'aviso' : 'sucesso'}">${ocupadas >= p.garcons ? 'Cheia' : `${p.garcons - ocupadas} ${p.garcons - ocupadas === 1 ? 'vaga' : 'vagas'}`}</span>`}</button>`;
+        }).join('');
+        f.querySelectorAll('[data-destino]').forEach((b) => b.addEventListener('click', () => { destino = Number(b.dataset.destino); trocarCom = null; render(f); }));
+        const troca = f.querySelector('[data-troca]');
+        troca.innerHTML = cheia ? `
+          <p style="margin-top:12px"><strong>Praça ${praca(destino).codigo} está cheia. Trocar com quem?</strong></p>
+          <p class="suave pequeno">${t.designacoes[id] ? `A pessoa escolhida vai para a praça ${praca(t.designacoes[id]).codigo}.` : 'A pessoa escolhida fica sem praça.'}</p>
+          <div class="chips" role="radiogroup" style="margin-top:8px">${ocupantes.map((g) => `<button class="chip" type="button" role="radio" data-com="${g}" aria-checked="${trocarCom === g}" aria-pressed="${trocarCom === g}" data-toque>${escapar(garcom(g).nome)}</button>`).join('')}</div>` : '';
+        troca.querySelectorAll('[data-com]').forEach((b) => b.addEventListener('click', () => { trocarCom = Number(b.dataset.com); render(f); }));
+        const ok = f.querySelector('[data-ok]');
+        ok.disabled = !destino || (cheia && !trocarCom);
+        ok.textContent = cheia && trocarCom ? 'Trocar' : 'Mover';
+      };
+      abrirFolha(`
+        <header><div><h2>${escapar(garcom(id).nome)}</h2><p class="suave pequeno">${t.designacoes[id] ? `Hoje na praça ${praca(t.designacoes[id]).codigo}` : 'Sem praça'}. Para qual praça?</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <div class="opcoes-praca" role="group" aria-label="Praças"></div>
+        <div data-troca></div>
+        <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Cancelar</button><button class="botao" type="button" data-ok data-toque>Mover</button></div>`,
+      { dialogo: true, rotulo: `Mudar praça de ${garcom(id).nome}`, aoMontar: (f) => {
+        render(f);
+        f.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        f.querySelector('[data-ok]').addEventListener('click', () => {
+          const origem = t.designacoes[id];
+          if (trocarCom) t.designacoes[trocarCom] = origem;
+          t.designacoes[id] = destino;
+          navegar('/alocacao');
+          avisar(trocarCom ? `${garcom(id).nome.split(' ')[0]} e ${garcom(trocarCom).nome.split(' ')[0]} trocaram de praça` : `${garcom(id).nome.split(' ')[0]} vai para a praça ${praca(destino).codigo}`, {
+            acao: 'Desfazer', aoAgir: () => { if (trocarCom) t.designacoes[trocarCom] = destino; t.designacoes[id] = origem; navegar('/alocacao'); },
+          });
+        });
+      } });
+    }
+
+    // ---------------- Salão agora: comandas abertas (leitura) ----------------
+    rota('/salao', () => {
+      const abertas = D.comandas.filter((c) => !c.fechada);
+      app.innerHTML = `
+        <div class="cabecalho"><div><h1>Salão agora</h1><p class="suave">Comandas abertas no jantar, por praça. Somente leitura.</p></div></div>
+        <div class="kpis">
+          <div class="cartao kpi"><div class="rotulo">Mesas ocupadas</div><div class="valor">${abertas.length} de ${D.mesas.length}</div></div>
+          <div class="cartao kpi"><div class="rotulo">Itens a entregar</div><div class="valor">${abertas.reduce((s, c) => s + c.itens.filter((i) => i.status === 'Pendente').length, 0)}</div></div>
+          <div class="cartao kpi"><div class="rotulo">Em consumo</div><div class="valor">${moeda(abertas.reduce((s, c) => s + D.totais(c).subtotal, 0))}</div></div>
+        </div>
+        ${D.pracas.map((p) => {
+          const daPraca = abertas.filter((c) => D.mesas.find((m) => m.id === c.mesaId).pracaId === p.id);
+          return `<section class="cartao" aria-labelledby="s-${p.id}">
+            <header><h2 id="s-${p.id}">Praça ${p.codigo}</h2><span class="suave pequeno">${daPraca.length} ${daPraca.length === 1 ? 'mesa ocupada' : 'mesas ocupadas'}</span></header>
+            ${daPraca.length ? `<div class="tabela-rolagem"><table class="tabela">
+              <thead><tr><th>Mesa</th><th>Garçom</th><th>Composição</th><th>Aberta há</th><th>A entregar</th><th class="direita">Subtotal</th><th><span class="sr">Ações</span></th></tr></thead>
+              <tbody>${daPraca.map((c) => {
+                const pend = c.itens.filter((i) => i.status === 'Pendente').length;
+                return `<tr>
+                  <td><strong>${D.mesas.find((m) => m.id === c.mesaId).numero}</strong></td>
+                  <td>${escapar(garcom(c.garcomId).nome)}</td>
+                  <td>${D.COMPOSICOES[c.composicao]} · ${c.pessoas}${c.restricoes.length ? ` <span class="etiqueta aviso">${icone('escudo')} restrição</span>` : ''}</td>
+                  <td class="num">${c.abertaHa} min</td>
+                  <td>${pend ? `<span class="etiqueta aviso">${pend}</span>` : '<span class="etiqueta sucesso">0</span>'}</td>
+                  <td class="direita num">${moeda(D.totais(c).subtotal)}</td>
+                  <td class="direita"><button class="botao compacto fantasma" type="button" data-ver="${c.id}" data-toque>Ver</button></td>
+                </tr>`;
+              }).join('')}</tbody></table></div>` : '<div class="corpo suave">Nenhuma mesa ocupada.</div>'}
+          </section>`;
+        }).join('')}`;
+
+      app.querySelectorAll('[data-ver]').forEach((b) => b.addEventListener('click', () => {
+        const c = D.comandas.find((x) => x.id === Number(b.dataset.ver));
+        const m = D.mesas.find((x) => x.id === c.mesaId);
+        abrirFolha(`
+          <header><div><h2>Mesa ${m.numero}</h2><p class="suave pequeno">${escapar(garcom(c.garcomId).nome)} · ${D.COMPOSICOES[c.composicao]}, ${c.pessoas} pessoas · aberta há ${c.abertaHa} min</p></div>
+            <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+          ${c.restricoes.length ? `<div class="alerta aviso">${icone('escudo')}<div><strong>Restrições</strong>${c.restricoes.map((r) => `<div>${D.RESTRICOES[r.categoria]}${r.observacao ? `: ${escapar(r.observacao)}` : ''}</div>`).join('')}</div></div>` : ''}
+          <ul class="lista" style="margin-top:8px">${c.itens.map((i) => `<li><div class="principal-item" style="${i.status === 'Cancelado' ? 'text-decoration:line-through;color:var(--texto-suave)' : ''}">${i.quantidade} × ${escapar(i.nome)}</div>
+            <span class="etiqueta ${i.status === 'Pendente' ? 'aviso' : i.status === 'Entregue' ? 'sucesso' : ''}">${i.status === 'Pendente' ? 'A entregar' : i.status}</span></li>`).join('')}</ul>
+          <p class="pequeno suave" style="margin-top:8px">${icone('cadeado')} Restrições ficam visíveis para garçom e metre só enquanto a mesa está aberta.</p>`,
+        { dialogo: true, rotulo: `Mesa ${m.numero}`, aoMontar: (f) => f.querySelector('[data-fechar]').addEventListener('click', fecharFolha) });
+      }));
+    });
+
+    document.querySelector('[data-sair]').addEventListener('click', () => { location.href = 'acesso.html#/login?sessao=encerrada'; });
+
+    G.iniciar({
+      aoMudarRota: (caminho) => document.querySelectorAll('[data-nav]').forEach((a) => (caminho.startsWith(a.dataset.nav) ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'))),
+      instrumento: { alternativas: [{ chave: 'servicoIndisponivel', rotulo: 'Serviço de alocação fora do ar' }] },
+    });
+  })();
+  </script>
+</body>
+</html>
