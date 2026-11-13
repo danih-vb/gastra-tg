@@ -99,7 +99,7 @@ describe('Conta do cliente (UC20)', () => {
     const pagina = await renderizar(CONTA);
 
     expect(texto(pagina)).toContain('Sua conta · Mesa 12');
-    expect(texto(pagina)).toContain('A caminho');
+    expect(texto(pagina)).toContain('Aguardando');
     expect(texto(pagina)).toContain('Entregue');
     expect(texto(pagina)).toContain('Cancelado · não cobrado');
     expect(texto(pagina)).toContain('R$ 191,00');
