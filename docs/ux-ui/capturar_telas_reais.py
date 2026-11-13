@@ -6,9 +6,12 @@ guarda senha) e salva cada tela em docs/ux-ui/telas-reais/<nome>.png.
     msedge --remote-debugging-port=9222 --user-data-dir=<pasta temporária> http://localhost:4200/acesso/login
     pip install websocket-client
     python docs/ux-ui/capturar_telas_reais.py cliente <código da mesa>
-    python docs/ux-ui/capturar_telas_reais.py garcom      # depois de entrar como garçom
-    python docs/ux-ui/capturar_telas_reais.py metre       # depois de entrar como Metre
-    python docs/ux-ui/capturar_telas_reais.py gerente     # depois de entrar como Gerente
+    python docs/ux-ui/capturar_telas_reais.py garcom [e-mail]   # com o e-mail, entra antes com a conta de teste
+    python docs/ux-ui/capturar_telas_reais.py metre [e-mail]
+    python docs/ux-ui/capturar_telas_reais.py gerente [e-mail]
+
+Com o e-mail, o script entra sozinho com as contas fictícias do semeador: a senha vem de GASTRA_SEMEADOR_SENHA
+(infra/.env) e o código do segundo fator é calculado da chave que a tela de primeiro acesso mostra.
 """
 
 from __future__ import annotations
@@ -93,33 +96,35 @@ def cliente(n: Navegador, codigo: str) -> None:
 
 
 def garcom(n: Navegador) -> None:
+    # No celular, a captura é da tela visível: em página inteira, a barra de baixo (fixa) sai no meio da imagem.
     n.tamanho(*CELULAR)
     n.ir("/comandas")
-    n.foto("garcom-mesas", pagina_inteira=True)
+    n.foto("garcom-mesas")
     livre = n.js("""(() => { const m = [...document.querySelectorAll('.mesa')].find(b => b.textContent.includes('Livre'));
         if (!m) return false; m.click(); return true; })()""")
     time.sleep(1.2)
     if livre:
         n.foto("garcom-abrir-mesa")
-        n.js("document.querySelector('app-folha button[aria-label], app-folha .fechar')?.click()")
     n.ir("/comandas")
-    aberta = n.js("""(() => { const m = [...document.querySelectorAll('.mesa.minha')][0];
-        if (!m) return null; m.click(); return location.pathname; })()""")
-    time.sleep(2.5)
-    n.foto("garcom-comanda", pagina_inteira=True)
+    n.js("[...document.querySelectorAll('.mesa.minha')][0]?.click()")
+    time.sleep(3)
+    aberta = n.js("location.pathname")
+    n.foto("garcom-comanda")
     n.clicar("Bebidas", "button")
     item = n.js("""(() => { const b = [...document.querySelectorAll('.lista.cardapio li button')].find(x => !x.disabled);
         if (!b) return false; b.click(); return true; })()""")
     time.sleep(1.2)
     if item:
         n.foto("garcom-lancar-item")
+        # Lança de fato, para a tela A entregar mostrar o item pendente.
+        n.clicar("Lançar 1", "app-folha button", espera=2.5)
     n.ir("/a-entregar")
-    n.foto("garcom-pendencias", pagina_inteira=True)
-    if aberta:
-        n.ir(aberta + "/fechar")
-        n.foto("garcom-fechar", pagina_inteira=True)
+    n.foto("garcom-pendencias")
+    if aberta.startswith("/comandas/"):
+        n.ir(aberta + "/fechar", 3)
+        n.foto("garcom-fechar")
     n.ir("/desempenho")
-    n.foto("garcom-desempenho", pagina_inteira=True)
+    n.foto("garcom-desempenho")
 
 
 def metre(n: Navegador) -> None:
@@ -144,10 +149,55 @@ def gerente(n: Navegador) -> None:
     n.foto("gerente-usuarios", pagina_inteira=True)
 
 
+
+
+def codigo_totp(chave_base32: str, agora: float | None = None) -> str:
+    """Código de 6 dígitos (RFC 6238), o mesmo que o aplicativo autenticador mostraria para a conta de teste."""
+    import hashlib
+    import hmac
+    import struct
+
+    chave = base64.b32decode(chave_base32.replace(" ", "").upper() + "=" * (-len(chave_base32.replace(" ", "")) % 8))
+    contador = struct.pack(">Q", int((agora or time.time()) // 30))
+    resumo = hmac.new(chave, contador, hashlib.sha1).digest()
+    deslocamento = resumo[-1] & 0x0F
+    numero = struct.unpack(">I", resumo[deslocamento:deslocamento + 4])[0] & 0x7FFFFFFF
+    return f"{numero % 1_000_000:06d}"
+
+
+def preencher(n: Navegador, seletor: str, valor: str) -> None:
+    n.js(f"""(() => {{ const e = document.querySelector({json.dumps(seletor)}); e.value = {json.dumps(valor)};
+        e.dispatchEvent(new Event('input', {{ bubbles: true }})); }})()""")
+
+
+def entrar(n: Navegador, email: str) -> None:
+    """Login com a conta de teste do semeador; a senha vem de GASTRA_SEMEADOR_SENHA (infra/.env) e não é exibida."""
+    import os
+
+    n.enviar("Emulation.clearDeviceMetricsOverride")
+    n.ir("/acesso/login", 1.5)
+    n.js("localStorage.clear(); sessionStorage.clear();")
+    n.ir("/acesso/login", 1.5)
+    preencher(n, "#email", email)
+    preencher(n, "#senha", os.environ["GASTRA_SEMEADOR_SENHA"])
+    n.js("document.querySelector('form').requestSubmit()")
+    time.sleep(3)
+    if n.js("location.pathname").startswith("/acesso/segundo-fator"):
+        chave = n.js("document.querySelector('.chave-manual code')?.textContent?.trim() ?? null")
+        if not chave:
+            raise SystemExit("Segundo fator já configurado em outra sessão: sem a chave, não há como gerar o código.")
+        preencher(n, "#codigo", codigo_totp(chave))
+        n.js("document.querySelector('form').requestSubmit()")
+        time.sleep(3)
+    print("   entrou:", n.js("location.pathname"))
+
+
 if __name__ == "__main__":
     papel = sys.argv[1]
     navegador = Navegador()
     if papel == "cliente":
         cliente(navegador, sys.argv[2])
     else:
+        if len(sys.argv) > 2:
+            entrar(navegador, sys.argv[2])
         {"garcom": garcom, "metre": metre, "gerente": gerente}[papel](navegador)
