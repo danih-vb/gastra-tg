@@ -10,59 +10,70 @@ repositório em 5 de novembro de 2026 e são reproduzíveis: cada tabela indica 
 ## 5.1 APRESENTAÇÃO DO PRODUTO E TELAS
 
 O GASTRA é uma aplicação web única, que apresenta a cada papel apenas as telas que lhe cabem. Esta seção percorre
-o sistema pela perspectiva de cada usuário; o funcionamento detalhado de cada tela está no manual do usuário, no
-Apêndice A.
+o sistema em funcionamento, pela perspectiva de cada usuário; as figuras são capturas do sistema completo em
+execução, com os dados simulados do semeador, e o funcionamento detalhado de cada tela está no manual do usuário,
+no Apêndice A.
 
-> **[SUBSTITUIR as figuras desta seção pelas capturas das telas em Angular.]** As imagens abaixo são do protótipo
-> navegável (seção 4.4.5). As telas do Cliente podem ser capturadas sem login; as dos demais papéis precisam de
-> uma sessão aberta. Manter os mesmos enquadramentos.
+O Garçom usa o sistema no celular (Figura 18). A tela inicial mostra as mesas do salão, com as da praça em que ele
+foi alocado no turno destacadas, e abre uma mesa em dois toques — a mesa livre e a quantidade de pessoas —, dentro
+do limite do RNF02. Na comanda, ele vê as restrições da mesa, os itens a entregar e as sugestões de pratos, e
+lança cada item em dois toques. Se a mesa tem uma restrição que o item não atende, o sistema avisa antes do
+lançamento, sem impedi-lo; se o serviço analítico estiver fora do ar, a comanda continua funcionando e apenas as
+sugestões deixam de aparecer. A tela A entregar reúne os itens pendentes de todas as mesas do garçom, do mais
+antigo ao mais novo, e marca como atrasado o que passou de 15 minutos (Figura 19). O fechamento só é liberado com
+todos os itens entregues ou cancelados com motivo (RN02), e a taxa de serviço vem incluída, removível e
+recolocável a pedido do cliente. Em Desempenho, o garçom vê a própria posição e o índice que a explica, sem os
+valores dos colegas.
 
-O Garçom usa o sistema no celular. A tela inicial mostra as mesas da praça em que ele foi alocado no turno,
-separadas das mesas dos colegas, e abre uma mesa em dois toques — a mesa livre e a quantidade de pessoas —, dentro
-do limite do RNF02. Na comanda (Figura 10, no capítulo 4), ele lança os itens, acompanha os pendentes, registra a
-restrição alimentar informada pelo cliente e recebe as sugestões de pratos; se o serviço analítico estiver fora do
-ar, a comanda continua funcionando e apenas as sugestões deixam de aparecer. O fechamento só é liberado com todos
-os itens entregues ou cancelados com motivo (RN02), e a taxa de serviço vem incluída, removível a pedido do
-cliente.
+**Figura 18 – Garçom: do salão ao lançamento do item**
 
-**Figura 11 – Mesas do Garçom**
-
-![Mesas do Garçom](../../ux-ui/telas/garcom-mesas.png)
+![Garçom: do salão ao lançamento do item](../../ux-ui/telas-reais/paineis/garcom-1.png)
 
 Fonte: elaborado pelos autores.
 
-O Metre monta o turno em três passos: marca os garçons presentes, recebe a sugestão de alocação e a confirma,
-podendo antes mover qualquer garçom de praça (Figura 12). A sugestão mostra, embaixo do nome de cada garçom, o
+**Figura 19 – Garçom: itens a entregar, fechamento e desempenho**
+
+![Garçom: itens a entregar, fechamento e desempenho](../../ux-ui/telas-reais/paineis/garcom-2.png)
+
+Fonte: elaborado pelos autores.
+
+O Metre monta o turno em três passos (Figura 20): marca os garçons presentes, recebe a sugestão de alocação e a
+confirma, podendo antes mover qualquer garçom de praça. A sugestão mostra, embaixo do nome de cada garçom, o
 motivo da escolha — a faixa de vendas em relação à equipe e há quantos turnos ele não recebe uma praça de alto
-movimento —, sem exibir valores de faturamento, que são indicadores de desempenho restritos ao Gerente (decisão
-D14). Depois de confirmada, a alocação não muda mais e passa a compor o histórico usado pela RN03.
+movimento —, sem exibir valores de faturamento, que são indicadores restritos ao Gerente (decisão D14). Depois de
+confirmada, a alocação não muda mais e passa a compor o histórico usado pela RN03. Em Salão agora, o Metre
+acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados.
 
-**Figura 12 – Sugestão de alocação de garçons**
+**Figura 20 – Metre: alocação do turno e salão**
 
-![Sugestão de alocação de garçons](../../ux-ui/telas/metre-sugestao.png)
-
-Fonte: elaborado pelos autores.
-
-O Gerente acompanha a operação pelos relatórios de Business Intelligence (Figura 13): faturamento por praça, com
-destaque para as de alto potencial, pela mesma regra usada na alocação; faturamento por hora e por dia da semana,
-em mapa de calor; ranking dos garçons pelo índice de desempenho; faturamento por item e por categoria; a média
-das avaliações dos clientes, sempre agregada; e os perfis de consumo encontrados pela clusterização, com os itens
-que caracterizam cada tipo de mesa. O Gerente também gerencia o cardápio, as promoções, as praças, as
-mesas e as contas de usuário; o Coordenador tem acesso somente ao cardápio e às promoções.
-
-**Figura 13 – Relatórios de Business Intelligence do Gerente**
-
-![Relatórios de Business Intelligence](../../ux-ui/telas/gerente-analises.png)
+![Metre: alocação do turno e salão](../../ux-ui/telas-reais/paineis/metre.png)
 
 Fonte: elaborado pelos autores.
 
-O Cliente não se autentica. Pelo QR code da mesa, ele consulta o cardápio digital, com filtros por restrição
-alimentar, e acompanha a própria conta em tempo real, com a situação de cada item (Figura 14). Depois que a conta
-é fechada, pode avaliar o atendimento com uma nota de 1 a 5 e um comentário opcional, sem que nada o identifique.
+O Gerente acompanha a operação pelos relatórios de Business Intelligence (Figura 21): faturamento, ticket médio e
+tempo médio de atendimento no período; os perfis de consumo encontrados pela clusterização, com os itens que
+caracterizam cada tipo de mesa; faturamento por praça, com destaque para as de alto potencial, pela mesma regra
+usada na alocação; faturamento por hora, em mapa de calor; ranking dos garçons pelo índice de desempenho; itens
+mais vendidos; e a engenharia de cardápio, que separa os itens em estrela, burro de carga, quebra-cabeça e cão
+pela popularidade e pelo valor de venda dentro da categoria (KASAVANA; SMITH, 1982). O Gerente também gerencia o
+cardápio, com fotos e promoções, as praças, as mesas e as contas de usuário; o Coordenador tem acesso somente ao
+cardápio e às promoções.
 
-**Figura 14 – Conta do Cliente**
+**Figura 21 – Gerente: análises, cardápio, salão e usuários**
 
-![Conta do Cliente](../../ux-ui/telas/cliente-conta.png)
+![Gerente: análises, cardápio, salão e usuários](../../ux-ui/telas-reais/paineis/gerente.png)
+
+Fonte: elaborado pelos autores.
+
+O Cliente não se autentica (Figura 22). Na tela da comanda, o garçom mostra um QR code que abre a conta da mesa no
+celular do cliente; ali ele acompanha os itens lançados e a situação de cada um, atualizados a cada segundo
+(RNF01), chama o garçom e divide o total entre as pessoas da mesa. O cardápio digital tem fotos e filtros por
+restrição alimentar. Depois que a conta é fechada, o cliente pode avaliar o atendimento com uma nota de 1 a 5 e um
+comentário opcional, sem que nada o identifique.
+
+**Figura 22 – Cliente: cardápio digital e conta**
+
+![Cliente: cardápio digital e conta](../../ux-ui/telas-reais/paineis/cliente.png)
 
 Fonte: elaborado pelos autores.
 
@@ -159,7 +170,7 @@ turno de cada garçom, em que zero significa todos iguais: é a dor que apareceu
 campo. A secundária é a espera máxima: a maior sequência de turnos em que algum garçom trabalhou sem receber uma
 praça de alto potencial. Para comparação, duas políticas de referência rodaram nas mesmas sementes: uma sem regra,
 em que cada garçom tende a ficar sempre na mesma praça, e um rodízio simples, que gira a ordem dos garçons a cada
-turno. Os resultados estão na Tabela 3 e na Figura 15.
+turno. Os resultados estão na Tabela 3 e na Figura 23.
 
 **Tabela 3 – Resultado da calibração dos pesos da RN03**
 
@@ -181,7 +192,7 @@ turno. Os resultados estão na Tabela 3 e na Figura 15.
 
 Fonte: elaborado pelos autores, com 20 sementes de 120 turnos para cada política.
 
-**Figura 15 – Desigualdade e espera máxima em função do peso w1**
+**Figura 23 – Desigualdade e espera máxima em função do peso w1**
 
 ![Calibração dos pesos da RN03](../../analises/calibracao_rn03.png)
 
@@ -302,9 +313,9 @@ venda de cada garçom, estimado pela razão entre o ticket médio das suas coman
 partir daí, simularam-se 120 turnos, o equivalente a 60 dias, com cinco políticas de alocação, nas mesmas 20
 sementes, resolvendo-se a cada turno a mesma programação linear usada pelo sistema. A cada turno, calculou-se o
 Gini do faturamento médio por turno de cada garçom nos 30 dias anteriores, que é a desigualdade percebida pela
-equipe e a janela usada pela própria RN03. Os resultados estão na Figura 16 e na Tabela 7.
+equipe e a janela usada pela própria RN03. Os resultados estão na Figura 24 e na Tabela 7.
 
-**Figura 16 – Desigualdade entre os garçons, turno a turno, conforme a política de alocação**
+**Figura 24 – Desigualdade entre os garçons, turno a turno, conforme a política de alocação**
 
 ![Evolução do Gini por turno](../../analises/evolucao_gini_rn03.png)
 
@@ -341,29 +352,77 @@ usabilidade (NIELSEN, 1994). Avaliou-se a tela implementada, e não o protótipo
 usar, e porque as correções passam a valer no sistema entregue. Foram usadas as dez heurísticas de Nielsen (1994): visibilidade do
 estado do sistema; correspondência entre o sistema e o mundo real; controle e liberdade do usuário; consistência e
 padrões; prevenção de erros; reconhecimento em vez de memorização; flexibilidade e eficiência de uso; estética e
-design minimalista; ajuda para reconhecer, diagnosticar e corrigir erros; e ajuda e documentação.
+design minimalista; ajuda para reconhecer, diagnosticar e corrigir erros; e ajuda e documentação, numeradas de H1 a H10 nessa ordem.
 
-A avaliação foi cruzada: cada integrante avaliou as telas desenhadas pelo outro — um, as do Gerente e do Cliente;
-o outro, as do Garçom e do Metre —, para que ninguém avaliasse o próprio desenho. Cada problema foi registrado
-com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta pelo autor: zero quando não
-chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é menor, três quando é grave e
-quatro quando impede o uso. Os problemas de severidade três e quatro foram corrigidos no código antes da entrega;
-os demais foram corrigidos ou aceitos com justificativa.
+A avaliação percorreu as 21 telas do sistema em execução — as quatro do cliente, o acesso, as sete do garçom, as
+três do Metre, as quatro do Gerente e a de conta não encontrada —, no tamanho de tela de cada papel: celular para
+o garçom e o cliente, computador para o Metre e o Gerente. Ela foi conduzida com o apoio de um assistente de
+inteligência artificial (Claude, da Anthropic), que aplicou as dez heurísticas a cada captura e registrou cada
+problema com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta pelo autor: zero
+quando não chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é menor, três quando é
+grave e quatro quando impede o uso. Os dois integrantes revisaram a lista e confirmaram a severidade de cada
+problema. **[CONFIRMAR: a dupla revisa o Quadro 8 antes da entrega.]**
+
+A avaliação encontrou onze problemas, nenhum de severidade três ou quatro, apresentados no Quadro 8. Os três de
+severidade dois foram tratados. Dois foram corrigidos no código: no cardápio digital, os filtros por restrição
+rolavam de lado no celular, e um filtro ativo podia ficar fora da tela; e, na conta do cliente, o item pendente
+aparecia como "A caminho", situação que o sistema não tem como saber, e passou a aparecer como "Aguardando". O
+terceiro foi aceito: em uma mesa com alergia registrada, o aviso para confirmar os ingredientes aparece em todos os
+itens, inclusive nos que não oferecem risco aparente, o que pode levar o garçom a deixar de lê-lo; como o cardápio
+não tem como conferir alergias, preferiu-se o aviso em excesso à falta dele. Os oito problemas de severidade um
+são estéticos ou de conveniência e ficaram registrados para versões futuras.
+
+**Quadro 8 – Problemas encontrados na avaliação heurística**
+
+| Nº | Tela | Heurística | Problema | Grau | Tratamento |
+|---|---|---|---|---|---|
+| 1 | Cardápio digital | H1 | No celular, filtros fora da tela; um filtro ativo podia não aparecer | 2 | Corrigido |
+| 2 | Conta do cliente | H2 | Item pendente exibido como "A caminho" | 2 | Corrigido |
+| 3 | Comanda | H8 | Aviso de alergia repetido em todos os itens | 2 | Aceito |
+| 4 | Entrar | H5 | Sem opção de mostrar a senha digitada no celular | 1 | Registrado |
+| 5 | Abrir mesa | H5 | A capacidade da mesa vem destacada como quantidade de pessoas | 1 | Registrado |
+| 6 | Início do cliente | H8 | Nome do sistema repetido no cabeçalho e no título | 1 | Registrado |
+| 7 | Conta não encontrada | H8 | Título e mensagem dizem a mesma coisa | 1 | Registrado |
+| 8 | Análises | H7 | Página longa, sem atalho para cada relatório | 1 | Registrado |
+| 9 | Análises | H2 | Perfis de consumo com nomes genéricos (Perfil 1, 2 e 3) | 1 | Registrado |
+| 10 | Todas | H6 | Botão de sair só com ícone | 1 | Registrado |
+| 11 | Alocação | H8 | No computador, a tela usa só parte da largura | 1 | Registrado |
+
+Fonte: elaborado pelos autores.
 
 O método tem uma limitação conhecida: um único avaliador encontra, em média, cerca de um terço dos problemas de
-uma interface, e são necessários de três a cinco para encontrar a maior parte deles (NIELSEN, 1994). Com dois
-avaliadores, parte dos problemas certamente não foi encontrada; por isso a avaliação heurística complementa, e não
-substitui, a observação de garçons e clientes usando o sistema no salão, que fica como trabalho futuro (capítulo 6).
-
-> **[A PREENCHER depois da avaliação — issues #101 e #102.]** O resultado em números (quantos problemas, por
-> severidade e por heurística), dois ou três exemplos com a correção feita, e o que foi aceito sem correção. Se
-> houver avaliador externo, ajustar o segundo e o terceiro parágrafos.
+uma interface, e são necessários de três a cinco para encontrar a maior parte deles (NIELSEN, 1994). A avaliação
+sobre capturas também não percebe o que só aparece no uso, como a demora de uma resposta ou um toque difícil de
+acertar. Por isso, a avaliação heurística complementa, e não substitui, a observação de garçons e clientes usando
+o sistema no salão, que fica como trabalho futuro (capítulo 6).
 
 ### 5.2.6 Testes operacionais
 
-> **[A PREENCHER depois da Sprint 5 — issues #207 a #211.]** Descrever os cenários de ponta a ponta executados
-> com o sistema completo em contêineres (navegador contra a API e o banco reais, sem dublês): um roteiro por papel,
-> do login à tarefa principal; a medição do RNF01 (tempo até o pedido aparecer na comanda do cliente) e do RNF02
-> (toques para abrir mesa e lançar item) no sistema real; e os defeitos encontrados, com a correção de cada um.
-> Incluir o teste em máquina limpa (#177): o sistema subindo com um único comando em um computador sem as
-> ferramentas de desenvolvimento.
+Os testes operacionais executam o sistema completo como na entrega — navegador, interface de programação, serviço
+analítico e banco de dados, todos em contêineres, sem nenhum dublê —, seguindo o roteiro por papel do plano de
+testes do repositório (`docs/testes/GASTRA_Plano_Testes_Operacionais.md`). Cada rodada começa do mesmo estado: um
+único comando apaga o banco, sobe os quatro serviços, aplica as migrations e preenche os dados simulados com o
+turno do dia.
+
+A primeira rodada foi executada em 13 de novembro de 2026, junto da captura das telas da seção 5.1, e cobriu os
+quatro papéis: o login com segundo fator do Gerente; as telas de análises, cardápio, salão e usuários; a sugestão
+de alocação do Metre, com o motivo de cada garçom, e o painel do salão; a abertura de mesa, o lançamento de item, as
+sugestões, a lista de itens a entregar, o bloqueio do fechamento com item pendente e o desempenho, do lado do
+garçom; e o cardápio digital com filtros e a conta do cliente, com o chamado do garçom e a divisão do total. Os dois
+fluxos medidos pelo RNF02 ficaram dentro do limite: a mesa abre com dois toques (a mesa e a quantidade de pessoas) e
+o item é lançado com dois (o item e a confirmação), contra o máximo de cinco no total.
+
+A rodada encontrou um defeito que nenhum teste automatizado havia acusado. Depois de um tempo sem uso, a comanda
+mostrava "Sugestões indisponíveis agora": o serviço analítico mantinha o modelo de recomendação em cache por cinco
+minutos e, vencido o prazo, treinava o modelo de novo dentro da própria requisição; com o contêiner ocioso, o treino
+passou dos dois segundos que o backend espera, e a requisição foi abandonada. Pela decisão D3, o atendimento seguiu
+normalmente, mas as sugestões sumiram justamente no primeiro pedido depois de uma pausa. A correção treina o primeiro
+modelo assim que o serviço sobe e, vencido o prazo, responde na hora com o modelo anterior enquanto o novo é
+treinado em segundo plano. No sistema corrigido, o primeiro pedido de sugestão depois da subida foi respondido em
+0,006 segundo. A rodada também levou às duas correções de usabilidade descritas na seção 5.2.5.
+
+> **[A PREENCHER depois da segunda rodada.]** Os passos que ainda dependem da dupla: a medição do RNF01 com dois
+> celulares (tempo do lançamento pelo garçom até o item aparecer na conta do cliente, em dez repetições); a leitura
+> do QR code pelo celular do cliente; a confirmação da alocação pelo Metre; a parada do serviço analítico com o
+> sistema em uso; e o teste em máquina limpa (#177), com o sistema subindo em um computador sem as ferramentas de
+> desenvolvimento. Registrar a quantidade de passos executados e aprovados por papel, como no resumo do plano.
