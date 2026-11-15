@@ -75,19 +75,19 @@ repete todo dia (um problema na tela de lançar item pesa mais que um na tela de
 
 | Nº | Avaliador | Tela | Heurística | Problema | Severidade | Correção ou justificativa | Issue/PR |
 |---|---|---|---|---|---|---|---|
-| 1 | Avaliador: Claude (IA), revisado pela dupla | Cardápio digital | H1 | No celular, filtros fora da tela; um filtro ativo podia não aparecer | 2 | Corrigido: os filtros quebram em linhas | #261 |
-| 2 | Avaliador: Claude (IA), revisado pela dupla | Conta do cliente | H2 | Item pendente exibido como "A caminho", o que o sistema não sabe | 2 | Corrigido: passa a "Aguardando" | #261 |
-| 3 | Avaliador: Claude (IA), revisado pela dupla | Comanda | H8 | Em mesa com alergia, o aviso para confirmar ingredientes aparece em todos os itens | 2 | Aceito: o cardápio não confere alergia; o aviso em excesso é preferível à falta | — |
-| 4 | Avaliador: Claude (IA), revisado pela dupla | Entrar | H5 | Sem opção de mostrar a senha digitada no celular | 1 | Registrado para versão futura | — |
-| 5 | Avaliador: Claude (IA), revisado pela dupla | Abrir mesa | H5 | A capacidade da mesa vem destacada como quantidade de pessoas | 1 | Registrado: o toque em qualquer número abre a mesa | — |
-| 6 | Avaliador: Claude (IA), revisado pela dupla | Início do cliente | H8 | Nome do sistema repetido no cabeçalho e no título | 1 | Registrado | — |
-| 7 | Avaliador: Claude (IA), revisado pela dupla | Conta não encontrada | H8 | Título e mensagem dizem a mesma coisa | 1 | Registrado | — |
-| 8 | Avaliador: Claude (IA), revisado pela dupla | Análises | H7 | Página longa, sem atalho para cada relatório | 1 | Registrado para versão futura | — |
-| 9 | Avaliador: Claude (IA), revisado pela dupla | Análises | H2 | Perfis de consumo com nomes genéricos (Perfil 1, 2 e 3) | 1 | Registrado: o nome seria inventado pelo sistema | — |
-| 10 | Avaliador: Claude (IA), revisado pela dupla | Todas | H6 | Botão de sair só com ícone | 1 | Registrado: tem rótulo para leitor de tela | — |
-| 11 | Avaliador: Claude (IA), revisado pela dupla | Alocação | H8 | No computador, a tela usa só parte da largura | 1 | Registrado | — |
+| 1 | | Cardápio digital | H1 | No celular, filtros fora da tela; um filtro ativo podia não aparecer | 2 | Corrigido: os filtros quebram em linhas | #261 |
+| 2 | | Conta do cliente | H2 | Item pendente exibido como "A caminho", o que o sistema não sabe | 2 | Corrigido: passa a "Aguardando" | #261 |
+| 3 | | Comanda | H8 | Em mesa com alergia, o aviso para confirmar ingredientes aparece em todos os itens | 2 | Aceito: o cardápio não confere alergia; o aviso em excesso é preferível à falta | — |
+| 4 | | Entrar | H5 | Sem opção de mostrar a senha digitada no celular | 1 | Registrado para versão futura | — |
+| 5 | | Abrir mesa | H5 | A capacidade da mesa vem destacada como quantidade de pessoas | 1 | Registrado: o toque em qualquer número abre a mesa | — |
+| 6 | | Início do cliente | H8 | Nome do sistema repetido no cabeçalho e no título | 1 | Registrado | — |
+| 7 | | Conta não encontrada | H8 | Título e mensagem dizem a mesma coisa | 1 | Registrado | — |
+| 8 | | Análises | H7 | Página longa, sem atalho para cada relatório | 1 | Registrado para versão futura | — |
+| 9 | | Análises | H2 | Perfis de consumo com nomes genéricos (Perfil 1, 2 e 3) | 1 | Registrado: o nome seria inventado pelo sistema | — |
+| 10 | | Todas | H6 | Botão de sair só com ícone | 1 | Registrado: tem rótulo para leitor de tela | — |
+| 11 | | Alocação | H8 | No computador, a tela usa só parte da largura | 1 | Registrado | — |
 
-Avaliação feita em 13/11/2026 sobre as capturas do sistema em execução (`docs/ux-ui/telas-reais`), com o apoio de IA declarado na seção 5.2.5. **A dupla revisa e confirma as severidades.**
+Avaliação feita em 13/11/2026 sobre as capturas do sistema em execução (`docs/ux-ui/telas-reais`). **A dupla preenche o avaliador, revisa e confirma as severidades.**
 
 ## Cobertura por tela
 

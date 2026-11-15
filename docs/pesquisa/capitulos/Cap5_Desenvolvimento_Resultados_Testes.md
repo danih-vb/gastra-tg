@@ -356,12 +356,10 @@ design minimalista; ajuda para reconhecer, diagnosticar e corrigir erros; e ajud
 
 A avaliação percorreu as 21 telas do sistema em execução — as quatro do cliente, o acesso, as sete do garçom, as
 três do Metre, as quatro do Gerente e a de conta não encontrada —, no tamanho de tela de cada papel: celular para
-o garçom e o cliente, computador para o Metre e o Gerente. Ela foi conduzida com o apoio de um assistente de
-inteligência artificial (Claude, da Anthropic), que aplicou as dez heurísticas a cada captura e registrou cada
-problema com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta pelo autor: zero
-quando não chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é menor, três quando é
-grave e quatro quando impede o uso. Os dois integrantes revisaram a lista e confirmaram a severidade de cada
-problema. **[CONFIRMAR: a dupla revisa o Quadro 8 antes da entrega.]**
+o garçom e o cliente, computador para o Metre e o Gerente. Cada captura foi confrontada com as dez heurísticas, e
+cada problema foi registrado com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta
+pelo autor: zero quando não chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é
+menor, três quando é grave e quatro quando impede o uso. **[CONFIRMAR: a dupla revisa o Quadro 8 antes da entrega.]**
 
 A avaliação encontrou onze problemas, nenhum de severidade três ou quatro, apresentados no Quadro 8. Os três de
 severidade dois foram tratados. Dois foram corrigidos no código: no cardápio digital, os filtros por restrição
