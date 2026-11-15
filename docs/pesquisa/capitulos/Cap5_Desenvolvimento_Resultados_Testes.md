@@ -359,7 +359,8 @@ três do Metre, as quatro do Gerente e a de conta não encontrada —, no tamanh
 o garçom e o cliente, computador para o Metre e o Gerente. Cada captura foi confrontada com as dez heurísticas, e
 cada problema foi registrado com a tela, a heurística violada e a severidade, na escala de zero a quatro proposta
 pelo autor: zero quando não chega a ser um problema de usabilidade, um quando é apenas estético, dois quando é
-menor, três quando é grave e quatro quando impede o uso. **[CONFIRMAR: a dupla revisa o Quadro 8 antes da entrega.]**
+menor, três quando é grave e quatro quando impede o uso. Os dois autores revisaram cada problema sobre as telas e
+confirmaram a severidade atribuída.
 
 A avaliação encontrou onze problemas, nenhum de severidade três ou quatro, apresentados no Quadro 8. Os três de
 severidade dois foram tratados. Dois foram corrigidos no código: no cardápio digital, os filtros por restrição
