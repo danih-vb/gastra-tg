@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GASTRA · Garçom (protótipo)</title>
+  <link rel="stylesheet" href="assets/prototipo.css">
+  <style>
+    .resumo-turno { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .resumo-turno .cartao { padding: 10px 12px; }
+    .resumo-turno strong { display: block; font-size: 1.25rem; color: var(--marinho-forte); font-variant-numeric: tabular-nums; }
+    .resumo-turno span { font-size: 0.75rem; color: var(--texto-suave); }
+
+    .praca-titulo { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 8px; }
+    .grade-mesas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .mesa {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+      min-height: 92px; padding: 10px; text-align: left;
+      background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio);
+      cursor: pointer; position: relative; color: inherit; text-decoration: none;
+    }
+    .mesa .numero { font-size: 1.375rem; font-weight: 700; color: var(--marinho-forte); line-height: 1.1; }
+    .mesa .estado { font-size: 0.75rem; color: var(--texto-suave); }
+    .mesa .valor { margin-top: auto; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .mesa.livre { border-style: dashed; border-color: var(--borda-forte); background: transparent; }
+    .mesa.minha { border: 2px solid var(--marinho); }
+    .mesa.outro { background: #eceae6; }
+    .mesa.outro .numero { color: var(--texto-suave); }
+    .mesa .pendentes { position: absolute; top: 8px; right: 8px; }
+
+    .linha-item { display: flex; align-items: center; gap: 10px; }
+    .linha-item .qtd { min-width: 32px; font-weight: 700; color: var(--marinho); font-variant-numeric: tabular-nums; }
+    .linha-item .nome { flex: 1; min-width: 0; }
+    .linha-item .nome small { display: block; color: var(--texto-suave); }
+    .linha-item.cancelado .nome { text-decoration: line-through; color: var(--texto-suave); }
+    .linha-item.pendente { flex-wrap: wrap; row-gap: 8px; }
+    .linha-item.pendente .acoes-item { flex-basis: 100%; display: flex; gap: 8px; padding-left: 42px; }
+    .linha-item.pendente .acoes-item .botao { flex: 1; }
+
+    .cardapio-lista > li { cursor: pointer; }
+    .cardapio-lista > li[aria-disabled="true"] { cursor: not-allowed; color: var(--texto-suave); }
+    .preco { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .preco s { display: block; font-size: 0.75rem; font-weight: 400; color: var(--texto-suave); }
+
+    .pessoas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .pessoas button {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      min-height: 72px; padding: 6px; background: var(--superficie);
+      border: 1px solid var(--borda-forte); border-radius: var(--raio); cursor: pointer;
+    }
+    .pessoas button strong { font-size: 1.375rem; color: var(--marinho-forte); }
+    .pessoas button span { font-size: 0.6875rem; color: var(--texto-suave); text-align: center; line-height: 1.15; }
+    .pessoas button.sugerido { border: 2px solid var(--laranja); background: var(--laranja-suave); }
+
+    .seletor-qtd { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 8px 0; }
+    .seletor-qtd output { min-width: 48px; text-align: center; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .seletor-qtd .botao-icone { border: 1px solid var(--borda-forte); }
+
+    .rodape-fixo {
+      position: sticky; bottom: 0; z-index: 4;
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      background: var(--superficie); border-top: 1px solid var(--borda); box-shadow: 0 -4px 12px rgb(30 37 48 / 6%);
+    }
+    .rodape-fixo .total { flex: 1; }
+    .rodape-fixo .total strong { display: block; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+
+    .linha-total { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+    .linha-total.grande { font-size: 1.375rem; font-weight: 700; border-top: 1px solid var(--borda); margin-top: 6px; padding-top: 12px; }
+
+    .posicao { display: flex; align-items: baseline; gap: 8px; }
+    .posicao strong { font-size: 3.5rem; line-height: 1; color: var(--laranja-forte); font-variant-numeric: tabular-nums; }
+    .indice-barra { height: 10px; background: var(--marinho-suave); border-radius: 5px; overflow: hidden; }
+    .indice-barra div { height: 100%; background: var(--laranja); }
+  </style>
+</head>
+<body class="moldura-celular">
+  <div class="celular" id="app"></div>
+
+  <script src="assets/base.js"></script>
+  <script src="assets/cenas.js"></script>
+  <script src="assets/dados.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { icone, moeda, numero, escapar, rota, navegar, abrirFolha, fecharFolha, avisar, marco, estados } = G;
+    const D = DADOS;
+    const EU = D.usuarios.find((u) => u.id === 11);
+    const minhaPraca = () => D.alocacaoAtual.designacoes[EU.id];
+    const app = document.getElementById('app');
+    let filtroPraca = 'minha';
+    const categoriaAtiva = {};
+
+    const mesa = (id) => D.mesas.find((m) => m.id === Number(id));
+    const praca = (id) => D.pracas.find((p) => p.id === id);
+    const comandaDaMesa = (mesaId) => D.comandas.find((c) => c.mesaId === mesaId && !c.fechada);
+    const comanda = (id) => D.comandas.find((c) => c.id === Number(id));
+    const pendentes = (c) => c.itens.filter((i) => i.status === 'Pendente');
+    const temInfantil = (c) => c.itens.some((i) => i.status !== 'Cancelado' && D.cardapio.find((x) => x.id === i.itemCardapioId).flags.includes('OpcaoInfantil'));
+    const nomeGarcom = (id) => D.usuarios.find((u) => u.id === id).nome.split(' ')[0];
+
+    function tela({ titulo, sub = '', voltar = null, acoes = '', corpo, rodape = '', nav = null }) {
+      app.innerHTML = `
+        <header class="topo">
+          ${voltar ? `<a class="botao-icone" href="#${voltar}" aria-label="Voltar" data-toque>${icone('voltar')}</a>` : ''}
+          <div><h1>${titulo}</h1>${sub ? `<div class="sub">${sub}</div>` : ''}</div>
+          <div class="acoes">${acoes}</div>
+        </header>
+        <main class="conteudo">${corpo}</main>
+        ${rodape}
+        ${nav ? navInferior(nav) : ''}`;
+    }
+
+    function navInferior(atual) {
+      const total = D.comandas.filter((c) => c.garcomId === EU.id && !c.fechada).reduce((s, c) => s + pendentes(c).length, 0);
+      const item = (rotaNav, nome, ic, extra = '') =>
+        `<a href="#${rotaNav}" ${atual === rotaNav ? 'aria-current="page"' : ''} data-toque>${icone(ic)}<span>${nome}${extra}</span></a>`;
+      return `<nav class="nav-inferior" aria-label="Navegação principal">
+        ${item('/mesas', 'Mesas', 'mesa')}
+        ${item('/pendencias', 'A entregar', 'relogio', total ? ` (${total})` : '')}
+        ${item('/desempenho', 'Desempenho', 'trofeu')}
+      </nav>`;
+    }
+
+    const botaoSair = `<button class="botao-icone" type="button" data-acao="sair" aria-label="Sair">${icone('sair')}</button>`;
+
+    // ---------------- Mesas (UC10: ponto de partida) ----------------
+    rota('/mesas', () => {
+      const minhas = D.comandas.filter((c) => c.garcomId === EU.id && !c.fechada);
+      const pend = minhas.reduce((s, c) => s + pendentes(c).length, 0);
+      const pracasVisiveis = filtroPraca === 'minha' ? [praca(minhaPraca())] : D.pracas;
+
+      tela({
+        titulo: `Olá, ${EU.nome.split(' ')[0]}`,
+        sub: `Jantar · quinta, 17/09 · sua praça: ${praca(minhaPraca()).codigo}`,
+        acoes: botaoSair,
+        nav: '/mesas',
+        corpo: `
+          <section class="resumo-turno" aria-label="Resumo do turno">
+            <div class="cartao"><strong>${minhas.length}</strong><span>mesas abertas</span></div>
+            <div class="cartao"><strong>${pend}</strong><span>itens a entregar</span></div>
+            <div class="cartao"><strong>${moeda(minhas.reduce((s, c) => s + D.totais(c).subtotal, 0)).replace(',00', '')}</strong><span>em consumo</span></div>
+          </section>
+          <div class="chips" role="group" aria-label="Filtrar mesas">
+            <button class="chip" type="button" data-filtro="minha" aria-pressed="${filtroPraca === 'minha'}">Minha praça (${praca(minhaPraca()).codigo})</button>
+            <button class="chip" type="button" data-filtro="todas" aria-pressed="${filtroPraca === 'todas'}">Todas as praças</button>
+          </div>
+          ${pracasVisiveis.map((p) => `
+            <section aria-labelledby="praca-${p.id}">
+              <div class="praca-titulo"><h2 id="praca-${p.id}">Praça ${p.codigo}</h2>
+                <span class="suave pequeno">${D.mesas.filter((m) => m.pracaId === p.id && !comandaDaMesa(m.id)).length} livres</span></div>
+              <div class="grade-mesas">
+                ${D.mesas.filter((m) => m.pracaId === p.id).map(cartaoMesa).join('')}
+              </div>
+            </section>`).join('')}
+          <p class="suave pequeno">${icone('info')} Mesa tracejada está livre: toque para abrir a comanda.</p>`,
+      });
+    });
+
+    function cartaoMesa(m) {
+      const c = comandaDaMesa(m.id);
+      if (!c) {
+        return `<button class="mesa livre" type="button" data-abrir-mesa="${m.id}" data-toque aria-label="Mesa ${m.numero}, livre, ${m.capacidade} lugares">
+          <span class="numero">${m.numero}</span><span class="estado">Livre · ${m.capacidade} lugares</span></button>`;
+      }
+      const t = D.totais(c);
+      const p = pendentes(c).length;
+      if (c.garcomId !== EU.id) {
+        return `<button class="mesa outro" type="button" data-mesa-outro="${m.id}" data-toque aria-label="Mesa ${m.numero}, atendida por ${nomeGarcom(c.garcomId)}">
+          <span class="numero">${m.numero}</span><span class="estado">${nomeGarcom(c.garcomId)}</span></button>`;
+      }
+      return `<a class="mesa minha" href="#/comanda/${c.id}" data-toque aria-label="Mesa ${m.numero}, sua, ${p} itens a entregar">
+        ${p ? `<span class="etiqueta aviso pendentes">${p} a entregar</span>` : ''}
+        <span class="numero">${m.numero}</span><span class="estado">${D.COMPOSICOES[c.composicao]} · ${c.abertaHa} min</span>
+        <span class="valor">${moeda(t.subtotal)}</span></a>`;
+    }
+
+    // UC10 + UC11 — abrir mesa: um toque na quantidade de pessoas já confirma a composição sugerida (RNF02).
+    function abrirMesa(mesaId) {
+      const m = mesa(mesaId);
+      const opcoes = [1, 2, 3, 4, 5, 6, 7, 8];
+      abrirFolha(`
+        <header><div><h2>Abrir mesa ${m.numero}</h2><p class="suave pequeno">Praça ${praca(m.pracaId).codigo} · ${m.capacidade} lugares</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <p class="rotulo" id="rotulo-pessoas"><strong>Quantas pessoas?</strong></p>
+        <p class="suave pequeno" style="margin-bottom:10px">O sistema sugere a composição (RN01). Tocar no número abre a comanda.</p>
+        <div class="pessoas" role="group" aria-labelledby="rotulo-pessoas">
+          ${opcoes.map((n) => `<button type="button" data-pessoas="${n}" data-toque class="${n === m.capacidade ? 'sugerido' : ''}">
+            <strong>${n}${n === 8 ? '+' : ''}</strong><span>${D.COMPOSICOES[D.classificar(n, false)]}</span></button>`).join('')}
+        </div>
+        <p class="suave pequeno" style="margin-top:12px">${icone('info')} “Família” é reconhecida sozinha quando um prato infantil for lançado.</p>`,
+      { rotulo: `Abrir mesa ${m.numero}`, aoMontar: (folha) => {
+        folha.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+        folha.querySelectorAll('[data-pessoas]').forEach((b) => b.addEventListener('click', () => {
+          const pessoas = Number(b.dataset.pessoas);
+          const nova = {
+            id: Math.max(...D.comandas.map((c) => c.id)) + 1, mesaId: m.id, garcomId: EU.id, pessoas,
+            composicao: D.classificar(pessoas, false), ajustada: false, taxaRemovida: false,
+            codigo: Math.random().toString(36).slice(2, 8).toUpperCase(), abertaHa: 0, itens: [], restricoes: [],
+          };
+          D.comandas.push(nova);
+          marco('mesa-aberta');
+          navegar(`/comanda/${nova.id}`);
+          avisar(`Mesa ${m.numero} aberta · ${D.COMPOSICOES[nova.composicao]}`, { acao: 'Ajustar', aoAgir: () => ajustarComposicao(nova) });
+        }));
+      } });
+    }
+
+    // ---------------- Comanda (UC11, UC12, UC13, UC18, UC23) ----------------
+    rota('/comanda/:id', ({ id }) => {
+      const c = comanda(id);
+      if (!c) return navegar('/mesas');
+      const m = mesa(c.mesaId);
+      const t = D.totais(c);
+      const pend = pendentes(c);
+      const resolvidos = c.itens.filter((i) => i.status !== 'Pendente');
+      const cat = categoriaAtiva[c.id] || 'Entrada';
+      const sug = D.sugestoes(c);
+
+      tela({
+        titulo: `Mesa ${m.numero}`,
+        sub: `${D.COMPOSICOES[c.composicao]}${c.ajustada ? ' (ajustada)' : ''} · ${c.pessoas} ${c.pessoas === 1 ? 'pessoa' : 'pessoas'} · ${c.abertaHa ? `aberta há ${c.abertaHa} min` : 'aberta agora'}`,
+        voltar: '/mesas',
+        acoes: `<button class="botao-icone" type="button" data-acao="composicao" aria-label="Ajustar composição" data-toque>${icone('pessoas')}</button>
+                <button class="botao-icone" type="button" data-acao="restricao" aria-label="Registrar restrição alimentar" data-toque>${icone('escudo')}</button>`,
+        corpo: `
+          ${c.restricoes.length ? `
+          <section class="alerta aviso" aria-label="Restrições alimentares da mesa">
+            ${icone('escudo')}
+            <div><strong>Restrições desta mesa</strong>
+              ${c.restricoes.map((r) => `<div>${D.RESTRICOES[r.categoria]}${r.observacao ? `: ${escapar(r.observacao)}` : ''}</div>`).join('')}
+              <div class="pequeno" style="margin-top:4px">Visível só enquanto a mesa está aberta. Apagada no fechamento.</div></div>
+          </section>` : ''}
+
+          <section class="cartao" aria-labelledby="t-pend">
+            <header><h2 id="t-pend">A entregar</h2><span class="etiqueta ${pend.length ? 'aviso' : 'sucesso'}">${pend.length}</span></header>
+            ${pend.length ? `<ul class="lista">${pend.map((i) => `
+              <li class="linha-item pendente">
+                <span class="qtd">${i.quantidade}×</span>
+                <span class="nome"><strong>${escapar(i.nome)}</strong><small>${i.minutosAtras ? `lançado há ${i.minutosAtras} min` : 'lançado agora'}</small></span>
+                <span class="acoes-item">
+                  <button class="botao compacto secundario" type="button" data-cancelar="${i.id}" data-toque aria-label="Cancelar ${escapar(i.nome)}">Cancelar</button>
+                  <button class="botao compacto" type="button" data-entregar="${i.id}" data-toque aria-label="Marcar ${escapar(i.nome)} como entregue">${icone('check')} Entregue</button>
+                </span>
+              </li>`).join('')}</ul>`
+            : `<div class="corpo suave">Nada pendente. ${c.itens.length ? 'Tudo entregue.' : 'Lance o primeiro item abaixo.'}</div>`}
+          </section>
+
+          <section class="cartao" aria-labelledby="t-sug">
+            <header>${icone('faisca')}<h2 id="t-sug">Sugestões para oferecer</h2></header>
+            <div class="corpo" style="display:flex;flex-direction:column;gap:10px;padding-bottom:4px">
+              ${estados.servicoIndisponivel
+                ? `<div class="alerta">${icone('info')}<div>Sugestões indisponíveis agora. O atendimento segue normalmente.</div></div>`
+                : `${sug.confirmarComCliente ? `<div class="alerta aviso">${icone('alerta')}<div>A mesa tem alergia registrada: confirme os ingredientes com o cliente antes de oferecer.</div></div>` : ''}
+                   <p class="suave pequeno">Costumam ser pedidos junto com o que já está na mesa.</p>`}
+            </div>
+            ${estados.servicoIndisponivel ? '' : `<ul class="lista cardapio-lista">${sug.itens.map((s) => `
+              <li data-lancar="${s.id}" data-toque role="button" tabindex="0">
+                <div class="principal-item"><strong>${escapar(s.nome)}</strong><span class="pequeno suave">${D.CATEGORIAS.find((k) => k.chave === s.categoria).nome}</span></div>
+                <div class="preco">${moeda(D.precoAtual(s))}</div>${icone('mais')}
+              </li>`).join('')}</ul>`}
+          </section>
+
+          <section class="cartao" aria-labelledby="t-lancar">
+            <header><h2 id="t-lancar">Lançar item</h2></header>
+            <div class="corpo" style="padding-bottom:0">
+              <div class="chips rolagem" role="tablist" aria-label="Categorias do cardápio">
+                ${D.CATEGORIAS.map((k) => `<button class="chip" type="button" role="tab" data-categoria="${k.chave}" aria-selected="${k.chave === cat}" data-toque>${k.nome}</button>`).join('')}
+              </div>
+            </div>
+            <ul class="lista cardapio-lista" style="margin-top:8px">
+              ${D.cardapio.filter((i) => i.categoria === cat).map((i) => {
+                const promo = D.precoPromocional(i);
+                return `<li ${i.disponivel ? `data-lancar="${i.id}" data-toque role="button" tabindex="0"` : 'aria-disabled="true"'}>
+                  <div class="principal-item"><strong>${escapar(i.nome)}</strong>
+                    <span class="pequeno suave">${i.disponivel ? i.flags.map((f) => D.FLAGS[f]).join(' · ') || '&nbsp;' : 'Indisponível agora'}</span></div>
+                  ${i.disponivel ? `<div class="preco">${promo ? `<s>${moeda(i.preco)}</s>${moeda(promo)}` : moeda(i.preco)}</div>${icone('mais')}` : `<span class="etiqueta">Indisponível</span>`}
+                </li>`;
+              }).join('')}
+            </ul>
+          </section>
+
+          ${resolvidos.length ? `
+          <details class="cartao">
+            <summary style="padding:14px 16px;cursor:pointer"><strong>Entregues e cancelados (${resolvidos.length})</strong></summary>
+            <ul class="lista">${resolvidos.map((i) => `
+              <li class="linha-item ${i.status === 'Cancelado' ? 'cancelado' : ''}">
+                <span class="qtd">${i.quantidade}×</span>
+                <span class="nome">${escapar(i.nome)}<small>${i.status === 'Cancelado' ? `Cancelado: ${D.MOTIVOS_CANCELAMENTO[i.motivo]}` : 'Entregue'}</small></span>
+                <span class="preco">${moeda(i.precoUnitario * i.quantidade)}</span>
+              </li>`).join('')}</ul>
+          </details>` : ''}
+          <p class="suave pequeno">${icone('qr')} Código para o cliente acompanhar a conta: <strong>${c.codigo}</strong></p>`,
+        rodape: `
+          <div class="rodape-fixo">
+            <div class="total"><span class="pequeno suave">Subtotal</span><strong>${moeda(t.subtotal)}</strong></div>
+            <a class="botao" href="#/comanda/${c.id}/fechar" data-toque>Fechar conta</a>
+          </div>`,
+      });
+
+      app.querySelector('[data-acao="composicao"]').addEventListener('click', () => ajustarComposicao(c));
+      app.querySelector('[data-acao="restricao"]').addEventListener('click', () => registrarRestricao(c));
+      app.querySelectorAll('[data-categoria]').forEach((b) => b.addEventListener('click', () => { categoriaAtiva[c.id] = b.dataset.categoria; navegar(`/comanda/${c.id}`); }));
+      app.querySelectorAll('[data-lancar]').forEach((b) => {
+        const abrir = () => lancarItem(c, Number(b.dataset.lancar));
+        b.addEventListener('click', abrir);
+        b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+      });
+      app.querySelectorAll('[data-entregar]').forEach((b) => b.addEventListener('click', () => {
+        const i = c.itens.find((x) => x.id === Number(b.dataset.entregar));
+        i.status = 'Entregue';
+        navegar(`/comanda/${c.id}`);
+        avisar(`${i.nome}: entregue`, { acao: 'Desfazer', aoAgir: () => { i.status = 'Pendente'; navegar(`/comanda/${c.id}`); } });
+      }));
+      app.querySelectorAll('[data-cancelar]').forEach((b) => b.addEventListener('click', () => cancelarItem(c, Number(b.dataset.cancelar))));
+    });
+
+    function lancarItem(c, itemId) {
+      const i = D.cardapio.find((x) => x.id === itemId);
+      const preco = D.precoAtual(i);
+      let qtd = 1;
+      const atualizar = (folha) => {
+        folha.querySelector('output').textContent = qtd;
+        folha.querySelector('[data-confirmar]').textContent = `Lançar ${qtd} × · ${moeda(preco * qtd)}`;
+        folha.querySelector('[data-menos]').disabled = qtd === 1;
+      };
+      abrirFolha(`
+        <header><div><h2>${escapar(i.nome)}</h2><p class="suave pequeno">${escapar(i.descricao)}</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        ${i.flags.length ? `<div class="chips">${i.flags.map((f) => `<span class="etiqueta">${D.FLAGS[f]}</span>`).join('')}</div>` : ''}
+        ${D.precoPromocional(i) ? `<p class="etiqueta marca" style="margin-top:8px">${icone('etiqueta')} Em promoção hoje</p>` : ''}
+        <div class="seletor-qtd" role="group" aria-label="Quantidade">
+          <button class="botao-icone" type="button" data-menos aria-label="Diminuir" data-toque>${icone('menos')}</button>
+          <output aria-live="polite">1</output>
+          <button class="botao-icone" type="button" data-mais aria-label="Aumentar" data-toque>${icone('mais')}</button>
+        </div>
+        <div class="rodape-folha"><button class="botao" type="button" data-confirmar data-toque>Lançar</button></div>`,
+      { rotulo: `Lançar ${i.nome}`, aoMontar: (folha) => {
+        atualizar(folha);
+        folha.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+        folha.querySelector('[data-menos]').addEventListener('click', () => { qtd = Math.max(1, qtd - 1); atualizar(folha); });
+        folha.querySelector('[data-mais]').addEventListener('click', () => { qtd++; atualizar(folha); });
+        folha.querySelector('[data-confirmar]').addEventListener('click', () => {
+          const novo = { id: D.novoIdItem(), itemCardapioId: i.id, nome: i.nome, quantidade: qtd, precoUnitario: preco, status: 'Pendente', motivo: null, minutosAtras: 0 };
+          c.itens.push(novo);
+          const antes = c.composicao;
+          if (!c.ajustada) c.composicao = D.classificar(c.pessoas, temInfantil(c));
+          marco('item-registrado');
+          navegar(`/comanda/${c.id}`);
+          const mudou = antes !== c.composicao ? ` · mesa agora é ${D.COMPOSICOES[c.composicao]}` : '';
+          avisar(`${qtd} × ${i.nome} lançado${mudou}`, { acao: 'Desfazer', aoAgir: () => {
+            c.itens = c.itens.filter((x) => x.id !== novo.id);
+            if (!c.ajustada) c.composicao = D.classificar(c.pessoas, temInfantil(c));
+            navegar(`/comanda/${c.id}`);
+          } });
+        });
+      } });
+    }
+
+    function cancelarItem(c, itemId) {
+      const i = c.itens.find((x) => x.id === itemId);
+      let motivo = null;
+      abrirFolha(`
+        <header><div><h2>Cancelar item</h2><p class="suave pequeno">${i.quantidade} × ${escapar(i.nome)}</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <p id="rotulo-motivo"><strong>Qual o motivo?</strong></p>
+        <p class="suave pequeno" style="margin-bottom:10px">Obrigatório: o item cancelado sai da conta, mas fica registrado (RN02).</p>
+        <div class="chips" role="radiogroup" aria-labelledby="rotulo-motivo">
+          ${Object.entries(D.MOTIVOS_CANCELAMENTO).map(([k, v]) => `<button class="chip" type="button" role="radio" aria-checked="false" data-motivo="${k}" data-toque>${v}</button>`).join('')}
+        </div>
+        <div class="rodape-folha">
+          <button class="botao secundario" type="button" data-fechar>Manter item</button>
+          <button class="botao perigo" type="button" data-confirmar disabled data-toque>Cancelar item</button>
+        </div>`,
+      { rotulo: 'Cancelar item', aoMontar: (folha) => {
+        folha.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', fecharFolha));
+        folha.querySelectorAll('[data-motivo]').forEach((b) => b.addEventListener('click', () => {
+          motivo = b.dataset.motivo;
+          folha.querySelectorAll('[data-motivo]').forEach((x) => { x.setAttribute('aria-checked', x === b); x.setAttribute('aria-pressed', x === b); });
+          folha.querySelector('[data-confirmar]').disabled = false;
+        }));
+        folha.querySelector('[data-confirmar]').addEventListener('click', () => {
+          i.status = 'Cancelado'; i.motivo = motivo;
+          if (!c.ajustada) c.composicao = D.classificar(c.pessoas, temInfantil(c));
+          navegar(`/comanda/${c.id}`);
+          avisar(`${i.nome}: cancelado`, { acao: 'Desfazer', aoAgir: () => { i.status = 'Pendente'; i.motivo = null; navegar(`/comanda/${c.id}`); } });
+        });
+      } });
+    }
+
+    // UC11 — ajuste manual da composição.
+    function ajustarComposicao(c) {
+      let pessoas = c.pessoas;
+      let escolha = c.composicao;
+      const render = (folha) => {
+        const sugerida = D.classificar(pessoas, temInfantil(c));
+        folha.querySelector('output').textContent = pessoas;
+        folha.querySelector('[data-menos]').disabled = pessoas === 1;
+        folha.querySelector('.chips').innerHTML = Object.entries(D.COMPOSICOES).map(([k, v]) =>
+          `<button class="chip" type="button" role="radio" data-comp="${k}" aria-checked="${k === escolha}" aria-pressed="${k === escolha}">${v}${k === sugerida ? ' · sugerida' : ''}</button>`).join('');
+        folha.querySelectorAll('[data-comp]').forEach((b) => b.addEventListener('click', () => { escolha = b.dataset.comp; render(folha); }));
+      };
+      abrirFolha(`
+        <header><div><h2>Composição da mesa</h2><p class="suave pequeno">Confirme ou ajuste o que o sistema sugeriu.</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <p><strong>Pessoas</strong></p>
+        <div class="seletor-qtd" role="group" aria-label="Pessoas">
+          <button class="botao-icone" type="button" data-menos aria-label="Diminuir" data-toque>${icone('menos')}</button>
+          <output aria-live="polite"></output>
+          <button class="botao-icone" type="button" data-mais aria-label="Aumentar" data-toque>${icone('mais')}</button>
+        </div>
+        <p><strong>Composição</strong></p>
+        <div class="chips" role="radiogroup" aria-label="Composição" style="margin-top:8px"></div>
+        <div class="rodape-folha"><button class="botao" type="button" data-confirmar data-toque>Salvar</button></div>`,
+      { rotulo: 'Composição da mesa', aoMontar: (folha) => {
+        render(folha);
+        folha.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+        folha.querySelector('[data-menos]').addEventListener('click', () => { pessoas = Math.max(1, pessoas - 1); escolha = D.classificar(pessoas, temInfantil(c)); render(folha); });
+        folha.querySelector('[data-mais]').addEventListener('click', () => { pessoas++; escolha = D.classificar(pessoas, temInfantil(c)); render(folha); });
+        folha.querySelector('[data-confirmar]').addEventListener('click', () => {
+          c.ajustada = escolha !== D.classificar(pessoas, temInfantil(c));
+          c.pessoas = pessoas; c.composicao = escolha;
+          navegar(`/comanda/${c.id}`);
+          avisar(`Composição: ${D.COMPOSICOES[escolha]}, ${pessoas} ${pessoas === 1 ? 'pessoa' : 'pessoas'}`);
+        });
+      } });
+    }
+
+    // UC13 — restrição alimentar (RF14), com aviso de minimização (RN04/RN05).
+    function registrarRestricao(c) {
+      let categoria = null;
+      abrirFolha(`
+        <header><div><h2>Restrição ou preferência</h2><p class="suave pequeno">Só o que o cliente informar por vontade própria.</p></div>
+          <button class="botao-icone" type="button" data-fechar aria-label="Fechar">${icone('x')}</button></header>
+        <p id="rotulo-cat"><strong>Categoria</strong></p>
+        <div class="chips" role="radiogroup" aria-labelledby="rotulo-cat" style="margin:8px 0 16px">
+          ${Object.entries(D.RESTRICOES).map(([k, v]) => `<button class="chip" type="button" role="radio" aria-checked="false" data-cat="${k}" data-toque>${v}</button>`).join('')}
+        </div>
+        <div class="campo">
+          <label for="obs">Detalhe (opcional)</label>
+          <textarea class="entrada" id="obs" maxlength="200" placeholder="Ex.: alergia a camarão"></textarea>
+          <span class="ajuda">${icone('cadeado')} Não anote nome, saúde ou outro dado pessoal. O detalhe é apagado quando a conta fecha.</span>
+        </div>
+        <div class="rodape-folha"><button class="botao" type="button" data-confirmar disabled data-toque>Registrar</button></div>`,
+      { rotulo: 'Registrar restrição', aoMontar: (folha) => {
+        folha.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+        folha.querySelectorAll('[data-cat]').forEach((b) => b.addEventListener('click', () => {
+          categoria = b.dataset.cat;
+          folha.querySelectorAll('[data-cat]').forEach((x) => { x.setAttribute('aria-checked', x === b); x.setAttribute('aria-pressed', x === b); });
+          folha.querySelector('[data-confirmar]').disabled = false;
+        }));
+        folha.querySelector('[data-confirmar]').addEventListener('click', () => {
+          c.restricoes.push({ id: Date.now(), categoria, observacao: folha.querySelector('#obs').value.trim() });
+          navegar(`/comanda/${c.id}`);
+          avisar(`Restrição registrada: ${D.RESTRICOES[categoria]}`);
+        });
+      } });
+    }
+
+    // ---------------- Fechar conta (UC14, RN02, RF04) ----------------
+    rota('/comanda/:id/fechar', ({ id }) => {
+      const c = comanda(id);
+      if (!c) return navegar('/mesas');
+      const m = mesa(c.mesaId);
+      const t = D.totais(c);
+      const pend = pendentes(c);
+      const validos = c.itens.filter((i) => i.status !== 'Cancelado');
+
+      tela({
+        titulo: `Fechar conta · Mesa ${m.numero}`,
+        sub: `${c.pessoas} ${c.pessoas === 1 ? 'pessoa' : 'pessoas'} · ${c.abertaHa ? `aberta há ${c.abertaHa} min` : 'aberta agora'}`,
+        voltar: `/comanda/${c.id}`,
+        corpo: `
+          ${pend.length ? `
+          <div class="alerta erro" role="alert">${icone('alerta')}
+            <div><strong>Ainda não dá para fechar</strong>
+              ${pend.length === 1 ? 'Há 1 item a entregar.' : `Há ${pend.length} itens a entregar.`} Marque como entregue ou cancele com o motivo.
+              <ul style="margin:6px 0 0;padding-left:18px">${pend.map((i) => `<li>${i.quantidade} × ${escapar(i.nome)}</li>`).join('')}</ul>
+              <a class="botao compacto secundario" style="margin-top:8px" href="#/comanda/${c.id}" data-toque>Resolver pendências</a></div>
+          </div>` : ''}
+
+          <section class="cartao" aria-labelledby="t-itens">
+            <header><h2 id="t-itens">Itens</h2></header>
+            <ul class="lista">${validos.map((i) => `
+              <li class="linha-item"><span class="qtd">${i.quantidade}×</span><span class="nome">${escapar(i.nome)}</span>
+                <span class="preco">${moeda(i.precoUnitario * i.quantidade)}</span></li>`).join('') || '<li class="suave">Nenhum item lançado.</li>'}</ul>
+          </section>
+
+          <section class="cartao pad" aria-label="Total">
+            <div class="linha-total"><span>Subtotal</span><span>${moeda(t.subtotal)}</span></div>
+            <div class="linha-total">
+              <label class="interruptor"><input type="checkbox" data-acao="taxa" ${c.taxaRemovida ? '' : 'checked'} data-toque> Taxa de serviço (10%)</label>
+              <span>${moeda(t.taxa)}</span>
+            </div>
+            <p class="suave pequeno">A taxa é cobrada por padrão. Retire só se o cliente pedir.</p>
+            <div class="linha-total grande"><span>Total</span><span>${moeda(t.total)}</span></div>
+          </section>`,
+        rodape: `
+          <div class="rodape-fixo">
+            <button class="botao largo" type="button" data-acao="fechar" ${pend.length || !validos.length ? 'disabled' : ''} data-toque>Fechar conta · ${moeda(t.total)}</button>
+          </div>`,
+      });
+
+      app.querySelector('[data-acao="taxa"]').addEventListener('change', (e) => {
+        c.taxaRemovida = !e.target.checked;
+        navegar(`/comanda/${c.id}/fechar`);
+        avisar(c.taxaRemovida ? 'Taxa de serviço retirada a pedido do cliente' : 'Taxa de serviço incluída');
+      });
+      app.querySelector('[data-acao="fechar"]').addEventListener('click', () => {
+        abrirFolha(`
+          <header><div><h2>Fechar a conta da mesa ${m.numero}?</h2></div></header>
+          <p>Total de <strong>${moeda(t.total)}</strong>${c.taxaRemovida ? ' (sem taxa de serviço)' : ''}. Depois de fechada, a conta não aceita novos itens.</p>
+          <div class="rodape-folha">
+            <button class="botao secundario" type="button" data-fechar>Voltar</button>
+            <button class="botao" type="button" data-confirmar data-toque>Fechar conta</button>
+          </div>`,
+        { rotulo: 'Confirmar fechamento', aoMontar: (folha) => {
+          folha.querySelector('[data-fechar]').addEventListener('click', fecharFolha);
+          folha.querySelector('[data-confirmar]').addEventListener('click', () => {
+            c.fechada = true; c.restricoes = [];
+            navegar(`/comanda/${c.id}/fechada`);
+          });
+        } });
+      });
+    });
+
+    rota('/comanda/:id/fechada', ({ id }) => {
+      const c = comanda(id);
+      const m = mesa(c.mesaId);
+      tela({
+        titulo: 'Conta fechada',
+        corpo: `
+          <div class="cartao pad" style="text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:24px">
+            <span style="display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:var(--sucesso-suave);color:var(--sucesso)">${icone('check')}</span>
+            <h2>Mesa ${m.numero} liberada</h2>
+            <p class="num" style="font-size:1.75rem;font-weight:700">${moeda(D.totais(c).total)}</p>
+            <p class="suave">As restrições alimentares e observações desta mesa foram apagadas.</p>
+          </div>
+          <a class="botao largo" href="#/mesas" data-toque>Voltar às mesas</a>`,
+        nav: '/mesas',
+      });
+    });
+
+    // ---------------- A entregar (RF03: pendências visíveis) ----------------
+    rota('/pendencias', () => {
+      const minhas = D.comandas.filter((c) => c.garcomId === EU.id && !c.fechada && pendentes(c).length);
+      const todas = minhas.flatMap((c) => pendentes(c).map((i) => ({ c, i }))).sort((a, b) => b.i.minutosAtras - a.i.minutosAtras);
+      tela({
+        titulo: 'A entregar',
+        sub: 'Suas mesas, do pedido mais antigo para o mais novo',
+        acoes: botaoSair,
+        nav: '/pendencias',
+        corpo: todas.length ? `
+          <section class="cartao"><ul class="lista">${todas.map(({ c, i }) => `
+            <li class="linha-item">
+              <span class="etiqueta">Mesa ${mesa(c.mesaId).numero}</span>
+              <span class="nome"><strong>${i.quantidade} × ${escapar(i.nome)}</strong><small>${i.minutosAtras ? `há ${i.minutosAtras} min` : 'agora'}</small></span>
+              <button class="botao compacto" type="button" data-entregar="${c.id}:${i.id}" data-toque>${icone('check')} Entregue</button>
+            </li>`).join('')}</ul></section>`
+          : `<div class="cartao pad" style="text-align:center"><p><strong>Tudo entregue.</strong></p><p class="suave">Quando lançar um item, ele aparece aqui até ser entregue.</p></div>`,
+      });
+      app.querySelectorAll('[data-entregar]').forEach((b) => b.addEventListener('click', () => {
+        const [cid, iid] = b.dataset.entregar.split(':').map(Number);
+        const i = comanda(cid).itens.find((x) => x.id === iid);
+        i.status = 'Entregue';
+        navegar('/pendencias');
+        avisar(`${i.nome}: entregue`, { acao: 'Desfazer', aoAgir: () => { i.status = 'Pendente'; navegar('/pendencias'); } });
+      }));
+    });
+
+    // ---------------- Desempenho (UC17: garçom vê só a própria posição) ----------------
+    rota('/desempenho', () => {
+      const ranking = D.ranking();
+      const eu = ranking.find((g) => g.garcomId === EU.id);
+      tela({
+        titulo: 'Seu desempenho',
+        sub: 'Últimos 30 dias · 18/08 a 16/09',
+        acoes: botaoSair,
+        nav: '/desempenho',
+        corpo: estados.semHistorico ? `
+          <div class="cartao pad" style="text-align:center"><p><strong>Ainda sem turnos no período.</strong></p>
+          <p class="suave">O índice aparece depois do seu primeiro turno com mesas atendidas.</p></div>` : `
+          <section class="cartao pad" style="display:flex;flex-direction:column;gap:12px">
+            <p class="suave pequeno">Sua posição</p>
+            <div class="posicao"><strong>${eu.posicao}º</strong><span class="suave">de ${ranking.length} garçons</span></div>
+            <div>
+              <div style="display:flex;justify-content:space-between" class="pequeno"><span>Índice de desempenho</span><strong class="num">${numero(eu.indice, 1)} / 100</strong></div>
+              <div class="indice-barra" role="img" aria-label="Índice ${numero(eu.indice, 1)} de 100"><div style="width:${eu.indice}%"></div></div>
+            </div>
+          </section>
+          <section class="cartao" aria-labelledby="t-comp">
+            <header><h2 id="t-comp">O que entra no índice</h2></header>
+            <ul class="lista">
+              <li><div class="principal-item"><strong>Faturamento por turno</strong><span class="pequeno suave">vale metade do índice</span></div><span class="preco">${moeda(eu.faturamentoPorTurno)}</span></li>
+              <li><div class="principal-item"><strong>Mesas atendidas por turno</strong><span class="pequeno suave">vale a outra metade</span></div><span class="preco">${numero(eu.mesasPorTurno, 1)}</span></li>
+              <li><div class="principal-item"><strong>Turnos trabalhados</strong><span class="pequeno suave">usados na média</span></div><span class="preco">${eu.turnos}</span></li>
+            </ul>
+          </section>
+          <div class="alerta">${icone('info')}<div class="pequeno">O índice é por turno: quem trabalhou menos dias não fica atrás por isso. As posições dos colegas não são exibidas.</div></div>`,
+      });
+    });
+
+    app.addEventListener('click', (e) => {
+      const alvo = e.target.closest('[data-abrir-mesa],[data-mesa-outro],[data-filtro],[data-acao="sair"]');
+      if (!alvo) return;
+      if (alvo.dataset.abrirMesa) abrirMesa(alvo.dataset.abrirMesa);
+      else if (alvo.dataset.mesaOutro) avisar(`Mesa ${mesa(alvo.dataset.mesaOutro).numero} está com ${nomeGarcom(comandaDaMesa(Number(alvo.dataset.mesaOutro)).garcomId)}`, { icone: 'info' });
+      else if (alvo.dataset.filtro) { filtroPraca = alvo.dataset.filtro; navegar('/mesas'); }
+      else if (alvo.dataset.acao === 'sair') {
+        abrirFolha(`<header><div><h2>Sair do GASTRA?</h2></div></header>
+          <p>Suas mesas continuam abertas. Outra pessoa neste celular vai precisar entrar com o próprio e-mail.</p>
+          <div class="rodape-folha"><button class="botao secundario" type="button" data-fechar>Continuar</button><a class="botao" href="acesso.html#/login?sessao=encerrada">Sair</a></div>`,
+        { rotulo: 'Sair', aoMontar: (f) => f.querySelector('[data-fechar]').addEventListener('click', fecharFolha) });
+      }
+    });
+
+    G.iniciar({
+      instrumento: {
+        medicoes: {
+          nome: 'RNF02 (abrir mesa + lançar item)',
+          inicio: '/mesas',
+          limite: 5,
+          etapas: [
+            { chave: 'mesa-aberta', nome: 'Abrir mesa', meta: 2 },
+            { chave: 'item-registrado', nome: 'Lançar item', meta: 3 },
+          ],
+        },
+        alternativas: [
+          { chave: 'servicoIndisponivel', rotulo: 'Serviço de sugestões fora do ar' },
+          { chave: 'semHistorico', rotulo: 'Garçom sem turnos no período' },
+        ],
+      },
+    });
+  })();
+  </script>
+</body>
+</html>

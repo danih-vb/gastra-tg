@@ -1,0 +1,171 @@
+@if (comanda(); as comanda) {
+  <header class="topo">
+    <a class="botao-icone" routerLink="/cliente" aria-label="Voltar"><app-icone nome="voltar" /></a>
+    <div>
+      <h1>Sua conta · Mesa {{ comanda.mesa }}</h1>
+      <div class="sub">
+        {{ comanda.fechada ? 'Conta fechada' : 'Aberta às ' + (comanda.dataHoraAbertura | date: 'HH:mm') }}
+      </div>
+    </div>
+    @if (!comanda.fechada) {
+      <div class="acoes">
+        <button class="botao-icone" type="button" aria-label="Atualizar agora" (click)="atualizarAgora()">
+          <app-icone nome="atualizar" />
+        </button>
+      </div>
+    }
+  </header>
+
+  @if (comanda.fechada) {
+    <div class="alerta sucesso" role="status">
+      <app-icone nome="check" />
+      <div><strong>Conta fechada. Obrigado pela visita!</strong></div>
+    </div>
+  } @else {
+    <p class="ao-vivo" aria-live="polite">
+      <span class="ponto" aria-hidden="true"></span>
+      <span>{{ atualizadoHa() ? 'Atualizado há ' + atualizadoHa() + ' s' : 'Atualizado agora' }}</span>
+    </p>
+  }
+
+  <section class="cartao" aria-labelledby="t-itens">
+    <header>
+      <h2 id="t-itens">Itens lançados</h2>
+      <span class="acoes suave pequeno">{{ comanda.itens.length }}</span>
+    </header>
+    <div>
+      @for (item of comanda.itens; track $index) {
+        <div class="item" [class.cancelado]="item.situacao === 'Cancelado'">
+          <span class="qtd">{{ item.quantidade }}×</span>
+          <span class="nome">{{ item.nome }}</span>
+          <span class="valor">{{ item.valor | currency: 'BRL' }}</span>
+          <span class="situacao">
+            <span class="etiqueta {{ SITUACAO[item.situacao].classe }}">{{ SITUACAO[item.situacao].texto }}</span>
+          </span>
+        </div>
+      } @empty {
+        <p class="corpo suave">Nada lançado ainda.</p>
+      }
+    </div>
+  </section>
+
+  @if (!comanda.fechada) {
+    <button class="botao largo chamar" type="button" [disabled]="comanda.garcomChamado || chamando()" (click)="chamarGarcom()">
+      <app-icone nome="sino" /> {{ comanda.garcomChamado ? 'Garçom chamado' : 'Chamar o garçom' }}
+    </button>
+  }
+
+  <section class="cartao pad" aria-label="Valores">
+    <div class="linha-total"><span>Subtotal</span><span>{{ comanda.subtotal | currency: 'BRL' }}</span></div>
+    <div class="linha-total"><span>Taxa de serviço (10%)</span><span>{{ comanda.taxaServico | currency: 'BRL' }}</span></div>
+    @if (!comanda.fechada) {
+      <p class="suave pequeno">A taxa de serviço é opcional. Se não quiser pagar, avise o garçom antes de fechar a conta.</p>
+    }
+    <div class="linha-total grande">
+      <span>{{ comanda.fechada ? 'Total' : 'Total parcial' }}</span>
+      <span>{{ comanda.total | currency: 'BRL' }}</span>
+    </div>
+    @if (comanda.total > 0) {
+      <div class="dividir" role="group" aria-label="Dividir a conta">
+        <span>Dividir entre</span>
+        <button
+          class="botao-icone"
+          type="button"
+          aria-label="Menos pessoas"
+          [disabled]="pessoasNaDivisao() === 2"
+          (click)="dividirEntre(pessoasNaDivisao() - 1)"
+        >
+          <app-icone nome="menos" />
+        </button>
+        <output aria-live="polite">{{ pessoasNaDivisao() }}</output>
+        <button class="botao-icone" type="button" aria-label="Mais pessoas" (click)="dividirEntre(pessoasNaDivisao() + 1)">
+          <app-icone nome="mais" />
+        </button>
+        <strong class="por-pessoa">{{ comanda.total / pessoasNaDivisao() | currency: 'BRL' }} cada</strong>
+      </div>
+    }
+  </section>
+
+  @if (comanda.avaliacaoEnviada) {
+    <section class="cartao pad avaliacao enviada" aria-label="Avaliação">
+      <app-icone nome="check" />
+      <h2>Obrigado pela avaliação</h2>
+    </section>
+  } @else if (comanda.podeAvaliar) {
+    <section class="cartao pad avaliacao" aria-label="Avaliar o atendimento">
+      <h2>Como foi o atendimento?</h2>
+
+      @if (errosDaAvaliacao().length) {
+        <div class="alerta erro" role="alert">
+          <app-icone nome="alerta" />
+          <div>
+            @for (erro of errosDaAvaliacao(); track erro) {
+              <div>{{ erro }}</div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="notas" role="radiogroup" aria-label="Nota de 1 a 5">
+        @for (valor of NOTAS; track valor) {
+          <button
+            class="nota"
+            type="button"
+            role="radio"
+            [class.escolhida]="nota() === valor"
+            [attr.aria-checked]="nota() === valor"
+            [attr.aria-label]="valor + ' de 5'"
+            (click)="nota.set(valor)"
+          >
+            {{ valor }}
+          </button>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="comentario">Quer contar mais? (opcional)</label>
+        <textarea
+          class="entrada"
+          id="comentario"
+          name="comentario"
+          rows="3"
+          [maxlength]="LIMITE_DO_COMENTARIO"
+          [(ngModel)]="comentario"
+        ></textarea>
+        <span class="ajuda">
+          A avaliação é anônima: não escreva seu nome.
+        </span>
+      </div>
+
+      <button class="botao" type="button" [disabled]="!nota() || enviando()" (click)="enviarAvaliacao()">
+        Enviar avaliação
+      </button>
+    </section>
+  }
+
+} @else if (carregando()) {
+  <p class="carregando">Carregando sua conta…</p>
+} @else if (naoEncontrada()) {
+  <header class="topo">
+    <a class="botao-icone" routerLink="/cliente" aria-label="Voltar"><app-icone nome="voltar" /></a>
+    <div><h1>Conta não encontrada</h1></div>
+  </header>
+  <div class="cartao pad vazio">
+    <app-icone nome="alerta" />
+    <h2>Não encontramos essa conta</h2>
+    <p class="suave">Peça o QR code da mesa ao garçom.</p>
+    <a class="botao secundario" routerLink="/cliente">Voltar ao início</a>
+  </div>
+} @else {
+  <div class="alerta erro" role="alert">
+    <app-icone nome="alerta" />
+    <div>
+      @for (erro of erros(); track erro) {
+        <div>{{ erro }}</div>
+      }
+      <button class="botao compacto secundario" style="margin-top: 8px" type="button" (click)="atualizarAgora()">
+        Tentar de novo
+      </button>
+    </div>
+  </div>
+}

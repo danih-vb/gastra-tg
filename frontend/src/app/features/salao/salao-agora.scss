@@ -1,0 +1,35 @@
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  .cartao {
+    padding: 10px 12px;
+  }
+
+  strong {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--marinho-forte);
+    font-variant-numeric: tabular-nums;
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+  }
+}
+
+.lista > li {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.valor {
+  font-weight: 600;
+}
+
+.cancelado {
+  color: var(--texto-suave);
+  text-decoration: line-through;
+}

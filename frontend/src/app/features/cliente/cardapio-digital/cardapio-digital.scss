@@ -1,0 +1,70 @@
+.prato {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  gap: 12px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--borda);
+
+  &:first-of-type {
+    border-top: 0;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    color: var(--texto-suave);
+  }
+
+  .rodape-prato {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .valor {
+    margin-right: 4px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+
+    s {
+      margin-right: 4px;
+      font-weight: 400;
+      color: var(--texto-suave);
+    }
+  }
+}
+
+/* Sem foto cadastrada, fica um bloco na cor da categoria: a linha não desalinha e nada finge ser uma foto. */
+.foto {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 12px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.Entrada { background: linear-gradient(135deg, #e7a15a, #c46a2b); }
+  &.PratoPrincipal { background: linear-gradient(135deg, #b5653c, #7c3b20); }
+  &.Sobremesa { background: linear-gradient(135deg, #e9b9a4, #b86f72); }
+  &.Bebida { background: linear-gradient(135deg, #7fb2c9, #3e6f8c); }
+}
+
+.vazio {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}

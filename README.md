@@ -4,6 +4,8 @@
 **Autores:** Daniel Velluto Bento e Pedro Luis Otrente de Campos
 **Orientador:** Prof. Me. Leonardo José de Lima Ferrucci
 
+[![CI](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml)
+
 ---
 
 ## Sobre o projeto
@@ -35,6 +37,7 @@ Definida no projeto de pesquisa formal:
 - **Backend:** ASP.NET Core
 - **Frontend:** Angular
 - **Análise de dados:** Python (clusterização, regras de associação, programação linear)
+- **Banco de dados:** MySQL, containerizado via Docker Compose no ambiente de desenvolvimento
 
 ## Notação de diagramas
 
@@ -46,21 +49,32 @@ negócio é representado em Business Model Canvas.
 
 ```
 gastra-tg/
-├── backend/                       # API ASP.NET Core
-├── frontend/                      # Aplicação Angular
-├── data-science/                  # Python — BI, clusterização, regras de associação, PL
+├── backend/                       # API ASP.NET Core — arquitetura em camadas (ver backend/README.md)
+│   ├── src/                       # Api, Application, Communication, Domain, Exceptions, Infrastructure
+│   └── tests/                     # Testes de integração e de arquitetura
+├── frontend/                      # Aplicação Angular (ver frontend/README.md)
+│   └── src/app/
+│       ├── core/                  # Sessão, interceptador do token, guardas por papel
+│       ├── shared/                # Componentes reutilizados
+│       └── features/              # Um módulo por grupo de casos de uso: acesso, cardapio, comandas, alocacao, analises, cliente
+├── data-science/                  # Python — clusterização, regras de associação, PL (serviço FastAPI)
 │   ├── notebooks/                 # Exploração e prototipagem (Jupyter)
-│   ├── src/                       # Código de produção dos algoritmos
+│   ├── src/gastra_analitica/      # Código de produção: api/, recomendacao/, alocacao/
+│   ├── tests/                     # Testes (pytest)
 │   └── data/
 │       ├── raw/                   # Nunca versionado (dados pessoais/LGPD)
 │       └── processed/             # Dados tratados/anonimizados, versionáveis
 │           └── GASTRA_Dados_Processados.docx
+├── infra/                         # Ambiente de banco via Docker Compose (dev/testes)
+│   ├── docker-compose.yml         # Serviço MySQL containerizado
+│   └── .env.example               # Variáveis necessárias, sem valor real (.env não é versionado)
 ├── docs/
 │   ├── pesquisa/                  # Projeto de pesquisa formal
 │   │   ├── Gastra.pdf
 │   │   └── referencias/           # Referências bibliográficas e material de apoio
 │   │       └── GASTRA_Referencias_Bibliograficas.docx
 │   ├── negocio/                   # Business Model Canvas
+│   │   └── GASTRA_Business_Model_Canvas.png
 │   ├── requisitos/                # RF/RNF/RN, Matriz de Rastreabilidade, User Stories, KPIs
 │   │   ├── GASTRA_Requisitos_RN.docx
 │   │   ├── GASTRA_Matriz_Rastreabilidade.docx
@@ -71,16 +85,29 @@ gastra-tg/
 │   │   └── questionarios/         # Instrumento de coleta (Jotform)
 │   │       └── GASTRA_Instrumento_Coleta.docx
 │   ├── modelagem/
+│   │   ├── GASTRA_Schema.sql   # Modelo físico completo (gerado das migrations)
 │   │   ├── mer/                   # Modelo de Entidade-Relacionamento (linguagem natural)
-│   │   └── der/                   # Diagrama formal, a partir do MER
+│   │   │   └── GASTRA_MER.docx
+│   │   └── der/                   # Diagrama formal (notação de Chen), a partir do MER
+│   │       ├── GASTRA_DER.brM3
+│   │       └── GASTRA_DER.png
 │   ├── arquitetura/                # Definição de arquitetura do sistema
+│   │   ├── GASTRA_Arquitetura.md       # Arquitetura: camadas, decisões e tecnologias (fonte)
+│   │   ├── GASTRA_Arquitetura.docx     # Mesma arquitetura, gerada para a monografia
+│   │   ├── GASTRA_Diagrama_Classes_Camadas.md
+│   │   ├── GASTRA_Politica_Log_Auditoria.md
+│   │   └── GASTRA_Ambiente_Desenvolvimento.md
 │   ├── ux-ui/                      # Wireframes e protótipo navegável
 │   ├── testes/                     # Cenários de teste executados
 │   ├── manual-usuario/             # Manual de uso do usuário
 │   ├── diagramas/                  # Diagramas de apoio (UML)
+│   │   ├── arquitetura/            # Implantação e caminho de uma requisição
+│   │   ├── casos-de-uso/           # Diagramas UML de Casos de Uso
+│   │   ├── classe/                 # Diagrama de Classes do domínio
+│   │   ├── atividade/              # Diagramas UML de Atividade
+│   │   └── sequencia/              # Diagramas UML de Sequência
 │   └── assets/
 │       └── logo/                   # Identidade visual do GASTRA
-├── scripts/                        # Scripts de apoio ao repositório
 ├── .github/                        # Templates de issue/PR, workflows
 ├── CONTRIBUTING.md
 ├── LICENSE
@@ -99,9 +126,38 @@ gastra-tg/
 - **Instrumento de coleta (questionários Jotform):** [`docs/requisitos/questionarios/GASTRA_Instrumento_Coleta.docx`](docs/requisitos/questionarios/GASTRA_Instrumento_Coleta.docx)
 - **Dados processados (questionários + entrevista):** [`data-science/data/processed/GASTRA_Dados_Processados.docx`](data-science/data/processed/GASTRA_Dados_Processados.docx)
 - **Fluxo de contribuição:** [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- **Ambiente de banco de dados (Docker):** [`infra/README.md`](infra/README.md)
+- **Guia do ambiente de desenvolvimento (setup do zero):** [`docs/arquitetura/GASTRA_Ambiente_Desenvolvimento.md`](docs/arquitetura/GASTRA_Ambiente_Desenvolvimento.md)
 - **Quadro de tarefas (GitHub Projects):** [GASTRA - TG](https://github.com/users/danih-vb/projects/3)
-- *A criar:* Business Model Canvas, MER/DER, diagramas de apoio (UML), definição de
-  arquitetura, protótipo UX/UI, cenários de teste, manual do usuário.
+- **Business Model Canvas:** [`docs/negocio/GASTRA_Business_Model_Canvas.png`](docs/negocio/GASTRA_Business_Model_Canvas.png)
+- **Casos de Uso:** [`docs/requisitos/GASTRA_Casos_de_Uso.docx`](docs/requisitos/GASTRA_Casos_de_Uso.docx)
+- **Diagramas de Casos de Uso:**
+  [autenticação](docs/diagramas/casos-de-uso/GASTRA_UC_Autenticacao.png) ·
+  [gestão de cardápio](docs/diagramas/casos-de-uso/GASTRA_UC_GestaoCardapio.png) ·
+  [núcleo de comandas](docs/diagramas/casos-de-uso/GASTRA_UC_NucleoComandas.png) ·
+  [blocos analíticos](docs/diagramas/casos-de-uso/GASTRA_UC_BlocosAnaliticos.png) ·
+  [cliente](docs/diagramas/casos-de-uso/GASTRA_UC_Cliente.png) ·
+  [configuração do salão](docs/diagramas/casos-de-uso/GASTRA_UC_ConfiguracaoSalao.png)
+- **Diagrama de Atividade — Núcleo de Comandas:** [`docs/diagramas/atividade/GASTRA_Atividade_NucleoComandas.png`](docs/diagramas/atividade/GASTRA_Atividade_NucleoComandas.png)
+- **Diagrama de Atividade — Alocação de Garçons:** [`docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png`](docs/diagramas/atividade/GASTRA_Atividade_AlocacaoGarcons.png)
+- **Diagrama de Sequência — Núcleo de Comandas:** [`docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png`](docs/diagramas/sequencia/GASTRA_Sequencia_NucleoComandas.png)
+- **Diagrama de Sequência — Recomendação de Pratos:** [`docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png`](docs/diagramas/sequencia/GASTRA_Sequencia_RecomendacaoPratos.png)
+- **Diagrama de Sequência — Alocação de Garçons:** [`docs/diagramas/sequencia/GASTRA_Sequencia_AlocacaoGarcons.png`](docs/diagramas/sequencia/GASTRA_Sequencia_AlocacaoGarcons.png)
+- **Modelo de Entidade-Relacionamento (MER):** [`docs/modelagem/mer/GASTRA_MER.docx`](docs/modelagem/mer/GASTRA_MER.docx)
+- **Modelo físico (SQL do banco):** [`docs/modelagem/GASTRA_Schema.sql`](docs/modelagem/GASTRA_Schema.sql)
+- **Views e triggers (com a justificativa de cada um):** [`docs/modelagem/GASTRA_Objetos_Banco.md`](docs/modelagem/GASTRA_Objetos_Banco.md)
+- **Validação do modelo físico** (engenharia reversa, formas normais e LGPD): [`docs/modelagem/GASTRA_Validacao_Modelo_Fisico.md`](docs/modelagem/GASTRA_Validacao_Modelo_Fisico.md) · [modelo lógico obtido do banco](docs/modelagem/engenharia-reversa/GASTRA_Logico_Engenharia_Reversa.png)
+- **Diagrama de Entidade-Relacionamento (DER):** [`docs/modelagem/der/GASTRA_DER.png`](docs/modelagem/der/GASTRA_DER.png)
+- **Diagrama de Classes** (por camadas):
+  [pacotes](docs/diagramas/classe/GASTRA_Classe_Pacotes.png) ·
+  [domínio](docs/diagramas/classe/GASTRA_Classe_Dominio.png) ·
+  [contratos e implementações](docs/diagramas/classe/GASTRA_Classe_Contratos.png) ·
+  [fatia vertical — abrir comanda](docs/diagramas/classe/GASTRA_Classe_AbrirComanda.png)
+- **Arquitetura do sistema:** [`docs/arquitetura/GASTRA_Arquitetura.md`](docs/arquitetura/GASTRA_Arquitetura.md) (versão para a monografia: [`.docx`](docs/arquitetura/GASTRA_Arquitetura.docx))
+- **Política de Log e Auditoria (LGPD):** [`docs/arquitetura/GASTRA_Politica_Log_Auditoria.md`](docs/arquitetura/GASTRA_Politica_Log_Auditoria.md)
+- **Diagrama de Classes por Camadas (especificação):** [`docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Camadas.md) *(planejamento de 15/09)* · **gerado do código:** [`docs/arquitetura/GASTRA_Diagrama_Classes_Codigo.md`](docs/arquitetura/GASTRA_Diagrama_Classes_Codigo.md)
+
+- *A criar:* protótipo UX/UI, cenários de teste, manual do usuário.
 
 ## Privacidade e LGPD
 

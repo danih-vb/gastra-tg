@@ -1,0 +1,33 @@
+<header class="barra">
+  <div class="marca">
+    <strong>GASTRA</strong>
+    @if (usuario(); as usuarioLogado) {
+      <span>{{ usuarioLogado.nome }} · {{ nomeDoPapel[usuarioLogado.papel] }}</span>
+    } @else {
+      <span>Gestão Analítica de Restaurantes</span>
+    }
+  </div>
+
+  @if (usuario()) {
+    <button class="botao-icone sair" type="button" aria-label="Sair do sistema" (click)="sair()">
+      <app-icone nome="sair" />
+    </button>
+  }
+</header>
+
+<main>
+  <router-outlet />
+</main>
+
+@if (usuario(); as usuarioLogado) {
+  <nav class="menu" aria-label="Menu principal">
+    @for (item of menu(); track item.rota) {
+      <a [routerLink]="item.rota" routerLinkActive="ativo" ariaCurrentWhenActive="page">
+        <app-icone [nome]="item.icone" />
+        <span>{{ item.rotulo }}</span>
+      </a>
+    }
+  </nav>
+}
+
+<app-avisos />

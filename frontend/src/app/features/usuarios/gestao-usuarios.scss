@@ -1,0 +1,37 @@
+.topo { flex-wrap: wrap; }
+
+.ferramentas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.nome-conta {
+  /* O e-mail fica embaixo do nome; a etiqueta "você" segue ao lado dele. */
+  > strong {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  > span {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--texto-suave);
+  }
+}
+
+.acoes-linha {
+  white-space: nowrap;
+
+  .botao + .botao { margin-left: 4px; }
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}

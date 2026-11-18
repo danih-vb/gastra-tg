@@ -1,0 +1,34 @@
+using Gastra.Communication.Enums;
+
+namespace Gastra.Communication.Responses;
+
+public class ComandaResponse
+{
+    public int Id { get; set; }
+    public int MesaId { get; set; }
+
+    /// <summary>Garçom que abriu a comanda: é o que separa "minhas mesas" das dos colegas no salão.</summary>
+    public int GarcomId { get; set; }
+
+    public string GarcomNome { get; set; } = string.Empty;
+    public StatusComanda Status { get; set; }
+    public int QuantidadePessoas { get; set; }
+    public ComposicaoMesa Composicao { get; set; }
+    public bool ComposicaoAjustadaManualmente { get; set; }
+    public bool TaxaServicoRemovida { get; set; }
+
+    /// <summary>Quando a mesa chamou o garçom pelo celular; nulo se não há chamado.</summary>
+    public DateTime? AtendimentoChamadoEm { get; set; }
+    public string CodigoAcessoCliente { get; set; } = string.Empty;
+    public DateTime DataHoraAbertura { get; set; }
+    public DateTime? DataHoraFechamento { get; set; }
+    public List<ItemPedidoResponse> Itens { get; set; } = [];
+    /// <summary>
+    /// Só para Garçom e Metre, com a comanda aberta (RN04). Para os demais papéis e depois do fechamento,
+    /// vem vazia: é dado do cliente.
+    /// </summary>
+    public List<RestricaoAlimentarResponse> Restricoes { get; set; } = [];
+    public decimal Subtotal { get; set; }
+    public decimal TaxaServico { get; set; }
+    public decimal Total { get; set; }
+}

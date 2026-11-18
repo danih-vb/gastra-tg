@@ -22,7 +22,7 @@ Closes #
 
 - [ ] Testei/revisei localmente
 - [ ] Não commitei dados brutos, segredos ou `.env`
-- [ ] Atualizei `docs/GASTRA_STATUS.md` se este PR muda escopo, decisão ou checklist
+- [ ] Atualizei o `README.md` se este PR criou arquivo novo, diretório novo, ou mudou a estrutura de diretórios existente
 - [ ] Se envolve requisito, RF/RNF/RN atualizado em `docs/requisitos/`
 - [ ] Consigo explicar qualquer trecho deste PR na banca
 

@@ -1,0 +1,96 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--fundo);
+}
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 16px;
+  color: #fff;
+  background: var(--marinho);
+
+  .marca {
+    flex: 1;
+    min-width: 0;
+
+    strong { display: block; font-size: 1.125rem; letter-spacing: 0.04em; }
+    span { font-size: 0.8125rem; color: #c9d3df; }
+  }
+
+  .sair { color: #fff; }
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 16px 96px;
+}
+
+.menu {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  background: var(--superficie);
+  border-top: 1px solid var(--borda);
+
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 60px;
+    padding: 8px 4px;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+    text-decoration: none;
+
+    .icone { width: 24px; height: 24px; }
+
+    &.ativo { color: var(--laranja-forte); font-weight: 600; }
+  }
+}
+
+/* Em tela grande (metre e gerente) o menu sobe para junto da barra: o rodapé é coisa de celular. */
+@media (min-width: 768px) {
+  .barra { order: -2; }
+
+  .menu {
+    order: -1;
+    position: sticky;
+    top: 56px;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px 16px;
+    border-top: 0;
+    border-bottom: 1px solid var(--borda);
+
+    a {
+      flex-direction: row;
+      gap: 8px;
+      min-height: 48px;
+      padding: 8px 14px;
+      font-size: 0.9375rem;
+      border-radius: var(--raio-pequeno);
+
+      &:hover { background: var(--marinho-suave); }
+    }
+  }
+}

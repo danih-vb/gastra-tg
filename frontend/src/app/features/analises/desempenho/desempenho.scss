@@ -1,0 +1,27 @@
+.destaque { display: flex; flex-direction: column; gap: 12px; }
+
+.posicao {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+
+  strong {
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--laranja-forte);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.linha-indice { display: flex; justify-content: space-between; }
+
+.barra {
+  height: 10px;
+  background: var(--marinho-suave);
+  border-radius: 5px;
+  overflow: hidden;
+
+  div { height: 100%; background: var(--laranja); }
+}
+
+.vazio { text-align: center; }

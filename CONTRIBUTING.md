@@ -130,6 +130,11 @@ Exemplos:
 - Ao revisar, comentem o que foi ajustado e por quê — o objetivo é que os dois consigam
   defender qualquer trecho do repositório na banca, não só quem escreveu.
 - Sem conflitos de merge pendentes antes de pedir aprovação.
+- **CI verde antes do merge.** O GitHub Actions (`.github/workflows/ci.yml`) roda em todo PR:
+  - backend, com MySQL real e o serviço Python no ar; o job falha se algum teste ficar ignorado;
+  - pytest da camada analítica;
+  - build e testes do frontend;
+  - varredura de segredos (gitleaks).
 
 ## 4. Segurança de dados e LGPD
 

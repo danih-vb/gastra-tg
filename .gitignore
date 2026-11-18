@@ -32,6 +32,7 @@ yarn-error.log*
 # === IDEs / editores ===
 .vscode/
 .idea/
+.vs/
 *.rider.json
 .DS_Store
 Thumbs.db
@@ -39,3 +40,14 @@ Thumbs.db
 # === Logs e temporários ===
 *.log
 *.tmp
+
+# Configuração local criada pelo brModelo ao abrir
+config.chc
+
+# Arquivos intermediários da engenharia reversa
+docs/modelagem/engenharia-reversa/schema.tsv
+docs/modelagem/engenharia-reversa/fisico.json
+docs/modelagem/engenharia-reversa/*.xml
+
+# Resultados temporários de execução de testes (docs/testes/README.md)
+resultados/
