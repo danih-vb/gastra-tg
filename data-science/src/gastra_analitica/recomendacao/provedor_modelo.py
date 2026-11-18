@@ -4,12 +4,16 @@ Regras:
 - com banco configurado, acessível e com movimento suficiente, o modelo é treinado com o histórico real;
 - em qualquer outro caso, usa o histórico simulado e informa o motivo;
 - o modelo fica em cache por alguns minutos: treinar a cada chamada seria lento, e o histórico muda pouco
-  entre duas consultas do garçom.
+  entre duas consultas do garçom;
+- vencido o prazo, a resposta sai na hora com o modelo anterior, e o novo é treinado em segundo plano. Treinar
+  dentro da requisição chegou a passar dos 2 s que o backend espera, e o garçom via "sugestões indisponíveis"
+  (achado dos testes operacionais).
 """
 
 from __future__ import annotations
 
 import logging
+import threading
 import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -35,7 +39,7 @@ class ModeloComOrigem:
 class ProvedorDeModelo:
     """
     `ler_historico` devolve as transações do banco ou `None` quando o banco não está configurado.
-    O relógio é injetável para testar o cache sem esperar.
+    O relógio e o executor em segundo plano são injetáveis para testar o cache sem esperar nem abrir thread.
     """
 
     def __init__(
@@ -44,24 +48,50 @@ class ProvedorDeModelo:
         minimo_de_comandas: int = MINIMO_DE_COMANDAS,
         cache_segundos: float = CACHE_SEGUNDOS,
         relogio: Callable[[], float] = time.monotonic,
+        em_segundo_plano: Callable[[Callable[[], None]], None] | None = None,
     ) -> None:
         self._ler_historico = ler_historico
         self._minimo = minimo_de_comandas
         self._cache_segundos = cache_segundos
         self._relogio = relogio
+        self._em_segundo_plano = em_segundo_plano or (lambda tarefa: threading.Thread(target=tarefa, daemon=True).start())
         self._atual: ModeloComOrigem | None = None
         self._calculado_em = 0.0
         self._simulado: CacheDoModeloSimulado = CacheDoModeloSimulado()
+        self._trava = threading.Lock()
+        self._atualizando = False
 
     def obter(self) -> ModeloComOrigem:
-        agora = self._relogio()
-        if self._atual is None or agora - self._calculado_em >= self._cache_segundos:
-            self._atual = self._calcular()
-            self._calculado_em = agora
+        if self._atual is None:
+            # Só sem modelo nenhum a requisição espera: na subida do serviço, aquecer() já cuida disso.
+            with self._trava:
+                if self._atual is None:
+                    self._atual, self._calculado_em = self._calcular(), self._relogio()
+        elif self._relogio() - self._calculado_em >= self._cache_segundos:
+            self._atualizar_em_segundo_plano()
         return self._atual
+
+    def aquecer(self) -> None:
+        """Treina o primeiro modelo antes da primeira comanda pedir sugestão."""
+        self._em_segundo_plano(self.obter)
 
     def invalidar(self) -> None:
         self._atual = None
+
+    def _atualizar_em_segundo_plano(self) -> None:
+        with self._trava:
+            if self._atualizando:
+                return
+            self._atualizando = True
+
+        def atualizar() -> None:
+            try:
+                novo = self._calcular()
+                self._atual, self._calculado_em = novo, self._relogio()
+            finally:
+                self._atualizando = False
+
+        self._em_segundo_plano(atualizar)
 
     def _calcular(self) -> ModeloComOrigem:
         try:

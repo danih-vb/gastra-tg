@@ -58,7 +58,9 @@ def test_o_modelo_fica_em_cache_e_e_recalculado_depois_do_prazo():
         leituras.append(relogio.agora)
         return HISTORICO_REAL
 
-    provedor = ProvedorDeModelo(ler, minimo_de_comandas=50, cache_segundos=300, relogio=relogio)
+    pendentes = []
+    provedor = ProvedorDeModelo(ler, minimo_de_comandas=50, cache_segundos=300, relogio=relogio,
+                                em_segundo_plano=pendentes.append)
 
     provedor.obter()
     relogio.agora = 299
@@ -67,7 +69,38 @@ def test_o_modelo_fica_em_cache_e_e_recalculado_depois_do_prazo():
 
     relogio.agora = 300
     provedor.obter()
+    pendentes.pop()()
     assert len(leituras) == 2
+
+
+def test_com_o_prazo_vencido_responde_na_hora_com_o_modelo_anterior():
+    relogio = Relogio()
+    pendentes = []
+    provedor = ProvedorDeModelo(lambda: HISTORICO_REAL, minimo_de_comandas=50, cache_segundos=300, relogio=relogio,
+                                em_segundo_plano=pendentes.append)
+    anterior = provedor.obter()
+
+    relogio.agora = 301
+    respondido = provedor.obter()
+    provedor.obter()  # um segundo pedido não dispara outro treino
+
+    assert respondido is anterior
+    assert len(pendentes) == 1
+    pendentes.pop()()
+    assert provedor.obter() is not anterior
+
+
+def test_aquecer_treina_antes_do_primeiro_pedido():
+    leituras = []
+    pendentes = []
+    provedor = ProvedorDeModelo(lambda: leituras.append(1) or HISTORICO_REAL, minimo_de_comandas=50,
+                                em_segundo_plano=pendentes.append)
+
+    provedor.aquecer()
+    pendentes.pop()()
+    provedor.obter()
+
+    assert len(leituras) == 1
 
 
 def test_invalidar_forca_nova_leitura():

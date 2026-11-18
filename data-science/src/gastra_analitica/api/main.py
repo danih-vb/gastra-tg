@@ -4,6 +4,7 @@ Recebe os dados do backend em C#, calcula e devolve o resultado. Não grava nada
 sempre a API ASP.NET Core (decisão D2 da arquitetura).
 """
 
+from contextlib import asynccontextmanager
 from datetime import date, timedelta
 
 from fastapi import FastAPI, HTTPException
@@ -30,10 +31,18 @@ from gastra_analitica.dados.historico_banco import ConfiguracaoBanco, ler_transa
 from gastra_analitica.recomendacao.provedor_modelo import ProvedorDeModelo
 from gastra_analitica.recomendacao.segmentada import treinar_segmentado
 
+@asynccontextmanager
+async def ciclo_de_vida(_: FastAPI):
+    # O primeiro modelo é treinado na subida, em segundo plano: o primeiro garçom não espera o treino.
+    provedor_de_modelo.aquecer()
+    yield
+
+
 app = FastAPI(
     title="GASTRA — Camada Analítica",
     description="Recomendação de pratos, perfis de consumo e alocação de garçons, consumida pelo backend em C#.",
     version="0.3.0",
+    lifespan=ciclo_de_vida,
 )
 
 # Janela do histórico real: um ano acompanha a sazonalidade sem carregar mudanças antigas de cardápio.
