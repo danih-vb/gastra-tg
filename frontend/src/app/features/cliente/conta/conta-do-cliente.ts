@@ -44,7 +44,7 @@ export class ContaDoCliente implements OnInit, OnDestroy {
   protected readonly errosDaAvaliacao = signal<string[]>([]);
 
   protected readonly SITUACAO: Record<StatusItemPedido, { texto: string; classe: string }> = {
-    Pendente: { texto: 'A caminho', classe: 'aviso' },
+    Pendente: { texto: 'Aguardando', classe: 'aviso' },
     Entregue: { texto: 'Entregue', classe: 'sucesso' },
     Cancelado: { texto: 'Cancelado · não cobrado', classe: '' },
   };

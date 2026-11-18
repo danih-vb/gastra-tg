@@ -22,7 +22,7 @@
 } @else {
   <section aria-labelledby="t-filtros">
     <h2 id="t-filtros" class="sr">Filtros</h2>
-    <div class="chips rolagem" role="group" aria-label="Mostrar só opções">
+    <div class="chips" role="group" aria-label="Mostrar só opções">
       @for (flag of flagsPossiveis; track flag) {
         <button class="chip" type="button" [attr.aria-pressed]="filtros().includes(flag)" (click)="alternarFiltro(flag)">
           @if (filtros().includes(flag)) {
