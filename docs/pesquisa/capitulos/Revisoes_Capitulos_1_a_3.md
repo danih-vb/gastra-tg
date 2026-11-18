@@ -57,7 +57,7 @@ conformidade com a Lei Geral de Proteção de Dados: o cliente não é identific
 agregados. Na ausência de histórico real, os algoritmos foram validados com dados simulados. A recomendação
 segmentada por perfil elevou o acerto das sugestões de 76,2% para 83,1%, e a alocação, aplicada turno a turno,
 reduziu em 92% a desigualdade de faturamento entre os garçons em 30 dias, medida pelo coeficiente de Gini. O
-sistema foi verificado por 513 casos de teste automatizados, todos aprovados. [Acrescentar uma frase com o
+sistema foi verificado por 552 casos de teste automatizados, todos aprovados. [Acrescentar uma frase com o
 resultado dos testes operacionais e da avaliação heurística, quando concluídos.]
 
 **Palavras-chave:** Análise e Desenvolvimento de Sistemas. Engenharia de Software. Business Intelligence. Programação linear.
@@ -78,7 +78,7 @@ in compliance with the Brazilian General Data Protection Law (LGPD): customers a
 analyses use only aggregated data. In the absence of real historical data, the algorithms were validated on
 simulated data. Profile-based recommendation raised the hit rate of the suggestions from 76.2% to 83.1%, and the
 assignment, applied shift after shift, reduced revenue inequality among waiters by 92% in 30 days, as measured by
-the Gini coefficient. The system was verified by 513 automated test cases, all of which passed. [Add the sentence
+the Gini coefficient. The system was verified by 552 automated test cases, all of which passed. [Add the sentence
 on operational tests and heuristic evaluation, translated, once the Portuguese one is written.]
 
 **Keywords:** Systems Analysis and Development. Software Engineering. Business Intelligence. Linear programming.

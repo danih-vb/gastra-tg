@@ -461,11 +461,56 @@ com dados fictícios e as mesmas regras, listas fechadas, mensagens de erro e pe
 backend. O protótipo cobre as quatro personas — Garçom e Cliente no formato de celular, Metre em tablet ou
 computador e Gerente em computador — além do acesso, e suas telas foram capturadas em 33 imagens e importadas no
 Figma. Ele serviu a três propósitos: validar o fluxo com antecedência, medir o RNF02 com um contador de toques
-embutido e servir de base para as telas em Angular. A Figura 10 mostra a comanda do garçom, a tela mais usada
-durante o expediente.
+embutido e servir de base para as telas em Angular.
 
-**Figura 10 – Protótipo da comanda do Garçom**
+As figuras 10 a 17 apresentam as 33 telas, agrupadas por perfil de usuário: o acesso ao sistema (Figura 10), o
+Garçom (figuras 11 a 13), o Metre (Figura 14), o Gerente (figuras 15 e 16) e o Cliente (Figura 17). Cada tela mostra
+a área visível sem rolagem; as imagens completas estão no repositório do projeto.
 
-![Protótipo da comanda do Garçom](../../ux-ui/telas/garcom-comanda.png)
+**Figura 10 – Protótipo: acesso ao sistema**
+
+![Protótipo: acesso ao sistema](../../ux-ui/telas/paineis/acesso.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 11 – Protótipo: Garçom, do salão ao lançamento do item**
+
+![Protótipo: Garçom, do salão ao lançamento do item](../../ux-ui/telas/paineis/garcom-1.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 12 – Protótipo: Garçom, restrições, sugestões e entregas**
+
+![Protótipo: Garçom, restrições, sugestões e entregas](../../ux-ui/telas/paineis/garcom-2.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 13 – Protótipo: Garçom, fechamento da conta e desempenho**
+
+![Protótipo: Garçom, fechamento da conta e desempenho](../../ux-ui/telas/paineis/garcom-3.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 14 – Protótipo: Metre, alocação do turno e salão**
+
+![Protótipo: Metre, alocação do turno e salão](../../ux-ui/telas/paineis/metre.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 15 – Protótipo: Gerente, análises e cardápio**
+
+![Protótipo: Gerente, análises e cardápio](../../ux-ui/telas/paineis/gerente-1.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 16 – Protótipo: Gerente, promoções, salão e usuários**
+
+![Protótipo: Gerente, promoções, salão e usuários](../../ux-ui/telas/paineis/gerente-2.png)
+
+Fonte: elaborado pelos autores.
+
+**Figura 17 – Protótipo: Cliente**
+
+![Protótipo: Cliente](../../ux-ui/telas/paineis/cliente.png)
 
 Fonte: elaborado pelos autores.

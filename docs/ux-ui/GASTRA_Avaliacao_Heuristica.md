@@ -75,7 +75,19 @@ repete todo dia (um problema na tela de lançar item pesa mais que um na tela de
 
 | Nº | Avaliador | Tela | Heurística | Problema | Severidade | Correção ou justificativa | Issue/PR |
 |---|---|---|---|---|---|---|---|
-| 1 | | | | | | | |
+| 1 | Pedro e Daniel | Cardápio digital | H1 | No celular, filtros fora da tela; um filtro ativo podia não aparecer | 2 | Corrigido: os filtros quebram em linhas | #261 |
+| 2 | Pedro e Daniel | Conta do cliente | H2 | Item pendente exibido como "A caminho", o que o sistema não sabe | 2 | Corrigido: passa a "Aguardando" | #261 |
+| 3 | Pedro e Daniel | Comanda | H8 | Em mesa com alergia, o aviso para confirmar ingredientes aparece em todos os itens | 2 | Aceito: o cardápio não confere alergia; o aviso em excesso é preferível à falta | — |
+| 4 | Pedro e Daniel | Entrar | H5 | Sem opção de mostrar a senha digitada no celular | 1 | Registrado para versão futura | — |
+| 5 | Pedro e Daniel | Abrir mesa | H5 | A capacidade da mesa vem destacada como quantidade de pessoas | 1 | Registrado: o toque em qualquer número abre a mesa | — |
+| 6 | Pedro e Daniel | Início do cliente | H8 | Nome do sistema repetido no cabeçalho e no título | 1 | Registrado | — |
+| 7 | Pedro e Daniel | Conta não encontrada | H8 | Título e mensagem dizem a mesma coisa | 1 | Registrado | — |
+| 8 | Pedro e Daniel | Análises | H7 | Página longa, sem atalho para cada relatório | 1 | Registrado para versão futura | — |
+| 9 | Pedro e Daniel | Análises | H2 | Perfis de consumo com nomes genéricos (Perfil 1, 2 e 3) | 1 | Registrado: o nome seria inventado pelo sistema | — |
+| 10 | Pedro e Daniel | Todas | H6 | Botão de sair só com ícone | 1 | Registrado: tem rótulo para leitor de tela | — |
+| 11 | Pedro e Daniel | Alocação | H8 | No computador, a tela usa só parte da largura | 1 | Registrado | — |
+
+Avaliação feita em 13/11/2026 sobre as capturas do sistema em execução (`docs/ux-ui/telas-reais`). Os dois autores revisaram cada problema e confirmaram as severidades.
 
 ## Cobertura por tela
 
@@ -106,11 +118,11 @@ problema.
 
 | Severidade | Encontrados | Corrigidos | Aceitos com justificativa |
 |---|---|---|---|
-| 4 | | | |
-| 3 | | | |
-| 2 | | | |
-| 1 | | | |
-| **Total** | | | |
+| 4 | 0 | 0 | 0 |
+| 3 | 0 | 0 | 0 |
+| 2 | 3 | 2 | 1 |
+| 1 | 8 | 0 | 8 (registrados para versões futuras) |
+| **Total** | **11** | **2** | **9** |
 
 Separar também por heurística (quais concentraram mais problemas) e escolher dois ou três exemplos com a correção
 feita, de preferência com o antes e o depois da tela.

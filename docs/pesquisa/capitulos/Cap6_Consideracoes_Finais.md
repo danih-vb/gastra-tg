@@ -33,7 +33,7 @@ simulado, a alocação combinou os dois fatores da regra, levando a praça de ma
 esperava havia mais tempo por ela (seções 5.2.3 e 5.2.4), e, aplicada por sucessivos turnos a partir desse histórico, reduziu em 92% a
 desigualdade de faturamento entre os garçons em 30 dias. A conformidade com a LGPD foi tratada como requisito de projeto, e não como
 funcionalidade adicional: o cliente não é identificado em nenhuma tabela, o único dado sensível é apagado no
-fechamento da comanda, e cada proteção foi traduzida em teste automatizado. Por fim, o sistema foi validado por 513
+fechamento da comanda, e cada proteção foi traduzida em teste automatizado. Por fim, o sistema foi validado por 552
 casos de teste automatizados, todos aprovados, nas três camadas de software [e pelos testes operacionais descritos
 na seção 5.2.6].
 
