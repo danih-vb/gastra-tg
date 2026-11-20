@@ -437,6 +437,3 @@ dela continuava pedindo o arquivo da versão anterior, que já não existia, e o
 responder, sem mensagem de erro. Como o celular do garçom fica o turno inteiro na mesma página, isso aconteceria a
 cada atualização do sistema. A correção recarrega a página no endereço de destino quando falta esse arquivo e, se
 ele continuar faltando logo em seguida, não recarrega de novo, para não entrar em repetição.
-
-> **[A PREENCHER depois do teste em máquina limpa (#177).]** O sistema subindo em um computador sem as ferramentas
-> de desenvolvimento, seguindo o README: tempo até a primeira tela e problemas encontrados.
