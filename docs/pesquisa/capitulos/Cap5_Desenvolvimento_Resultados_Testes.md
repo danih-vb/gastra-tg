@@ -420,8 +420,23 @@ modelo assim que o serviço sobe e, vencido o prazo, responde na hora com o mode
 treinado em segundo plano. No sistema corrigido, o primeiro pedido de sugestão depois da subida foi respondido em
 0,006 segundo. A rodada também levou às duas correções de usabilidade descritas na seção 5.2.5.
 
-> **[A PREENCHER depois da segunda rodada.]** Os passos que ainda dependem da dupla: a medição do RNF01 com dois
-> celulares (tempo do lançamento pelo garçom até o item aparecer na conta do cliente, em dez repetições); a leitura
-> do QR code pelo celular do cliente; a confirmação da alocação pelo Metre; a parada do serviço analítico com o
-> sistema em uso; e o teste em máquina limpa (#177), com o sistema subindo em um computador sem as ferramentas de
-> desenvolvimento. Registrar a quantidade de passos executados e aprovados por papel, como no resumo do plano.
+A segunda rodada, em 18 e 19 de novembro de 2026, cobriu os passos que dependiam do sistema em uso contínuo. O
+RNF01 foi medido com duas janelas abertas ao mesmo tempo no mesmo computador, uma com o garçom e outra com a conta do
+cliente: em dez lançamentos seguidos, o item apareceu na conta do cliente em média 0,83 segundo depois da
+confirmação do garçom, com máximo de 0,91 segundo, todos dentro dos dois segundos do requisito. O QR code da comanda
+foi lido pela câmera de um celular na mesma rede e abriu a conta da mesa certa; para isso, o sistema precisa ser
+aberto pelo endereço do computador na rede, e não por `localhost`, já que o QR code leva o endereço em que a comanda
+foi aberta. O Metre gerou a sugestão de alocação, mudou um garçom de praça e confirmou; a partir daí a alocação
+deixou de aceitar ajustes, e o garçom passou a ver a própria praça no celular. Com o serviço analítico parado, o
+garçom abriu uma mesa, lançou um item e fechou a conta normalmente, e o espaço das sugestões passou a mostrar
+"Sugestões indisponíveis agora", como prevê a decisão D3.
+
+A segunda rodada também encontrou um defeito. Cada tela do sistema é carregada na primeira vez que alguém entra
+nela, a partir de um arquivo que leva no nome o código da versão. Depois de uma atualização, uma aba aberta antes
+dela continuava pedindo o arquivo da versão anterior, que já não existia, e o botão "Fechar conta" deixava de
+responder, sem mensagem de erro. Como o celular do garçom fica o turno inteiro na mesma página, isso aconteceria a
+cada atualização do sistema. A correção recarrega a página no endereço de destino quando falta esse arquivo e, se
+ele continuar faltando logo em seguida, não recarrega de novo, para não entrar em repetição.
+
+> **[A PREENCHER depois do teste em máquina limpa (#177).]** O sistema subindo em um computador sem as ferramentas
+> de desenvolvimento, seguindo o README: tempo até a primeira tela e problemas encontrados.
