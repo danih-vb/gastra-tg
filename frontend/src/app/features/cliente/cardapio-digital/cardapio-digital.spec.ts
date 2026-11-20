@@ -95,17 +95,17 @@ describe('Cardápio digital (UC19)', () => {
     expect(texto(pagina.querySelector('app-folha')!)).toContain('R$ 19,00');
   });
 
-  it('monta a lista "Quero pedir" no próprio celular, com o total', async () => {
+  it('monta a lista "Tenho interesse" no próprio celular, com o total', async () => {
     localStorage.removeItem('gastra.queroPedir');
     const pagina = await renderizar();
     const coracao = (nome: string) =>
-      pagina.querySelector<HTMLButtonElement>(`.favorito[aria-label="Quero pedir: ${nome}"]`)!;
+      pagina.querySelector<HTMLButtonElement>(`.favorito[aria-label="Tenho interesse: ${nome}"]`)!;
 
     coracao('Picanha na chapa').click();
     coracao('Pudim de leite').click();
     await fixture.whenStable();
 
-    expect(texto(pagina)).toContain('Quero pedir (2)');
+    expect(texto(pagina)).toContain('Tenho interesse (2)');
     expect(JSON.parse(localStorage.getItem('gastra.queroPedir')!)).toEqual([2, 3]);
 
     pagina.querySelector<HTMLButtonElement>('.barra-lista button')!.click();
@@ -114,7 +114,27 @@ describe('Cardápio digital (UC19)', () => {
 
     coracao('Pudim de leite').click();
     await fixture.whenStable();
-    expect(texto(pagina)).toContain('Quero pedir (1)');
+    expect(texto(pagina)).toContain('Tenho interesse (1)');
+    localStorage.removeItem('gastra.queroPedir');
+  });
+
+  it('vindo da conta da mesa, a lista já oferece chamar o garçom', async () => {
+    localStorage.removeItem('gastra.queroPedir');
+    sessionStorage.setItem('gastra.mesaDaAba', 'abc123');
+    const pagina = await renderizar();
+
+    pagina.querySelector<HTMLButtonElement>('.favorito')!.click();
+    await fixture.whenStable();
+    pagina.querySelector<HTMLButtonElement>('.barra-lista button')!.click();
+    await fixture.whenStable();
+    [...pagina.querySelectorAll<HTMLButtonElement>('app-folha button')]
+      .find((b) => b.textContent?.includes('Chamar o garçom'))!
+      .click();
+
+    http.expectOne(`${API}/api/comandas/consulta/abc123/chamado`).flush(null);
+    await fixture.whenStable();
+    expect(texto(pagina)).toContain('Garçom chamado');
+    sessionStorage.removeItem('gastra.mesaDaAba');
     localStorage.removeItem('gastra.queroPedir');
   });
 

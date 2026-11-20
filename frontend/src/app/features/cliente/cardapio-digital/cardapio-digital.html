@@ -103,7 +103,7 @@
               class="favorito"
               type="button"
               [attr.aria-pressed]="naLista(item)"
-              [attr.aria-label]="'Quero pedir: ' + item.nome"
+              [attr.aria-label]="'Tenho interesse: ' + item.nome"
               (click)="alternarNaLista(item)"
             >
               <app-icone nome="coracao" />
@@ -131,7 +131,7 @@
   @if (itensDaLista().length) {
     <div class="barra-lista">
       <button class="botao largo" type="button" (click)="vendoLista.set(true)">
-        <app-icone nome="coracao" /> Quero pedir ({{ itensDaLista().length }})
+        <app-icone nome="coracao" /> Tenho interesse ({{ itensDaLista().length }})
       </button>
     </div>
   }
@@ -168,13 +168,13 @@
       type="button"
       (click)="alternarNaLista(item)"
     >
-      <app-icone nome="coracao" /> {{ naLista(item) ? 'Tirar da lista' : 'Quero pedir' }}
+      <app-icone nome="coracao" /> {{ naLista(item) ? 'Tirar da lista' : 'Tenho interesse' }}
     </button>
   </app-folha>
 }
 
 @if (vendoLista()) {
-  <app-folha titulo="Quero pedir" (fechar)="vendoLista.set(false)">
+  <app-folha titulo="Tenho interesse" (fechar)="vendoLista.set(false)">
     <ul class="lista-pedido">
       @for (item of itensDaLista(); track item.id) {
         <li>
@@ -194,6 +194,14 @@
     <p class="total-lista">
       <span>Total</span><strong class="num">{{ totalDaLista() | currency: 'BRL' }}</strong>
     </p>
+    @if (codigoDaMesa()) {
+      @if (erroAoChamar(); as erro) {
+        <p class="alerta erro" role="alert">{{ erro }}</p>
+      }
+      <button class="botao largo" type="button" [disabled]="garcomChamado() || chamando()" (click)="chamarGarcom()">
+        <app-icone nome="sino" /> {{ garcomChamado() ? 'Garçom chamado' : 'Chamar o garçom' }}
+      </button>
+    }
     <button class="botao secundario largo" type="button" (click)="limparLista()">
       Limpar lista
     </button>

@@ -5,6 +5,7 @@ import { GastraApiService } from '../../../core/api/gastra-api.service';
 import { FlagDietetica, ItemCardapio } from '../../../core/api/modelos';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Folha } from '../../../shared/folha/folha';
+import { CHAVE_DA_MESA } from '../conta/conta-do-cliente';
 import { Icone } from '../../../shared/icone/icone';
 import { CATEGORIAS, FLAGS, ICONES_DAS_FLAGS } from '../../../shared/rotulos';
 
@@ -24,6 +25,14 @@ function lerLista(): number[] {
   }
 }
 
+function lerCodigoDaMesa(): string | null {
+  try {
+    return sessionStorage.getItem(CHAVE_DA_MESA);
+  } catch {
+    return null;
+  }
+}
+
 @Component({
   selector: 'app-cardapio-digital',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +49,12 @@ export class CardapioDigital {
   protected readonly filtros = signal<FlagDietetica[]>([]);
   protected readonly emDetalhe = signal<ItemCardapio | null>(null);
   protected readonly vendoLista = signal(false);
+
+  /** Chegou pela conta da mesa (QR code)? Então a lista já oferece chamar o garçom. */
+  protected readonly codigoDaMesa = signal<string | null>(lerCodigoDaMesa());
+  protected readonly chamando = signal(false);
+  protected readonly garcomChamado = signal(false);
+  protected readonly erroAoChamar = signal<string | null>(null);
   protected readonly lista = signal<number[]>(lerLista());
 
   /** Só os itens que continuam no cardápio: um item retirado some da lista sozinho. */
@@ -98,6 +113,25 @@ export class CardapioDigital {
     this.lista.set([]);
     this.guardarLista();
     this.vendoLista.set(false);
+  }
+
+  protected chamarGarcom(): void {
+    const codigo = this.codigoDaMesa();
+    if (!codigo || this.chamando()) {
+      return;
+    }
+    this.chamando.set(true);
+    this.erroAoChamar.set(null);
+    this.api.chamarGarcom(codigo).subscribe({
+      next: () => {
+        this.chamando.set(false);
+        this.garcomChamado.set(true);
+      },
+      error: (erro: unknown) => {
+        this.chamando.set(false);
+        this.erroAoChamar.set(mensagensDeErro(erro)[0] ?? 'Não deu para chamar o garçom.');
+      },
+    });
   }
 
   private guardarLista(): void {
