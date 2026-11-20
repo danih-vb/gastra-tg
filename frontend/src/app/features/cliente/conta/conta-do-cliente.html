@@ -58,9 +58,6 @@
   <section class="cartao pad" aria-label="Valores">
     <div class="linha-total"><span>Subtotal</span><span>{{ comanda.subtotal | currency: 'BRL' }}</span></div>
     <div class="linha-total"><span>Taxa de serviço (10%)</span><span>{{ comanda.taxaServico | currency: 'BRL' }}</span></div>
-    @if (!comanda.fechada) {
-      <p class="suave pequeno">A taxa de serviço é opcional. Se não quiser pagar, avise o garçom antes de fechar a conta.</p>
-    }
     <div class="linha-total grande">
       <span>{{ comanda.fechada ? 'Total' : 'Total parcial' }}</span>
       <span>{{ comanda.total | currency: 'BRL' }}</span>

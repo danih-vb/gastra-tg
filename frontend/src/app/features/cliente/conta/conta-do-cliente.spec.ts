@@ -108,12 +108,6 @@ describe('Conta do cliente (UC20)', () => {
     expect(texto(pagina)).toContain('R$ 210,10');
   });
 
-  it('explica que a taxa é opcional e que nada pessoal aparece (RN04)', async () => {
-    const pagina = await renderizar(CONTA);
-
-    expect(texto(pagina)).toContain('A taxa de serviço é opcional');
-  });
-
   it('com a conta fechada, agradece e mostra o total final', async () => {
     const pagina = await renderizar({ ...CONTA, fechada: true });
 
