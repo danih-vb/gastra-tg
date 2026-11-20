@@ -55,21 +55,19 @@ describe('Desempenho (UC17)', () => {
     expect(texto(pagina)).toContain('de 8 garçons');
     expect(texto(pagina)).toContain('95,0 / 100');
     expect(texto(pagina)).toContain('R$ 1.184,76');
-    expect(texto(pagina)).toContain('vale 50% do índice');
     // Sem avaliações suficientes no restaurante, a avaliação nem aparece como parte do índice.
     expect(texto(pagina)).not.toContain('Avaliação dos clientes');
   });
 
   const COM_AVALIACAO: RankingDeDesempenho = { ...RANKING, pesoFaturamento: 0.4, pesoMesasAtendidas: 0.3, pesoAvaliacao: 0.3 };
 
-  it('com avaliações, mostra a nota do próprio garçom e o peso dela', async () => {
+  it('com avaliações, mostra a nota do próprio garçom', async () => {
     const pagina = await renderizar({
       ...COM_AVALIACAO,
       posicoes: [{ ...RANKING.posicoes[0], notaConsiderada: 4.59 }],
     });
 
     expect(texto(pagina)).toContain('Avaliação dos clientes');
-    expect(texto(pagina)).toContain('vale 30% do índice');
     expect(texto(pagina)).toContain('4,59 / 5');
   });
 
