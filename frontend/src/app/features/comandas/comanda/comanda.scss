@@ -16,7 +16,10 @@
     flex: 1;
     min-width: 0;
 
-    small { display: block; color: var(--texto-suave); }
+    small {
+      display: block;
+      color: var(--texto-suave);
+    }
   }
 
   .acoes-item {
@@ -25,7 +28,9 @@
     gap: 8px;
     padding-left: 42px;
 
-    .botao { flex: 1; }
+    .botao {
+      flex: 1;
+    }
   }
 
   &.cancelado .nome {
@@ -34,7 +39,9 @@
   }
 }
 
-.cardapio > li[aria-disabled='true'] { color: var(--texto-suave); }
+.cardapio > li[aria-disabled='true'] {
+  color: var(--texto-suave);
+}
 
 .preco {
   text-align: right;
@@ -65,7 +72,9 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .botao-icone { border: 1px solid var(--borda-forte); }
+  .botao-icone {
+    border: 1px solid var(--borda-forte);
+  }
 }
 
 details.cartao > summary {
@@ -108,5 +117,33 @@ details.cartao > summary {
     margin: 12px 0;
     padding: 12px;
     background: #fff;
+  }
+}
+
+.busca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0 12px;
+  border: 1px solid var(--borda-forte);
+  border-radius: var(--raio-pequeno);
+  background: var(--superficie);
+  color: var(--texto-suave);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--toque-minimo);
+    border: 0;
+    background: transparent;
+    font: inherit;
+    color: var(--texto);
+    outline: none;
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--laranja-forte);
+    outline-offset: 1px;
   }
 }

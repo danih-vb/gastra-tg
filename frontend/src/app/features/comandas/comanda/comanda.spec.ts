@@ -3,7 +3,14 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Comanda as ComandaDaApi, SugestoesDaComanda } from '../../../core/api/modelos';
-import { API, comanda, itemCardapio, itemDoPedido, mesa, sessaoDoGarcom } from '../../../core/api/testes';
+import {
+  API,
+  comanda,
+  itemCardapio,
+  itemDoPedido,
+  mesa,
+  sessaoDoGarcom,
+} from '../../../core/api/testes';
 import { ARMAZENAMENTO_DA_SESSAO } from '../../../core/configuracao';
 import { provedoresDeLocalizacao } from '../../../core/localizacao';
 import { AvisoService } from '../../../shared/aviso/aviso.service';
@@ -41,17 +48,25 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  async function responder(dados: Partial<ComandaDaApi> = {}, sugestoes: SugestoesDaComanda | 'falha' = SUGESTOES): Promise<void> {
+  async function responder(
+    dados: Partial<ComandaDaApi> = {},
+    sugestoes: SugestoesDaComanda | 'falha' = SUGESTOES,
+  ): Promise<void> {
     http.expectOne(`${API}/api/comandas/501`).flush(comanda({ itens: [itemDoPedido()], ...dados }));
-    http.expectOne(`${API}/api/cardapio`).flush([
-      itemCardapio({ id: 1, nome: 'Risoto de cogumelos', preco: 68, precoPromocional: 57.8 }),
-      itemCardapio({ id: 2, nome: 'Caipirinha de limão', categoria: 'Bebida', preco: 24 }),
-      itemCardapio({ id: 3, nome: 'Parmegiana', categoria: 'PratoPrincipal', disponivel: false }),
-    ]);
+    http
+      .expectOne(`${API}/api/cardapio`)
+      .flush([
+        itemCardapio({ id: 1, nome: 'Risoto de cogumelos', preco: 68, precoPromocional: 57.8 }),
+        itemCardapio({ id: 2, nome: 'Caipirinha de limão', categoria: 'Bebida', preco: 24 }),
+        itemCardapio({ id: 3, nome: 'Parmegiana', categoria: 'PratoPrincipal', disponivel: false }),
+      ]);
     http.expectOne(`${API}/api/mesas`).flush([mesa(10, '10')]);
     const pedido = http.expectOne(`${API}/api/comandas/501/sugestoes`);
     if (sugestoes === 'falha') {
-      pedido.flush({ erros: ['Serviço indisponível.'] }, { status: 503, statusText: 'Service Unavailable' });
+      pedido.flush(
+        { erros: ['Serviço indisponível.'] },
+        { status: 503, statusText: 'Service Unavailable' },
+      );
     } else {
       pedido.flush(sugestoes);
     }
@@ -69,11 +84,18 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
 
   it('avisa antes de lançar um item que não atende à restrição da mesa, sem impedir (RF14)', async () => {
     const pagina = await renderizar();
-    await responder({}, { ...SUGESTOES, itensForaDaRestricao: [{ itemDoCardapioId: 1, restricoes: ['SemGluten'] }] });
+    await responder(
+      {},
+      { ...SUGESTOES, itensForaDaRestricao: [{ itemDoCardapioId: 1, restricoes: ['SemGluten'] }] },
+    );
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Pratos'))?.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('button')]
+      .find((b) => b.textContent?.includes('Pratos'))
+      ?.click();
     await fixture.whenStable();
-    const linha = [...pagina.querySelectorAll<HTMLElement>('.lista.cardapio li')].find((l) => l.textContent?.includes('Risoto'))!;
+    const linha = [...pagina.querySelectorAll<HTMLElement>('.lista.cardapio li')].find((l) =>
+      l.textContent?.includes('Risoto'),
+    )!;
     expect(linha.textContent).toContain('Não é Sem glúten');
 
     linha.querySelector<HTMLButtonElement>('button')!.click();
@@ -97,7 +119,9 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     await responder({ codigoAcessoCliente: 'a1b2c3d4e5f60718293a4b5c6d7e8f90' });
 
     const link = pagina.querySelector<HTMLAnchorElement>('.qr-da-conta a')!;
-    expect(link.href).toBe(`${window.location.origin}/cliente/conta/a1b2c3d4e5f60718293a4b5c6d7e8f90`);
+    expect(link.href).toBe(
+      `${window.location.origin}/cliente/conta/a1b2c3d4e5f60718293a4b5c6d7e8f90`,
+    );
     await vi.waitFor(() => {
       fixture.detectChanges();
       expect(pagina.querySelector('.qr-da-conta svg')).not.toBeNull();
@@ -116,18 +140,42 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     expect(pagina.querySelector('h1')?.textContent).toContain('Mesa 10');
     expect(pagina.querySelector('#t-pendentes')?.parentElement?.textContent).toContain('1');
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((b) => b.textContent?.includes('Pratos'))!.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('[role="tab"]')]
+      .find((b) => b.textContent?.includes('Pratos'))!
+      .click();
     await fixture.whenStable();
 
     expect(texto(pagina)).toContain('R$ 57,80');
     expect(texto(pagina)).toContain('Indisponível');
   });
 
+  it('busca o item pelo nome no cardápio inteiro, sem depender de acento', async () => {
+    const pagina = await renderizar();
+    await responder();
+    const busca = pagina.querySelector<HTMLInputElement>('#busca-item')!;
+
+    busca.value = 'LIMAO';
+    busca.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    const lista = pagina.querySelector<HTMLElement>('.lista.cardapio')!;
+    expect(texto(lista)).toContain('Caipirinha de limão');
+    expect(texto(lista)).not.toContain('Risoto de cogumelos');
+
+    busca.value = 'lasanha';
+    busca.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    expect(texto(pagina)).toContain('Nenhum item com "lasanha"');
+  });
+
   it('lança o item e oferece desfazer, que cancela por erro de lançamento', async () => {
     const pagina = await renderizar();
     await responder({ itens: [] });
 
-    const bebidas = [...pagina.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((b) => b.textContent?.includes('Bebidas'))!;
+    const bebidas = [...pagina.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((b) =>
+      b.textContent?.includes('Bebidas'),
+    )!;
     bebidas.click();
     await fixture.whenStable();
 
@@ -144,8 +192,13 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
 
     avisos.desfazer();
     const cancelamento = http.expectOne(`${API}/api/comandas/501/itens/91/situacao`);
-    expect(cancelamento.request.body).toEqual({ situacao: 'Cancelado', motivoCancelamento: 'ErroDeLancamento' });
-    cancelamento.flush(itemDoPedido({ id: 91, status: 'Cancelado', motivoCancelamento: 'ErroDeLancamento' }));
+    expect(cancelamento.request.body).toEqual({
+      situacao: 'Cancelado',
+      motivoCancelamento: 'ErroDeLancamento',
+    });
+    cancelamento.flush(
+      itemDoPedido({ id: 91, status: 'Cancelado', motivoCancelamento: 'ErroDeLancamento' }),
+    );
     await responderRecarga({ itens: [] });
   });
 
@@ -153,7 +206,9 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     const pagina = await renderizar();
     await responder();
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('.linha-item .botao')].find((b) => b.textContent?.includes('Entregue'))!.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('.linha-item .botao')]
+      .find((b) => b.textContent?.includes('Entregue'))!
+      .click();
     const requisicao = http.expectOne(`${API}/api/comandas/501/itens/90/situacao`);
     expect(requisicao.request.body).toEqual({ situacao: 'Entregue', motivoCancelamento: null });
     requisicao.flush(itemDoPedido({ status: 'Entregue' }));
@@ -167,31 +222,46 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     const pagina = await renderizar();
     await responder();
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('.linha-item .botao')].find((b) => b.textContent?.includes('Cancelar'))!.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('.linha-item .botao')]
+      .find((b) => b.textContent?.includes('Cancelar'))!
+      .click();
     await fixture.whenStable();
 
-    const confirmar = [...pagina.querySelectorAll<HTMLButtonElement>('app-folha .rodape-folha .botao')][1];
+    const confirmar = [
+      ...pagina.querySelectorAll<HTMLButtonElement>('app-folha .rodape-folha .botao'),
+    ][1];
     expect(confirmar.disabled).toBe(true);
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('app-folha .chip')].find((c) => c.textContent?.includes('Item em falta'))!.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('app-folha .chip')]
+      .find((c) => c.textContent?.includes('Item em falta'))!
+      .click();
     await fixture.whenStable();
     expect(confirmar.disabled).toBe(false);
 
     confirmar.click();
     const requisicao = http.expectOne(`${API}/api/comandas/501/itens/90/situacao`);
-    expect(requisicao.request.body).toEqual({ situacao: 'Cancelado', motivoCancelamento: 'ItemEmFalta' });
+    expect(requisicao.request.body).toEqual({
+      situacao: 'Cancelado',
+      motivoCancelamento: 'ItemEmFalta',
+    });
     requisicao.flush(itemDoPedido({ status: 'Cancelado', motivoCancelamento: 'ItemEmFalta' }));
-    await responderRecarga({ itens: [itemDoPedido({ status: 'Cancelado', motivoCancelamento: 'ItemEmFalta' })] });
+    await responderRecarga({
+      itens: [itemDoPedido({ status: 'Cancelado', motivoCancelamento: 'ItemEmFalta' })],
+    });
   });
 
   it('registra a restrição com a observação (RF14)', async () => {
     const pagina = await renderizar();
     await responder();
 
-    pagina.querySelector<HTMLButtonElement>('[aria-label="Registrar restrição alimentar"]')!.click();
+    pagina
+      .querySelector<HTMLButtonElement>('[aria-label="Registrar restrição alimentar"]')!
+      .click();
     await fixture.whenStable();
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('app-folha .chip')].find((c) => c.textContent?.includes('Alergia'))!.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('app-folha .chip')]
+      .find((c) => c.textContent?.includes('Alergia'))!
+      .click();
     const campo = pagina.querySelector<HTMLTextAreaElement>('#observacao')!;
     campo.value = 'Camarão';
     campo.dispatchEvent(new Event('input'));
@@ -201,7 +271,9 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     const requisicao = http.expectOne(`${API}/api/comandas/501/restricoes`);
     expect(requisicao.request.body).toEqual({ categoria: 'Alergia', observacaoLivre: 'Camarão' });
     requisicao.flush(comanda());
-    await responderRecarga({ restricoes: [{ id: 1, categoria: 'Alergia', observacaoLivre: 'Camarão' }] });
+    await responderRecarga({
+      restricoes: [{ id: 1, categoria: 'Alergia', observacaoLivre: 'Camarão' }],
+    });
 
     expect(texto(pagina)).toContain('Alergia: Camarão');
   });
