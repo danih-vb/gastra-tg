@@ -24,6 +24,15 @@ export const FLAGS: Record<FlagDietetica, string> = {
   OpcaoInfantil: 'Infantil',
 };
 
+/** Ícone de cada restrição, ao lado do nome: ajuda a achar o que serve sem ler etiqueta por etiqueta. */
+export const ICONES_DAS_FLAGS: Record<FlagDietetica, string> = {
+  Vegano: 'folha',
+  Vegetariano: 'broto',
+  SemGluten: 'sem-gluten',
+  SemLactose: 'sem-lactose',
+  OpcaoInfantil: 'crianca',
+};
+
 export const RESTRICOES: Record<CategoriaRestricao, string> = {
   Vegano: 'Vegano',
   Vegetariano: 'Vegetariano',

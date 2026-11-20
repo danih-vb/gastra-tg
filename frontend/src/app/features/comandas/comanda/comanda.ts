@@ -32,6 +32,7 @@ import {
   CATEGORIAS,
   COMPOSICOES,
   FLAGS,
+  ICONES_DAS_FLAGS,
   MOTIVOS,
   RESTRICOES,
   atrasado,
@@ -67,7 +68,8 @@ export class Comanda implements OnInit {
   protected readonly cardapio = signal<ItemCardapio[]>([]);
   private readonly mesas = signal<Mesa[]>([]);
   protected readonly sugestoes = signal<SugestoesDaComanda | null>(null);
-  protected readonly categoria = signal<CategoriaItemCardapio>('Entrada');
+  /** Sem categoria marcada, a lista mostra o cardápio inteiro, na ordem das categorias. Tocar de novo desmarca. */
+  protected readonly categoria = signal<CategoriaItemCardapio | null>(null);
 
   // Painéis abertos
   protected readonly itemParaLancar = signal<ItemCardapio | null>(null);
@@ -83,6 +85,7 @@ export class Comanda implements OnInit {
   protected readonly CATEGORIAS = CATEGORIAS;
   protected readonly COMPOSICOES = COMPOSICOES;
   protected readonly FLAGS = FLAGS;
+  protected readonly ICONES_DAS_FLAGS = ICONES_DAS_FLAGS;
   protected readonly MOTIVOS = MOTIVOS;
   protected readonly RESTRICOES = RESTRICOES;
   protected readonly motivosPossiveis = Object.keys(MOTIVOS) as MotivoCancelamento[];
@@ -107,7 +110,12 @@ export class Comanda implements OnInit {
   protected readonly itensDaCategoria = computed(() => {
     const termo = semAcento(this.busca().trim());
     if (!termo) {
-      return this.cardapio().filter((i) => i.categoria === this.categoria());
+      const categoria = this.categoria();
+      if (categoria === null) {
+        const ordem = CATEGORIAS.map((c) => c.chave);
+        return [...this.cardapio()].sort((a, b) => ordem.indexOf(a.categoria) - ordem.indexOf(b.categoria));
+      }
+      return this.cardapio().filter((i) => i.categoria === categoria);
     }
     return this.cardapio().filter((i) =>
       semAcento([i.nome, ...i.flagsDieteticas.map((f) => FLAGS[f])].join(' ')).includes(termo),

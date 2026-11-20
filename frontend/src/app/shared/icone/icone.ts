@@ -29,6 +29,15 @@ const CAMINHOS: Record<string, string> = {
   avancar: '<path d="M9 5l7 7-7 7"/>',
   importar: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   sino: '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
+  folha: '<path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19l8-8"/>',
+  broto:
+    '<path d="M12 21v-9"/><path d="M12 12c0-4-3-6-7-6 0 4 3 6 7 6zM12 11c0-4 3-6 7-6 0 4-3 6-7 6z"/>',
+  'sem-gluten':
+    '<path d="M12 21V7"/><path d="M12 9c-2.5-.5-4-2.5-4-5 2.5.5 4 2.5 4 5zM12 9c2.5-.5 4-2.5 4-5-2.5.5-4 2.5-4 5zM12 14c-2.5-.5-4-2.5-4-5 2.5.5 4 2.5 4 5zM12 14c2.5-.5 4-2.5 4-5-2.5.5-4 2.5-4 5z"/><path d="M4 4l16 16"/>',
+  'sem-lactose':
+    '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 01-12 0c0-3.5 3-7 6-11z"/><path d="M4 4l16 16"/>',
+  crianca:
+    '<circle cx="12" cy="12" r="9"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0M9 10v.01M15 10v.01"/>',
   lupa: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
   coracao: '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>',
 };
