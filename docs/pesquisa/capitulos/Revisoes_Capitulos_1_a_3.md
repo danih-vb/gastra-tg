@@ -166,7 +166,7 @@ não têm equivalente igualmente consolidado no ecossistema .NET. *(resto do par
 pesquisa formal *(resto do parágrafo sem alteração)*.
 
 **[novo]** Os quatro componentes — frontend, backend, serviço analítico e banco de dados — são executados em
-contêineres Docker (DOCKER, 2026). Um contêiner empacota o componente com tudo de que ele precisa para rodar, de
+contêineres Docker (DOCKER INC., 2026). Um contêiner empacota o componente com tudo de que ele precisa para rodar, de
 modo que a mesma configuração vale no desenvolvimento, na integração contínua e na entrega, e o sistema completo
 sobe com um único comando em qualquer máquina com o Docker instalado, sem instalar .NET, Node.js ou Python.
 
