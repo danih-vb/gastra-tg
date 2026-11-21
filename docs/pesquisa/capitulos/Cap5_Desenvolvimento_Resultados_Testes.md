@@ -42,7 +42,9 @@ confirma, podendo antes mover qualquer garçom de praça. A sugestão mostra, em
 motivo da escolha — a faixa de vendas em relação à equipe e há quantos turnos ele não recebe uma praça de alto
 movimento —, sem exibir valores de faturamento, que são indicadores restritos ao Gerente (decisão D14). Depois de
 confirmada, a alocação não muda mais e passa a compor o histórico usado pela RN03. Em Salão agora, o Metre
-acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados.
+acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados, e pode lançar uma cortesia na
+mesa, por R$ 0,00 e com motivo (RF26). O Gerente usa a mesma tela para ajustar o preço de um item já lançado; o
+preço original fica guardado e o cliente vê os dois valores na conta.
 
 **Figura 20 – Metre: alocação do turno e salão**
 
