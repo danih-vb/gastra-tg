@@ -350,7 +350,7 @@ executa os algoritmos de recomendação e de alocação; e o MySQL. O princípio
 backend é o único dono das regras de negócio e o único componente que grava no banco: o frontend apenas apresenta
 e coleta dados, e o serviço analítico apenas calcula e devolve o resultado.
 
-A Figura 7 apresenta o diagrama de implantação. Os quatro componentes são executados em contêineres Docker (DOCKER, 2026) e
+A Figura 7 apresenta o diagrama de implantação. Os quatro componentes são executados em contêineres Docker (DOCKER INC., 2026) e
 sobem juntos com um único comando, o que permite executar o sistema completo em qualquer máquina, sem instalar as
 plataformas de cada um. O contêiner do frontend, com o servidor nginx, entrega os arquivos da aplicação e repassa
 ao backend as chamadas à interface de programação, de modo que o navegador fala com uma única origem.
