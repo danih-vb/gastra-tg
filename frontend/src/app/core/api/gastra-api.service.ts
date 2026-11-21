@@ -112,6 +112,23 @@ export class GastraApiService {
   }
 
   /** UC23 — marca o item como entregue ou cancela com motivo da lista fechada (RN02). */
+  /** Cortesia do Metre ou do Gerente: o item entra na comanda por R$ 0,00. */
+  lancarCortesia(comandaId: number, itemCardapioId: number, quantidade: number, motivo: string): Observable<ItemDoPedido> {
+    return this.http.post<ItemDoPedido>(`${this.api}/api/comandas/${comandaId}/cortesias`, {
+      itemCardapioId,
+      quantidade,
+      motivo,
+    });
+  }
+
+  /** Só o Gerente: preço novo para um item já lançado, com motivo. */
+  alterarPrecoDoItem(comandaId: number, itemId: number, preco: number, motivo: string): Observable<ItemDoPedido> {
+    return this.http.patch<ItemDoPedido>(`${this.api}/api/comandas/${comandaId}/itens/${itemId}/preco`, {
+      preco,
+      motivo,
+    });
+  }
+
   atualizarSituacaoDoItem(
     comandaId: number,
     itemId: number,

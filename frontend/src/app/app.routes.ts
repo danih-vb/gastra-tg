@@ -59,7 +59,7 @@ export const routes: Routes = [
   {
     path: 'salao-agora',
     title: 'Salão agora — GASTRA',
-    canActivate: [exigePapel('Metre')],
+    canActivate: [exigePapel('Metre', 'Gerente')],
     loadComponent: () => import('./features/salao/salao-agora').then((m) => m.SalaoAgora),
   },
   // UC05–UC09 — cardápio e promoções (Gerente e Coordenador).

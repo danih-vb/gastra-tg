@@ -125,6 +125,30 @@ public class Comanda : EntidadeBase
         return pedido;
     }
 
+    /// <summary>
+    /// Cortesia lançada pelo Metre ou pelo Gerente (uma torta de aniversário, por exemplo). Vale também para item
+    /// indisponível no cardápio: assim o restaurante cadastra um item que não é vendido e só sai como cortesia.
+    /// </summary>
+    public ItemDoPedido AdicionarCortesia(ItemDoCardapio item, int quantidade, string motivo)
+    {
+        GarantirAberta();
+
+        var pedido = ItemDoPedido.CriarCortesia(item.Id, quantidade, item.Preco, motivo);
+        _itens.Add(pedido);
+        return pedido;
+    }
+
+    /// <summary>O Gerente muda o preço de um item já lançado nesta comanda, com motivo.</summary>
+    public ItemDoPedido AlterarPrecoDoItem(int itemDoPedidoId, decimal novoPreco, string motivo)
+    {
+        GarantirAberta();
+
+        var pedido = _itens.SingleOrDefault(i => i.Id == itemDoPedidoId)
+                     ?? throw new KeyNotFoundException("O item não pertence a esta comanda.");
+        pedido.AlterarPreco(novoPreco, motivo);
+        return pedido;
+    }
+
     /// <summary>RF14: restrição informada voluntariamente, vinculada à comanda ativa.</summary>
     public RestricaoAlimentar RegistrarRestricao(CategoriaRestricao categoria, string? observacaoLivre)
     {

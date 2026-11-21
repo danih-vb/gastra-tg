@@ -93,6 +93,9 @@
             <span class="nome">
               <strong>{{ item.nome }}</strong>
               <small>lançado {{ tempo(item.dataHoraRegistro) }}</small>
+              @if (item.cortesia) {
+                <span class="etiqueta marca">Cortesia</span>
+              }
               @if (atrasado(item.dataHoraRegistro)) {
                 <span class="etiqueta erro"><app-icone nome="relogio" /> Atrasado</span>
               }

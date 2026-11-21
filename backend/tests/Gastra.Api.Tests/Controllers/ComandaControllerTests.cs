@@ -139,6 +139,122 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
         Assert.Equal(["O item está indisponível no cardápio."], await LerErros(resposta));
     }
 
+    // --- Cortesia (Metre e Gerente) e ajuste de preço (Gerente) ---
+
+    private async Task<HttpClient> ClienteMetre()
+    {
+        var metre = factory.CreateClient();
+        var email = $"metre-{Guid.NewGuid():N}@gastra.test";
+        await factory.CriarUsuario(email, Gastra.Domain.Enums.PapelUsuario.Metre);
+        Autenticar(metre, await factory.Login(factory.CreateClient(), email));
+        return metre;
+    }
+
+    private async Task<HttpClient> ClienteGerente()
+    {
+        var gerente = factory.CreateClient();
+        Autenticar(gerente, await factory.TokenGerente(factory.CreateClient()));
+        return gerente;
+    }
+
+    [Fact]
+    public async Task Cortesia_PeloMetre_EntraPorZeroMesmoComItemIndisponivel()
+    {
+        var comanda = await AbrirComanda();
+        var tortaId = await factory.CriarItemCardapio(preco: 18m, disponivel: false);
+        var metre = await ClienteMetre();
+
+        var resposta = await metre.PostAsJsonAsync($"{Rota}/{comanda.Id}/cortesias",
+            new { itemCardapioId = tortaId, quantidade = 1, motivo = "Aniversário" }, Json);
+
+        Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
+        var item = (await resposta.Content.ReadFromJsonAsync<ItemPedidoResponse>(Json))!;
+        Assert.True(item.Cortesia);
+        Assert.Equal(0m, item.Valor);
+        Assert.Equal(18m, item.PrecoOriginal);
+        Assert.Equal(0m, (await Obter(comanda.Id)).Subtotal);
+
+        var conta = await factory.CreateClient().GetFromJsonAsync<ComandaClienteResponse>(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}", Json);
+        Assert.True(Assert.Single(conta!.Itens).Cortesia);
+    }
+
+    [Fact]
+    public async Task Cortesia_PeloGarcom_Retorna403()
+    {
+        var comanda = await AbrirComanda();
+        var itemId = await factory.CriarItemCardapio();
+
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{comanda.Id}/cortesias",
+            new { itemCardapioId = itemId, quantidade = 1, motivo = "Aniversário" }, Json);
+
+        Assert.Equal(HttpStatusCode.Forbidden, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task Cortesia_SemMotivo_Retorna400()
+    {
+        var comanda = await AbrirComanda();
+        var itemId = await factory.CriarItemCardapio();
+        var gerente = await ClienteGerente();
+
+        var resposta = await gerente.PostAsJsonAsync($"{Rota}/{comanda.Id}/cortesias",
+            new { itemCardapioId = itemId, quantidade = 1, motivo = " " }, Json);
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+        Assert.Equal(["Informe o motivo."], await LerErros(resposta));
+    }
+
+    [Fact]
+    public async Task AlterarPreco_PeloGerente_MudaAContaEOClienteVeOValorOriginal()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarItem(comanda.Id, await factory.CriarItemCardapio(preco: 50m), quantidade: 2);
+        var gerente = await ClienteGerente();
+
+        var resposta = await gerente.PatchAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/preco",
+            new { preco = 40m, motivo = "Prato demorou" }, Json);
+
+        resposta.EnsureSuccessStatusCode();
+        var alterado = (await resposta.Content.ReadFromJsonAsync<ItemPedidoResponse>(Json))!;
+        Assert.Equal(40m, alterado.PrecoUnitarioNoMomento);
+        Assert.Equal(50m, alterado.PrecoOriginal);
+        Assert.Equal("Prato demorou", alterado.MotivoDoAjuste);
+        Assert.Equal(80m, (await Obter(comanda.Id)).Subtotal);
+
+        var conta = await factory.CreateClient().GetFromJsonAsync<ComandaClienteResponse>(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}", Json);
+        var linha = Assert.Single(conta!.Itens);
+        Assert.Equal(80m, linha.Valor);
+        Assert.Equal(100m, linha.ValorOriginal);
+    }
+
+    [Fact]
+    public async Task AlterarPreco_PeloMetre_Retorna403()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarItem(comanda.Id, await factory.CriarItemCardapio());
+        var metre = await ClienteMetre();
+
+        var resposta = await metre.PatchAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/preco",
+            new { preco = 1m, motivo = "Teste" }, Json);
+
+        Assert.Equal(HttpStatusCode.Forbidden, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task AlterarPreco_IgualAoAtual_Retorna422()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarItem(comanda.Id, await factory.CriarItemCardapio(preco: 50m));
+        var gerente = await ClienteGerente();
+
+        var resposta = await gerente.PatchAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/preco",
+            new { preco = 50m, motivo = "Teste" }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
     // --- UC23 e RN02: situação do item ---
 
     [Fact]

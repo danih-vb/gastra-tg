@@ -57,7 +57,16 @@
         <li>
           <span class="qtd">{{ item.quantidade }}×</span>
           <span class="principal-item">{{ item.nome }}</span>
-          <span class="preco">{{ item.valor | currency: 'BRL' }}</span>
+          @if (item.cortesia) {
+            <span class="etiqueta marca">Cortesia</span>
+          } @else {
+            <span class="preco">
+              @if (item.precoOriginal !== null) {
+                <s>{{ item.precoOriginal * item.quantidade | currency: 'BRL' }}</s>
+              }
+              {{ item.valor | currency: 'BRL' }}
+            </span>
+          }
         </li>
       } @empty {
         <li class="suave">Nenhum item lançado.</li>
