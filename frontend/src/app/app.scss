@@ -64,6 +64,9 @@ main {
 
     &.ativo { color: var(--laranja-forte); font-weight: 600; }
   }
+
+  /* No celular não há espaço no rodapé: as telas dos outros papéis só aparecem em tela grande. */
+  .bloqueado { display: none; }
 }
 
 /* Em tela grande (metre e gerente) o menu sobe para junto da barra: o rodapé é coisa de celular. */
@@ -91,6 +94,22 @@ main {
       border-radius: var(--raio-pequeno);
 
       &:hover { background: var(--marinho-suave); }
+    }
+
+    overflow-x: auto;
+
+    .bloqueado {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 8px 14px;
+      font-size: 0.9375rem;
+      color: var(--borda-forte);
+      cursor: not-allowed;
+      white-space: nowrap;
+
+      .cadeado { width: 14px; height: 14px; }
     }
   }
 }

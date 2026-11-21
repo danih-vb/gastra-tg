@@ -23,6 +23,20 @@ export class App {
     return usuario ? MENU.filter((item) => item.papeis.includes(usuario.papel)) : [];
   });
 
+  /**
+   * As telas dos outros papéis aparecem em cinza, sem link: cada um vê o que pode fazer e o que fica com outra
+   * pessoa (sugestão do orientador, 20/11/2026). Quem protege de fato é a guarda de rota e a API.
+   */
+  protected readonly bloqueados = computed(() => {
+    const usuario = this.usuario();
+    return usuario
+      ? MENU.filter((item) => !item.papeis.includes(usuario.papel)).map((item) => ({
+          ...item,
+          dono: 'Só para ' + item.papeis.map((p) => NOME_DO_PAPEL[p]).join(' e '),
+        }))
+      : [];
+  });
+
   protected sair(): void {
     // O logoff na API pode falhar (sem rede); a sessão local é encerrada de qualquer jeito.
     this.sessao.sair().subscribe({ error: () => undefined, complete: () => undefined });

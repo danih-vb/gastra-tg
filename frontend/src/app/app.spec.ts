@@ -67,6 +67,23 @@ describe('App', () => {
     expect(itensDoMenu(pagina)).toEqual(['Análises', 'Cardápio', 'Salão', 'Usuários']);
   });
 
+  it('as telas dos outros papéis aparecem sem link, dizendo de quem são', async () => {
+    const pagina = await renderizar('Garcom');
+    const bloqueados = [...pagina.querySelectorAll('nav .bloqueado')];
+
+    expect(bloqueados.map((b) => b.textContent?.trim())).toEqual([
+      'Alocação',
+      'Salão agora',
+      'Análises',
+      'Cardápio',
+      'Salão',
+      'Usuários',
+    ]);
+    expect(bloqueados.every((b) => b.closest('a') === null)).toBe(true);
+    expect(bloqueados[0].getAttribute('title')).toBe('Só para Metre');
+    expect(bloqueados[3].getAttribute('title')).toBe('Só para Gerente e Coordenador');
+  });
+
   it('o coordenador vê só o cardápio, onde ficam também as promoções', async () => {
     const pagina = await renderizar('Coordenador');
 

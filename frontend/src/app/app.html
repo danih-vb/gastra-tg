@@ -27,6 +27,13 @@
         <span>{{ item.rotulo }}</span>
       </a>
     }
+    @for (item of bloqueados(); track item.rota) {
+      <span class="bloqueado" aria-disabled="true" [attr.title]="item.dono" [attr.aria-label]="item.rotulo + ': ' + item.dono">
+        <app-icone [nome]="item.icone" />
+        <span>{{ item.rotulo }}</span>
+        <app-icone class="cadeado" nome="cadeado" />
+      </span>
+    }
   </nav>
 }
 
