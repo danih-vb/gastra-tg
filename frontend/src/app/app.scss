@@ -96,7 +96,9 @@ main {
       &:hover { background: var(--marinho-suave); }
     }
 
+    justify-content: safe center;
     overflow-x: auto;
+    scrollbar-width: thin;
 
     .bloqueado {
       display: flex;
@@ -111,5 +113,14 @@ main {
 
       .cadeado { width: 14px; height: 14px; }
     }
+  }
+}
+
+/* Entre o tablet e o computador, a tela bloqueada fica só com o ícone; o nome aparece ao passar o mouse. */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .menu .bloqueado {
+    padding: 8px;
+
+    > span { display: none; }
   }
 }
