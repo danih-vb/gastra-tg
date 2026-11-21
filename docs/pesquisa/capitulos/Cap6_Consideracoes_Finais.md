@@ -29,7 +29,7 @@ potencial a quem faturava pouco e esperava havia mais tempo por ela (seções 5.
 sucessivos, reduziu em 92% a desigualdade de faturamento entre os garçons em 30 dias. A conformidade com a LGPD foi
 tratada como requisito de projeto, e não como funcionalidade adicional: o cliente não é identificado em nenhuma
 tabela, o único dado sensível é apagado no fechamento da comanda, e cada proteção foi traduzida em teste
-automatizado. Por fim, o sistema foi validado por 552 casos de teste automatizados, todos aprovados, nas três
+automatizado. Por fim, o sistema foi validado por 576 casos de teste automatizados, todos aprovados, nas três
 camadas de software, e por duas rodadas de testes operacionais com o sistema completo, que encontraram e levaram à
 correção de dois defeitos que os testes automatizados não haviam acusado (seção 5.2.6).
 
