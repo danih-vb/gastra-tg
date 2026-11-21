@@ -8,7 +8,7 @@ import { AvisoService } from '../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
-import { CATEGORIAS, FLAGS } from '../../shared/rotulos';
+import { CATEGORIAS, FLAGS, ICONES_DAS_FLAGS } from '../../shared/rotulos';
 import { dataDeHoje } from '../comandas/turno';
 
 type Aba = 'itens' | 'promocoes';
@@ -72,6 +72,7 @@ export class GestaoCardapio {
 
   protected readonly CATEGORIAS = CATEGORIAS;
   protected readonly FLAGS = FLAGS;
+  protected readonly ICONES_DAS_FLAGS = ICONES_DAS_FLAGS;
   protected readonly flagsPossiveis = Object.keys(FLAGS) as FlagDietetica[];
 
   protected readonly itensFiltrados = computed(() => {

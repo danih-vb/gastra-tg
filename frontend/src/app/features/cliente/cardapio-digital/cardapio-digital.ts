@@ -6,7 +6,7 @@ import { FlagDietetica, ItemCardapio } from '../../../core/api/modelos';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Folha } from '../../../shared/folha/folha';
 import { Icone } from '../../../shared/icone/icone';
-import { CATEGORIAS, FLAGS } from '../../../shared/rotulos';
+import { CATEGORIAS, FLAGS, ICONES_DAS_FLAGS } from '../../../shared/rotulos';
 
 /**
  * UC19 — cardápio digital (RF05). Tela pública: o cliente chega pelo QR code da mesa e não faz login. Não tem
@@ -52,6 +52,7 @@ export class CardapioDigital {
 
   protected readonly CATEGORIAS = CATEGORIAS;
   protected readonly FLAGS = FLAGS;
+  protected readonly ICONES_DAS_FLAGS = ICONES_DAS_FLAGS;
   protected readonly flagsPossiveis = Object.keys(FLAGS) as FlagDietetica[];
 
   /** Os filtros combinam entre si: "vegetariano e sem glúten" mostra só o que atende aos dois. */

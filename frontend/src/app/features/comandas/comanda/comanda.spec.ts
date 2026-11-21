@@ -154,11 +154,16 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     await responder();
     const busca = pagina.querySelector<HTMLInputElement>('#busca-item')!;
 
+    // Sem escolher categoria, a lista abre com o cardápio inteiro.
+    const tudo = texto(pagina.querySelector<HTMLElement>('[aria-labelledby="t-lancar"] .lista.cardapio')!);
+    expect(tudo).toContain('Risoto de cogumelos');
+    expect(tudo).toContain('Caipirinha de limão');
+
     busca.value = 'LIMAO';
     busca.dispatchEvent(new Event('input'));
     await fixture.whenStable();
 
-    const lista = pagina.querySelector<HTMLElement>('.lista.cardapio')!;
+    const lista = pagina.querySelector<HTMLElement>('[aria-labelledby="t-lancar"] .lista.cardapio')!;
     expect(texto(lista)).toContain('Caipirinha de limão');
     expect(texto(lista)).not.toContain('Risoto de cogumelos');
 

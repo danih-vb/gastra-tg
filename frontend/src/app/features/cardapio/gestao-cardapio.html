@@ -79,7 +79,7 @@
                 <td>
                   <div class="chips pequenos">
                     @for (flag of item.flagsDieteticas; track flag) {
-                      <span class="etiqueta">{{ FLAGS[flag] }}</span>
+                      <span class="etiqueta"><app-icone [nome]="ICONES_DAS_FLAGS[flag]" /> {{ FLAGS[flag] }}</span>
                     } @empty {
                       <span class="suave">—</span>
                     }
