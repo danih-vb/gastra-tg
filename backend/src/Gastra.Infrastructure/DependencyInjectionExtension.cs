@@ -60,7 +60,12 @@ public static class DependencyInjectionExtension
         services.AddSingleton<IGeradorToken, GeradorToken>();
         services.AddSingleton<ICriptografiaSenha, CriptografiaSenha>();
 
-        services.AddDataProtection().SetApplicationName("Gastra");
+        // O segredo do segundo fator é criptografado com estas chaves. Sem uma pasta que sobreviva ao contêiner,
+        // cada nova imagem da API gerava chaves novas e o código do aplicativo autenticador passava a ser recusado.
+        var protecao = services.AddDataProtection().SetApplicationName("Gastra");
+        var pastaDasChaves = configuration["Seguranca:PastaDasChaves"];
+        if (!string.IsNullOrWhiteSpace(pastaDasChaves))
+            protecao.PersistKeysToFileSystem(new DirectoryInfo(pastaDasChaves));
         services.AddSingleton<IValidadorTotp, ValidadorTotp>();
 
         services.AddHttpContextAccessor();
