@@ -65,6 +65,11 @@ export function composicaoSugerida(pessoas: number, temItemInfantil = false): Co
   return pessoas <= 4 ? 'GrupoPequeno' : 'GrupoGrande';
 }
 
+/** Para buscar sem depender de acento nem de maiúscula: "pure" acha "Purê". */
+export function semAcento(texto: string): string {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
 /** "há 12 min", "agora": tempo desde um instante devolvido pela API. */
 export function minutosDesde(dataIso: string, agora = Date.now()): number {
   return Math.max(0, Math.floor((agora - new Date(dataIso).getTime()) / 60000));

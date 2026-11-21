@@ -55,10 +55,18 @@
     object-fit: cover;
   }
 
-  &.Entrada { background: linear-gradient(135deg, #e7a15a, #c46a2b); }
-  &.PratoPrincipal { background: linear-gradient(135deg, #b5653c, #7c3b20); }
-  &.Sobremesa { background: linear-gradient(135deg, #e9b9a4, #b86f72); }
-  &.Bebida { background: linear-gradient(135deg, #7fb2c9, #3e6f8c); }
+  &.Entrada {
+    background: linear-gradient(135deg, #e7a15a, #c46a2b);
+  }
+  &.PratoPrincipal {
+    background: linear-gradient(135deg, #b5653c, #7c3b20);
+  }
+  &.Sobremesa {
+    background: linear-gradient(135deg, #e9b9a4, #b86f72);
+  }
+  &.Bebida {
+    background: linear-gradient(135deg, #7fb2c9, #3e6f8c);
+  }
 }
 
 .vazio {
@@ -67,4 +75,97 @@
   gap: 8px;
   align-items: center;
   text-align: center;
+}
+
+.abrir {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lado {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  align-content: start;
+}
+
+button.foto {
+  padding: 0;
+  border: 0;
+  cursor: zoom-in;
+}
+
+.favorito {
+  display: grid;
+  place-items: center;
+  width: var(--toque-minimo);
+  height: var(--toque-minimo);
+  border: 1px solid var(--borda);
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--texto-suave);
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    border-color: var(--laranja-forte);
+    background: var(--laranja-suave);
+    color: var(--laranja-forte);
+  }
+}
+
+.foto-grande {
+  display: block;
+  width: 100%;
+  max-height: 50vh;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.valor-grande {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  s {
+    margin-right: 6px;
+    font-weight: 400;
+    color: var(--texto-suave);
+  }
+}
+
+.barra-lista {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(transparent, var(--fundo) 30%);
+}
+
+.lista-pedido {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .nome-pedido {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.total-lista {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
 }
