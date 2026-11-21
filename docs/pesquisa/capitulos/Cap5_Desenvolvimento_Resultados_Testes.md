@@ -5,7 +5,7 @@ apresenta o sistema do ponto de vista de cada usuário. A seção 5.2 reúne a v
 a integração contínua (5.2.1), os testes automatizados (5.2.2), os dois estudos feitos sobre os algoritmos — a
 calibração dos pesos da alocação de garçons (5.2.3) e a validação dos blocos analíticos sobre um histórico simulado
 (5.2.4) —, a avaliação heurística das telas (5.2.5) e os testes operacionais (5.2.6). Os números deste capítulo correspondem ao estado do
-repositório em 5 de novembro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
+repositório em 21 de novembro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
 
 ## 5.1 APRESENTAÇÃO DO PRODUTO E TELAS
 
@@ -42,7 +42,9 @@ confirma, podendo antes mover qualquer garçom de praça. A sugestão mostra, em
 motivo da escolha — a faixa de vendas em relação à equipe e há quantos turnos ele não recebe uma praça de alto
 movimento —, sem exibir valores de faturamento, que são indicadores restritos ao Gerente (decisão D14). Depois de
 confirmada, a alocação não muda mais e passa a compor o histórico usado pela RN03. Em Salão agora, o Metre
-acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados.
+acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados, e pode lançar uma cortesia na
+mesa, por R$ 0,00 e com motivo (RF26). O Gerente usa a mesma tela para ajustar o preço de um item já lançado; o
+preço original fica guardado e o cliente vê os dois valores na conta.
 
 **Figura 20 – Metre: alocação do turno e salão**
 
@@ -85,8 +87,8 @@ O trabalho foi organizado em dez marcos no quadro de projeto do GitHub, do levan
 defesa (M10), e executado em sprints semanais, conforme descrito na seção 1.5. Cada tarefa foi registrada como
 issue, com critérios de aceite, prioridade, marco e sprint, e cada mudança no repositório entrou por Pull
 Request: uma regra do repositório impede a integração na branch de desenvolvimento sem a aprovação do outro
-integrante. Entre 17 de agosto e 5 de novembro de 2026, foram
-integrados 104 Pull Requests e fechadas 123 issues.
+integrante. Entre 17 de agosto e 21 de novembro de 2026, foram
+integrados 120 Pull Requests e fechadas 138 issues.
 
 A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions (GITHUB, 2026) executa cinco
 verificações independentes, cujo resultado aparece no próprio Pull Request para o revisor. A primeira compila o backend e
@@ -125,21 +127,21 @@ conjuntos de dados.
 
 | Bloco | Cenários | Casos | Aprovados |
 |---|---:|---:|---:|
-| Núcleo de comandas | 126 | 135 | 135 |
-| Cardápio e promoções | 62 | 83 | 83 |
+| Núcleo de comandas | 139 | 148 | 148 |
+| Cardápio e promoções | 65 | 86 | 86 |
 | Alocação de garçons (programação linear) | 61 | 67 | 67 |
-| Recomendação de pratos (ciência de dados) | 52 | 58 | 58 |
+| Recomendação de pratos (ciência de dados) | 54 | 60 | 60 |
 | BI e índice de desempenho | 54 | 58 | 58 |
-| LGPD, auditoria e segurança | 108 | 109 | 109 |
+| LGPD, auditoria e segurança | 110 | 111 | 111 |
 | Banco de dados (views, triggers e restrições) | 14 | 14 | 14 |
 | Integração backend e serviço analítico | 12 | 15 | 15 |
-| Arquitetura e infraestrutura | 9 | 13 | 13 |
-| **Total** | **498** | **552** | **552** |
+| Arquitetura e infraestrutura | 13 | 17 | 17 |
+| **Total** | **522** | **576** | **576** |
 
-Fonte: elaborado pelos autores, a partir da execução de 05/11/2026 (script `gerar_relatorio_testes.py`).
+Fonte: elaborado pelos autores, a partir da execução de 21/11/2026 (script `gerar_relatorio_testes.py`).
 
-Os 552 casos foram aprovados, nenhum falhou e nenhum foi ignorado. Por camada, são 350 casos no backend, 66 na
-camada analítica e 136 no frontend. Cada bloco do trabalho é verificado nas três camadas: a mesma regra de
+Os 576 casos foram aprovados, nenhum falhou e nenhum foi ignorado. Por camada, são 361 casos no backend, 68 na
+camada analítica e 147 no frontend. Cada bloco do trabalho é verificado nas três camadas: a mesma regra de
 negócio é testada no domínio, na interface de programação e na tela que a apresenta ao usuário. O bloco de
 proteção de dados é o segundo maior, porque cada restrição da LGPD foi traduzida em ao menos um teste que falha se
 ela for violada — por exemplo, o que verifica que nenhuma view expõe dado pessoal, o que verifica que o Gerente

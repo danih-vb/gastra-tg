@@ -59,6 +59,7 @@ BLOCOS_DO_FRONTEND = [
     ("app.spec.ts", "LGPD, auditoria e segurança"),  # o menu por papel é controle de acesso
     ("shared/rotulos", "Núcleo de comandas"),  # composicaoSugerida e os rótulos de RN01
     ("shared/", "Arquitetura e infraestrutura"),
+    ("core/versao-nova", "Arquitetura e infraestrutura"),  # aba aberta antes de uma atualização
 ]
 
 BACKEND, ANALITICA, FRONTEND = "Backend .NET", "Analítica Python", "Frontend Angular"
