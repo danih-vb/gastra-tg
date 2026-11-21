@@ -17,7 +17,7 @@ export const MENU: ItemDeMenu[] = [
   { rotulo: 'A entregar', icone: 'relogio', rota: '/a-entregar', papeis: ['Garcom'] },
   { rotulo: 'Desempenho', icone: 'trofeu', rota: '/desempenho', papeis: ['Garcom'] },
   { rotulo: 'Alocação', icone: 'pessoas', rota: '/alocacao', papeis: ['Metre'] },
-  { rotulo: 'Salão agora', icone: 'mesa', rota: '/salao-agora', papeis: ['Metre'] },
+  { rotulo: 'Salão agora', icone: 'mesa', rota: '/salao-agora', papeis: ['Metre', 'Gerente'] },
   { rotulo: 'Análises', icone: 'faisca', rota: '/analises', papeis: ['Gerente'] },
   { rotulo: 'Cardápio', icone: 'etiqueta', rota: '/cardapio', papeis: ['Gerente', 'Coordenador'] },
   { rotulo: 'Salão', icone: 'mesa', rota: '/salao', papeis: ['Gerente'] },

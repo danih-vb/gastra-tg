@@ -38,7 +38,16 @@
         <div class="item" [class.cancelado]="item.situacao === 'Cancelado'">
           <span class="qtd">{{ item.quantidade }}×</span>
           <span class="nome">{{ item.nome }}</span>
-          <span class="valor">{{ item.valor | currency: 'BRL' }}</span>
+          <span class="valor">
+            @if (item.cortesia) {
+              Cortesia
+            } @else {
+              @if (item.valorOriginal !== null) {
+                <s>{{ item.valorOriginal | currency: 'BRL' }}</s>
+              }
+              {{ item.valor | currency: 'BRL' }}
+            }
+          </span>
           <span class="situacao">
             <span class="etiqueta {{ SITUACAO[item.situacao].classe }}">{{ SITUACAO[item.situacao].texto }}</span>
           </span>

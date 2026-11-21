@@ -237,6 +237,12 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasColumnName("comanda_id");
 
+                    b.Property<bool>("Cortesia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("cortesia");
+
                     b.Property<DateTime>("DataHoraRegistro")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("data_hora_registro");
@@ -249,6 +255,15 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)")
                         .HasColumnName("motivo_cancelamento");
+
+                    b.Property<string>("MotivoDoAjuste")
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("motivo_ajuste");
+
+                    b.Property<decimal?>("PrecoOriginal")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("preco_original");
 
                     b.Property<decimal>("PrecoUnitarioNoMomento")
                         .HasColumnType("decimal(10,2)")

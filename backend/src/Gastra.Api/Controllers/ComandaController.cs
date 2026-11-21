@@ -19,6 +19,10 @@ public class ComandaController : ControllerBase
     // O núcleo de comandas é do Garçom (RF01–RF04); metre e gestão acompanham só de leitura (RNF04).
     private const string Garcom = nameof(PapelUsuario.Garcom);
 
+    // Cortesia: Metre ou Gerente. Mudar o preço de um item lançado: só o Gerente.
+    private const string MetreOuGerente = nameof(PapelUsuario.Metre) + "," + nameof(PapelUsuario.Gerente);
+    private const string Gerente = nameof(PapelUsuario.Gerente);
+
     private const string PapeisDeLeitura =
         nameof(PapelUsuario.Garcom) + "," + nameof(PapelUsuario.Metre) + "," +
         nameof(PapelUsuario.Coordenador) + "," + nameof(PapelUsuario.Gerente);
@@ -67,6 +71,38 @@ public class ComandaController : ControllerBase
     {
         var resposta = await useCase.Executar(id, request);
         return CreatedAtAction(nameof(Obter), new { id }, resposta);
+    }
+
+    /// <summary>Cortesia: o Metre ou o Gerente lança um item por R$ 0,00, com motivo.</summary>
+    [Authorize(Roles = MetreOuGerente)]
+    [HttpPost("{id:int}/cortesias")]
+    [ProducesResponseType(typeof(ItemPedidoResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> LancarCortesia(
+        int id,
+        [FromBody] CortesiaRequest request,
+        [FromServices] ILancarCortesiaUseCase useCase)
+    {
+        var resposta = await useCase.Executar(id, request);
+        return CreatedAtAction(nameof(Obter), new { id }, resposta);
+    }
+
+    /// <summary>O Gerente muda o preço de um item já lançado, com motivo; o preço original fica guardado.</summary>
+    [Authorize(Roles = Gerente)]
+    [HttpPatch("{id:int}/itens/{itemId:int}/preco")]
+    [ProducesResponseType(typeof(ItemPedidoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> AlterarPrecoDoItem(
+        int id,
+        int itemId,
+        [FromBody] AlterarPrecoItemRequest request,
+        [FromServices] IAlterarPrecoDoItemUseCase useCase)
+    {
+        return Ok(await useCase.Executar(id, itemId, request));
     }
 
     /// <summary>UC23 — Marcar item como entregue ou cancelá-lo com justificativa (RN02).</summary>

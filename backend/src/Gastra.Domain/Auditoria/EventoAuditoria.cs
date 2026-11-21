@@ -37,6 +37,8 @@ public static class EventoAuditoria
     public const string ComposicaoAjustada = "COMPOSICAO_AJUSTADA";
     public const string ItemRegistrado = "ITEM_REGISTRADO";
     public const string ItemCancelado = "ITEM_CANCELADO";
+    public const string CortesiaLancada = "CORTESIA_LANCADA";
+    public const string PrecoDoItemAlterado = "PRECO_DO_ITEM_ALTERADO";
     public const string RestricaoRegistrada = "RESTRICAO_REGISTRADA";
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";
     public const string TaxaServicoRecolocada = "TAXA_SERVICO_RECOLOCADA";

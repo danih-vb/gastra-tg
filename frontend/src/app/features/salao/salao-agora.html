@@ -68,7 +68,7 @@
                 <span class="etiqueta sucesso">0</span>
               }
               <span class="valor num">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
-              <button class="botao compacto fantasma" type="button" (click)="comandaAberta.set(linha.comanda)">Ver</button>
+              <button class="botao compacto fantasma" type="button" (click)="abrirComanda(linha.comanda)">Ver</button>
             </li>
           }
         </ul>
@@ -83,7 +83,7 @@
   <app-folha
     [titulo]="'Mesa ' + numeroDaMesa(comanda.mesaId)"
     [subtitulo]="comanda.garcomNome + ' · ' + COMPOSICOES[comanda.composicao] + ', ' + comanda.quantidadePessoas + ' pessoas'"
-    (fechar)="comandaAberta.set(null)"
+    (fechar)="fecharComanda()"
   >
     @if (comanda.restricoes.length) {
       <div class="alerta aviso">
@@ -104,7 +104,20 @@
             @if (item.status === 'Cancelado' && item.motivoCancelamento) {
               <span class="pequeno suave">{{ MOTIVOS[item.motivoCancelamento] }}</span>
             }
+            @if (item.cortesia) {
+              <span class="pequeno suave">Cortesia · {{ item.motivoDoAjuste }}</span>
+            } @else if (item.precoOriginal !== null) {
+              <span class="pequeno suave">
+                <s>{{ item.precoOriginal | currency: 'BRL' }}</s> {{ item.precoUnitarioNoMomento | currency: 'BRL' }} ·
+                {{ item.motivoDoAjuste }}
+              </span>
+            }
           </div>
+          @if (item.cortesia) {
+            <span class="etiqueta marca">Cortesia</span>
+          } @else {
+            <span class="num">{{ item.valor | currency: 'BRL' }}</span>
+          }
           <span
             class="etiqueta"
             [class.aviso]="item.status === 'Pendente'"
@@ -112,10 +125,64 @@
           >
             {{ item.status === 'Pendente' ? 'A entregar' : item.status }}
           </span>
+          @if (ehGerente() && item.status !== 'Cancelado' && !item.cortesia) {
+            <button class="botao compacto fantasma" type="button" (click)="abrirAjuste(item)">Alterar preço</button>
+          }
         </li>
       } @empty {
         <li class="suave">Nada lançado ainda.</li>
       }
     </ul>
+
+    @if (errosDaFolha().length) {
+      <div class="alerta erro" role="alert">
+        <app-icone nome="alerta" />
+        <div>
+          @for (erro of errosDaFolha(); track erro) {
+            <div>{{ erro }}</div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (lancandoCortesia()) {
+      <form class="formulario" (ngSubmit)="confirmarCortesia()">
+        <label for="cortesia-item">Item</label>
+        <select id="cortesia-item" name="item" required [(ngModel)]="cortesiaItemId">
+          <option [ngValue]="null" disabled>Escolha o item</option>
+          @for (opcao of itensParaCortesia(); track opcao.id) {
+            <option [ngValue]="opcao.id">{{ opcao.nome }} · {{ opcao.preco | currency: 'BRL' }}</option>
+          }
+        </select>
+        <label for="cortesia-quantidade">Quantidade</label>
+        <input id="cortesia-quantidade" name="quantidade" type="number" min="1" max="20" required [(ngModel)]="cortesiaQuantidade" />
+        <label for="cortesia-motivo">Motivo</label>
+        <input id="cortesia-motivo" name="motivo" maxlength="120" required placeholder="Aniversário" [(ngModel)]="cortesiaMotivo" />
+        <div class="botoes">
+          <button class="botao secundario" type="button" (click)="fecharFormularios()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando() || cortesiaItemId === null || !cortesiaMotivo.trim()">
+            Lançar cortesia
+          </button>
+        </div>
+      </form>
+    } @else if (itemEmAjuste(); as item) {
+      <form class="formulario" (ngSubmit)="confirmarAjuste()">
+        <p><strong>{{ item.quantidade }} × {{ item.nome }}</strong></p>
+        <label for="ajuste-preco">Preço unitário (R$)</label>
+        <input id="ajuste-preco" name="preco" type="number" min="0" step="0.01" required [(ngModel)]="novoPreco" />
+        <label for="ajuste-motivo">Motivo</label>
+        <input id="ajuste-motivo" name="motivo" maxlength="120" required [(ngModel)]="motivoDoAjuste" />
+        <div class="botoes">
+          <button class="botao secundario" type="button" (click)="fecharFormularios()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando() || novoPreco === null || !motivoDoAjuste.trim()">
+            Salvar preço
+          </button>
+        </div>
+      </form>
+    } @else {
+      <button class="botao secundario largo" type="button" (click)="abrirCortesia()">
+        <app-icone nome="mais" /> Lançar cortesia
+      </button>
+    }
   </app-folha>
 }

@@ -89,4 +89,10 @@
   <data name="ComentarioMuitoLongo" xml:space="preserve"><value>The comment must be at most 280 characters long.</value></data>
   <data name="ComandaJaAvaliada" xml:space="preserve"><value>This bill has already been rated. Thank you!</value></data>
   <data name="AvaliacaoForaDoPrazo" xml:space="preserve"><value>The window to rate this bill has closed.</value></data>
+  <data name="MotivoDoAjusteObrigatorio" xml:space="preserve"><value>Enter the reason.</value></data>
+  <data name="MotivoDoAjusteMuitoLongo" xml:space="preserve"><value>The reason must have at most 120 characters.</value></data>
+  <data name="QuantidadeCortesiaInvalida" xml:space="preserve"><value>A courtesy must have from 1 to 20 units.</value></data>
+  <data name="PrecoAjustadoInvalido" xml:space="preserve"><value>The price must be from 0.00 to 99,999.99.</value></data>
+  <data name="PrecoAjustadoIgualAoAtual" xml:space="preserve"><value>The new price is the same as the current one.</value></data>
+  <data name="ItemCanceladoSemPreco" xml:space="preserve"><value>A canceled item has no price to change.</value></data>
 </root>
