@@ -58,11 +58,14 @@ services:
       Jwt__ChaveAssinatura: ${JWT_CHAVE_ASSINATURA:-}
       ServicoAnalitico__UrlBase: http://analitica:8000
       Fotos__Diretorio: /app/fotos
+      # Chaves que criptografam o segredo do segundo fator: num volume, sobrevivem a uma nova imagem da API.
+      Seguranca__PastaDasChaves: /app/chaves
       Administrador__Nome: ${ADMIN_NOME:-Administrador}
       Administrador__Email: ${ADMIN_EMAIL:-}
       Administrador__Senha: ${ADMIN_SENHA:-}
     volumes:
       - gastra_fotos:/app/fotos
+      - gastra_chaves:/app/chaves
     ports:
       # Só na própria máquina: de fora, o caminho é o nginx do frontend (D12). Aberta para a rede, a API aceitaria
       # conexão direta vinda da rede do Docker, em que ela confia para ler o X-Forwarded-For (#230).
@@ -85,5 +88,6 @@ services:
         condition: service_healthy
 
 volumes:
+  gastra_chaves:
   gastra_fotos:
   gastra_mysql_data:
