@@ -9,15 +9,18 @@ repositório em 21 de novembro de 2026 e são reproduzíveis: cada tabela indica
 
 ## 5.1 APRESENTAÇÃO DO PRODUTO E TELAS
 
-O GASTRA é uma aplicação web única, que apresenta a cada papel apenas as telas que lhe cabem. Esta seção percorre
-o sistema em funcionamento, pela perspectiva de cada usuário; as figuras são capturas do sistema completo em
+O GASTRA é uma aplicação web única, que libera a cada papel apenas as telas que lhe cabem. As telas dos outros
+papéis aparecem no menu em cinza, com um cadeado, para que cada usuário saiba o que fica com outra pessoa, e a
+barra superior mostra quem está conectado, com as iniciais, o nome e o papel ao lado do botão de sair. Esta seção
+percorre o sistema em funcionamento, pela perspectiva de cada usuário; as figuras são capturas do sistema completo em
 execução, com os dados simulados do semeador, e o funcionamento detalhado de cada tela está no manual do usuário,
 no Apêndice A.
 
 O Garçom usa o sistema no celular (Figura 18). A tela inicial mostra as mesas do salão, com as da praça em que ele
 foi alocado no turno destacadas, e abre uma mesa em dois toques — a mesa livre e a quantidade de pessoas —, dentro
-do limite do RNF02. Na comanda, ele vê as restrições da mesa, os itens a entregar e as sugestões de pratos, e
-lança cada item em dois toques. Se a mesa tem uma restrição que o item não atende, o sistema avisa antes do
+do limite do RNF02. Na comanda, ele vê as restrições da mesa, os itens a entregar, com as cortesias marcadas, e
+as sugestões de pratos, e lança cada item em dois toques. A lista abre com o cardápio inteiro, e uma busca encontra
+o item pelo nome ou pela restrição, sem depender de acento (Figura 19). Se a mesa tem uma restrição que o item não atende, o sistema avisa antes do
 lançamento, sem impedi-lo; se o serviço analítico estiver fora do ar, a comanda continua funcionando e apenas as
 sugestões deixam de aparecer. A tela A entregar reúne os itens pendentes de todas as mesas do garçom, do mais
 antigo ao mais novo, e marca como atrasado o que passou de 15 minutos (Figura 19). O fechamento só é liberado com
@@ -31,9 +34,9 @@ valores dos colegas.
 
 Fonte: elaborado pelos autores.
 
-**Figura 19 – Garçom: itens a entregar, fechamento e desempenho**
+**Figura 19 – Garçom: busca, itens a entregar, fechamento e desempenho**
 
-![Garçom: itens a entregar, fechamento e desempenho](../../ux-ui/telas-reais/paineis/garcom-2.png)
+![Garçom: busca, itens a entregar, fechamento e desempenho](../../ux-ui/telas-reais/paineis/garcom-2.png)
 
 Fonte: elaborado pelos autores.
 
@@ -46,9 +49,9 @@ acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasad
 mesa, por R$ 0,00 e com motivo (RF26). O Gerente usa a mesma tela para ajustar o preço de um item já lançado; o
 preço original fica guardado e o cliente vê os dois valores na conta.
 
-**Figura 20 – Metre: alocação do turno e salão**
+**Figura 20 – Metre: alocação do turno, salão e cortesia**
 
-![Metre: alocação do turno e salão](../../ux-ui/telas-reais/paineis/metre.png)
+![Metre: alocação do turno, salão e cortesia](../../ux-ui/telas-reais/paineis/metre.png)
 
 Fonte: elaborado pelos autores.
 
@@ -61,21 +64,23 @@ pela popularidade e pelo valor de venda dentro da categoria (KASAVANA; SMITH, 19
 cardápio, com fotos e promoções, as praças, as mesas e as contas de usuário; o Coordenador tem acesso somente ao
 cardápio e às promoções.
 
-**Figura 21 – Gerente: análises, cardápio, salão e usuários**
+**Figura 21 – Gerente: análises, cardápio, ajuste de preço e usuários**
 
-![Gerente: análises, cardápio, salão e usuários](../../ux-ui/telas-reais/paineis/gerente.png)
+![Gerente: análises, cardápio, ajuste de preço e usuários](../../ux-ui/telas-reais/paineis/gerente.png)
 
 Fonte: elaborado pelos autores.
 
 O Cliente não se autentica (Figura 22). Na tela da comanda, o garçom mostra um QR code que abre a conta da mesa no
 celular do cliente; ali ele acompanha os itens lançados e a situação de cada um, atualizados a cada segundo
 (RNF01), chama o garçom e divide o total entre as pessoas da mesa. O cardápio digital tem fotos e filtros por
-restrição alimentar. Depois que a conta é fechada, o cliente pode avaliar o atendimento com uma nota de 1 a 5 e um
+restrição alimentar, com um ícone para cada restrição. Tocar em um prato abre a foto ampliada com a descrição, e o
+cliente pode marcar os que lhe interessam em uma lista que fica apenas no próprio celular, sem identificá-lo; da
+lista, ele chama o garçom para fazer o pedido. Depois que a conta é fechada, o cliente pode avaliar o atendimento com uma nota de 1 a 5 e um
 comentário opcional, sem que nada o identifique.
 
-**Figura 22 – Cliente: cardápio digital e conta**
+**Figura 22 – Cliente: conta, cardápio digital e lista de interesse**
 
-![Cliente: cardápio digital e conta](../../ux-ui/telas-reais/paineis/cliente.png)
+![Cliente: conta, cardápio digital e lista de interesse](../../ux-ui/telas-reais/paineis/cliente.png)
 
 Fonte: elaborado pelos autores.
 
