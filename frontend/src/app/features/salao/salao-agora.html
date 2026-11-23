@@ -118,7 +118,11 @@
           @if (item.cortesia) {
             <span class="etiqueta marca">Cortesia</span>
           } @else {
-            <span class="num">{{ item.valor | currency: 'BRL' }}</span>
+            @if (item.status === 'AConfirmar') {
+              <span class="num suave">{{ item.precoUnitarioNoMomento * item.quantidade | currency: 'BRL' }}</span>
+            } @else {
+              <span class="num">{{ item.valor | currency: 'BRL' }}</span>
+            }
           }
           <span
             class="etiqueta"
