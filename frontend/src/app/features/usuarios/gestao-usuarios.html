@@ -111,6 +111,7 @@
     <app-folha
       [titulo]="usuarioEmFoco() ? 'Editar ' + usuarioEmFoco()!.nome : 'Novo usuário'"
       [dialogo]="true"
+      [larga]="!!medalhasEmFoco()"
       (fechar)="fecharPainel()"
     >
       <form class="formulario" novalidate (ngSubmit)="salvarConta()">
@@ -174,6 +175,12 @@
           <button class="botao" type="submit" [disabled]="salvando()">{{ usuarioEmFoco() ? 'Salvar' : 'Cadastrar' }}</button>
         </div>
       </form>
+      @if (medalhasEmFoco(); as medalhas) {
+        <section class="medalhas-da-conta" aria-labelledby="t-medalhas-conta">
+          <h2 id="t-medalhas-conta">Medalhas</h2>
+          <app-medalhas [dados]="medalhas" />
+        </section>
+      }
     </app-folha>
   }
 

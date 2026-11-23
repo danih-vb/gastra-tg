@@ -1,10 +1,11 @@
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
-import { RankingDeDesempenho } from '../../../core/api/modelos';
+import { MedalhasDoGarcom, RankingDeDesempenho } from '../../../core/api/modelos';
 import { SessaoService } from '../../../core/sessao/sessao.service';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Icone } from '../../../shared/icone/icone';
+import { Medalhas } from '../../../shared/medalhas/medalhas';
 
 /**
  * UC17 — índice de desempenho (RF11). Para o Garçom, a API já devolve só a própria posição: a tela não tem como
@@ -13,7 +14,7 @@ import { Icone } from '../../../shared/icone/icone';
 @Component({
   selector: 'app-desempenho',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, DatePipe, DecimalPipe, Icone],
+  imports: [CurrencyPipe, DatePipe, DecimalPipe, Icone, Medalhas],
   templateUrl: './desempenho.html',
   styleUrl: './desempenho.scss',
 })
@@ -24,6 +25,7 @@ export class Desempenho {
   protected readonly carregando = signal(true);
   protected readonly erros = signal<string[]>([]);
   protected readonly ranking = signal<RankingDeDesempenho | null>(null);
+  protected readonly medalhas = signal<MedalhasDoGarcom | null>(null);
 
   protected readonly minhaPosicao = computed(() => {
     const meuId = this.sessao.usuario()?.id;
@@ -46,6 +48,11 @@ export class Desempenho {
         this.erros.set(mensagensDeErro(erro));
         this.carregando.set(false);
       },
+    });
+    // As medalhas são um extra: se falharem, o índice continua na tela.
+    this.api.obterMedalhas().subscribe({
+      next: (medalhas) => this.medalhas.set(medalhas),
+      error: () => this.medalhas.set(null),
     });
   }
 }

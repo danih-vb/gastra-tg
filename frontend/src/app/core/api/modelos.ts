@@ -209,6 +209,32 @@ export interface RankingDeDesempenho {
   posicoes: PosicaoNoRanking[];
 }
 
+export type CodigoDaMedalha =
+  | 'top-3'
+  | 'mesa-cheia'
+  | 'maratonista'
+  | 'bem-avaliado'
+  | 'vendedor-de-destaque'
+  | 'meta-batida';
+
+export interface Medalha {
+  codigo: CodigoDaMedalha;
+  conquistada: boolean;
+  /** De 0 até o alvo; no top-3 é a posição do mês e no bem-avaliado, a média das notas. */
+  progresso: number;
+  alvo: number;
+}
+
+export interface MedalhasDoGarcom {
+  garcomId: number;
+  nome: string;
+  /** Primeiro dia do mês atual. */
+  mes: string;
+  medalhas: Medalha[];
+  /** Do mês atual para trás: o que foi conquistado em cada um. */
+  historico: { mes: string; conquistadas: CodigoDaMedalha[] }[];
+}
+
 // --- Gerente: relatórios de BI (UC16) ---
 
 export interface Periodo {

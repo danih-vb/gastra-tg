@@ -23,6 +23,7 @@ import {
   PeriodoAlocacao,
   Praca,
   Promocao,
+  MedalhasDoGarcom,
   RankingDeDesempenho,
   PerfisDeConsumo,
   RelatorioAvaliacoes,
@@ -239,6 +240,12 @@ export class GastraApiService {
   /** UC17 — para o Garçom, a API já devolve apenas a própria posição. */
   obterDesempenho(): Observable<RankingDeDesempenho> {
     return this.http.get<RankingDeDesempenho>(`${this.api}/api/indicadores/desempenho`);
+  }
+
+  /** Medalhas do mês e o histórico de conquistas. O garçom recebe só as dele; o Gerente escolhe de quem. */
+  obterMedalhas(garcomId?: number): Observable<MedalhasDoGarcom> {
+    const params: Record<string, number> = garcomId === undefined ? {} : { garcomId };
+    return this.http.get<MedalhasDoGarcom>(`${this.api}/api/indicadores/medalhas`, { params });
   }
 
   // --- Gerente: relatórios (UC16, UC17). Sem datas, a API usa os últimos 30 dias. ---

@@ -53,3 +53,11 @@
 
   .grande { --tamanho-avatar: 72px; font-size: 1.25rem; }
 }
+
+.medalhas-da-conta {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--borda);
+
+  h2 { margin: 0 0 12px; font-size: 1rem; }
+}

@@ -18,6 +18,7 @@ public class IndicadoresFalsos : IRepositorioIndicadores
     public List<IndicadorPracaNoTempo> PorDiaDaSemana { get; } = [];
     public List<LinhaAvaliacao> Avaliacoes { get; } = [];
     public List<AvaliacoesDoGarcom> AvaliacoesPorGarcom { get; } = [];
+    public Dictionary<int, int> UnidadesDeMeta { get; } = [];
     public List<(DateOnly Inicio, DateOnly Fim)> PeriodosConsultados { get; } = [];
 
     public void Reiniciar()
@@ -31,6 +32,7 @@ public class IndicadoresFalsos : IRepositorioIndicadores
         PorDiaDaSemana.Clear();
         Avaliacoes.Clear();
         AvaliacoesPorGarcom.Clear();
+        UnidadesDeMeta.Clear();
         PeriodosConsultados.Clear();
     }
 
@@ -45,6 +47,9 @@ public class IndicadoresFalsos : IRepositorioIndicadores
 
     public Task<List<AvaliacoesDoGarcom>> ObterAvaliacoesPorGarcom(DateOnly inicio, DateOnly fim) =>
         Registrar(inicio, fim, AvaliacoesPorGarcom.ToList());
+
+    public Task<Dictionary<int, int>> ObterUnidadesDeMetaPorGarcom(DateOnly inicio, DateOnly fim) =>
+        Registrar(inicio, fim, new Dictionary<int, int>(UnidadesDeMeta));
 
     public Task<List<IndicadorPraca>> ObterIndicadoresPorPraca(DateOnly inicio, DateOnly fim) => Registrar(inicio, fim, Pracas.ToList());
 

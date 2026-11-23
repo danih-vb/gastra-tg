@@ -315,4 +315,49 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
 
         Assert.Equal(HttpStatusCode.Forbidden, (await garcom.GetAsync($"{Rota}/perfis-consumo")).StatusCode);
     }
+
+    // --- Medalhas e histórico de conquistas ---
+
+    [Fact]
+    public async Task Medalhas_DoGarcom_MostraAsDoMesEOHistorico_ERegistraAConsulta()
+    {
+        var (cliente, garcom) = await ClienteGarcom();
+        factory.Indicadores.Garcons.Add(new IndicadorGarcom(garcom.Id, 9000m, 40, 22, 130, 2000));
+        factory.Indicadores.UnidadesDeMeta[garcom.Id] = 8;
+
+        var medalhas = await Ler<MedalhasResponse>(cliente, $"{Rota}/medalhas");
+
+        Assert.Equal(garcom.Id, medalhas.GarcomId);
+        Assert.Equal(6, medalhas.Medalhas.Count);
+        Assert.True(medalhas.Medalhas.Single(m => m.Codigo == "mesa-cheia").Conquistada);
+        Assert.True(medalhas.Medalhas.Single(m => m.Codigo == "maratonista").Conquistada);
+        var destaque = medalhas.Medalhas.Single(m => m.Codigo == "vendedor-de-destaque");
+        Assert.Equal((false, 8m, 20m), (destaque.Conquistada, destaque.Progresso, destaque.Alvo));
+        Assert.Equal(6, medalhas.Historico.Count);
+        Assert.Contains("mesa-cheia", medalhas.Historico[0].Conquistadas);
+        Assert.Contains((await factory.Auditoria(EventoAuditoria.MedalhasConsultadas)),
+            r => r.Detalhes!.Contains(garcom.Id.ToString()));
+    }
+
+    [Fact]
+    public async Task Medalhas_OGarcomNaoVeAsDeOutro()
+    {
+        var (cliente, garcom) = await ClienteGarcom();
+        var (_, colega) = await ClienteGarcom();
+
+        var medalhas = await Ler<MedalhasResponse>(cliente, $"{Rota}/medalhas?garcomId={colega.Id}");
+
+        Assert.Equal(garcom.Id, medalhas.GarcomId);
+    }
+
+    [Fact]
+    public async Task Medalhas_OGerenteVeAsDeQualquerGarcom_EsoDeGarcom()
+    {
+        var (_, garcom) = await ClienteGarcom();
+
+        var medalhas = await Ler<MedalhasResponse>(_gerente, $"{Rota}/medalhas?garcomId={garcom.Id}");
+
+        Assert.Equal(garcom.Id, medalhas.GarcomId);
+        Assert.Equal(HttpStatusCode.NotFound, (await _gerente.GetAsync($"{Rota}/medalhas")).StatusCode);
+    }
 }

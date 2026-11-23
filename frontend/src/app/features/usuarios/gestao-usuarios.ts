@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { GastraApiService } from '../../core/api/gastra-api.service';
-import { Usuario } from '../../core/api/modelos';
+import { MedalhasDoGarcom, Usuario } from '../../core/api/modelos';
 import { Papel } from '../../core/sessao/modelos';
 import { SessaoService } from '../../core/sessao/sessao.service';
 import { AvisoService } from '../../shared/aviso/aviso.service';
@@ -10,6 +10,7 @@ import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
 import { Avatar } from '../../shared/avatar/avatar';
+import { Medalhas } from '../../shared/medalhas/medalhas';
 import { PAPEIS } from '../../shared/rotulos';
 
 type Filtro = 'ativos' | 'inativos' | 'todos';
@@ -22,7 +23,7 @@ type Painel = 'conta' | 'inativar' | 'senha' | 'segundo-fator' | null;
 @Component({
   selector: 'app-gestao-usuarios',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, Folha, Icone, Avatar],
+  imports: [FormsModule, Folha, Icone, Avatar, Medalhas],
   templateUrl: './gestao-usuarios.html',
   styleUrl: './gestao-usuarios.scss',
 })
@@ -40,6 +41,7 @@ export class GestaoUsuarios {
 
   protected readonly painel = signal<Painel>(null);
   protected readonly usuarioEmFoco = signal<Usuario | null>(null);
+  protected readonly medalhasEmFoco = signal<MedalhasDoGarcom | null>(null);
   protected formularioDaConta = { nome: '', email: '', papel: '' as Papel | '', senha: '' };
   protected senhaNova = '';
 
@@ -78,6 +80,15 @@ export class GestaoUsuarios {
       papel: usuario?.papel ?? '',
       senha: '',
     };
+    this.medalhasEmFoco.set(null);
+    if (usuario?.papel === 'Garcom') {
+      this.api.obterMedalhas(usuario.id).subscribe({
+        next: (medalhas) => {
+          if (this.usuarioEmFoco()?.id === medalhas.garcomId) this.medalhasEmFoco.set(medalhas);
+        },
+        error: () => undefined,
+      });
+    }
     this.abrir('conta');
   }
 
