@@ -112,6 +112,11 @@ export class GastraApiService {
   }
 
   /** UC23 — marca o item como entregue ou cancela com motivo da lista fechada (RN02). */
+  /** O garçom confirma ou recusa um item lançado pelo Metre ou pelo Gerente na mesa dele. */
+  confirmarItem(comandaId: number, itemId: number, aceitar: boolean): Observable<void> {
+    return this.http.post<void>(`${this.api}/api/comandas/${comandaId}/itens/${itemId}/confirmacao`, { aceitar });
+  }
+
   /** Cortesia do Metre ou do Gerente: o item entra na comanda por R$ 0,00. */
   lancarCortesia(comandaId: number, itemCardapioId: number, quantidade: number, motivo: string): Observable<ItemDoPedido> {
     return this.http.post<ItemDoPedido>(`${this.api}/api/comandas/${comandaId}/cortesias`, {

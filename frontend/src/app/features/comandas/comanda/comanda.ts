@@ -103,7 +103,11 @@ export class Comanda implements OnInit {
     () => this.comanda()?.itens.filter((i) => i.status === 'Pendente') ?? [],
   );
   protected readonly resolvidos = computed(
-    () => this.comanda()?.itens.filter((i) => i.status !== 'Pendente') ?? [],
+    () => this.comanda()?.itens.filter((i) => i.status === 'Entregue' || i.status === 'Cancelado') ?? [],
+  );
+  /** Itens que o Metre ou o Gerente lançou: só entram na conta depois que o garçom confirma. */
+  protected readonly aConfirmar = computed(
+    () => this.comanda()?.itens.filter((i) => i.status === 'AConfirmar') ?? [],
   );
   protected readonly busca = signal('');
   /** Com algo digitado, a busca vale para o cardápio inteiro, pelo nome ou pela restrição ("sem glúten"). */
@@ -185,6 +189,16 @@ export class Comanda implements OnInit {
           executar: () => this.cancelar(lancado, 'ErroDeLancamento'),
         });
       },
+    );
+  }
+
+  protected responderLancamento(item: ItemDoPedido, aceitar: boolean): void {
+    const comanda = this.comanda();
+    if (!comanda || this.salvando()) {
+      return;
+    }
+    this.executar(this.api.confirmarItem(comanda.id, item.id, aceitar), () =>
+      this.avisos.mostrar(`${item.nome}: ${aceitar ? 'confirmado' : 'recusado'}`),
     );
   }
 

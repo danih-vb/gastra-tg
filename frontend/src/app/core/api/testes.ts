@@ -36,6 +36,7 @@ export function itemDoPedido(dados: Partial<ItemDoPedido> = {}): ItemDoPedido {
     precoUnitarioNoMomento: 68,
     valor: 68,
     cortesia: false,
+    lancadoPor: null,
     precoOriginal: null,
     motivoDoAjuste: null,
     status: 'Pendente',

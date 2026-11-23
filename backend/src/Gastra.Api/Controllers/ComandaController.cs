@@ -23,6 +23,9 @@ public class ComandaController : ControllerBase
     private const string MetreOuGerente = nameof(PapelUsuario.Metre) + "," + nameof(PapelUsuario.Gerente);
     private const string Gerente = nameof(PapelUsuario.Gerente);
 
+    // Lançar item: o garçom da mesa, ou o Metre e o Gerente, cujo item espera a confirmação do garçom.
+    private const string QuemLanca = Garcom + "," + MetreOuGerente;
+
     private const string PapeisDeLeitura =
         nameof(PapelUsuario.Garcom) + "," + nameof(PapelUsuario.Metre) + "," +
         nameof(PapelUsuario.Coordenador) + "," + nameof(PapelUsuario.Gerente);
@@ -57,8 +60,8 @@ public class ComandaController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>UC12 — Registrar item do pedido na comanda.</summary>
-    [Authorize(Roles = Garcom)]
+    /// <summary>UC12 — Registrar item do pedido na comanda. Pelo Metre ou pelo Gerente, o item espera o garçom.</summary>
+    [Authorize(Roles = QuemLanca)]
     [HttpPost("{id:int}/itens")]
     [ProducesResponseType(typeof(ItemPedidoResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
@@ -71,6 +74,22 @@ public class ComandaController : ControllerBase
     {
         var resposta = await useCase.Executar(id, request);
         return CreatedAtAction(nameof(Obter), new { id }, resposta);
+    }
+
+    /// <summary>O garçom confirma ou recusa um item que o Metre ou o Gerente lançou na mesa.</summary>
+    [Authorize(Roles = Garcom)]
+    [HttpPost("{id:int}/itens/{itemId:int}/confirmacao")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> ConfirmarItem(
+        int id,
+        int itemId,
+        [FromBody] ConfirmacaoItemRequest request,
+        [FromServices] IConfirmarItemUseCase useCase)
+    {
+        await useCase.Executar(id, itemId, request);
+        return NoContent();
     }
 
     /// <summary>Cortesia: o Metre ou o Gerente lança um item por R$ 0,00, com motivo.</summary>

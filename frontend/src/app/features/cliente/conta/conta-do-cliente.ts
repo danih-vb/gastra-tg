@@ -50,6 +50,7 @@ export class ContaDoCliente implements OnInit, OnDestroy {
     Pendente: { texto: 'Aguardando', classe: 'aviso' },
     Entregue: { texto: 'Entregue', classe: 'sucesso' },
     Cancelado: { texto: 'Cancelado · não cobrado', classe: '' },
+    AConfirmar: { texto: 'Aguardando', classe: 'aviso' },
   };
 
   constructor() {

@@ -53,6 +53,7 @@ public static class MensagensErro
     public static string ComandaNaoEstaAberta => Obter(nameof(ComandaNaoEstaAberta));
     public static string QuantidadePessoasInvalida => Obter(nameof(QuantidadePessoasInvalida));
     public static string QuantidadeItemInvalida => Obter(nameof(QuantidadeItemInvalida));
+    public static string ItemNaoEstaAConfirmar => Obter(nameof(ItemNaoEstaAConfirmar));
     public static string MotivoDoAjusteObrigatorio => Obter(nameof(MotivoDoAjusteObrigatorio));
     public static string MotivoDoAjusteMuitoLongo => Obter(nameof(MotivoDoAjusteMuitoLongo));
     public static string QuantidadeCortesiaInvalida => Obter(nameof(QuantidadeCortesiaInvalida));

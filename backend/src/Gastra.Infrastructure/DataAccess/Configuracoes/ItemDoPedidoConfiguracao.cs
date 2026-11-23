@@ -20,6 +20,7 @@ public class ItemDoPedidoConfiguracao : IEntityTypeConfiguration<ItemDoPedido>
         builder.Property(i => i.Quantidade).HasColumnName("quantidade").IsRequired();
         builder.Property(i => i.PrecoUnitarioNoMomento).HasColumnName("preco_unitario_no_momento")
             .HasColumnType("decimal(10,2)").IsRequired();
+        builder.Property(i => i.LancadoPor).HasColumnName("lancado_por").HasConversion<string>().HasMaxLength(12);
         builder.Property(i => i.Cortesia).HasColumnName("cortesia").IsRequired().HasDefaultValue(false);
         builder.Property(i => i.PrecoOriginal).HasColumnName("preco_original").HasColumnType("decimal(10,2)");
         builder.Property(i => i.MotivoDoAjuste).HasColumnName("motivo_ajuste").HasMaxLength(ItemDoPedido.TamanhoMaximoDoMotivo);

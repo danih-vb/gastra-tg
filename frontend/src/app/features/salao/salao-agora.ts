@@ -44,6 +44,8 @@ export class SalaoAgora {
   protected readonly ehGerente = computed(() => this.sessao.usuario()?.papel === 'Gerente');
   protected readonly cardapio = signal<ItemCardapio[]>([]);
   protected readonly lancandoCortesia = signal(false);
+  /** Item comum lançado pelo Metre ou pelo Gerente: espera o garçom da mesa confirmar. */
+  protected readonly lancandoItem = signal(false);
   protected readonly itemEmAjuste = signal<ItemDoPedido | null>(null);
   protected readonly salvando = signal(false);
   protected readonly errosDaFolha = signal<string[]>([]);
@@ -102,9 +104,30 @@ export class SalaoAgora {
 
   protected fecharFormularios(): void {
     this.lancandoCortesia.set(false);
+    this.lancandoItem.set(false);
     this.itemEmAjuste.set(null);
     this.errosDaFolha.set([]);
   }
+
+  protected abrirLancamento(): void {
+    this.abrirCortesia();
+    this.lancandoCortesia.set(false);
+    this.lancandoItem.set(true);
+  }
+
+  protected confirmarLancamento(): void {
+    const comanda = this.comandaAberta();
+    if (!comanda || this.cortesiaItemId === null || this.salvando()) {
+      return;
+    }
+    this.salvando.set(true);
+    this.api
+      .registrarItem(comanda.id, Number(this.cortesiaItemId), this.cortesiaQuantidade)
+      .subscribe({ next: () => this.recarregarComanda(comanda.id), error: (erro: unknown) => this.falhou(erro) });
+  }
+
+  /** Para o lançamento comum, só o que está à venda; a cortesia aceita também o que está fora de venda. */
+  protected readonly itensParaLancar = computed(() => this.itensParaCortesia().filter((i) => i.disponivel));
 
   protected abrirCortesia(): void {
     this.fecharFormularios();
