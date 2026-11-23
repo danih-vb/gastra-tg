@@ -70,6 +70,8 @@ public static class DependencyInjectionExtension
         services.AddScoped<IAbrirComandaUseCase, AbrirComandaUseCase>();
         services.AddScoped<IConfirmarComposicaoUseCase, ConfirmarComposicaoUseCase>();
         services.AddScoped<IRegistrarItemPedidoUseCase, RegistrarItemPedidoUseCase>();
+        services.AddScoped<ILancarCortesiaUseCase, LancarCortesiaUseCase>();
+        services.AddScoped<IAlterarPrecoDoItemUseCase, AlterarPrecoDoItemUseCase>();
         services.AddScoped<IAtualizarSituacaoItemUseCase, AtualizarSituacaoItemUseCase>();
         services.AddScoped<IRegistrarRestricaoUseCase, RegistrarRestricaoUseCase>();
         services.AddScoped<IAvaliarAtendimentoUseCase, AvaliarAtendimentoUseCase>();

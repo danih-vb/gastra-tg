@@ -33,3 +33,21 @@
   color: var(--texto-suave);
   text-decoration: line-through;
 }
+
+.formulario {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+}

@@ -48,6 +48,11 @@ export interface ItemDoPedido {
   quantidade: number;
   precoUnitarioNoMomento: number;
   valor: number;
+  /** Cortesia do Metre ou do Gerente: entra por R$ 0,00. */
+  cortesia: boolean;
+  /** Preço antes da cortesia ou do ajuste do Gerente; nulo se nunca mudou. */
+  precoOriginal: number | null;
+  motivoDoAjuste: string | null;
   status: StatusItemPedido;
   motivoCancelamento: MotivoCancelamento | null;
   dataHoraRegistro: string;
@@ -154,7 +159,15 @@ export interface ComandaDoCliente {
   mesa: string;
   dataHoraAbertura: string;
   fechada: boolean;
-  itens: { nome: string; quantidade: number; valor: number; situacao: StatusItemPedido }[];
+  itens: {
+    nome: string;
+    quantidade: number;
+    valor: number;
+    cortesia: boolean;
+    /** Valor antes do ajuste do Gerente, para mostrar o desconto. */
+    valorOriginal: number | null;
+    situacao: StatusItemPedido;
+  }[];
   subtotal: number;
   taxaServico: number;
   total: number;

@@ -18,6 +18,17 @@ public class ItemDoPedido : EntidadeBase
     /// </summary>
     public decimal PrecoUnitarioNoMomento { get; private set; }
 
+    /// <summary>Cortesia do Metre ou do Gerente: entra na conta por R$ 0,00 e não conta como venda.</summary>
+    public bool Cortesia { get; private set; }
+
+    /// <summary>Preço antes de uma cortesia ou de um ajuste do Gerente. Nulo se o preço nunca mudou.</summary>
+    public decimal? PrecoOriginal { get; private set; }
+
+    /// <summary>Por que o preço mudou: obrigatório na cortesia e no ajuste, para o caixa e a gestão entenderem.</summary>
+    public string? MotivoDoAjuste { get; private set; }
+
+    public const int TamanhoMaximoDoMotivo = 120;
+
     public DateTime DataHoraRegistro { get; private set; }
     public StatusItemPedido Status { get; private set; }
     public MotivoCancelamento? MotivoCancelamento { get; private set; }
@@ -40,6 +51,45 @@ public class ItemDoPedido : EntidadeBase
         PrecoUnitarioNoMomento = precoUnitario;
         DataHoraRegistro = DateTime.UtcNow;
         Status = StatusItemPedido.Pendente;
+    }
+
+    /// <summary>Item dado de cortesia: preço zero, guardando o do cardápio para mostrar quanto foi oferecido.</summary>
+    internal static ItemDoPedido CriarCortesia(int itemDoCardapioId, int quantidade, decimal precoDoCardapio, string motivo)
+    {
+        var item = new ItemDoPedido(itemDoCardapioId, quantidade, precoDoCardapio);
+        item.Cortesia = true;
+        item.PrecoOriginal = precoDoCardapio;
+        item.PrecoUnitarioNoMomento = 0;
+        item.MotivoDoAjuste = ValidarMotivo(motivo);
+        return item;
+    }
+
+    /// <summary>Ajuste de preço feito pelo Gerente numa comanda aberta. O primeiro preço fica guardado.</summary>
+    public void AlterarPreco(decimal novoPreco, string motivo)
+    {
+        if (Status == StatusItemPedido.Cancelado)
+            throw new InvalidOperationException("Um item cancelado não tem preço a alterar.");
+
+        if (novoPreco < 0)
+            throw new ArgumentOutOfRangeException(nameof(novoPreco), "O preço não pode ser negativo.");
+
+        if (novoPreco == PrecoUnitarioNoMomento)
+            throw new InvalidOperationException("O preço novo é igual ao atual.");
+
+        var motivoValido = ValidarMotivo(motivo);
+        PrecoOriginal ??= PrecoUnitarioNoMomento;
+        PrecoUnitarioNoMomento = novoPreco;
+        MotivoDoAjuste = motivoValido;
+    }
+
+    private static string ValidarMotivo(string motivo)
+    {
+        var limpo = motivo?.Trim() ?? string.Empty;
+        if (limpo.Length == 0)
+            throw new ArgumentException("O motivo é obrigatório.", nameof(motivo));
+        if (limpo.Length > TamanhoMaximoDoMotivo)
+            throw new ArgumentException("O motivo é longo demais.", nameof(motivo));
+        return limpo;
     }
 
     public void MarcarEntregue()

@@ -89,4 +89,10 @@
   <data name="ComentarioMuitoLongo" xml:space="preserve"><value>O comentário deve ter no máximo 280 caracteres.</value></data>
   <data name="ComandaJaAvaliada" xml:space="preserve"><value>Esta conta já foi avaliada. Obrigado!</value></data>
   <data name="AvaliacaoForaDoPrazo" xml:space="preserve"><value>O prazo para avaliar esta conta terminou.</value></data>
+  <data name="MotivoDoAjusteObrigatorio" xml:space="preserve"><value>Informe o motivo.</value></data>
+  <data name="MotivoDoAjusteMuitoLongo" xml:space="preserve"><value>O motivo deve ter no máximo 120 caracteres.</value></data>
+  <data name="QuantidadeCortesiaInvalida" xml:space="preserve"><value>A cortesia deve ter de 1 a 20 unidades.</value></data>
+  <data name="PrecoAjustadoInvalido" xml:space="preserve"><value>O preço deve ser de R$ 0,00 a R$ 99.999,99.</value></data>
+  <data name="PrecoAjustadoIgualAoAtual" xml:space="preserve"><value>O preço novo é igual ao atual.</value></data>
+  <data name="ItemCanceladoSemPreco" xml:space="preserve"><value>Um item cancelado não tem preço a alterar.</value></data>
 </root>

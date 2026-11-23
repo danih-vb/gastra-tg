@@ -69,10 +69,10 @@ describe('App', () => {
     expect(itensDoMenu(pagina)).toEqual(['Alocação', 'Salão agora']);
   });
 
-  it('o gerente vê a gestão, mas não a alocação do metre', async () => {
+  it('o gerente vê a gestão e o salão agora, mas não a alocação do metre', async () => {
     const pagina = await renderizar('Gerente');
 
-    expect(itensDoMenu(pagina)).toEqual(['Análises', 'Cardápio', 'Salão', 'Usuários']);
+    expect(itensDoMenu(pagina)).toEqual(['Salão agora', 'Análises', 'Cardápio', 'Salão', 'Usuários']);
   });
 
   it('as telas dos outros papéis aparecem sem link, dizendo de quem são', async () => {

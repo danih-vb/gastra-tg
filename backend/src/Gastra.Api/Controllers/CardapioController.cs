@@ -19,7 +19,8 @@ public class CardapioController : ControllerBase
     private const string Gestao = nameof(PapelUsuario.Gerente) + "," + nameof(PapelUsuario.Coordenador);
 
     // O garçom lê a lista completa para lançar pedidos e ver o que está indisponível (RF03); não altera nada.
-    private const string GestaoOuGarcom = Gestao + "," + nameof(PapelUsuario.Garcom);
+    // O Metre lê o cardápio para lançar cortesia.
+    private const string GestaoOuGarcom = Gestao + "," + nameof(PapelUsuario.Garcom) + "," + nameof(PapelUsuario.Metre);
 
     /// <summary>UC05 — Cadastrar item do cardápio.</summary>
     [Authorize(Roles = Gestao)]

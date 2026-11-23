@@ -29,5 +29,10 @@ public class ItemConsultaCliente
     public string Nome { get; set; } = string.Empty;
     public int Quantidade { get; set; }
     public decimal Valor { get; set; }
+    public bool Cortesia { get; set; }
+
+    /// <summary>Valor antes do ajuste do Gerente, para o cliente ver o desconto. Nulo se o preço não mudou.</summary>
+    public decimal? ValorOriginal { get; set; }
+
     public string Situacao { get; set; } = string.Empty;
 }
