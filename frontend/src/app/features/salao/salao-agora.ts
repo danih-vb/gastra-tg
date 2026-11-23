@@ -8,7 +8,8 @@ import { SessaoService } from '../../core/sessao/sessao.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
-import { COMPOSICOES, MOTIVOS, RESTRICOES, atrasado, minutosDesde } from '../../shared/rotulos';
+import { EscolherItem } from '../../shared/escolher-item/escolher-item';
+import { COMPOSICOES, MOTIVOS, RESTRICOES, atrasado, minutosDesde, FLAGS, ICONES_DAS_FLAGS } from '../../shared/rotulos';
 
 interface LinhaDoSalao {
   comanda: Comanda;
@@ -26,7 +27,7 @@ interface LinhaDoSalao {
 @Component({
   selector: 'app-salao-agora',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, FormsModule, Folha, Icone],
+  imports: [CurrencyPipe, FormsModule, Folha, Icone, EscolherItem],
   templateUrl: './salao-agora.html',
   styleUrl: './salao-agora.scss',
 })
@@ -49,16 +50,19 @@ export class SalaoAgora {
   protected readonly itemEmAjuste = signal<ItemDoPedido | null>(null);
   protected readonly salvando = signal(false);
   protected readonly errosDaFolha = signal<string[]>([]);
-  protected cortesiaItemId: number | null = null;
-  protected cortesiaQuantidade = 1;
+  /** Item escolhido na lista, à espera da quantidade (e do motivo, na cortesia). */
+  protected readonly itemEscolhido = signal<ItemCardapio | null>(null);
+  protected readonly quantidade = signal(1);
   protected cortesiaMotivo = '';
+  protected readonly FLAGS = FLAGS;
+  protected readonly ICONES_DAS_FLAGS = ICONES_DAS_FLAGS;
+  protected readonly precoDoEscolhido = computed(() => {
+    const item = this.itemEscolhido();
+    return item ? (item.precoPromocional ?? item.preco) * this.quantidade() : 0;
+  });
   protected novoPreco: number | null = null;
   protected motivoDoAjuste = '';
 
-  /** Ordem alfabética: na cortesia o Metre procura pelo nome, inclusive itens que não estão à venda. */
-  protected readonly itensParaCortesia = computed(() =>
-    [...this.cardapio()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')),
-  );
 
   protected readonly COMPOSICOES = COMPOSICOES;
   protected readonly MOTIVOS = MOTIVOS;
@@ -117,22 +121,20 @@ export class SalaoAgora {
 
   protected confirmarLancamento(): void {
     const comanda = this.comandaAberta();
-    if (!comanda || this.cortesiaItemId === null || this.salvando()) {
+    const item = this.itemEscolhido();
+    if (!comanda || !item || this.salvando()) {
       return;
     }
     this.salvando.set(true);
     this.api
-      .registrarItem(comanda.id, Number(this.cortesiaItemId), this.cortesiaQuantidade)
+      .registrarItem(comanda.id, item.id, this.quantidade())
       .subscribe({ next: () => this.recarregarComanda(comanda.id), error: (erro: unknown) => this.falhou(erro) });
   }
 
-  /** Para o lançamento comum, só o que está à venda; a cortesia aceita também o que está fora de venda. */
-  protected readonly itensParaLancar = computed(() => this.itensParaCortesia().filter((i) => i.disponivel));
-
   protected abrirCortesia(): void {
     this.fecharFormularios();
-    this.cortesiaItemId = null;
-    this.cortesiaQuantidade = 1;
+    this.itemEscolhido.set(null);
+    this.quantidade.set(1);
     this.cortesiaMotivo = '';
     this.lancandoCortesia.set(true);
     if (!this.cardapio().length) {
@@ -145,12 +147,13 @@ export class SalaoAgora {
 
   protected confirmarCortesia(): void {
     const comanda = this.comandaAberta();
-    if (!comanda || this.cortesiaItemId === null || this.salvando()) {
+    const item = this.itemEscolhido();
+    if (!comanda || !item || this.salvando()) {
       return;
     }
     this.salvando.set(true);
     this.api
-      .lancarCortesia(comanda.id, Number(this.cortesiaItemId), this.cortesiaQuantidade, this.cortesiaMotivo.trim())
+      .lancarCortesia(comanda.id, item.id, this.quantidade(), this.cortesiaMotivo.trim())
       .subscribe({ next: () => this.recarregarComanda(comanda.id), error: (erro: unknown) => this.falhou(erro) });
   }
 

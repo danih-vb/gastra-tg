@@ -13,6 +13,7 @@ import {
   TipoDestaque,
 } from '../../core/api/modelos';
 import { EtiquetaDestaque } from '../../shared/destaque/etiqueta-destaque';
+import { EscolherItem } from '../../shared/escolher-item/escolher-item';
 import { AvisoService } from '../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
@@ -43,7 +44,7 @@ export function precoComDesconto(preco: number, tipo: TipoDesconto, valor: numbe
 @Component({
   selector: 'app-gestao-cardapio',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, DatePipe, FormsModule, Folha, Icone, EtiquetaDestaque],
+  imports: [CurrencyPipe, DatePipe, FormsModule, Folha, Icone, EtiquetaDestaque, EscolherItem],
   templateUrl: './gestao-cardapio.html',
   styleUrl: './gestao-cardapio.scss',
 })
@@ -59,12 +60,11 @@ export class GestaoCardapio {
   protected readonly itens = signal<ItemCardapio[]>([]);
   protected readonly promocoes = signal<Promocao[]>([]);
   protected readonly destaques = signal<Destaque[]>([]);
-  protected destaqueItemId: number | null = null;
+  /** Item escolhido na lista, à espera do tipo de destaque. */
+  protected readonly itemDoDestaque = signal<ItemCardapio | null>(null);
   protected destaqueTipo: TipoDestaque = 'DestaqueDoDia';
   protected destaqueMeta: number | null = null;
-  protected readonly itensEmOrdem = computed(() =>
-    [...this.itens()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')),
-  );
+
 
   protected readonly busca = signal('');
   protected readonly categoria = signal<CategoriaItemCardapio | 'todas'>('todas');
@@ -261,14 +261,14 @@ export class GestaoCardapio {
 
   /** Destaque do dia vale hoje; meta do mês vale este mês. */
   protected criarDestaque(): void {
-    if (this.destaqueItemId === null || this.salvando()) return;
+    const item = this.itemDoDestaque();
+    if (!item || this.salvando()) return;
     const meta = this.destaqueTipo === 'MetaDoMes' ? Number(this.destaqueMeta) : null;
-    const item = this.itens().find((i) => i.id === Number(this.destaqueItemId));
     this.salvar(
-      this.api.criarDestaque(Number(this.destaqueItemId), this.destaqueTipo, meta),
-      this.destaqueTipo === 'MetaDoMes' ? `Meta do mês criada: ${item?.nome}` : `Destaque do dia: ${item?.nome}`,
+      this.api.criarDestaque(item.id, this.destaqueTipo, meta),
+      this.destaqueTipo === 'MetaDoMes' ? `Meta do mês criada: ${item.nome}` : `Destaque de hoje: ${item.nome}`,
     );
-    this.destaqueItemId = null;
+    this.itemDoDestaque.set(null);
     this.destaqueMeta = null;
   }
 

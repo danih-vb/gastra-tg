@@ -145,42 +145,60 @@
       </div>
     }
 
-    @if (lancandoCortesia()) {
-      <form class="formulario" (ngSubmit)="confirmarCortesia()">
-        <label for="cortesia-item">Item</label>
-        <select id="cortesia-item" name="item" required [(ngModel)]="cortesiaItemId">
-          <option [ngValue]="null" disabled>Escolha o item</option>
-          @for (opcao of itensParaCortesia(); track opcao.id) {
-            <option [ngValue]="opcao.id">{{ opcao.nome }} · {{ opcao.preco | currency: 'BRL' }}</option>
+    @if ((lancandoCortesia() || lancandoItem()) && itemEscolhido(); as item) {
+      <div class="escolhido">
+        <button class="botao-icone" type="button" aria-label="Voltar à lista" (click)="itemEscolhido.set(null)">
+          <app-icone nome="voltar" />
+        </button>
+        <div>
+          <h3>{{ item.nome }}</h3>
+          @if (item.descricao) {
+            <p class="pequeno suave">{{ item.descricao }}</p>
           }
-        </select>
-        <label for="cortesia-quantidade">Quantidade</label>
-        <input id="cortesia-quantidade" name="quantidade" type="number" min="1" max="20" required [(ngModel)]="cortesiaQuantidade" />
-        <label for="cortesia-motivo">Motivo</label>
-        <input id="cortesia-motivo" name="motivo" maxlength="120" required placeholder="Aniversário" [(ngModel)]="cortesiaMotivo" />
-        <div class="botoes">
-          <button class="botao secundario" type="button" (click)="fecharFormularios()">Cancelar</button>
-          <button class="botao" type="submit" [disabled]="salvando() || cortesiaItemId === null || !cortesiaMotivo.trim()">
-            Lançar cortesia
-          </button>
         </div>
-      </form>
-    } @else if (lancandoItem()) {
-      <form class="formulario" (ngSubmit)="confirmarLancamento()">
-        <label for="lancar-item">Item</label>
-        <select id="lancar-item" name="item" required [(ngModel)]="cortesiaItemId">
-          <option [ngValue]="null" disabled>Escolha o item</option>
-          @for (opcao of itensParaLancar(); track opcao.id) {
-            <option [ngValue]="opcao.id">{{ opcao.nome }} · {{ opcao.preco | currency: 'BRL' }}</option>
+      </div>
+      @if (item.flagsDieteticas.length) {
+        <div class="chips">
+          @for (flag of item.flagsDieteticas; track flag) {
+            <span class="etiqueta"><app-icone [nome]="ICONES_DAS_FLAGS[flag]" /> {{ FLAGS[flag] }}</span>
           }
-        </select>
-        <label for="lancar-quantidade">Quantidade</label>
-        <input id="lancar-quantidade" name="quantidade" type="number" min="1" max="20" required [(ngModel)]="cortesiaQuantidade" />
-        <div class="botoes">
-          <button class="botao secundario" type="button" (click)="fecharFormularios()">Cancelar</button>
-          <button class="botao" type="submit" [disabled]="salvando() || cortesiaItemId === null">Lançar para o garçom</button>
         </div>
-      </form>
+      }
+      <div class="seletor-qtd" role="group" aria-label="Quantidade">
+        <button class="botao-icone" type="button" aria-label="Diminuir" [disabled]="quantidade() === 1" (click)="quantidade.set(quantidade() - 1)">
+          <app-icone nome="menos" />
+        </button>
+        <output aria-live="polite">{{ quantidade() }}</output>
+        <button class="botao-icone" type="button" aria-label="Aumentar" [disabled]="quantidade() === 20" (click)="quantidade.set(quantidade() + 1)">
+          <app-icone nome="mais" />
+        </button>
+      </div>
+      @if (lancandoCortesia()) {
+        <div class="campo">
+          <label for="cortesia-motivo">Motivo</label>
+          <input id="cortesia-motivo" class="entrada" name="motivo" maxlength="120" placeholder="Aniversário" [(ngModel)]="cortesiaMotivo" />
+        </div>
+        <button class="botao largo" type="button" [disabled]="salvando() || !cortesiaMotivo.trim()" (click)="confirmarCortesia()">
+          <app-icone nome="coracao" /> Cortesia {{ quantidade() }} × · {{ 0 | currency: 'BRL' }}
+          <span class="vale">(vale {{ precoDoEscolhido() | currency: 'BRL' }})</span>
+        </button>
+      } @else {
+        <button class="botao largo" type="button" [disabled]="salvando()" (click)="confirmarLancamento()">
+          Lançar {{ quantidade() }} × · {{ precoDoEscolhido() | currency: 'BRL' }} para o garçom confirmar
+        </button>
+      }
+    } @else if (lancandoCortesia() || lancandoItem()) {
+      <div class="cabecalho-escolha">
+        <strong>{{ lancandoCortesia() ? 'Cortesia para a mesa' : 'Lançar para o garçom confirmar' }}</strong>
+        <button class="botao fantasma compacto" type="button" (click)="fecharFormularios()">Cancelar</button>
+      </div>
+      <app-escolher-item
+        [itens]="cardapio()"
+        [rotulo]="lancandoCortesia() ? 'Cortesia' : 'Lançar'"
+        [icone]="lancandoCortesia() ? 'coracao' : 'mais'"
+        [aceitarForaDeVenda]="lancandoCortesia()"
+        (escolhido)="itemEscolhido.set($event); quantidade.set(1)"
+      />
     } @else if (itemEmAjuste(); as item) {
       <form class="formulario" (ngSubmit)="confirmarAjuste()">
         <p><strong>{{ item.quantidade }} × {{ item.nome }}</strong></p>
