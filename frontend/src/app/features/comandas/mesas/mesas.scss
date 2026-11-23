@@ -59,8 +59,10 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .pendentes { position: absolute; top: 8px; right: 8px; }
-  .chamando { position: absolute; top: 8px; right: 8px; }
+  /* A etiqueta vem logo abaixo do número: no canto, em cartão estreito de celular, ela cobria o número da mesa. */
+  .numero { order: -1; }
+  .pendentes,
+  .chamando { align-self: flex-start; }
 
   &.livre { border-style: dashed; border-color: var(--borda-forte); background: transparent; }
   &.minha { border: 2px solid var(--marinho); }
