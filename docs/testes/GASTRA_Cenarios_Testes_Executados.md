@@ -3,10 +3,10 @@
 > **Gerado a partir da execução real dos testes automatizados** (`docs/testes/gerar_relatorio_testes.py`).
 > Não edite à mão: rode os testes e o script de novo.
 
-- **Execução:** 05/11/2026 19:00, commit `e8c00ae`.
+- **Execução:** 21/11/2026 11:43, commit `b0293e6`.
 - **Ambiente:** MySQL 8.4 real (testes de views, triggers e restrições), serviço Python no ar (testes de contrato),
   .NET 10, Python 3.13 e Angular 22 sobre Vitest.
-- **Resultado:** 498 cenários e 552 casos executados: 552 passaram, 0 falharam e 0 foram ignorados.
+- **Resultado:** 522 cenários e 576 casos executados: 576 passaram, 0 falharam e 0 foram ignorados.
 
 Cobre o critério da issue #48 para os **testes automatizados**: pelo menos um cenário por bloco (comandas,
 alocação por programação linear, recomendação e LGPD), com o resultado executado. Cada bloco aparece nas três
@@ -20,23 +20,23 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 
 | Camada | Cenários | Casos | Passaram | Falharam | Ignorados |
 |---|---|---|---|---|---|
-| Backend .NET | 303 | 350 | 350 | 0 | 0 |
-| Analítica Python | 59 | 66 | 66 | 0 | 0 |
-| Frontend Angular | 136 | 136 | 136 | 0 | 0 |
+| Backend .NET | 314 | 361 | 361 | 0 | 0 |
+| Analítica Python | 61 | 68 | 68 | 0 | 0 |
+| Frontend Angular | 147 | 147 | 147 | 0 | 0 |
 
 ## Resumo por bloco
 
 | Bloco | Cenários | Casos | Passaram | Falharam | Ignorados |
 |---|---|---|---|---|---|
-| Núcleo de comandas | 126 | 135 | 135 | 0 | 0 |
-| Cardápio e promoções | 62 | 83 | 83 | 0 | 0 |
+| Núcleo de comandas | 139 | 148 | 148 | 0 | 0 |
+| Cardápio e promoções | 65 | 86 | 86 | 0 | 0 |
 | Alocação de garçons (programação linear) | 61 | 67 | 67 | 0 | 0 |
-| Recomendação de pratos (ciência de dados) | 52 | 58 | 58 | 0 | 0 |
+| Recomendação de pratos (ciência de dados) | 54 | 60 | 60 | 0 | 0 |
 | BI e índice de desempenho | 54 | 58 | 58 | 0 | 0 |
-| LGPD, auditoria e segurança | 108 | 109 | 109 | 0 | 0 |
+| LGPD, auditoria e segurança | 110 | 111 | 111 | 0 | 0 |
 | Banco de dados (views, triggers e restrições) | 14 | 14 | 14 | 0 | 0 |
 | Integração backend ↔ Python | 12 | 15 | 15 | 0 | 0 |
-| Arquitetura e infraestrutura | 9 | 13 | 13 | 0 | 0 |
+| Arquitetura e infraestrutura | 13 | 17 | 17 | 0 | 0 |
 
 ## Núcleo de comandas
 
@@ -47,127 +47,140 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 3 | Abrir comanda como gerente retorna 403 mas leitura e permitida | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
 | 4 | Abrir sem pessoas retorna 400 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
 | 5 | Ajustar composicao na mao impede que o sistema reclassifique | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 6 | Atender chamado sem login retorna 401 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 7 | Avaliacao com codigo inexistente retorna 404 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 8 | Avaliacao com conta aberta recusa | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 9 | Avaliacao com nota fora da escala retorna 400 | Backend .NET | `ComandaControllerTests` | 2 | ✅ Passou |
-| 10 | Avaliacao depois de fechar aceita sem login e nao deixa avaliar de novo | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 11 | Avaliacao nao identifica quem avaliou | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 12 | Cancelar item com motivo tira o item da conta | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 13 | Cancelar item sem motivo retorna 400 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 14 | Chamar garcom com codigo inexistente retorna 404 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 15 | Chamar garcom com conta fechada retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 16 | Chamar garcom sem login aparece pra equipe e some ao atender | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 17 | Comanda fechada nao aceita novo item | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 18 | Comanda traz o garcom que abriu na abertura na consulta e na lista | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 19 | Comandas sem login retorna 401 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 20 | Consulta do cliente com codigo inexistente retorna 404 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 21 | Consulta do cliente diz se pode avaliar e quando ja avaliou | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 22 | Consulta do cliente pelo codigo de acesso funciona sem login e nao expoe restricao | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 23 | Fechar apaga a observacao livre da restricao e mantem a categoria | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 24 | Fechar com item entregue calcula total com taxa de dez por cento | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 25 | Fechar com item pendente retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 26 | Lancar item copia o preco do cardapio e soma no subtotal | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 27 | Lancar item indisponivel retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 28 | Lancar item infantil em mesa de tres muda a composicao para familia | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 29 | Recolocar taxa servico volta a cobrar no fechamento | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 30 | Remover taxa servico zera a taxa no fechamento | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 31 | Restricao depois do fechamento nem o garcom ve | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 32 | Restricao garcom ve com a comanda aberta | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 33 | Restricao gerente nao ve nem na consulta nem no painel | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 34 | Restricao metre ve com a comanda aberta | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
-| 35 | Abrir com zero pessoas lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 36 | Abrir sugere a composicao pela quantidade de pessoas | Backend .NET | `ComandaTests` | 6 | ✅ Passou |
-| 37 | Adicionar item copia o preco do momento e nao muda depois | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 38 | Adicionar item indisponivel lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 39 | Adicionar item infantil em mesa de duas pessoas nao vira familia | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 40 | Adicionar item infantil em mesa de tres ou mais reclassifica como familia | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 41 | Ajustar composicao na mao congela a regra automatica | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 42 | Atender chamado limpa o chamado | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 43 | Calcular total soma taxa de dez por cento | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 44 | Chamar garcom de novo mantem a hora do primeiro chamado | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 45 | Comanda fechada nao aceita novo item nem restricao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 46 | Confirmar a sugestao sem mudar nao congela a regra automatica | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 47 | Confirmar composicao guarda o ajuste do garcom | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 48 | Fechar apaga a observacao livre da restricao e mantem a categoria | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 49 | Fechar com item pendente lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 50 | Fechar com todos os itens entregues fecha e registra a hora | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 51 | Fechar limpa o chamado | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 52 | Item cancelado nao entra na conta e nao impede o fechamento | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 53 | Recolocar taxa servico volta a cobrar | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 54 | Registrar restricao guarda categoria e observacao sem espacos sobrando | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 55 | Registrar restricao sem observacao fica nula | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 56 | Remover taxa servico zera a taxa | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 57 | Restricoes visiveis com comanda aberta so para quem atende a mesa | Backend .NET | `ComandaTests` | 4 | ✅ Passou |
-| 58 | Restricoes visiveis depois do fechamento ninguem ve | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
-| 59 | Cadastrar mesa com numero repetido retorna 422 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 60 | Cadastrar mesa em praca inexistente retorna 404 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 61 | Cadastrar mesa sem capacidade retorna 400 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 62 | Cadastrar mesa vincula a praca e aparece na listagem | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 63 | Cadastrar praca com codigo repetido retorna 422 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 64 | Cadastrar praca com dados validos retorna 201 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 65 | Cadastrar praca sem garcons retorna 400 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 66 | Editar mesa altera numero e capacidade sem trocar de praca | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 67 | Editar praca altera a quantidade de garcons | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 68 | Editar praca inexistente retorna 404 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 69 | Garcom nao cadastra mesa mas precisa enxergar a lista | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 70 | Mesa cadastrada pelo gerente permite ao garcom abrir comanda | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 71 | Salao sem login retorna 401 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
-| 72 | Marca como atrasado só o item que passou do limite, e ele vem primeiro | Frontend Angular | `A entregar (RF03)` | 1 | ✅ Passou |
-| 73 | Mostra a mesa que chamou e limpa ao atender | Frontend Angular | `A entregar (RF03)` | 1 | ✅ Passou |
-| 74 | Avisa antes de lançar um item que não atende à restrição da mesa, sem impedir (RF14) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 75 | Cancelar só libera depois de escolher o motivo (RN02) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 76 | Com o serviço de análise fora do ar, avisa e mantém o resto da comanda (D3) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 77 | Entregar não pede confirmação, e o aviso não oferece desfazer (a API não volta atrás) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 78 | Lança o item e oferece desfazer, que cancela por erro de lançamento | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 79 | Marca como atrasado o item pendente que passou do limite | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 80 | Mostra a mesa, as pendências e o preço promocional do cardápio | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 81 | Oferece ao garçom o QR code e o link da conta do cliente (RF13) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 82 | Registra a restrição com a observação (RF14) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
-| 83 | Atualizar agora busca a conta de novo | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 84 | Avisa para nao escrever dado pessoal no comentario | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 85 | Chama o garçom e mostra que o chamado foi feito | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 86 | Com a conta aberta, nao oferece avaliar: o atendimento ainda esta acontecendo | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 87 | Com a conta fechada, agradece e mostra o total final | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 88 | Com a conta fechada, não oferece chamar | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 89 | Código inexistente não vira erro de sistema: explica o que fazer | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 90 | Divide o total entre as pessoas, a partir de duas | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 91 | Envia a nota e o comentario, e depois agradece (RF25) | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 92 | Erro da API na avaliacao aparece dentro do bloco, sem derrubar a conta | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 93 | Explica que a taxa é opcional e que nada pessoal aparece (RN04) | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 94 | Mostra os itens com a situação de cada um e os totais | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 95 | Sem escolher nota, o botao de enviar fica desabilitado | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
-| 96 | Com item pendente, explica o bloqueio e não deixa fechar (RN02) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
-| 97 | Erro da API no fechamento aparece na tela | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
-| 98 | Fecha depois de confirmar | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
-| 99 | Mostra subtotal, taxa de 10% e total, e cobra a taxa por padrão (RF04) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
-| 100 | Recoloca a taxa se o cliente mudar de ideia (RF04) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
-| 101 | Tira a taxa e atualiza os valores na hora, com a resposta vazia da API (RF04) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
-| 102 | Agrupa as mesas por praça, em ordem, e soma vagas e lugares | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
-| 103 | Cria a praça com código e vagas | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
-| 104 | Mostra dentro do painel a mensagem da API quando o código repete | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
-| 105 | Nova mesa vai para a praça escolhida; editar mesa não deixa mudar de praça (REL01) | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
-| 106 | Sem praça cadastrada, explica o primeiro passo e não deixa criar mesa | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
-| 107 | Leva ao cardápio, sem login | Frontend Angular | `Início do cliente` | 1 | ✅ Passou |
-| 108 | Abre a mesa em dois toques: a mesa livre e a quantidade de pessoas (RNF02) | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
-| 109 | Abre na praça do garçom e separa as mesas dele das dos colegas | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
-| 110 | Mesa de colega não abre comanda: avisa de quem é | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
-| 111 | Sem alocação confirmada, mostra todas as praças e avisa o motivo | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
-| 112 | Abre a comanda só para leitura, com as restrições (RN04) | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 113 | Agrupa as mesas por praça, com garçom, pendências e restrição | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 114 | Mostra quantos itens da mesa estão atrasados | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 115 | Soma o que está em consumo e o que falta entregar | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 116 | Conta os minutos desde o lançamento | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 117 | Escreve o tempo do jeito que o garçom lê | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 118 | Sugere a composição de 1 pessoas (infantil: false) como Solo | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 119 | Sugere a composição de 2 pessoas (infantil: false) como Casal | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 120 | Sugere a composição de 3 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 121 | Sugere a composição de 3 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 122 | Sugere a composição de 4 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 123 | Sugere a composição de 5 pessoas (infantil: false) como GrupoGrande | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 124 | Sugere a composição de 6 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 125 | Trata até as 17h como almoço, como as views de BI | Frontend Angular | `turno atual` | 1 | ✅ Passou |
-| 126 | Usa a data do aparelho, e não UTC | Frontend Angular | `turno atual` | 1 | ✅ Passou |
+| 6 | Alterar preco igual ao atual retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 7 | Alterar preco pelo gerente muda a conta e o cliente ve o valor original | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 8 | Alterar preco pelo metre retorna 403 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 9 | Atender chamado sem login retorna 401 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 10 | Avaliacao com codigo inexistente retorna 404 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 11 | Avaliacao com conta aberta recusa | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 12 | Avaliacao com nota fora da escala retorna 400 | Backend .NET | `ComandaControllerTests` | 2 | ✅ Passou |
+| 13 | Avaliacao depois de fechar aceita sem login e nao deixa avaliar de novo | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 14 | Avaliacao nao identifica quem avaliou | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 15 | Cancelar item com motivo tira o item da conta | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 16 | Cancelar item sem motivo retorna 400 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 17 | Chamar garcom com codigo inexistente retorna 404 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 18 | Chamar garcom com conta fechada retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 19 | Chamar garcom sem login aparece pra equipe e some ao atender | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 20 | Comanda fechada nao aceita novo item | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 21 | Comanda traz o garcom que abriu na abertura na consulta e na lista | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 22 | Comandas sem login retorna 401 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 23 | Consulta do cliente com codigo inexistente retorna 404 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 24 | Consulta do cliente diz se pode avaliar e quando ja avaliou | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 25 | Consulta do cliente pelo codigo de acesso funciona sem login e nao expoe restricao | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 26 | Cortesia pelo garcom retorna 403 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 27 | Cortesia pelo metre entra por zero mesmo com item indisponivel | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 28 | Cortesia sem motivo retorna 400 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 29 | Fechar apaga a observacao livre da restricao e mantem a categoria | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 30 | Fechar com item entregue calcula total com taxa de dez por cento | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 31 | Fechar com item pendente retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 32 | Lancar item copia o preco do cardapio e soma no subtotal | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 33 | Lancar item indisponivel retorna 422 | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 34 | Lancar item infantil em mesa de tres muda a composicao para familia | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 35 | Recolocar taxa servico volta a cobrar no fechamento | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 36 | Remover taxa servico zera a taxa no fechamento | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 37 | Restricao depois do fechamento nem o garcom ve | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 38 | Restricao garcom ve com a comanda aberta | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 39 | Restricao gerente nao ve nem na consulta nem no painel | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 40 | Restricao metre ve com a comanda aberta | Backend .NET | `ComandaControllerTests` | 1 | ✅ Passou |
+| 41 | Abrir com zero pessoas lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 42 | Abrir sugere a composicao pela quantidade de pessoas | Backend .NET | `ComandaTests` | 6 | ✅ Passou |
+| 43 | Adicionar item copia o preco do momento e nao muda depois | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 44 | Adicionar item indisponivel lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 45 | Adicionar item infantil em mesa de duas pessoas nao vira familia | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 46 | Adicionar item infantil em mesa de tres ou mais reclassifica como familia | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 47 | Ajustar composicao na mao congela a regra automatica | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 48 | Alterar preco de item cancelado lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 49 | Alterar preco muda o valor e guarda o primeiro preco | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 50 | Atender chamado limpa o chamado | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 51 | Calcular total soma taxa de dez por cento | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 52 | Chamar garcom de novo mantem a hora do primeiro chamado | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 53 | Comanda fechada nao aceita cortesia nem ajuste | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 54 | Comanda fechada nao aceita novo item nem restricao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 55 | Confirmar a sugestao sem mudar nao congela a regra automatica | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 56 | Confirmar composicao guarda o ajuste do garcom | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 57 | Cortesia entra por zero guarda o preco do cardapio e vale para item indisponivel | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 58 | Cortesia sem motivo lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 59 | Fechar apaga a observacao livre da restricao e mantem a categoria | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 60 | Fechar com item pendente lanca excecao | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 61 | Fechar com todos os itens entregues fecha e registra a hora | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 62 | Fechar limpa o chamado | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 63 | Item cancelado nao entra na conta e nao impede o fechamento | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 64 | Recolocar taxa servico volta a cobrar | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 65 | Registrar restricao guarda categoria e observacao sem espacos sobrando | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 66 | Registrar restricao sem observacao fica nula | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 67 | Remover taxa servico zera a taxa | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 68 | Restricoes visiveis com comanda aberta so para quem atende a mesa | Backend .NET | `ComandaTests` | 4 | ✅ Passou |
+| 69 | Restricoes visiveis depois do fechamento ninguem ve | Backend .NET | `ComandaTests` | 1 | ✅ Passou |
+| 70 | Cadastrar mesa com numero repetido retorna 422 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 71 | Cadastrar mesa em praca inexistente retorna 404 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 72 | Cadastrar mesa sem capacidade retorna 400 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 73 | Cadastrar mesa vincula a praca e aparece na listagem | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 74 | Cadastrar praca com codigo repetido retorna 422 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 75 | Cadastrar praca com dados validos retorna 201 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 76 | Cadastrar praca sem garcons retorna 400 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 77 | Editar mesa altera numero e capacidade sem trocar de praca | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 78 | Editar praca altera a quantidade de garcons | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 79 | Editar praca inexistente retorna 404 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 80 | Garcom nao cadastra mesa mas precisa enxergar a lista | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 81 | Mesa cadastrada pelo gerente permite ao garcom abrir comanda | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 82 | Salao sem login retorna 401 | Backend .NET | `SalaoControllerTests` | 1 | ✅ Passou |
+| 83 | Marca como atrasado só o item que passou do limite, e ele vem primeiro | Frontend Angular | `A entregar (RF03)` | 1 | ✅ Passou |
+| 84 | Mostra a mesa que chamou e limpa ao atender | Frontend Angular | `A entregar (RF03)` | 1 | ✅ Passou |
+| 85 | Avisa antes de lançar um item que não atende à restrição da mesa, sem impedir (RF14) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 86 | Busca o item pelo nome no cardápio inteiro, sem depender de acento | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 87 | Cancelar só libera depois de escolher o motivo (RN02) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 88 | Com o serviço de análise fora do ar, avisa e mantém o resto da comanda (D3) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 89 | Entregar não pede confirmação, e o aviso não oferece desfazer (a API não volta atrás) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 90 | Lança o item e oferece desfazer, que cancela por erro de lançamento | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 91 | Marca como atrasado o item pendente que passou do limite | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 92 | Mostra a mesa, as pendências e o preço promocional do cardápio | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 93 | Oferece ao garçom o QR code e o link da conta do cliente (RF13) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 94 | Registra a restrição com a observação (RF14) | Frontend Angular | `Comanda (UC12, UC13, UC18, UC23)` | 1 | ✅ Passou |
+| 95 | Atualizar agora busca a conta de novo | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 96 | Avisa para nao escrever dado pessoal no comentario | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 97 | Chama o garçom e mostra que o chamado foi feito | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 98 | Com a conta aberta, nao oferece avaliar: o atendimento ainda esta acontecendo | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 99 | Com a conta fechada, agradece e mostra o total final | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 100 | Com a conta fechada, não oferece chamar | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 101 | Código inexistente não vira erro de sistema: explica o que fazer | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 102 | Divide o total entre as pessoas, a partir de duas | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 103 | Envia a nota e o comentario, e depois agradece (RF25) | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 104 | Erro da API na avaliacao aparece dentro do bloco, sem derrubar a conta | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 105 | Mostra os itens com a situação de cada um e os totais | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 106 | Sem escolher nota, o botao de enviar fica desabilitado | Frontend Angular | `Conta do cliente (UC20)` | 1 | ✅ Passou |
+| 107 | Com item pendente, explica o bloqueio e não deixa fechar (RN02) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
+| 108 | Erro da API no fechamento aparece na tela | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
+| 109 | Fecha depois de confirmar | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
+| 110 | Mostra subtotal, taxa de 10% e total, e cobra a taxa por padrão (RF04) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
+| 111 | Recoloca a taxa se o cliente mudar de ideia (RF04) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
+| 112 | Tira a taxa e atualiza os valores na hora, com a resposta vazia da API (RF04) | Frontend Angular | `FecharConta (UC14)` | 1 | ✅ Passou |
+| 113 | Agrupa as mesas por praça, em ordem, e soma vagas e lugares | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
+| 114 | Cria a praça com código e vagas | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
+| 115 | Mostra dentro do painel a mensagem da API quando o código repete | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
+| 116 | Nova mesa vai para a praça escolhida; editar mesa não deixa mudar de praça (REL01) | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
+| 117 | Sem praça cadastrada, explica o primeiro passo e não deixa criar mesa | Frontend Angular | `Gestão do salão (UC24)` | 1 | ✅ Passou |
+| 118 | Leva ao cardápio, sem login | Frontend Angular | `Início do cliente` | 1 | ✅ Passou |
+| 119 | Abre a mesa em dois toques: a mesa livre e a quantidade de pessoas (RNF02) | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
+| 120 | Abre na praça do garçom e separa as mesas dele das dos colegas | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
+| 121 | Mesa de colega não abre comanda: avisa de quem é | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
+| 122 | Sem alocação confirmada, mostra todas as praças e avisa o motivo | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
+| 123 | Abre a comanda só para leitura, com as restrições (RN04) | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 124 | Agrupa as mesas por praça, com garçom, pendências e restrição | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 125 | Mostra quantos itens da mesa estão atrasados | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 126 | O gerente altera o preço de um item da mesa, com motivo | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 127 | O metre lança uma cortesia com motivo e a mesa passa a mostrá-la | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 128 | Soma o que está em consumo e o que falta entregar | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 129 | Conta os minutos desde o lançamento | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 130 | Escreve o tempo do jeito que o garçom lê | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 131 | Sugere a composição de 1 pessoas (infantil: false) como Solo | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 132 | Sugere a composição de 2 pessoas (infantil: false) como Casal | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 133 | Sugere a composição de 3 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 134 | Sugere a composição de 3 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 135 | Sugere a composição de 4 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 136 | Sugere a composição de 5 pessoas (infantil: false) como GrupoGrande | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 137 | Sugere a composição de 6 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 138 | Trata até as 17h como almoço, como as views de BI | Frontend Angular | `turno atual` | 1 | ✅ Passou |
+| 139 | Usa a data do aparelho, e não UTC | Frontend Angular | `turno atual` | 1 | ✅ Passou |
 
 ## Cardápio e promoções
 
@@ -224,17 +237,20 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 49 | Vigente em inclui os dois extremos | Backend .NET | `PromocaoTests` | 4 | ✅ Passou |
 | 50 | Agrupa por categoria e mostra o preço promocional junto do cheio | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
 | 51 | Avisa que o pedido é com o garçom e que alergia precisa ser confirmada | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
-| 52 | Os filtros combinam entre si | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
-| 53 | Sem resultado, explica e oferece limpar os filtros | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
-| 54 | Cadastra o item com preço em reais, flags e foto | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 55 | Cadastro mostra dentro do painel as mensagens da API | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 56 | Cria a promoção com a prévia dos preços e os itens escolhidos | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 57 | Importa a foto do computador e usa o endereço devolvido pela API (RF05) | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 58 | Lista os itens com preço promocional e filtra pela busca | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 59 | Remover promoção pede confirmação e chama a API | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 60 | Tirar do ar oferece desfazer, que devolve a disponibilidade | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
-| 61 | Calcula a prévia da promoção como o domínio: percentual, fixo e mínimo de R$ 0,01 | Frontend Angular | `contas do cardápio` | 1 | ✅ Passou |
-| 62 | Lê valores em reais do jeito que o gerente digita | Frontend Angular | `contas do cardápio` | 1 | ✅ Passou |
+| 52 | Monta a lista "Tenho interesse" no próprio celular, com o total | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
+| 53 | Os filtros combinam entre si | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
+| 54 | Sem resultado, explica e oferece limpar os filtros | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
+| 55 | Tocar no item abre a foto e os detalhes | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
+| 56 | Vindo da conta da mesa, a lista já oferece chamar o garçom | Frontend Angular | `Cardápio digital (UC19)` | 1 | ✅ Passou |
+| 57 | Cadastra o item com preço em reais, flags e foto | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 58 | Cadastro mostra dentro do painel as mensagens da API | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 59 | Cria a promoção com a prévia dos preços e os itens escolhidos | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 60 | Importa a foto do computador e usa o endereço devolvido pela API (RF05) | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 61 | Lista os itens com preço promocional e filtra pela busca | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 62 | Remover promoção pede confirmação e chama a API | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 63 | Tirar do ar oferece desfazer, que devolve a disponibilidade | Frontend Angular | `Gestão do cardápio (UC05–UC09)` | 1 | ✅ Passou |
+| 64 | Calcula a prévia da promoção como o domínio: percentual, fixo e mínimo de R$ 0,01 | Frontend Angular | `contas do cardápio` | 1 | ✅ Passou |
+| 65 | Lê valores em reais do jeito que o gerente digita | Frontend Angular | `contas do cardápio` | 1 | ✅ Passou |
 
 ## Alocação de garçons (programação linear)
 
@@ -345,19 +361,21 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 37 | Senha nao aparece na representacao da engine | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
 | 38 | Usuario analitico le a view | Analítica Python | `test_historico_banco` | 1 | ✅ Passou |
 | 39 | Usuario analitico nao le tabelas nem grava | Analítica Python | `test_historico_banco` | 4 | ✅ Passou |
-| 40 | Banco fora do ar nao derruba a recomendacao | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 41 | Historico real pequeno demais usa o simulado | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 42 | Historico real suficiente treina com o banco | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 43 | Invalidar forca nova leitura | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 44 | O modelo fica em cache e e recalculado depois do prazo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 45 | Sem banco configurado usa o simulado e diz o motivo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
-| 46 | Descarta regras com lift abaixo de um | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 47 | Historico sem combinacoes nao gera regra | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 48 | Nao sugere item que ja esta na comanda | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 49 | Recupera a combinacao plantada no simulador | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 50 | Respeita a lista de itens disponiveis | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 51 | Respeita o limite de sugestoes | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
-| 52 | Resultado e o mesmo para a mesma semente | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 40 | Aquecer treina antes do primeiro pedido | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 41 | Banco fora do ar nao derruba a recomendacao | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 42 | Com o prazo vencido responde na hora com o modelo anterior | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 43 | Historico real pequeno demais usa o simulado | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 44 | Historico real suficiente treina com o banco | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 45 | Invalidar forca nova leitura | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 46 | O modelo fica em cache e e recalculado depois do prazo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 47 | Sem banco configurado usa o simulado e diz o motivo | Analítica Python | `test_provedor_modelo` | 1 | ✅ Passou |
+| 48 | Descarta regras com lift abaixo de um | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 49 | Historico sem combinacoes nao gera regra | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 50 | Nao sugere item que ja esta na comanda | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 51 | Recupera a combinacao plantada no simulador | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 52 | Respeita a lista de itens disponiveis | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 53 | Respeita o limite de sugestoes | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
+| 54 | Resultado e o mesmo para a mesma semente | Analítica Python | `test_recomendacao` | 1 | ✅ Passou |
 
 ## BI e índice de desempenho
 
@@ -413,7 +431,7 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 48 | Separa os itens nos quatro grupos da engenharia de cardápio | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
 | 49 | Trocar o período pede os relatórios de novo | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
 | 50 | Abaixo do mínimo, não mostra a nota | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 51 | Com avaliações, mostra a nota do próprio garçom e o peso dela | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 51 | Com avaliações, mostra a nota do próprio garçom | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
 | 52 | Mostra a posição do próprio garçom e o que entra no índice | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
 | 53 | Sem turnos no período, explica em vez de mostrar tela vazia | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
 | 54 | Inclui o dia de hoje em cada opção | Frontend Angular | `datas do período` | 1 | ✅ Passou |
@@ -488,48 +506,50 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 64 | Tentativa falha depois do bloqueio exige outros cinco erros | Backend .NET | `UsuarioTests` | 1 | ✅ Passou |
 | 65 | Tentativa falha durante o bloqueio nao empurra o fim | Backend .NET | `UsuarioTests` | 1 | ✅ Passou |
 | 66 | Tentativa falha quatro seguidas ainda nao bloqueia | Backend .NET | `UsuarioTests` | 1 | ✅ Passou |
-| 67 | Exibe o nome do sistema no cabeçalho | Frontend Angular | `App` | 1 | ✅ Passou |
-| 68 | O coordenador vê só o cardápio, onde ficam também as promoções | Frontend Angular | `App` | 1 | ✅ Passou |
-| 69 | O garçom vê só as telas dele | Frontend Angular | `App` | 1 | ✅ Passou |
-| 70 | O gerente vê a gestão, mas não a alocação do metre | Frontend Angular | `App` | 1 | ✅ Passou |
-| 71 | O metre vê a alocação e o salão, e não as telas do garçom | Frontend Angular | `App` | 1 | ✅ Passou |
-| 72 | Sem login, não mostra menu nem botão de sair | Frontend Angular | `App` | 1 | ✅ Passou |
-| 73 | Cadastra a conta com papel e senha inicial | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 74 | Erro da API aparece dentro do painel de cadastro | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 75 | Inativar pede confirmação e explica que o acesso cai na hora (RF18) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 76 | Lista os ativos por padrão e filtra pela situação | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 77 | Mostra a verificação em duas etapas só para quem usa (RF16) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 78 | Na própria conta não oferece inativar, senha nem zerar as duas etapas | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 79 | Reativar não pede confirmação: é ação sem perda | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 80 | Redefine a senha avisando que as sessões caem (#141) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 81 | Zerar as duas etapas só aparece para quem já configurou, e explica o efeito (RN07) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 82 | Com acesso liberado, vai para a tela inicial do papel | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 83 | Mostra a mensagem da API quando a senha está errada | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 84 | Não chama a API com o formulário vazio | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 85 | Não segue um "voltar" que aponta para fora do sistema | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 86 | Avisa que a chave aparece uma única vez (RN07) | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 87 | Desenha o QR code da URI otpauth no próprio navegador | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 88 | Erro ao gerar a chave aparece na tela em vez de deixar o cartão vazio | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 89 | Mantém a chave digitável como contingência de quem não consegue apontar a câmera | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 90 | Nos acessos seguintes pede só o código, sem chave nem QR | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 91 | Confirmar o segundo fator libera o acesso e descarta o token temporário | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 92 | Login do garçom libera o acesso direto e guarda nome, papel e validade | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 93 | Login do gerente no primeiro acesso pede a configuração do autenticador, sem liberar acesso | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 94 | Lê a validade do JWT em milissegundos e trata token malformado como vencido | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 95 | Restaura a sessão guardada ao recarregar a página | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 96 | Sair encerra a sessão no navegador mesmo se a API falhar | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 97 | Sessão guardada com token vencido é descartada | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 98 | 401 do próprio login (senha errada) não mexe na navegação | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 99 | 401 fora do login encerra a sessão e leva ao login | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 100 | Envia o token nas chamadas à API | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 101 | Nunca envia o token para outro endereço | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 102 | A raiz leva o Coordenador para /cardapio | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 103 | A raiz leva o Garcom para /comandas | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 104 | A raiz leva o Gerente para /analises | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 105 | A raiz leva o Metre para /alocacao | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 106 | Com o papel certo, deixa entrar | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 107 | Com outro papel, manda para sem permissão | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 108 | Sem login, manda para o login lembrando a tela pedida | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 67 | As telas dos outros papéis aparecem sem link, dizendo de quem são | Frontend Angular | `App` | 1 | ✅ Passou |
+| 68 | Exibe o nome do sistema no cabeçalho | Frontend Angular | `App` | 1 | ✅ Passou |
+| 69 | Mostra o rodapé em todas as páginas, com ou sem login | Frontend Angular | `App` | 1 | ✅ Passou |
+| 70 | O coordenador vê só o cardápio, onde ficam também as promoções | Frontend Angular | `App` | 1 | ✅ Passou |
+| 71 | O garçom vê só as telas dele | Frontend Angular | `App` | 1 | ✅ Passou |
+| 72 | O gerente vê a gestão e o salão agora, mas não a alocação do metre | Frontend Angular | `App` | 1 | ✅ Passou |
+| 73 | O metre vê a alocação e o salão, e não as telas do garçom | Frontend Angular | `App` | 1 | ✅ Passou |
+| 74 | Sem login, não mostra menu nem botão de sair | Frontend Angular | `App` | 1 | ✅ Passou |
+| 75 | Cadastra a conta com papel e senha inicial | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 76 | Erro da API aparece dentro do painel de cadastro | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 77 | Inativar pede confirmação e explica que o acesso cai na hora (RF18) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 78 | Lista os ativos por padrão e filtra pela situação | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 79 | Mostra a verificação em duas etapas só para quem usa (RF16) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 80 | Na própria conta não oferece inativar, senha nem zerar as duas etapas | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 81 | Reativar não pede confirmação: é ação sem perda | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 82 | Redefine a senha avisando que as sessões caem (#141) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 83 | Zerar as duas etapas só aparece para quem já configurou, e explica o efeito (RN07) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 84 | Com acesso liberado, vai para a tela inicial do papel | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 85 | Mostra a mensagem da API quando a senha está errada | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 86 | Não chama a API com o formulário vazio | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 87 | Não segue um "voltar" que aponta para fora do sistema | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 88 | Avisa que a chave aparece uma única vez (RN07) | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 89 | Desenha o QR code da URI otpauth no próprio navegador | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 90 | Erro ao gerar a chave aparece na tela em vez de deixar o cartão vazio | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 91 | Mantém a chave digitável como contingência de quem não consegue apontar a câmera | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 92 | Nos acessos seguintes pede só o código, sem chave nem QR | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 93 | Confirmar o segundo fator libera o acesso e descarta o token temporário | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 94 | Login do garçom libera o acesso direto e guarda nome, papel e validade | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 95 | Login do gerente no primeiro acesso pede a configuração do autenticador, sem liberar acesso | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 96 | Lê a validade do JWT em milissegundos e trata token malformado como vencido | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 97 | Restaura a sessão guardada ao recarregar a página | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 98 | Sair encerra a sessão no navegador mesmo se a API falhar | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 99 | Sessão guardada com token vencido é descartada | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 100 | 401 do próprio login (senha errada) não mexe na navegação | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 101 | 401 fora do login encerra a sessão e leva ao login | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 102 | Envia o token nas chamadas à API | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 103 | Nunca envia o token para outro endereço | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 104 | A raiz leva o Coordenador para /cardapio | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 105 | A raiz leva o Garcom para /comandas | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 106 | A raiz leva o Gerente para /analises | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 107 | A raiz leva o Metre para /alocacao | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 108 | Com o papel certo, deixa entrar | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 109 | Com outro papel, manda para sem permissão | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 110 | Sem login, manda para o login lembrando a tela pedida | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
 
 ## Banco de dados (views, triggers e restrições)
 
@@ -580,3 +600,7 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 7 | Health responde ok quando a api sobe | Backend .NET | `HealthCheckTests` | 1 | ✅ Passou |
 | 8 | Algoritmo nao importa fastapi | Analítica Python | `test_arquitetura` | 2 | ✅ Passou |
 | 9 | Health responde healthy | Analítica Python | `test_health` | 1 | ✅ Passou |
+| 10 | Com a versão antiga na aba, carrega a página de novo no endereço de destino | Frontend Angular | `recarregarSeVersaoMudou` | 1 | ✅ Passou |
+| 11 | Não entra em loop: se o arquivo continua faltando logo depois de recarregar, para | Frontend Angular | `recarregarSeVersaoMudou` | 1 | ✅ Passou |
+| 12 | Não recarrega por outros erros de navegação | Frontend Angular | `recarregarSeVersaoMudou` | 1 | ✅ Passou |
+| 13 | Reconhece o arquivo de tela que sumiu com a atualização (Chrome, Safari e Firefox) | Frontend Angular | `recarregarSeVersaoMudou` | 1 | ✅ Passou |

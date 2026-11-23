@@ -43,15 +43,15 @@ PAINEIS = {
 # vem na altura da tela, e o computador é cortado na altura da janela (900 px × 2).
 PAINEIS_REAIS = {
     "garcom-1": (4, [("garcom-mesas", "Mesas"), ("garcom-abrir-mesa", "Abrir mesa"),
-                     ("garcom-comanda", "Comanda e sugestões"), ("garcom-lancar-item", "Lançar item")]),
-    "garcom-2": (3, [("garcom-pendencias", "A entregar"), ("garcom-fechar", "Fechar conta"),
-                     ("garcom-desempenho", "Desempenho")]),
+                     ("garcom-comanda", "Comanda, cortesia e sugestões"), ("garcom-lancar-item", "Lançar item")]),
+    "garcom-2": (4, [("garcom-busca", "Busca no cardápio"), ("garcom-pendencias", "A entregar"),
+                     ("garcom-fechar", "Fechar conta"), ("garcom-desempenho", "Desempenho")]),
     "metre": (2, [("metre-presenca", "Presença"), ("metre-sugestao", "Sugestão de alocação"),
-                  ("metre-salao", "Salão agora")]),
+                  ("metre-salao", "Salão agora"), ("metre-cortesia", "Cortesia na mesa")]),
     "gerente": (2, [("gerente-analises", "Análises"), ("gerente-cardapio", "Cardápio"),
-                    ("gerente-salao", "Salão"), ("gerente-usuarios", "Usuários")]),
-    "cliente": (4, [("cliente-inicio", "Início"), ("cliente-cardapio", "Cardápio digital"),
-                    ("cliente-filtro", "Filtro sem glúten"), ("cliente-conta", "Conta")]),
+                    ("gerente-ajuste", "Ajuste de preço na mesa"), ("gerente-usuarios", "Usuários")]),
+    "cliente": (4, [("cliente-conta", "Conta"), ("cliente-cardapio", "Cardápio digital"),
+                    ("cliente-item", "Prato ampliado"), ("cliente-interesse", "Tenho interesse")]),
 }
 
 LARGURA_DO_PAINEL = 1600
