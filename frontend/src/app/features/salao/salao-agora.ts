@@ -1,9 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { GastraApiService } from '../../core/api/gastra-api.service';
-import { Comanda, ItemCardapio, ItemDoPedido, Mesa, Praca } from '../../core/api/modelos';
+import { Comanda, Destaque, ItemCardapio, ItemDoPedido, Mesa, Praca } from '../../core/api/modelos';
 import { SessaoService } from '../../core/sessao/sessao.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
@@ -44,6 +44,7 @@ export class SalaoAgora {
 
   protected readonly ehGerente = computed(() => this.sessao.usuario()?.papel === 'Gerente');
   protected readonly cardapio = signal<ItemCardapio[]>([]);
+  protected readonly destaques = signal<Destaque[]>([]);
   protected readonly lancandoCortesia = signal(false);
   /** Item comum lançado pelo Metre ou pelo Gerente: espera o garçom da mesa confirmar. */
   protected readonly lancandoItem = signal(false);
@@ -138,8 +139,15 @@ export class SalaoAgora {
     this.cortesiaMotivo = '';
     this.lancandoCortesia.set(true);
     if (!this.cardapio().length) {
-      this.api.listarCardapio().subscribe({
-        next: (itens) => this.cardapio.set(itens),
+      // Os destaques só colorem a lista: sem eles, o lançamento continua.
+      forkJoin({
+        itens: this.api.listarCardapio(),
+        destaques: this.api.listarDestaques().pipe(catchError(() => of([] as Destaque[]))),
+      }).subscribe({
+        next: ({ itens, destaques }) => {
+          this.cardapio.set(itens);
+          this.destaques.set(destaques);
+        },
         error: (erro: unknown) => this.errosDaFolha.set(mensagensDeErro(erro)),
       });
     }

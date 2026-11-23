@@ -75,6 +75,7 @@ describe('Salão agora (painel do Metre)', () => {
     http
       .expectOne(`${API}/api/cardapio`)
       .flush([itemCardapio({ id: 7, nome: 'Tortinha de aniversário', preco: 18, disponivel: false })]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
     await fixture.whenStable();
 
     // Fora de venda, a torta só pode sair como cortesia: na lista de cortesia o botão vem liberado.
@@ -113,6 +114,7 @@ describe('Salão agora (painel do Metre)', () => {
         itemCardapio({ id: 7, nome: 'Tortinha de aniversário', disponivel: false }),
         itemCardapio({ id: 8, nome: 'Moqueca de peixe', preco: 89 }),
       ]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
     await fixture.whenStable();
 
     // No lançamento comum, o que está fora de venda aparece, mas não pode ser escolhido.

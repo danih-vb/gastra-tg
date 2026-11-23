@@ -201,6 +201,7 @@
       </div>
       <app-escolher-item
         [itens]="cardapio()"
+        [destaques]="destaques()"
         [rotulo]="lancandoCortesia() ? 'Cortesia' : 'Lançar'"
         [icone]="lancandoCortesia() ? 'coracao' : 'mais'"
         [aceitarForaDeVenda]="lancandoCortesia()"
