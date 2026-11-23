@@ -41,6 +41,12 @@ describe('App', () => {
     expect(pagina.querySelector('.barra')?.textContent).toContain('GASTRA');
   });
 
+  it('mostra o rodapé em todas as páginas, com ou sem login', async () => {
+    const pagina = await renderizar(null);
+
+    expect(pagina.querySelector('footer.rodape')?.textContent).toContain('FATEC Araraquara');
+  });
+
   it('sem login, não mostra menu nem botão de sair', async () => {
     const pagina = await renderizar(null);
 
@@ -52,7 +58,9 @@ describe('App', () => {
     const pagina = await renderizar('Garcom');
 
     expect(itensDoMenu(pagina)).toEqual(['Comandas', 'A entregar', 'Desempenho']);
-    expect(pagina.querySelector('.barra')?.textContent).toContain('Ana · Garçom');
+    expect(pagina.querySelector('.barra .quem')?.textContent).toContain('Ana');
+    expect(pagina.querySelector('.barra .quem')?.textContent).toContain('Garçom');
+    expect(pagina.querySelector('.barra .avatar')?.textContent?.trim()).toBe('A');
   });
 
   it('o metre vê a alocação e o salão, e não as telas do garçom', async () => {

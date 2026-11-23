@@ -1,4 +1,8 @@
 :host {
+  /* Altura fixa da barra azul: o menu gruda logo abaixo dela. Com a altura solta (nome e papel em duas linhas),
+     a barra ficava mais alta que o ponto onde o menu gruda, e o menu cobria a base dela ao rolar. */
+  --altura-da-barra: 64px;
+
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -12,7 +16,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 56px;
+  box-sizing: border-box;
+  height: var(--altura-da-barra);
   padding: 8px 16px;
   color: #fff;
   background: var(--marinho);
@@ -21,11 +26,65 @@
     flex: 1;
     min-width: 0;
 
-    strong { display: block; font-size: 1.125rem; letter-spacing: 0.04em; }
-    span { font-size: 0.8125rem; color: #c9d3df; }
+    strong { display: block; font-size: 1.125rem; line-height: 1.4; letter-spacing: 0.04em; }
+
+    span {
+      display: block;
+      overflow: hidden;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      color: #c9d3df;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .conta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--marinho);
+    background: #fff;
+  }
+
+  .quem {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 200px;
+    text-align: right;
+
+    strong,
+    span {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    strong { font-size: 0.875rem; }
+    span { font-size: 0.75rem; color: #c9d3df; }
   }
 
   .sair { color: #fff; }
+}
+
+/* No celular a barra é estreita: fica o avatar e o botão de sair; o nome aparece a partir de 480 px. */
+@media (max-width: 479px) {
+  .barra .quem { display: none; }
 }
 
 main {
@@ -36,7 +95,19 @@ main {
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  padding: 16px 16px 96px;
+  padding: 16px;
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 16px;
+  padding: 16px;
+  font-size: 0.75rem;
+  color: var(--texto-suave);
+  text-align: center;
+  border-top: 1px solid var(--borda);
 }
 
 .menu {
@@ -76,7 +147,7 @@ main {
   .menu {
     order: -1;
     position: sticky;
-    top: 56px;
+    top: var(--altura-da-barra);
     grid-auto-flow: column;
     grid-auto-columns: max-content;
     justify-content: center;

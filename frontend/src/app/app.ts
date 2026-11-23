@@ -18,6 +18,14 @@ export class App {
 
   protected readonly usuario = this.sessao.usuario;
   protected readonly nomeDoPapel = NOME_DO_PAPEL;
+
+  /** "Carla Mendes" vira "CM", como o avatar de uma conta em rede social. */
+  protected readonly iniciais = computed(() => {
+    const partes = (this.usuario()?.nome ?? '').trim().split(/\s+/).filter(Boolean);
+    const primeira = partes[0]?.[0] ?? '';
+    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+    return (primeira + ultima).toUpperCase();
+  });
   protected readonly menu = computed(() => {
     const usuario = this.usuario();
     return usuario ? MENU.filter((item) => item.papeis.includes(usuario.papel)) : [];
