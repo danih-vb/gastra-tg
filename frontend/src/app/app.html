@@ -19,6 +19,11 @@
   <router-outlet />
 </main>
 
+<footer class="rodape">
+  <span><strong>GASTRA</strong> · Gestão Analítica de Restaurantes</span>
+  <span>FATEC Araraquara · Análise e Desenvolvimento de Sistemas · 2026</span>
+</footer>
+
 @if (usuario(); as usuarioLogado) {
   <nav class="menu" aria-label="Menu principal">
     @for (item of menu(); track item.rota) {

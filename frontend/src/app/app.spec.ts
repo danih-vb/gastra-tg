@@ -41,6 +41,12 @@ describe('App', () => {
     expect(pagina.querySelector('.barra')?.textContent).toContain('GASTRA');
   });
 
+  it('mostra o rodapé em todas as páginas, com ou sem login', async () => {
+    const pagina = await renderizar(null);
+
+    expect(pagina.querySelector('footer.rodape')?.textContent).toContain('FATEC Araraquara');
+  });
+
   it('sem login, não mostra menu nem botão de sair', async () => {
     const pagina = await renderizar(null);
 
