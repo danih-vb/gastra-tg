@@ -31,6 +31,8 @@ public static class EventoAuditoria
     public const string MesaEditada = "MESA_EDITADA";
     public const string PromocaoCriada = "PROMOCAO_CRIADA";
     public const string PromocaoRemovida = "PROMOCAO_REMOVIDA";
+    public const string DestaqueCriado = "DESTAQUE_CRIADO";
+    public const string DestaqueRemovido = "DESTAQUE_REMOVIDO";
 
     // 4.3 Comandas
     public const string ComandaAberta = "COMANDA_ABERTA";

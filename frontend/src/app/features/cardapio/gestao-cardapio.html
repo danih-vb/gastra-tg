@@ -5,7 +5,7 @@
   <div class="acoes">
     @if (aba() === 'itens') {
       <button class="botao" type="button" (click)="abrirNovoItem()"><app-icone nome="mais" /> Novo item</button>
-    } @else {
+    } @else if (aba() === 'promocoes') {
       <button class="botao" type="button" (click)="abrirNovaPromocao()"><app-icone nome="mais" /> Nova promoção</button>
     }
   </div>
@@ -17,6 +17,9 @@
   </button>
   <button type="button" role="tab" [attr.aria-selected]="aba() === 'promocoes'" (click)="aba.set('promocoes')">
     Promoções ({{ promocoes().length }})
+  </button>
+  <button type="button" role="tab" [attr.aria-selected]="aba() === 'destaques'" (click)="aba.set('destaques')">
+    Destaques ({{ destaques().length }})
   </button>
 </div>
 
@@ -120,6 +123,62 @@
       <div class="corpo suave vazio">Nenhum item encontrado{{ busca() ? ' para “' + busca() + '”' : '' }}.</div>
     }
   </section>
+} @else if (aba() === 'destaques') {
+  <section class="cartao pad">
+    <form class="novo-destaque" (ngSubmit)="criarDestaque()">
+      <div class="campo">
+        <label for="destaque-item">Item</label>
+        <select id="destaque-item" name="item" required [(ngModel)]="destaqueItemId">
+          <option [ngValue]="null" disabled>Escolha o item</option>
+          @for (item of itensEmOrdem(); track item.id) {
+            <option [ngValue]="item.id">{{ item.nome }}</option>
+          }
+        </select>
+      </div>
+      <div class="chips" role="radiogroup" aria-label="Tipo de destaque">
+        <button class="chip" type="button" role="radio" [attr.aria-checked]="destaqueTipo === 'DestaqueDoDia'" (click)="destaqueTipo = 'DestaqueDoDia'">
+          <app-icone nome="faisca" /> Destaque de hoje
+        </button>
+        <button class="chip" type="button" role="radio" [attr.aria-checked]="destaqueTipo === 'MetaDoMes'" (click)="destaqueTipo = 'MetaDoMes'">
+          <app-icone nome="trofeu" /> Meta deste mês
+        </button>
+      </div>
+      @if (destaqueTipo === 'MetaDoMes') {
+        <div class="campo">
+          <label for="destaque-meta">Unidades a vender</label>
+          <input id="destaque-meta" name="meta" type="number" min="1" max="10000" required [(ngModel)]="destaqueMeta" />
+        </div>
+      }
+      <button
+        class="botao"
+        type="submit"
+        [disabled]="salvando() || destaqueItemId === null || (destaqueTipo === 'MetaDoMes' && !destaqueMeta)"
+      >
+        <app-icone nome="mais" /> Criar
+      </button>
+    </form>
+  </section>
+
+  @if (destaques().length) {
+    <ul class="cartao lista">
+      @for (destaque of destaques(); track destaque.id) {
+        <li>
+          <div class="principal-item">
+            <strong>{{ destaque.nome }}</strong>
+            <span class="pequeno suave">
+              {{ destaque.dataInicio | date: 'dd/MM' }}{{ destaque.dataFim !== destaque.dataInicio ? ' a ' + (destaque.dataFim | date: 'dd/MM') : '' }}
+            </span>
+          </div>
+          <app-etiqueta-destaque [destaque]="destaque" />
+          <button class="botao compacto secundario" type="button" [disabled]="salvando()" (click)="removerDestaque(destaque)">Remover</button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="cartao pad vazio">
+      <h2>Nenhum destaque</h2>
+    </div>
+  }
 } @else {
   @if (promocoes().length) {
     <div class="promocoes">

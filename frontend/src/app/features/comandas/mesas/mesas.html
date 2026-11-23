@@ -37,6 +37,20 @@
     </div>
   </section>
 
+  @if (destaques().length) {
+    <section class="cartao destaques" aria-labelledby="t-destaques">
+      <header><h2 id="t-destaques">Destaques de hoje</h2></header>
+      <ul class="lista">
+        @for (destaque of destaques(); track destaque.id) {
+          <li>
+            <span class="principal-item"><strong>{{ destaque.nome }}</strong></span>
+            <app-etiqueta-destaque [destaque]="destaque" />
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
   @if (minhaPraca(); as praca) {
     <div class="chips" role="group" aria-label="Filtrar mesas">
       <button class="chip" type="button" [attr.aria-pressed]="filtro() === 'minha'" (click)="filtro.set('minha')">

@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { Comanda as ComandaDaApi, SugestoesDaComanda } from '../../../core/api/modelos';
+import { Comanda as ComandaDaApi, Destaque, SugestoesDaComanda } from '../../../core/api/modelos';
 import {
   API,
   comanda,
@@ -51,6 +51,7 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
   async function responder(
     dados: Partial<ComandaDaApi> = {},
     sugestoes: SugestoesDaComanda | 'falha' = SUGESTOES,
+    destaques: Destaque[] = [],
   ): Promise<void> {
     http.expectOne(`${API}/api/comandas/501`).flush(comanda({ itens: [itemDoPedido()], ...dados }));
     http
@@ -61,6 +62,7 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
         itemCardapio({ id: 3, nome: 'Parmegiana', categoria: 'PratoPrincipal', disponivel: false }),
       ]);
     http.expectOne(`${API}/api/mesas`).flush([mesa(10, '10')]);
+    http.expectOne(`${API}/api/destaques`).flush(destaques);
     const pedido = http.expectOne(`${API}/api/comandas/501/sugestoes`);
     if (sugestoes === 'falha') {
       pedido.flush(
@@ -221,6 +223,27 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
 
     expect(avisos.aviso()?.mensagem).toContain('entregue');
     expect(avisos.aviso()?.acao).toBeUndefined();
+  });
+
+  it('o item em destaque vem primeiro na lista de lançar, com a meta do mês', async () => {
+    const pagina = await renderizar();
+    await responder({}, SUGESTOES, [
+      {
+        id: 1,
+        itemCardapioId: 2,
+        nome: 'Caipirinha de limão',
+        tipo: 'MetaDoMes',
+        dataInicio: '2026-11-01',
+        dataFim: '2026-11-30',
+        meta: 40,
+        vendidos: 12,
+        vigenteHoje: true,
+      },
+    ]);
+
+    const primeiro = pagina.querySelector<HTMLElement>('[aria-labelledby="t-lancar"] .lista.cardapio li')!;
+    expect(texto(primeiro)).toContain('Caipirinha de limão');
+    expect(texto(primeiro)).toContain('Meta do mês · 12/40');
   });
 
   it('item lançado pelo Metre aparece para o garçom confirmar', async () => {

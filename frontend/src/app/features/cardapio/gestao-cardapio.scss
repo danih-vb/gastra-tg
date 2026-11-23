@@ -198,3 +198,9 @@ fieldset.campo {
   object-fit: cover;
   border-radius: 8px;
 }
+
+.novo-destaque {
+  display: grid;
+  gap: 12px;
+  max-width: 480px;
+}

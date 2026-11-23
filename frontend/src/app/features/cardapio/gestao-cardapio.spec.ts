@@ -62,6 +62,7 @@ describe('Gestão do cardápio (UC05–UC09)', () => {
   function responderLista(): void {
     http.expectOne(`${API}/api/cardapio`).flush(ITENS);
     http.expectOne(`${API}/api/promocoes`).flush([PROMOCAO]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
   }
 
   function botao(raiz: ParentNode, texto: string): HTMLButtonElement {

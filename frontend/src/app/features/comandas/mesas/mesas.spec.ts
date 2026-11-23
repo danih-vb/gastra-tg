@@ -35,6 +35,7 @@ describe('Mesas (UC10)', () => {
   function responder(opcoes: { alocado?: boolean } = {}): void {
     http.expectOne(`${API}/api/pracas`).flush([praca(1, 'A'), praca(2, 'B')]);
     http.expectOne(`${API}/api/mesas`).flush([mesa(1, '01', 1), mesa(2, '02', 1), mesa(9, '09', 2)]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
     http.expectOne(`${API}/api/comandas`).flush([
       comanda({ id: 501, mesaId: 1, garcomId: 11, itens: [itemDoPedido({ status: 'Pendente' })] }),
       comanda({ id: 502, mesaId: 2, garcomId: 12, garcomNome: 'João Pereira' }),
