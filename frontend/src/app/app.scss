@@ -39,7 +39,52 @@
     }
   }
 
+  .conta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--marinho);
+    background: #fff;
+  }
+
+  .quem {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 200px;
+    text-align: right;
+
+    strong,
+    span {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    strong { font-size: 0.875rem; }
+    span { font-size: 0.75rem; color: #c9d3df; }
+  }
+
   .sair { color: #fff; }
+}
+
+/* No celular a barra é estreita: fica o avatar e o botão de sair; o nome aparece a partir de 480 px. */
+@media (max-width: 479px) {
+  .barra .quem { display: none; }
 }
 
 main {
