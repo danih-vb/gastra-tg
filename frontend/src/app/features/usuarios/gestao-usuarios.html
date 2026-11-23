@@ -47,6 +47,7 @@
           @for (usuario of listados(); track usuario.id) {
             <tr [class.inativo]="!usuario.ativo">
               <td class="nome-conta">
+                <app-avatar [nome]="usuario.nome" [foto]="usuario.foto" />
                 <strong>
                   {{ usuario.nome }}
                   @if (usuario.id === meuId()) {
@@ -121,6 +122,18 @@
                 <div>{{ erro }}</div>
               }
             </div>
+          </div>
+        }
+        @if (usuarioEmFoco(); as conta) {
+          <div class="foto-da-conta">
+            <app-avatar class="grande" [nome]="conta.nome" [foto]="conta.foto" />
+            <label class="botao secundario compacto" for="conta-foto">
+              <app-icone nome="importar" /> {{ conta.foto ? 'Trocar foto' : 'Pôr foto' }}
+            </label>
+            <input id="conta-foto" class="sr" type="file" accept="image/jpeg,image/png,image/webp" (change)="trocarFoto($any($event.target))" />
+            @if (conta.foto) {
+              <button class="botao fantasma compacto" type="button" [disabled]="salvando()" (click)="tirarFoto()">Tirar foto</button>
+            }
           </div>
         }
         <div class="campo">

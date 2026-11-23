@@ -6,6 +6,7 @@ export interface RespostaDeLogin {
   tokenAcesso: string | null;
   nome: string | null;
   papel: Papel | null;
+  foto?: string | null;
   requerSegundoFator: boolean;
   requerConfiguracaoSegundoFator: boolean;
   tokenSegundoFator: string | null;
@@ -29,6 +30,8 @@ export interface UsuarioDaSessao {
   id: number;
   nome: string;
   papel: Papel;
+  /** Foto do crachá, quando o Gerente cadastrou uma. */
+  foto?: string | null;
   /** Instante, em milissegundos, em que o token deixa de valer. */
   expiraEm: number;
 }

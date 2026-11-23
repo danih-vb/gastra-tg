@@ -326,6 +326,8 @@ export interface Usuario {
   papel: Papel;
   ativo: boolean;
   segundoFatorConfigurado: boolean;
+  /** Foto do crachá, posta pelo Gerente. */
+  foto: string | null;
 }
 
 export interface NovoUsuario {

@@ -347,6 +347,11 @@ export class GastraApiService {
   }
 
   /** RF18 — inativar não apaga: a conta perde o acesso na hora e o histórico continua. */
+  /** Foto do crachá do funcionário: o endereço vem do envio de foto; nulo tira a foto. */
+  definirFotoDoUsuario(id: number, foto: string | null): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}/foto`, { foto });
+  }
+
   alterarSituacaoDoUsuario(id: number, ativo: boolean): Observable<void> {
     return this.http.patch<void>(`${this.api}/api/usuarios/${id}/situacao`, { ativo });
   }

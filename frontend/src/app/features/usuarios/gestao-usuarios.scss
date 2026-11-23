@@ -35,3 +35,21 @@
   flex-direction: column;
   gap: 14px;
 }
+
+.nome-conta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  align-items: center;
+
+  app-avatar { grid-row: span 2; }
+}
+
+.foto-da-conta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  .grande { --tamanho-avatar: 72px; font-size: 1.25rem; }
+}

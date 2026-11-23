@@ -18,10 +18,10 @@ function sessaoDoGerente(): Storage {
 }
 
 const CONTAS: Usuario[] = [
-  { id: 1, nome: 'Roberta Lima', email: 'roberta@gastra.test', papel: 'Gerente', ativo: true, segundoFatorConfigurado: true },
-  { id: 2, nome: 'Marcos Tavares', email: 'marcos@gastra.test', papel: 'Coordenador', ativo: true, segundoFatorConfigurado: true },
-  { id: 11, nome: 'Carla Mendes', email: 'carla@gastra.test', papel: 'Garcom', ativo: true, segundoFatorConfigurado: false },
-  { id: 19, nome: 'Paulo Henrique', email: 'paulo@gastra.test', papel: 'Garcom', ativo: false, segundoFatorConfigurado: false },
+  { id: 1, nome: 'Roberta Lima', email: 'roberta@gastra.test', papel: 'Gerente', ativo: true, segundoFatorConfigurado: true, foto: null },
+  { id: 2, nome: 'Marcos Tavares', email: 'marcos@gastra.test', papel: 'Coordenador', ativo: true, segundoFatorConfigurado: true, foto: null },
+  { id: 11, nome: 'Carla Mendes', email: 'carla@gastra.test', papel: 'Garcom', ativo: true, segundoFatorConfigurado: false, foto: null },
+  { id: 19, nome: 'Paulo Henrique', email: 'paulo@gastra.test', papel: 'Garcom', ativo: false, segundoFatorConfigurado: false, foto: null },
 ];
 
 describe('Gestão de usuários (UC04)', () => {
