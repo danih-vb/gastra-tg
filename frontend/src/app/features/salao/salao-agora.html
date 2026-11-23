@@ -83,6 +83,7 @@
   <app-folha
     [titulo]="'Mesa ' + numeroDaMesa(comanda.mesaId)"
     [subtitulo]="comanda.garcomNome + ' · ' + COMPOSICOES[comanda.composicao] + ', ' + comanda.quantidadePessoas + ' pessoas'"
+    [larga]="true"
     (fechar)="fecharComanda()"
   >
     @if (comanda.restricoes.length) {
@@ -96,6 +97,7 @@
         </div>
       </div>
     }
+    @if (!lancandoCortesia() && !lancandoItem() && !itemEmAjuste()) {
     <ul class="lista" style="margin-top: 8px">
       @for (item of comanda.itens; track item.id) {
         <li>
@@ -133,6 +135,7 @@
         <li class="suave">Nada lançado ainda.</li>
       }
     </ul>
+    }
 
     @if (errosDaFolha().length) {
       <div class="alerta erro" role="alert">
