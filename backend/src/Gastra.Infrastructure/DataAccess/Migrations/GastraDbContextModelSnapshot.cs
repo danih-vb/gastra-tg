@@ -572,6 +572,11 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasColumnType("varchar(150)")
                         .HasColumnName("email");
 
+                    b.Property<string>("Foto")
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)")
+                        .HasColumnName("foto");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)

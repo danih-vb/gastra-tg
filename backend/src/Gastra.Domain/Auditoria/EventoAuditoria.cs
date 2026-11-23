@@ -32,6 +32,7 @@ public static class EventoAuditoria
     public const string PromocaoCriada = "PROMOCAO_CRIADA";
     public const string PromocaoRemovida = "PROMOCAO_REMOVIDA";
     public const string DestaqueCriado = "DESTAQUE_CRIADO";
+    public const string FotoDoUsuarioAlterada = "FOTO_DO_USUARIO_ALTERADA";
     public const string DestaqueRemovido = "DESTAQUE_REMOVIDO";
 
     // 4.3 Comandas
