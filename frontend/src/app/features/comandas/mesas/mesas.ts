@@ -17,6 +17,7 @@ interface MesaNaTela {
   comanda: Comanda | null;
   minha: boolean;
   pendentes: number;
+  aConfirmar: number;
   minutos: number;
   chamando: boolean;
 }
@@ -97,6 +98,7 @@ export class Mesas implements OnDestroy {
           comanda,
           minha: comanda?.garcomId === meuId,
           pendentes: comanda?.itens.filter((i) => i.status === 'Pendente').length ?? 0,
+          aConfirmar: comanda?.itens.filter((i) => i.status === 'AConfirmar').length ?? 0,
           minutos: comanda ? minutosDesde(comanda.dataHoraAbertura, agora) : 0,
           chamando: Boolean(comanda?.atendimentoChamadoEm),
         };

@@ -95,4 +95,5 @@
   <data name="PrecoAjustadoInvalido" xml:space="preserve"><value>O preço deve ser de R$ 0,00 a R$ 99.999,99.</value></data>
   <data name="PrecoAjustadoIgualAoAtual" xml:space="preserve"><value>O preço novo é igual ao atual.</value></data>
   <data name="ItemCanceladoSemPreco" xml:space="preserve"><value>Um item cancelado não tem preço a alterar.</value></data>
+  <data name="ItemNaoEstaAConfirmar" xml:space="preserve"><value>Este item não está aguardando a confirmação do garçom.</value></data>
 </root>

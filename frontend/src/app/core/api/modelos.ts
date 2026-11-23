@@ -8,10 +8,11 @@ import { Papel } from '../sessao/modelos';
 export type CategoriaItemCardapio = 'Entrada' | 'PratoPrincipal' | 'Sobremesa' | 'Bebida';
 export type FlagDietetica = 'Vegano' | 'Vegetariano' | 'SemGluten' | 'SemLactose' | 'OpcaoInfantil';
 export type CategoriaRestricao = 'Vegano' | 'Vegetariano' | 'SemGluten' | 'SemLactose' | 'Alergia' | 'Outro';
-export type MotivoCancelamento = 'ErroDeLancamento' | 'ClienteDesistiu' | 'ItemEmFalta';
+export type MotivoCancelamento = 'ErroDeLancamento' | 'ClienteDesistiu' | 'ItemEmFalta' | 'RecusadoPeloGarcom';
 export type ComposicaoMesa = 'Solo' | 'Casal' | 'GrupoPequeno' | 'Familia' | 'GrupoGrande';
 export type StatusComanda = 'Aberta' | 'Fechada';
-export type StatusItemPedido = 'Pendente' | 'Entregue' | 'Cancelado';
+/** AConfirmar: lançado pelo Metre ou pelo Gerente, espera o garçom da mesa. */
+export type StatusItemPedido = 'Pendente' | 'Entregue' | 'Cancelado' | 'AConfirmar';
 export type PeriodoAlocacao = 'Almoco' | 'Jantar';
 
 export interface ItemCardapio {
@@ -50,6 +51,8 @@ export interface ItemDoPedido {
   valor: number;
   /** Cortesia do Metre ou do Gerente: entra por R$ 0,00. */
   cortesia: boolean;
+  /** 'Metre' ou 'Gerente' quando não foi o garçom da mesa que lançou. */
+  lancadoPor: 'Metre' | 'Gerente' | null;
   /** Preço antes da cortesia ou do ajuste do Gerente; nulo se nunca mudou. */
   precoOriginal: number | null;
   motivoDoAjuste: string | null;

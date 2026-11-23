@@ -99,6 +99,38 @@ describe('Salão agora (painel do Metre)', () => {
     expect(texto(pagina.querySelector('app-folha')!)).toContain('Cortesia · Aniversário');
   });
 
+  it('o metre lança um item comum, que vai para o garçom confirmar', async () => {
+    const pagina = await renderizar('Metre');
+    botao(pagina, 'Ver')!.click();
+    await fixture.whenStable();
+
+    botao(pagina, 'Lançar item')!.click();
+    http
+      .expectOne(`${API}/api/cardapio`)
+      .flush([
+        itemCardapio({ id: 7, nome: 'Tortinha de aniversário', disponivel: false }),
+        itemCardapio({ id: 8, nome: 'Moqueca de peixe', preco: 89 }),
+      ]);
+    await fixture.whenStable();
+
+    const lista = pagina.querySelector<HTMLSelectElement>('#lancar-item')!;
+    expect([...lista.options].map((o) => o.textContent)).not.toContain('Tortinha de aniversário · R$ 0,00');
+    lista.selectedIndex = 1;
+    lista.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    botao(pagina, 'Lançar para o garçom')!.click();
+
+    const pedido = http.expectOne(`${API}/api/comandas/501/itens`);
+    expect(pedido.request.body).toEqual({ itemCardapioId: 8, quantidade: 1 });
+    pedido.flush(itemDoPedido({ status: 'AConfirmar', lancadoPor: 'Metre' }));
+    http.expectOne(`${API}/api/comandas/501`).flush(
+      comanda({ id: 501, mesaId: 10, itens: [itemDoPedido({ nome: 'Moqueca de peixe', status: 'AConfirmar', lancadoPor: 'Metre' })] }),
+    );
+    await fixture.whenStable();
+
+    expect(texto(pagina.querySelector('app-folha')!)).toContain('A confirmar');
+  });
+
   it('o gerente altera o preço de um item da mesa, com motivo', async () => {
     const pagina = await renderizar('Gerente');
     botao(pagina, 'Ver')!.click();

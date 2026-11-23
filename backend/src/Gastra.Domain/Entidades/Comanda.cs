@@ -104,7 +104,9 @@ public class Comanda : EntidadeBase
 
     /// <summary>RF03: lança um item, copiando o preço vigente no cardápio.</summary>
     /// <param name="precoPromocional">Preço com promoção vigente (RF22). Nunca acima do preço do cardápio.</param>
-    public ItemDoPedido AdicionarItem(ItemDoCardapio item, int quantidade, decimal? precoPromocional = null)
+    /// <param name="lancadoPor">Metre ou Gerente: o item espera o garçom da mesa confirmar. Nulo quando é o garçom.</param>
+    public ItemDoPedido AdicionarItem(
+        ItemDoCardapio item, int quantidade, decimal? precoPromocional = null, PapelUsuario? lancadoPor = null)
     {
         GarantirAberta();
 
@@ -115,6 +117,8 @@ public class Comanda : EntidadeBase
             throw new ArgumentOutOfRangeException(nameof(precoPromocional), "O preço promocional precisa ser positivo e não maior que o do cardápio.");
 
         var pedido = new ItemDoPedido(item.Id, quantidade, precoPromocional ?? item.Preco);
+        if (lancadoPor is not null)
+            pedido.AguardarConfirmacaoDoGarcom(lancadoPor.Value);
         _itens.Add(pedido);
 
         // RN01: item infantil em mesa de 3 ou mais pessoas reclassifica a composição — a não ser que
@@ -187,7 +191,9 @@ public class Comanda : EntidadeBase
     }
 
     /// <summary>RN02: itens ainda pendentes impedem o fechamento e ficam visíveis como lembrete.</summary>
-    public bool PossuiPendencias() => _itens.Any(i => i.Status == StatusItemPedido.Pendente);
+    /// <summary>RN02: item a entregar ou à espera da confirmação do garçom impede o fechamento.</summary>
+    public bool PossuiPendencias() =>
+        _itens.Any(i => i.Status is StatusItemPedido.Pendente or StatusItemPedido.AConfirmar);
 
     public decimal CalcularSubtotal() => _itens.Sum(i => i.CalcularValor());
 

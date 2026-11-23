@@ -251,6 +251,11 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasColumnName("item_cardapio_id");
 
+                    b.Property<string>("LancadoPor")
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)")
+                        .HasColumnName("lancado_por");
+
                     b.Property<string>("MotivoCancelamento")
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)")

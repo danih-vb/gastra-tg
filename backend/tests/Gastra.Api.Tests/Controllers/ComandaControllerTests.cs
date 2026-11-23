@@ -255,6 +255,89 @@ public class ComandaControllerTests(GastraApiFactory factory) : IClassFixture<Ga
         Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
     }
 
+    // --- Lançamento pelo Metre ou pelo Gerente, com confirmação do garçom ---
+
+    private async Task<ItemPedidoResponse> LancarComo(HttpClient cliente, int comandaId, int itemId)
+    {
+        var resposta = await cliente.PostAsJsonAsync($"{Rota}/{comandaId}/itens",
+            new { itemCardapioId = itemId, quantidade = 1 }, Json);
+        Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
+        return (await resposta.Content.ReadFromJsonAsync<ItemPedidoResponse>(Json))!;
+    }
+
+    [Fact]
+    public async Task LancadoPeloMetre_EsperaOGarcom_ForaDaContaEDoCliente()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarComo(await ClienteMetre(), comanda.Id, await factory.CriarItemCardapio(preco: 40m));
+
+        Assert.Equal(StatusItemPedido.AConfirmar, item.Status);
+        Assert.Equal("Metre", item.LancadoPor);
+        Assert.Equal(0m, (await Obter(comanda.Id)).Subtotal);
+
+        var conta = await factory.CreateClient().GetFromJsonAsync<ComandaClienteResponse>(
+            $"{Rota}/consulta/{comanda.CodigoAcessoCliente}", Json);
+        Assert.Empty(conta!.Itens);
+
+        var fechar = await _cliente.PostAsync($"{Rota}/{comanda.Id}/fechamento", null);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, fechar.StatusCode);
+    }
+
+    [Fact]
+    public async Task GarcomConfirma_ItemLancadoPeloGerente_EntraNaConta()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarComo(await ClienteGerente(), comanda.Id, await factory.CriarItemCardapio(preco: 40m));
+
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/confirmacao",
+            new { aceitar = true }, Json);
+
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
+        var atualizada = await Obter(comanda.Id);
+        Assert.Equal(StatusItemPedido.Pendente, Assert.Single(atualizada.Itens).Status);
+        Assert.Equal(40m, atualizada.Subtotal);
+    }
+
+    [Fact]
+    public async Task GarcomRecusa_ItemSaiComMotivo()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarComo(await ClienteMetre(), comanda.Id, await factory.CriarItemCardapio());
+
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/confirmacao",
+            new { aceitar = false }, Json);
+
+        Assert.Equal(HttpStatusCode.NoContent, resposta.StatusCode);
+        var recusado = Assert.Single((await Obter(comanda.Id)).Itens);
+        Assert.Equal(StatusItemPedido.Cancelado, recusado.Status);
+        Assert.Equal(MotivoCancelamento.RecusadoPeloGarcom, recusado.MotivoCancelamento);
+    }
+
+    [Fact]
+    public async Task Confirmacao_DeItemDoProprioGarcom_Retorna422()
+    {
+        var comanda = await AbrirComanda();
+        var item = await LancarItem(comanda.Id, await factory.CriarItemCardapio());
+
+        var resposta = await _cliente.PostAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/confirmacao",
+            new { aceitar = true }, Json);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+    }
+
+    [Fact]
+    public async Task Confirmacao_PeloMetre_Retorna403()
+    {
+        var comanda = await AbrirComanda();
+        var metre = await ClienteMetre();
+        var item = await LancarComo(metre, comanda.Id, await factory.CriarItemCardapio());
+
+        var resposta = await metre.PostAsJsonAsync($"{Rota}/{comanda.Id}/itens/{item.Id}/confirmacao",
+            new { aceitar = true }, Json);
+
+        Assert.Equal(HttpStatusCode.Forbidden, resposta.StatusCode);
+    }
+
     // --- UC23 e RN02: situação do item ---
 
     [Fact]

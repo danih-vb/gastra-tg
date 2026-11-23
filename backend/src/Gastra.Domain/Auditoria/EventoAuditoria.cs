@@ -38,6 +38,8 @@ public static class EventoAuditoria
     public const string ItemRegistrado = "ITEM_REGISTRADO";
     public const string ItemCancelado = "ITEM_CANCELADO";
     public const string CortesiaLancada = "CORTESIA_LANCADA";
+    public const string ItemConfirmadoPeloGarcom = "ITEM_CONFIRMADO_PELO_GARCOM";
+    public const string ItemRecusadoPeloGarcom = "ITEM_RECUSADO_PELO_GARCOM";
     public const string PrecoDoItemAlterado = "PRECO_DO_ITEM_ALTERADO";
     public const string RestricaoRegistrada = "RESTRICAO_REGISTRADA";
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";

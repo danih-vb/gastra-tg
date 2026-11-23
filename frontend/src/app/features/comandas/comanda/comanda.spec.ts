@@ -223,6 +223,23 @@ describe('Comanda (UC12, UC13, UC18, UC23)', () => {
     expect(avisos.aviso()?.acao).toBeUndefined();
   });
 
+  it('item lançado pelo Metre aparece para o garçom confirmar', async () => {
+    const pagina = await renderizar();
+    await responder({ itens: [itemDoPedido({ nome: 'Pudim de leite', status: 'AConfirmar', lancadoPor: 'Metre' })] });
+
+    const secao = pagina.querySelector<HTMLElement>('.a-confirmar')!;
+    expect(texto(secao)).toContain('Pudim de leite');
+    expect(texto(secao)).toContain('lançado pelo Metre');
+
+    [...secao.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Confirmar'))!.click();
+    const requisicao = http.expectOne(`${API}/api/comandas/501/itens/90/confirmacao`);
+    expect(requisicao.request.body).toEqual({ aceitar: true });
+    requisicao.flush(null);
+    await responderRecarga({ itens: [itemDoPedido({ nome: 'Pudim de leite', status: 'Pendente' })] });
+
+    expect(pagina.querySelector('.a-confirmar')).toBeNull();
+  });
+
   it('cancelar só libera depois de escolher o motivo (RN02)', async () => {
     const pagina = await renderizar();
     await responder();

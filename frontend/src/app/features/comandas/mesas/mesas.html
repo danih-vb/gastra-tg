@@ -78,6 +78,8 @@
           >
             @if (linha.chamando) {
               <span class="etiqueta erro chamando"><app-icone nome="sino" /> Chamando</span>
+            } @else if (linha.minha && linha.aConfirmar) {
+              <span class="etiqueta aviso pendentes">{{ linha.aConfirmar }} a confirmar</span>
             } @else if (linha.minha && linha.pendentes) {
               <span class="etiqueta aviso pendentes">{{ linha.pendentes }} a entregar</span>
             }

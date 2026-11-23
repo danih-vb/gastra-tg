@@ -74,6 +74,34 @@
     </section>
   }
 
+  @if (aConfirmar().length) {
+    <section class="cartao a-confirmar" aria-labelledby="t-a-confirmar">
+      <header>
+        <h2 id="t-a-confirmar">Para confirmar</h2>
+        <span class="etiqueta aviso">{{ aConfirmar().length }}</span>
+      </header>
+      <ul class="lista">
+        @for (item of aConfirmar(); track item.id) {
+          <li class="linha-item">
+            <span class="qtd">{{ item.quantidade }}×</span>
+            <span class="nome">
+              <strong>{{ item.nome }}</strong>
+              <small>lançado {{ item.lancadoPor === 'Gerente' ? 'pelo Gerente' : 'pelo Metre' }}</small>
+            </span>
+            <span class="acoes-item">
+              <button class="botao secundario compacto" type="button" [disabled]="salvando()" (click)="responderLancamento(item, false)">
+                Recusar
+              </button>
+              <button class="botao compacto" type="button" [disabled]="salvando()" (click)="responderLancamento(item, true)">
+                <app-icone nome="check" /> Confirmar
+              </button>
+            </span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
   <section class="cartao" aria-labelledby="t-pendentes">
     <header>
       <h2 id="t-pendentes">A entregar</h2>

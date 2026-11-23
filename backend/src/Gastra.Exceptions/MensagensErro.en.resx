@@ -95,4 +95,5 @@
   <data name="PrecoAjustadoInvalido" xml:space="preserve"><value>The price must be from 0.00 to 99,999.99.</value></data>
   <data name="PrecoAjustadoIgualAoAtual" xml:space="preserve"><value>The new price is the same as the current one.</value></data>
   <data name="ItemCanceladoSemPreco" xml:space="preserve"><value>A canceled item has no price to change.</value></data>
+  <data name="ItemNaoEstaAConfirmar" xml:space="preserve"><value>This item is not waiting for the waiter's confirmation.</value></data>
 </root>

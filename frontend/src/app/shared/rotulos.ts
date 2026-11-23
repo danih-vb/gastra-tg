@@ -46,6 +46,7 @@ export const MOTIVOS: Record<MotivoCancelamento, string> = {
   ErroDeLancamento: 'Erro de lançamento',
   ClienteDesistiu: 'Cliente desistiu',
   ItemEmFalta: 'Item em falta',
+  RecusadoPeloGarcom: 'Recusado pelo garçom',
 };
 
 export const PAPEIS: Record<Papel, string> = {

@@ -5,4 +5,5 @@ public enum MotivoCancelamento
     ErroDeLancamento,
     ClienteDesistiu,
     ItemEmFalta,
+    RecusadoPeloGarcom,
 }

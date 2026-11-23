@@ -192,6 +192,55 @@ public class ComandaTests
         Assert.Throws<InvalidOperationException>(() => comanda.AlterarPrecoDoItem(pedido.Id, 10m, "Teste"));
     }
 
+    // --- Lançamento pelo Metre ou pelo Gerente, com confirmação do garçom ---
+
+    [Fact]
+    public void LancadoPeloMetre_EsperaOGarcom_ForaDaConta_EImpedeOFechamento()
+    {
+        var comanda = AbrirComanda();
+
+        var pedido = comanda.AdicionarItem(Item(50m), 2, lancadoPor: PapelUsuario.Metre);
+
+        Assert.Equal(StatusItemPedido.AConfirmar, pedido.Status);
+        Assert.Equal(PapelUsuario.Metre, pedido.LancadoPor);
+        Assert.Equal(0m, comanda.CalcularSubtotal());
+        Assert.True(comanda.PossuiPendencias());
+    }
+
+    [Fact]
+    public void GarcomConfirma_ItemEntraNaContaComoPendente()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 2, lancadoPor: PapelUsuario.Gerente);
+
+        pedido.ConfirmarPeloGarcom();
+
+        Assert.Equal(StatusItemPedido.Pendente, pedido.Status);
+        Assert.Equal(100m, comanda.CalcularSubtotal());
+    }
+
+    [Fact]
+    public void GarcomRecusa_ItemSaiDaContaComOMotivo()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 1, lancadoPor: PapelUsuario.Metre);
+
+        pedido.RecusarPeloGarcom();
+
+        Assert.Equal(StatusItemPedido.Cancelado, pedido.Status);
+        Assert.Equal(MotivoCancelamento.RecusadoPeloGarcom, pedido.MotivoCancelamento);
+        Assert.False(comanda.PossuiPendencias());
+    }
+
+    [Fact]
+    public void ConfirmarItemQueNaoEsperaOGarcom_LancaExcecao()
+    {
+        var pedido = AbrirComanda().AdicionarItem(Item(50m), 1);
+
+        Assert.Throws<InvalidOperationException>(() => pedido.ConfirmarPeloGarcom());
+        Assert.Throws<InvalidOperationException>(() => pedido.RecusarPeloGarcom());
+    }
+
     // --- RF04: taxa de serviço ---
 
     [Fact]
