@@ -18,6 +18,7 @@ import {
   CategoriaItemCardapio,
   CategoriaRestricao,
   Comanda as ComandaDaApi,
+  Destaque,
   ItemCardapio,
   ItemDoPedido,
   Mesa,
@@ -27,6 +28,7 @@ import {
 import { AvisoService } from '../../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Folha } from '../../../shared/folha/folha';
+import { EtiquetaDestaque } from '../../../shared/destaque/etiqueta-destaque';
 import { Icone } from '../../../shared/icone/icone';
 import {
   CATEGORIAS,
@@ -45,7 +47,7 @@ import {
 @Component({
   selector: 'app-comanda',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, FormsModule, RouterLink, Folha, Icone],
+  imports: [CurrencyPipe, FormsModule, RouterLink, Folha, Icone, EtiquetaDestaque],
   templateUrl: './comanda.html',
   styleUrl: './comanda.scss',
 })
@@ -109,17 +111,29 @@ export class Comanda implements OnInit {
   protected readonly aConfirmar = computed(
     () => this.comanda()?.itens.filter((i) => i.status === 'AConfirmar') ?? [],
   );
+  protected readonly destaques = signal<Destaque[]>([]);
+  /** Só o que vale hoje: o destaque de outro dia não muda a lista do garçom. */
+  protected readonly destaquePorItem = computed(
+    () => new Map(this.destaques().filter((d) => d.vigenteHoje).map((d) => [d.itemCardapioId, d])),
+  );
   protected readonly busca = signal('');
   /** Com algo digitado, a busca vale para o cardápio inteiro, pelo nome ou pela restrição ("sem glúten"). */
   protected readonly itensDaCategoria = computed(() => {
     const termo = semAcento(this.busca().trim());
     if (!termo) {
       const categoria = this.categoria();
+      const destacados = this.destaquePorItem();
+      const primeiroOsDestaques = (a: ItemCardapio, b: ItemCardapio) =>
+        Number(destacados.has(b.id)) - Number(destacados.has(a.id));
       if (categoria === null) {
         const ordem = CATEGORIAS.map((c) => c.chave);
-        return [...this.cardapio()].sort((a, b) => ordem.indexOf(a.categoria) - ordem.indexOf(b.categoria));
+        return [...this.cardapio()].sort(
+          (a, b) => primeiroOsDestaques(a, b) || ordem.indexOf(a.categoria) - ordem.indexOf(b.categoria),
+        );
       }
-      return this.cardapio().filter((i) => i.categoria === categoria);
+      return this.cardapio()
+        .filter((i) => i.categoria === categoria)
+        .sort(primeiroOsDestaques);
     }
     return this.cardapio().filter((i) =>
       semAcento([i.nome, ...i.flagsDieteticas.map((f) => FLAGS[f])].join(' ')).includes(termo),
@@ -296,6 +310,8 @@ export class Comanda implements OnInit {
       comanda: this.api.obterComanda(id),
       cardapio: this.api.listarCardapio(),
       mesas: this.api.listarMesas(),
+      // Sem os destaques a comanda funciona igual: a lista só perde as cores.
+      destaques: this.api.listarDestaques().pipe(catchError(() => of([] as Destaque[]))),
       // D3: sem o serviço de análise, o atendimento continua; só as sugestões somem.
       sugestoes: this.api
         .obterSugestoes(id)
@@ -310,7 +326,8 @@ export class Comanda implements OnInit {
           ),
         ),
     }).subscribe({
-      next: ({ comanda, cardapio, mesas, sugestoes }) => {
+      next: ({ comanda, cardapio, mesas, destaques, sugestoes }) => {
+        this.destaques.set(destaques);
         this.comanda.set(comanda);
         this.desenharQrCode(comanda.codigoAcessoCliente);
         this.cardapio.set(cardapio);

@@ -334,3 +334,19 @@ export interface NovoUsuario {
   senha: string;
   papel: Papel;
 }
+
+/** Destaque do dia: o item aparece primeiro e colorido para o garçom. Meta do mês: com quantidade a vender. */
+export type TipoDestaque = 'DestaqueDoDia' | 'MetaDoMes';
+
+export interface Destaque {
+  id: number;
+  itemCardapioId: number;
+  nome: string;
+  tipo: TipoDestaque;
+  dataInicio: string;
+  dataFim: string;
+  meta: number | null;
+  /** Unidades vendidas pela equipe no período, sem cortesias e sem cancelados. */
+  vendidos: number;
+  vigenteHoje: boolean;
+}

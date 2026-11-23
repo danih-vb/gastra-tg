@@ -8,6 +8,7 @@ import {
   CategoriaRestricao,
   Comanda,
   ComandaDoCliente,
+  Destaque,
   GarcomDoTurno,
   ItemCardapio,
   ItemDoPedido,
@@ -30,6 +31,7 @@ import {
   RelatorioHorarios,
   RelatorioPracas,
   SugestoesDaComanda,
+  TipoDestaque,
   Usuario,
 } from './modelos';
 
@@ -112,6 +114,19 @@ export class GastraApiService {
   }
 
   /** UC23 — marca o item como entregue ou cancela com motivo da lista fechada (RN02). */
+  /** Destaques do dia e metas do mês, de hoje em diante, com quanto a equipe já vendeu. */
+  listarDestaques(): Observable<Destaque[]> {
+    return this.http.get<Destaque[]>(`${this.api}/api/destaques`);
+  }
+
+  criarDestaque(itemCardapioId: number, tipo: TipoDestaque, meta: number | null): Observable<Destaque> {
+    return this.http.post<Destaque>(`${this.api}/api/destaques`, { itemCardapioId, tipo, meta });
+  }
+
+  removerDestaque(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/destaques/${id}`);
+  }
+
   /** O garçom confirma ou recusa um item lançado pelo Metre ou pelo Gerente na mesa dele. */
   confirmarItem(comandaId: number, itemId: number, aceitar: boolean): Observable<void> {
     return this.http.post<void>(`${this.api}/api/comandas/${comandaId}/itens/${itemId}/confirmacao`, { aceitar });

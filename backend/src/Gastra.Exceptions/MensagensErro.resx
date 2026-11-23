@@ -96,4 +96,9 @@
   <data name="PrecoAjustadoIgualAoAtual" xml:space="preserve"><value>O preço novo é igual ao atual.</value></data>
   <data name="ItemCanceladoSemPreco" xml:space="preserve"><value>Um item cancelado não tem preço a alterar.</value></data>
   <data name="ItemNaoEstaAConfirmar" xml:space="preserve"><value>Este item não está aguardando a confirmação do garçom.</value></data>
+  <data name="TipoDestaqueInvalido" xml:space="preserve"><value>Escolha destaque do dia ou meta do mês.</value></data>
+  <data name="MetaDestaqueInvalida" xml:space="preserve"><value>A meta deve ser de 1 a 10.000 unidades.</value></data>
+  <data name="DestaqueNoPassado" xml:space="preserve"><value>Escolha hoje ou um dia futuro.</value></data>
+  <data name="DestaqueRepetido" xml:space="preserve"><value>Este item já tem esse destaque no mesmo período.</value></data>
+  <data name="DestaqueNaoEncontrado" xml:space="preserve"><value>Destaque não encontrado.</value></data>
 </root>

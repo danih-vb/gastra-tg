@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal
 import { Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
-import { AlocacaoDoTurno, Comanda, Mesa, Praca } from '../../../core/api/modelos';
+import { AlocacaoDoTurno, Comanda, Destaque, Mesa, Praca } from '../../../core/api/modelos';
+import { EtiquetaDestaque } from '../../../shared/destaque/etiqueta-destaque';
 import { SessaoService } from '../../../core/sessao/sessao.service';
 import { AvisoService } from '../../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../../shared/erros';
@@ -26,7 +27,7 @@ interface MesaNaTela {
 @Component({
   selector: 'app-mesas',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, Folha, Icone],
+  imports: [CurrencyPipe, Folha, Icone, EtiquetaDestaque],
   templateUrl: './mesas.html',
   styleUrl: './mesas.scss',
 })
@@ -74,6 +75,9 @@ export class Mesas implements OnDestroy {
   );
 
   protected readonly emConsumo = computed(() => this.minhasComandas().reduce((total, c) => total + c.subtotal, 0));
+
+  /** O que a casa quer vender hoje e no mês, com o quanto a equipe já vendeu. */
+  protected readonly destaques = signal<Destaque[]>([]);
 
   // O garçom precisa ver quem está chamando sem recarregar a tela.
   private readonly relogio = setInterval(() => this.carregar(true), 15_000);
@@ -154,12 +158,14 @@ export class Mesas implements OnDestroy {
       pracas: this.api.listarPracas(),
       mesas: this.api.listarMesas(),
       comandas: this.api.listarComandasAbertas(),
+      destaques: this.api.listarDestaques().pipe(catchError(() => of([] as Destaque[]))),
       // Sem alocação confirmada para o turno a API responde 404: o salão continua utilizável, só sem "minha praça".
       alocacao: this.api
         .obterAlocacao(dataDeHoje(), this.periodo)
         .pipe(catchError(() => of(null as AlocacaoDoTurno | null))),
     }).subscribe({
-      next: ({ pracas, mesas, comandas, alocacao }) => {
+      next: ({ pracas, mesas, comandas, destaques, alocacao }) => {
+        this.destaques.set(destaques.filter((d) => d.vigenteHoje));
         this.pracas.set(pracas);
         this.mesas.set(mesas);
         this.comandas.set(comandas);

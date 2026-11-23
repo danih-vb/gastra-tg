@@ -247,6 +247,9 @@
         <li [attr.aria-disabled]="item.disponivel ? null : 'true'">
           <div class="principal-item">
             <strong>{{ item.nome }}</strong>
+            @if (destaquePorItem().get(item.id); as destaque) {
+              <app-etiqueta-destaque [destaque]="destaque" />
+            }
             <span class="pequeno suave">
               @if (item.disponivel) {
                 @for (flag of item.flagsDieteticas; track flag) {

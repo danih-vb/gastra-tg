@@ -176,6 +176,49 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Gastra.Domain.Entidades.DestaqueDoCardapio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("DataFim")
+                        .HasColumnType("date")
+                        .HasColumnName("data_fim");
+
+                    b.Property<DateOnly>("DataInicio")
+                        .HasColumnType("date")
+                        .HasColumnName("data_inicio");
+
+                    b.Property<int>("ItemDoCardapioId")
+                        .HasColumnType("int")
+                        .HasColumnName("item_cardapio_id");
+
+                    b.Property<int?>("Meta")
+                        .HasColumnType("int")
+                        .HasColumnName("meta");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("tipo");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataFim");
+
+                    b.HasIndex("ItemDoCardapioId");
+
+                    b.ToTable("destaque_cardapio", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_destaque_cardapio_periodo_e_meta", "data_fim >= data_inicio AND ((tipo = 'MetaDoMes' AND meta > 0) OR (tipo = 'DestaqueDoDia' AND meta IS NULL))");
+                        });
+                });
+
             modelBuilder.Entity("Gastra.Domain.Entidades.ItemDoCardapio", b =>
                 {
                     b.Property<int>("Id")
@@ -599,6 +642,15 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                     b.HasOne("Gastra.Domain.Entidades.Mesa", null)
                         .WithMany()
                         .HasForeignKey("MesaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Gastra.Domain.Entidades.DestaqueDoCardapio", b =>
+                {
+                    b.HasOne("Gastra.Domain.Entidades.ItemDoCardapio", null)
+                        .WithMany()
+                        .HasForeignKey("ItemDoCardapioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
