@@ -40,3 +40,20 @@ python docs/pesquisa/capitulos/gerar_guia_de_insercao.py
 Um script leva o texto aprovado para o `Gastra II.docx`, com os estilos do documento (Título 2 e 3, legenda com
 numeração automática, fonte abaixo) e as imagens. É feito uma vez, com os três capítulos aprovados, para não
 haver duas versões do mesmo texto sendo editadas ao mesmo tempo.
+
+## Fase final: o `.docx` passou a ser a fonte
+
+Desde 21/11/2026 o texto é ajustado direto no `Gastra II.docx`, por scripts que trocam trechos exatos e podem rodar
+de novo sem duplicar nada. Os capítulos em Markdown desta pasta ficaram como registro da revisão e **não** têm essas
+mudanças: rodar `levar_para_docx.py`, `inserir_capitulo_5.py` ou `inserir_capitulo_6.py` agora apagaria o que veio
+depois.
+
+| Script | O que faz |
+|---|---|
+| `registrar_cortesia.py` | RF26, UC26 e US25 (cortesia e ajuste de preço) |
+| `registrar_fase_final.py` | RF27 a RF29, UC27 a UC29, US26 a US28, figuras da 5.1, Tabela 2 de 23/11 |
+| `registrar_entrega_final.py` | menção honrosa, RF30 (QR codes das mesas), app no celular, Tabela 2 lida do relatório de testes |
+| `revisar_travessoes.py` | revisão de estilo: travessões do texto corrido trocados por vírgula, parênteses ou dois-pontos |
+| `inserir_apendice_a.py` | Apêndice A, o manual do usuário, com as capturas reais no lugar das telas do protótipo |
+
+Depois de qualquer um deles, no Word: Ctrl+A e F9, e exportar o PDF.
