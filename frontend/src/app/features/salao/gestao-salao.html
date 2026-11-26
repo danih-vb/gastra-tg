@@ -3,6 +3,7 @@
     <h1>Salão</h1>
   </div>
   <div class="acoes">
+    <a class="botao secundario" routerLink="/salao/qr-codes"><app-icone nome="qr" /> QR codes</a>
     <button class="botao secundario" type="button" (click)="abrirPraca(null)"><app-icone nome="mais" /> Nova praça</button>
     <button class="botao" type="button" [disabled]="!pracas().length" (click)="abrirMesa(null)">
       <app-icone nome="mais" /> Nova mesa

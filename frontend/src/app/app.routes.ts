@@ -84,6 +84,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/salao/gestao-salao').then((m) => m.GestaoSalao),
   },
   {
+    path: 'salao/qr-codes',
+    title: 'QR codes das mesas — GASTRA',
+    canActivate: [exigePapel('Gerente')],
+    loadComponent: () => import('./features/salao/qr-das-mesas').then((m) => m.QrDasMesas),
+  },
+  {
     path: 'usuarios',
     title: 'Usuários — GASTRA',
     canActivate: [exigePapel('Gerente')],

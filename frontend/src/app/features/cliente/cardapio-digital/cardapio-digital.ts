@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GastraApiService } from '../../../core/api/gastra-api.service';
 import { FlagDietetica, ItemCardapio } from '../../../core/api/modelos';
@@ -42,6 +42,9 @@ function lerCodigoDaMesa(): string | null {
 })
 export class CardapioDigital {
   private readonly api = inject(GastraApiService);
+
+  /** Número da mesa, quando o cliente chega pelo QR impresso na mesa (?mesa=12). */
+  readonly mesa = input<string>();
 
   protected readonly carregando = signal(true);
   protected readonly erros = signal<string[]>([]);

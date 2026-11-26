@@ -2,6 +2,9 @@
   <a class="botao-icone" routerLink="/cliente" aria-label="Voltar"><app-icone nome="voltar" /></a>
   <div>
     <h1>Cardápio</h1>
+    @if (mesa()) {
+      <div class="sub">Mesa {{ mesa() }}</div>
+    }
   </div>
 </header>
 

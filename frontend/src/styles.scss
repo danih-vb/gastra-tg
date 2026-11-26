@@ -502,3 +502,23 @@ app-conta-do-cliente {
   padding: 24px 16px;
   color: var(--texto-suave);
 }
+
+/* Impressão (folha de QR codes): sem barra, menu, rodapé e avisos. */
+@media print {
+  app-root > .barra,
+  app-root > .menu,
+  app-root > .rodape,
+  app-avisos {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  app-root > main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+}
