@@ -11,4 +11,5 @@ public class UsuarioResponse
     public PapelUsuario Papel { get; set; }
     public bool Ativo { get; set; }
     public bool SegundoFatorConfigurado { get; set; }
+    public string? Foto { get; set; }
 }

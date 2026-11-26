@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { MENU, NOME_DO_PAPEL } from './core/navegacao';
 import { Avisos } from './shared/aviso/avisos';
 import { Icone } from './shared/icone/icone';
+import { Avatar } from './shared/avatar/avatar';
 import { SessaoService } from './core/sessao/sessao.service';
 
 /** Casca da aplicação: cabeçalho, menu conforme o papel e área das telas. */
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Avisos, Icone],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Avisos, Icone, Avatar],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
@@ -19,13 +20,6 @@ export class App {
   protected readonly usuario = this.sessao.usuario;
   protected readonly nomeDoPapel = NOME_DO_PAPEL;
 
-  /** "Carla Mendes" vira "CM", como o avatar de uma conta em rede social. */
-  protected readonly iniciais = computed(() => {
-    const partes = (this.usuario()?.nome ?? '').trim().split(/\s+/).filter(Boolean);
-    const primeira = partes[0]?.[0] ?? '';
-    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
-    return (primeira + ultima).toUpperCase();
-  });
   protected readonly menu = computed(() => {
     const usuario = this.usuario();
     return usuario ? MENU.filter((item) => item.papeis.includes(usuario.papel)) : [];

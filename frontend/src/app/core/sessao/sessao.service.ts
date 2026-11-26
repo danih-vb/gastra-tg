@@ -108,6 +108,7 @@ export class SessaoService {
       token: resposta.tokenAcesso,
       nome: resposta.nome,
       papel: resposta.papel,
+      foto: resposta.foto ?? null,
       id: idDoToken(resposta.tokenAcesso),
       expiraEm: expiracaoDoToken(resposta.tokenAcesso),
     };

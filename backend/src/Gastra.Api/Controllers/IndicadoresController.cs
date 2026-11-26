@@ -78,4 +78,12 @@ public class IndicadoresController : ControllerBase
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Desempenho(DateOnly? inicio, DateOnly? fim, [FromServices] IRankingDesempenhoUseCase useCase) =>
         Ok(await useCase.Executar(inicio, fim));
+
+    /// <summary>Medalhas do mês e histórico de conquistas: o garçom vê as próprias; o Gerente, as de qualquer garçom.</summary>
+    [Authorize(Roles = GerenteOuGarcom)]
+    [HttpGet("medalhas")]
+    [ProducesResponseType(typeof(MedalhasResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Medalhas(int? garcomId, [FromServices] IMedalhasUseCase useCase) =>
+        Ok(await useCase.Executar(garcomId));
 }

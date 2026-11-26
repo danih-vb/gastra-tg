@@ -75,14 +75,17 @@ describe('Salão agora (painel do Metre)', () => {
     http
       .expectOne(`${API}/api/cardapio`)
       .flush([itemCardapio({ id: 7, nome: 'Tortinha de aniversário', preco: 18, disponivel: false })]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
     await fixture.whenStable();
 
-    const lista = pagina.querySelector<HTMLSelectElement>('#cortesia-item')!;
-    lista.selectedIndex = 1;
-    lista.dispatchEvent(new Event('change'));
+    // Fora de venda, a torta só pode sair como cortesia: na lista de cortesia o botão vem liberado.
+    pagina.querySelector<HTMLButtonElement>('button[aria-label="Cortesia: Tortinha de aniversário"]')!.click();
+    await fixture.whenStable();
+    botao(pagina, 'Aumentar')?.click();
+    pagina.querySelector<HTMLButtonElement>('button[aria-label="Diminuir"]')!.click();
     preencher(pagina, '#cortesia-motivo', 'Aniversário');
     await fixture.whenStable();
-    botao(pagina, 'Lançar cortesia')!.click();
+    botao(pagina, 'Cortesia 1 ×')!.click();
 
     const pedido = http.expectOne(`${API}/api/comandas/501/cortesias`);
     expect(pedido.request.body).toEqual({ itemCardapioId: 7, quantidade: 1, motivo: 'Aniversário' });
@@ -111,14 +114,14 @@ describe('Salão agora (painel do Metre)', () => {
         itemCardapio({ id: 7, nome: 'Tortinha de aniversário', disponivel: false }),
         itemCardapio({ id: 8, nome: 'Moqueca de peixe', preco: 89 }),
       ]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
     await fixture.whenStable();
 
-    const lista = pagina.querySelector<HTMLSelectElement>('#lancar-item')!;
-    expect([...lista.options].map((o) => o.textContent)).not.toContain('Tortinha de aniversário · R$ 0,00');
-    lista.selectedIndex = 1;
-    lista.dispatchEvent(new Event('change'));
+    // No lançamento comum, o que está fora de venda aparece, mas não pode ser escolhido.
+    expect(pagina.querySelector<HTMLButtonElement>('button[aria-label="Lançar: Tortinha de aniversário"]')!.disabled).toBe(true);
+    pagina.querySelector<HTMLButtonElement>('button[aria-label="Lançar: Moqueca de peixe"]')!.click();
     await fixture.whenStable();
-    botao(pagina, 'Lançar para o garçom')!.click();
+    botao(pagina, 'para o garçom confirmar')!.click();
 
     const pedido = http.expectOne(`${API}/api/comandas/501/itens`);
     expect(pedido.request.body).toEqual({ itemCardapioId: 8, quantidade: 1 });

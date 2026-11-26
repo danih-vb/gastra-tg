@@ -22,6 +22,11 @@ public class RepositorioDestaque(GastraDbContext contexto) : IRepositorioDestaqu
             .OrderBy(d => d.DataInicio).ThenBy(d => d.Tipo)
             .ToListAsync();
 
+    public async Task<List<DestaqueDoCardapio>> ListarMetasDoPeriodo(DateOnly inicio, DateOnly fim) =>
+        await contexto.Destaques.AsNoTracking()
+            .Where(d => d.Tipo == TipoDestaque.MetaDoMes && d.DataInicio < fim && d.DataFim >= inicio)
+            .ToListAsync();
+
     public async Task<int> QuantidadeVendida(int itemDoCardapioId, DateOnly inicio, DateOnly fim)
     {
         var de = inicio.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc) + FusoDoRestaurante;

@@ -43,4 +43,10 @@ public interface IRepositorioIndicadores
     /// avaliações antes de mostrar qualquer nota (<see cref="IndiceDeDesempenho.MinimoDeAvaliacoes"/>, RN08).
     /// </summary>
     Task<List<AvaliacoesDoGarcom>> ObterAvaliacoesPorGarcom(DateOnly inicio, DateOnly fim);
+
+    /// <summary>
+    /// Unidades vendidas por garçom, no período, dos itens que eram meta do mês na data da comanda (sem cancelados,
+    /// sem itens à espera do garçom e sem cortesias). Base da medalha "vendedor de destaque".
+    /// </summary>
+    Task<Dictionary<int, int>> ObterUnidadesDeMetaPorGarcom(DateOnly inicio, DateOnly fim);
 }

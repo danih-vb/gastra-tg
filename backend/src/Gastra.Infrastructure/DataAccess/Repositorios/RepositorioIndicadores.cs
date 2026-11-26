@@ -84,6 +84,24 @@ public class RepositorioIndicadores(GastraDbContext contexto) : IRepositorioIndi
             GROUP BY c.garcom_id
             """).ToListAsync();
 
+    public async Task<Dictionary<int, int>> ObterUnidadesDeMetaPorGarcom(DateOnly inicio, DateOnly fim)
+    {
+        var linhas = await contexto.Database.SqlQuery<UnidadesDoGarcom>($"""
+            SELECT c.garcom_id AS GarcomId, CAST(SUM(i.quantidade) AS SIGNED) AS Unidades
+            FROM item_pedido i
+            JOIN comanda c ON c.id = i.comanda_id
+            JOIN destaque_cardapio d ON d.item_cardapio_id = i.item_cardapio_id AND d.tipo = 'MetaDoMes'
+            WHERE i.status IN ('Pendente', 'Entregue') AND i.cortesia = 0
+              AND DATE(CONVERT_TZ(c.data_hora_abertura, '+00:00', '-03:00')) BETWEEN d.data_inicio AND d.data_fim
+              AND DATE(CONVERT_TZ(c.data_hora_abertura, '+00:00', '-03:00')) >= {inicio}
+              AND DATE(CONVERT_TZ(c.data_hora_abertura, '+00:00', '-03:00')) < {fim}
+            GROUP BY c.garcom_id
+            """).ToListAsync();
+        return linhas.ToDictionary(l => l.GarcomId, l => l.Unidades);
+    }
+
+    private sealed record UnidadesDoGarcom(int GarcomId, int Unidades);
+
     public Task<List<IndicadorPracaNoTempo>> ObterFaturamentoPorPracaEHora(DateOnly inicio, DateOnly fim) =>
         contexto.Database.SqlQuery<IndicadorPracaNoTempo>($"""
             SELECT praca_id AS PracaId, hora AS Fatia, SUM(faturamento) AS Faturamento, COUNT(*) AS Comandas

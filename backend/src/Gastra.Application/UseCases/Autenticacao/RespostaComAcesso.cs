@@ -13,5 +13,6 @@ internal static class RespostaComAcesso
         TokenAcesso = geradorToken.GerarTokenAcesso(usuario),
         Nome = usuario.Nome,
         Papel = usuario.Papel.Adapt<ComunicacaoEnums.PapelUsuario>(),
+        Foto = usuario.Foto,
     };
 }

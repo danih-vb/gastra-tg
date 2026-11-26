@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Usuario } from '../../core/api/modelos';
+import { MedalhasDoGarcom, Usuario } from '../../core/api/modelos';
 import { API, sessaoDoGarcom } from '../../core/api/testes';
 import { ARMAZENAMENTO_DA_SESSAO } from '../../core/configuracao';
 import { AvisoService } from '../../shared/aviso/aviso.service';
@@ -18,11 +18,30 @@ function sessaoDoGerente(): Storage {
 }
 
 const CONTAS: Usuario[] = [
-  { id: 1, nome: 'Roberta Lima', email: 'roberta@gastra.test', papel: 'Gerente', ativo: true, segundoFatorConfigurado: true },
-  { id: 2, nome: 'Marcos Tavares', email: 'marcos@gastra.test', papel: 'Coordenador', ativo: true, segundoFatorConfigurado: true },
-  { id: 11, nome: 'Carla Mendes', email: 'carla@gastra.test', papel: 'Garcom', ativo: true, segundoFatorConfigurado: false },
-  { id: 19, nome: 'Paulo Henrique', email: 'paulo@gastra.test', papel: 'Garcom', ativo: false, segundoFatorConfigurado: false },
+  { id: 1, nome: 'Roberta Lima', email: 'roberta@gastra.test', papel: 'Gerente', ativo: true, segundoFatorConfigurado: true, foto: null },
+  { id: 2, nome: 'Marcos Tavares', email: 'marcos@gastra.test', papel: 'Coordenador', ativo: true, segundoFatorConfigurado: true, foto: null },
+  { id: 11, nome: 'Carla Mendes', email: 'carla@gastra.test', papel: 'Garcom', ativo: true, segundoFatorConfigurado: false, foto: null },
+  { id: 19, nome: 'Paulo Henrique', email: 'paulo@gastra.test', papel: 'Garcom', ativo: false, segundoFatorConfigurado: false, foto: null },
 ];
+
+const MEDALHAS: MedalhasDoGarcom = {
+  garcomId: 11,
+  nome: 'Carla Mendes',
+  mes: '2026-11-01',
+  medalhas: [
+    { codigo: 'top-3', conquistada: true, progresso: 2, alvo: 3 },
+    { codigo: 'mesa-cheia', conquistada: false, progresso: 64, alvo: 100 },
+    { codigo: 'maratonista', conquistada: true, progresso: 20, alvo: 20 },
+    { codigo: 'bem-avaliado', conquistada: false, progresso: 0, alvo: 4.5 },
+    { codigo: 'vendedor-de-destaque', conquistada: false, progresso: 8, alvo: 20 },
+    { codigo: 'meta-batida', conquistada: false, progresso: 0, alvo: 1 },
+  ],
+  historico: [
+    { mes: '2026-11-01', conquistadas: ['top-3', 'maratonista'] },
+    { mes: '2026-10-01', conquistadas: ['mesa-cheia', 'meta-batida'] },
+    { mes: '2026-09-01', conquistadas: [] },
+  ],
+};
 
 describe('Gestão de usuários (UC04)', () => {
   let http!: HttpTestingController;
@@ -200,5 +219,25 @@ describe('Gestão de usuários (UC04)', () => {
     await fixture.whenStable();
 
     expect(avisos.aviso()?.mensagem).toContain('zerada');
+  });
+  it('no perfil do garçom, o Gerente vê as medalhas e o histórico de conquistas', async () => {
+    const pagina = await renderizar();
+
+    botao(linha(pagina, 'Carla Mendes'), 'Editar').click();
+    await fixture.whenStable();
+    http.expectOne(`${API}/api/indicadores/medalhas?garcomId=11`).flush(MEDALHAS);
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.medalhas-da-conta')?.textContent).toContain('Maratonista');
+    expect(pagina.querySelectorAll('.medalhas-da-conta .historico li').length).toBe(2);
+  });
+
+  it('em conta que não é de garçom, não busca medalhas', async () => {
+    const pagina = await renderizar();
+
+    botao(linha(pagina, 'Marcos Tavares'), 'Editar').click();
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.medalhas-da-conta')).toBeNull();
   });
 });

@@ -32,6 +32,7 @@ public static class EventoAuditoria
     public const string PromocaoCriada = "PROMOCAO_CRIADA";
     public const string PromocaoRemovida = "PROMOCAO_REMOVIDA";
     public const string DestaqueCriado = "DESTAQUE_CRIADO";
+    public const string FotoDoUsuarioAlterada = "FOTO_DO_USUARIO_ALTERADA";
     public const string DestaqueRemovido = "DESTAQUE_REMOVIDO";
 
     // 4.3 Comandas
@@ -63,6 +64,7 @@ public static class EventoAuditoria
     // 4.5 Análises
     public const string RelatorioBiConsultado = "RELATORIO_BI_CONSULTADO";
     public const string IndiceDesempenhoConsultado = "INDICE_DESEMPENHO_CONSULTADO";
+    public const string MedalhasConsultadas = "MEDALHAS_CONSULTADAS";
 
     // Seção 7: retenção
     public const string AuditoriaEliminadaPorPrazo = "AUDITORIA_ELIMINADA_POR_PRAZO";

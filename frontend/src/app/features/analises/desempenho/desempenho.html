@@ -78,10 +78,16 @@
       </li>
     </ul>
   </section>
-
 } @else {
   <div class="cartao pad vazio">
     <p><strong>Ainda sem turnos no período.</strong></p>
     <p class="suave">O índice aparece depois do seu primeiro turno com mesas atendidas.</p>
   </div>
+}
+
+@if (!carregando() && !erros().length && medalhas(); as medalhas) {
+  <section class="cartao pad" aria-labelledby="t-medalhas">
+    <h2 id="t-medalhas">Medalhas de {{ medalhas.mes | date: 'MMMM' }}</h2>
+    <app-medalhas [dados]="medalhas" />
+  </section>
 }

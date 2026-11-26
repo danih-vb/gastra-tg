@@ -23,6 +23,7 @@ import {
   PeriodoAlocacao,
   Praca,
   Promocao,
+  MedalhasDoGarcom,
   RankingDeDesempenho,
   PerfisDeConsumo,
   RelatorioAvaliacoes,
@@ -241,6 +242,12 @@ export class GastraApiService {
     return this.http.get<RankingDeDesempenho>(`${this.api}/api/indicadores/desempenho`);
   }
 
+  /** Medalhas do mês e o histórico de conquistas. O garçom recebe só as dele; o Gerente escolhe de quem. */
+  obterMedalhas(garcomId?: number): Observable<MedalhasDoGarcom> {
+    const params: Record<string, number> = garcomId === undefined ? {} : { garcomId };
+    return this.http.get<MedalhasDoGarcom>(`${this.api}/api/indicadores/medalhas`, { params });
+  }
+
   // --- Gerente: relatórios (UC16, UC17). Sem datas, a API usa os últimos 30 dias. ---
 
   relatorioDeGarcons(inicio: string, fim: string): Observable<RelatorioGarcons> {
@@ -347,6 +354,11 @@ export class GastraApiService {
   }
 
   /** RF18 — inativar não apaga: a conta perde o acesso na hora e o histórico continua. */
+  /** Foto do crachá do funcionário: o endereço vem do envio de foto; nulo tira a foto. */
+  definirFotoDoUsuario(id: number, foto: string | null): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}/foto`, { foto });
+  }
+
   alterarSituacaoDoUsuario(id: number, ativo: boolean): Observable<void> {
     return this.http.patch<void>(`${this.api}/api/usuarios/${id}/situacao`, { ativo });
   }

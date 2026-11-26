@@ -58,3 +58,50 @@
   gap: 8px;
   margin-top: 12px;
 }
+
+.cabecalho-escolha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.escolhido {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+
+  h3 { font-size: 1.125rem; }
+}
+
+.seletor-qtd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 12px 0;
+
+  output {
+    min-width: 48px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .botao-icone { border: 1px solid var(--borda-forte); }
+}
+
+.vale {
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.campo {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+
+  label { font-size: 0.875rem; font-weight: 600; }
+}

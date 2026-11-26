@@ -6,7 +6,7 @@
 
   @if (usuario(); as usuarioLogado) {
     <div class="conta">
-      <span class="avatar" aria-hidden="true">{{ iniciais() }}</span>
+      <app-avatar class="avatar" [nome]="usuarioLogado.nome" [foto]="usuarioLogado.foto" />
       <span class="quem">
         <strong>{{ usuarioLogado.nome }}</strong>
         <span>{{ nomeDoPapel[usuarioLogado.papel] }}</span>
