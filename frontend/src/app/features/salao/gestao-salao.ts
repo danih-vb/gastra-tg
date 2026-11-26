@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Observable, forkJoin } from 'rxjs';
 import { GastraApiService } from '../../core/api/gastra-api.service';
 import { Mesa, Praca } from '../../core/api/modelos';
@@ -17,7 +18,7 @@ type Painel = 'praca' | 'mesa' | null;
 @Component({
   selector: 'app-gestao-salao',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, Folha, Icone],
+  imports: [FormsModule, RouterLink, Folha, Icone],
   templateUrl: './gestao-salao.html',
   styleUrl: './gestao-salao.scss',
 })

@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { API, mesa, praca } from '../../core/api/testes';
 import { AvisoService } from '../../shared/aviso/aviso.service';
 import { GestaoSalao } from './gestao-salao';
@@ -13,7 +14,7 @@ describe('Gestão do salão (UC24)', () => {
   async function renderizar(comPracas = true): Promise<HTMLElement> {
     await TestBed.configureTestingModule({
       imports: [GestaoSalao],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
     avisos = TestBed.inject(AvisoService);
