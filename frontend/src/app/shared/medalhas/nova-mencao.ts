@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GastraApiService } from '../../core/api/gastra-api.service';
 import { CorDaMencao, IconeDaMencao, MencaoHonrosa } from '../../core/api/modelos';
@@ -167,7 +167,7 @@ export class NovaMencao {
   protected readonly erros = signal<string[]>([]);
   protected titulo = '';
   protected descricao = '';
-  protected mes = '';
+  protected readonly mes = linkedSignal(() => this.meses()[0] ?? '');
 
   protected salvar(): void {
     if (!this.titulo.trim()) return;
@@ -180,7 +180,7 @@ export class NovaMencao {
         descricao: this.descricao.trim() || null,
         icone: this.icone(),
         cor: this.cor(),
-        mes: this.mes || this.meses()[0],
+        mes: this.mes(),
       })
       .subscribe({
         next: (mencao) => {
