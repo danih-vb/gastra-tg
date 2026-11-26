@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { CodigoDaMedalha, Medalha, MedalhasDoGarcom } from '../../core/api/modelos';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { CodigoDaMedalha, CorDaMencao, IconeDaMencao, Medalha, MedalhasDoGarcom, MencaoHonrosa } from '../../core/api/modelos';
 import { Icone } from '../icone/icone';
 
 export const MEDALHAS: Record<CodigoDaMedalha, { nome: string; icone: string }> = {
@@ -10,6 +10,26 @@ export const MEDALHAS: Record<CodigoDaMedalha, { nome: string; icone: string }> 
   'bem-avaliado': { nome: 'Bem avaliado', icone: 'estrela' },
   'vendedor-de-destaque': { nome: 'Vendedor de destaque', icone: 'faisca' },
   'meta-batida': { nome: 'Meta batida', icone: 'alvo' },
+};
+
+export const ICONES_DA_MENCAO: Record<IconeDaMencao, string> = {
+  trofeu: 'Troféu',
+  estrela: 'Estrela',
+  coracao: 'Coração',
+  faisca: 'Brilho',
+  alvo: 'Alvo',
+  relogio: 'Relógio',
+  pessoas: 'Equipe',
+  check: 'Certo',
+};
+
+export const CORES_DA_MENCAO: Record<CorDaMencao, { nome: string; valor: string }> = {
+  laranja: { nome: 'Laranja', valor: '#c2410c' },
+  marinho: { nome: 'Azul-marinho', valor: '#2b3a4e' },
+  verde: { nome: 'Verde', valor: '#15803d' },
+  vermelho: { nome: 'Vermelho', valor: '#b91c1c' },
+  roxo: { nome: 'Roxo', valor: '#6d28d9' },
+  dourado: { nome: 'Dourado', valor: '#a16207' },
 };
 
 /** As seis medalhas do mês, com quanto falta para cada uma, e o que foi conquistado nos meses anteriores. */
@@ -55,6 +75,32 @@ export const MEDALHAS: Record<CodigoDaMedalha, { nome: string; icone: string }> 
         </li>
       }
     </ul>
+
+    @if (dados().mencoes.length) {
+      <h3>Menções honrosas</h3>
+      <ul class="lista mencoes">
+        @for (mencao of dados().mencoes; track mencao.id) {
+          <li>
+            <span class="selo mencao" [style.background]="CORES_DA_MENCAO[mencao.cor].valor">
+              <app-icone [nome]="mencao.icone" />
+            </span>
+            <div class="principal-item">
+              <strong>{{ mencao.titulo }}</strong>
+              @if (mencao.descricao) {
+                <span class="pequeno">{{ mencao.descricao }}</span>
+              }
+              <span class="suave pequeno mes">{{ mencao.mes | date: 'MMMM yyyy' }}</span>
+            </div>
+            @if (podeRemover()) {
+              <button class="botao fantasma compacto" type="button" [attr.aria-label]="'Remover ' + mencao.titulo"
+                (click)="remover.emit(mencao)">
+                <app-icone nome="x" />
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
 
     @if (anteriores().length) {
       <h3>Conquistas anteriores</h3>
@@ -131,12 +177,19 @@ export const MEDALHAS: Record<CodigoDaMedalha, { nome: string; icone: string }> 
     h3 { margin: 4px 0 0; font-size: 0.9375rem; }
     .mes { text-transform: capitalize; }
     .conquistas { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+    .mencoes li { display: flex; align-items: center; gap: 12px; }
+    .mencoes .principal-item { display: grid; gap: 2px; flex: 1; min-width: 0; }
+    .selo.mencao { color: #fff; border: 0; flex: none; }
   `,
 })
 export class Medalhas {
   readonly dados = input.required<MedalhasDoGarcom>();
+  /** O Gerente, no perfil do garçom, pode tirar uma menção dada por engano. */
+  readonly podeRemover = input(false);
+  readonly remover = output<MencaoHonrosa>();
 
   protected readonly MEDALHAS = MEDALHAS;
+  protected readonly CORES_DA_MENCAO = CORES_DA_MENCAO;
 
   /** O histórico começa no mês atual, que já aparece na grade. */
   protected readonly anteriores = computed(() => this.dados().historico.slice(1));

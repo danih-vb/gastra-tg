@@ -101,4 +101,10 @@
   <data name="DestaqueNoPassado" xml:space="preserve"><value>Choose today or a future day.</value></data>
   <data name="DestaqueRepetido" xml:space="preserve"><value>This item already has this highlight in the same period.</value></data>
   <data name="DestaqueNaoEncontrado" xml:space="preserve"><value>Highlight not found.</value></data>
+  <data name="TituloDaMencaoInvalido" xml:space="preserve"><value>Give it a title of up to 60 characters.</value></data>
+  <data name="DescricaoDaMencaoMuitoLonga" xml:space="preserve"><value>The description has up to 200 characters.</value></data>
+  <data name="IconeDaMencaoInvalido" xml:space="preserve"><value>Choose one of the icons.</value></data>
+  <data name="CorDaMencaoInvalida" xml:space="preserve"><value>Choose one of the colors.</value></data>
+  <data name="MencaoNoFuturo" xml:space="preserve"><value>Choose the current month or a past one.</value></data>
+  <data name="MencaoNaoEncontrada" xml:space="preserve"><value>Honorable mention not found.</value></data>
 </root>

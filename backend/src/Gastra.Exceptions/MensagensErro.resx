@@ -101,4 +101,10 @@
   <data name="DestaqueNoPassado" xml:space="preserve"><value>Escolha hoje ou um dia futuro.</value></data>
   <data name="DestaqueRepetido" xml:space="preserve"><value>Este item já tem esse destaque no mesmo período.</value></data>
   <data name="DestaqueNaoEncontrado" xml:space="preserve"><value>Destaque não encontrado.</value></data>
+  <data name="TituloDaMencaoInvalido" xml:space="preserve"><value>Dê um título de até 60 caracteres.</value></data>
+  <data name="DescricaoDaMencaoMuitoLonga" xml:space="preserve"><value>A descrição tem até 200 caracteres.</value></data>
+  <data name="IconeDaMencaoInvalido" xml:space="preserve"><value>Escolha um dos ícones.</value></data>
+  <data name="CorDaMencaoInvalida" xml:space="preserve"><value>Escolha uma das cores.</value></data>
+  <data name="MencaoNoFuturo" xml:space="preserve"><value>Escolha o mês atual ou um mês que já passou.</value></data>
+  <data name="MencaoNaoEncontrada" xml:space="preserve"><value>Menção honrosa não encontrada.</value></data>
 </root>

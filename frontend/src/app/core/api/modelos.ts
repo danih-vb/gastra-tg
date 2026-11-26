@@ -225,6 +225,30 @@ export interface Medalha {
   alvo: number;
 }
 
+export type IconeDaMencao = 'trofeu' | 'estrela' | 'coracao' | 'faisca' | 'alvo' | 'relogio' | 'pessoas' | 'check';
+export type CorDaMencao = 'laranja' | 'marinho' | 'verde' | 'vermelho' | 'roxo' | 'dourado';
+
+/** Reconhecimento dado pelo Gerente por algo que o sistema não mede. */
+export interface MencaoHonrosa {
+  id: number;
+  titulo: string;
+  descricao: string | null;
+  icone: IconeDaMencao;
+  cor: CorDaMencao;
+  /** Primeiro dia do mês. */
+  mes: string;
+}
+
+export interface NovaMencaoHonrosa {
+  garcomId: number;
+  titulo: string;
+  descricao: string | null;
+  icone: IconeDaMencao;
+  cor: CorDaMencao;
+  /** Qualquer dia do mês; sem ele, vale o mês atual. */
+  mes?: string;
+}
+
 export interface MedalhasDoGarcom {
   garcomId: number;
   nome: string;
@@ -233,6 +257,8 @@ export interface MedalhasDoGarcom {
   medalhas: Medalha[];
   /** Do mês atual para trás: o que foi conquistado em cada um. */
   historico: { mes: string; conquistadas: CodigoDaMedalha[] }[];
+  /** Da mais recente para a mais antiga. */
+  mencoes: MencaoHonrosa[];
 }
 
 // --- Gerente: relatórios de BI (UC16) ---

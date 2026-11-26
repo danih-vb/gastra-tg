@@ -52,6 +52,7 @@ public static class DependencyInjectionExtension
         services.AddScoped<IRepositorioIndicadores, RepositorioIndicadores>();
         services.AddScoped<IRepositorioPromocao, RepositorioPromocao>();
         services.AddScoped<IRepositorioDestaque, RepositorioDestaque>();
+        services.AddScoped<IRepositorioMencaoHonrosa, RepositorioMencaoHonrosa>();
         services.AddSingleton<IArmazenamentoDeFotos, ArmazenamentoDeFotosEmDisco>();
     }
 

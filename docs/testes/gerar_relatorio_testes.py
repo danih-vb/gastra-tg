@@ -34,7 +34,7 @@ BLOCOS = OrderedDict([
     ("Recomendação de pratos (ciência de dados)", ["SugestoesComandaTests", "test_recomendacao", "test_clusterizacao", "test_provedor_modelo",
                                                     "test_historico_banco", "test_api_analitica"]),
     ("BI e índice de desempenho", ["IndicadoresControllerTests", "IndiceDeDesempenhoTests", "RepositorioIndicadoresTests",
-                                   "EngenhariaDeCardapioTests", "MedalhasTests"]),
+                                   "EngenhariaDeCardapioTests", "MedalhasTests", "MencaoHonrosaTests"]),
     ("LGPD, auditoria e segurança", ["AuditoriaTests", "LimiteDeRequisicoesTests", "EliminacaoAuditoriaTests", "AutenticacaoControllerTests",
                                       "UsuarioControllerTests", "UsuarioTests"]),
     ("Banco de dados (views, triggers e restrições)", ["ObjetosDoBancoTests"]),

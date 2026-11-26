@@ -22,6 +22,7 @@ public interface IMedalhasUseCase
 public class MedalhasUseCase(
     IRepositorioIndicadores indicadores,
     IRepositorioDestaque destaques,
+    IRepositorioMencaoHonrosa mencoes,
     IRepositorioUsuario repositorioUsuario,
     IUsuarioLogado usuarioLogado,
     IRegistradorAuditoria auditoria,
@@ -59,6 +60,8 @@ public class MedalhasUseCase(
                 Conquistadas = medalhas.Where(m => m.Conquistada).Select(m => m.Codigo).ToList(),
             });
         }
+
+        resposta.Mencoes = (await mencoes.ListarDoGarcom(garcom.Id)).Select(MencoesHonrosas.ParaResposta).ToList();
 
         await auditoria.Registrar(EventoAuditoria.MedalhasConsultadas, detalhes: new { GarcomConsultado = garcom.Id });
         await unitOfWork.Commit();

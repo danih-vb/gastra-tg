@@ -36,6 +36,9 @@ const MEDALHAS: MedalhasDoGarcom = {
     { mes: '2026-10-01', conquistadas: ['mesa-cheia', 'meta-batida'] },
     { mes: '2026-09-01', conquistadas: [] },
   ],
+  mencoes: [
+    { id: 4, titulo: 'Menos faltas', descricao: 'Nenhuma falta em outubro.', icone: 'relogio', cor: 'verde', mes: '2026-10-01' },
+  ],
 };
 
 describe('Desempenho (UC17)', () => {
@@ -109,6 +112,15 @@ describe('Desempenho (UC17)', () => {
     const meses = [...pagina.querySelectorAll('.historico li')];
     expect(meses.map((m) => m.querySelector('.mes')?.textContent?.trim().toLowerCase())).toEqual(['outubro 2026', 'setembro 2026']);
     expect(meses[0].querySelectorAll('.selo').length).toBe(2);
+  });
+
+  it('mostra as menções honrosas do Gerente, sem botão de remover', async () => {
+    const pagina = await renderizar(RANKING);
+
+    const mencao = pagina.querySelector('.mencoes li')!;
+    expect(mencao.textContent).toContain('Menos faltas');
+    expect(mencao.textContent).toContain('Nenhuma falta em outubro.');
+    expect(mencao.querySelector('button')).toBeNull();
   });
 
   it('sem turnos no período, explica em vez de mostrar tela vazia', async () => {

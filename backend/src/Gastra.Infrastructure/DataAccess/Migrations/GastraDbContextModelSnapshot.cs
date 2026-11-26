@@ -339,6 +339,66 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Gastra.Domain.Entidades.MencaoHonrosa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConcedidaPorId")
+                        .HasColumnType("int")
+                        .HasColumnName("concedida_por_id");
+
+                    b.Property<string>("Cor")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("cor");
+
+                    b.Property<DateTime>("DataHoraConcessao")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("data_hora_concessao");
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("descricao");
+
+                    b.Property<int>("GarcomId")
+                        .HasColumnType("int")
+                        .HasColumnName("garcom_id");
+
+                    b.Property<string>("Icone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("icone");
+
+                    b.Property<DateOnly>("Mes")
+                        .HasColumnType("date")
+                        .HasColumnName("mes");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)")
+                        .HasColumnName("titulo");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConcedidaPorId");
+
+                    b.HasIndex("GarcomId", "Mes");
+
+                    b.ToTable("mencao_honrosa", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_mencao_honrosa_primeiro_dia_do_mes", "DAY(mes) = 1");
+                        });
+                });
+
             modelBuilder.Entity("Gastra.Domain.Entidades.Mesa", b =>
                 {
                     b.Property<int>("Id")
@@ -695,6 +755,21 @@ namespace Gastra.Infrastructure.DataAccess.Migrations
                     b.HasOne("Gastra.Domain.Entidades.ItemDoCardapio", null)
                         .WithMany()
                         .HasForeignKey("ItemDoCardapioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Gastra.Domain.Entidades.MencaoHonrosa", b =>
+                {
+                    b.HasOne("Gastra.Domain.Entidades.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("ConcedidaPorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Gastra.Domain.Entidades.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("GarcomId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
