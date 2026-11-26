@@ -74,6 +74,26 @@ a sessão do usuário).
 celular; as do cardápio são de gestão e exigem login de Gerente ou Coordenador. Separar evita que a
 área pública carregue código e rotas da área administrativa.
 
+## App no celular (PWA, #218)
+
+O GASTRA pode ser instalado na tela de início do celular, com ícone próprio e tela cheia, sem a barra do navegador.
+
+- **O que fica guardado no aparelho:** só o casco do app (HTML, JS, CSS e ícones), configurado em `ngsw-config.json`.
+  Nada de `/api`: conta, comanda e mesas vêm sempre do servidor, porque dado de salão vindo de cache é pior do que erro.
+- **Atualização:** o service worker confere `ngsw.json` a cada abertura; a versão nova vale na abertura seguinte. O nginx
+  serve `ngsw-worker.js`, `ngsw.json` e `manifest.webmanifest` sem cache longo, para o celular não ficar preso.
+- **Só no build de produção** (`ng build`, imagem Docker). No `ng serve` o service worker fica desligado.
+
+**Como instalar.** O navegador só instala app de origem segura: HTTPS ou `localhost`. No computador do servidor,
+`http://localhost:4200` já serve (Chrome/Edge: ícone de instalar na barra de endereço). No celular, pelo IP da rede local
+(`http://192.168.x.x:4200`), é HTTP comum, então para a demonstração:
+
+1. No Chrome do Android, abrir `chrome://flags/#unsafely-treat-insecure-origin-as-secure`;
+2. Colocar o endereço do servidor (ex.: `http://192.168.1.3:4200`), ativar e reiniciar o Chrome;
+3. Abrir o GASTRA e tocar em **Instalar app** (ou menu ⋮ → **Adicionar à tela inicial**).
+
+Em produção, com HTTPS de verdade (seção 3.2 do TG, publicação em nuvem), o passo 1 e o 2 deixam de existir.
+
 ## Sessão e comunicação com a API
 
 A API roda em `http://localhost:5019` (valor padrão do token `URL_DA_API`, em `core/configuracao.ts`).
