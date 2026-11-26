@@ -27,4 +27,7 @@ public class MedalhasResponse
 
     /// <summary>O que foi conquistado em cada um dos meses anteriores, do mais recente ao mais antigo.</summary>
     public List<ConquistasDoMesResponse> Historico { get; set; } = [];
+
+    /// <summary>Menções honrosas dadas pelo Gerente, da mais recente para a mais antiga.</summary>
+    public List<MencaoHonrosaResponse> Mencoes { get; set; } = [];
 }

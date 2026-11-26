@@ -65,6 +65,8 @@ public static class EventoAuditoria
     public const string RelatorioBiConsultado = "RELATORIO_BI_CONSULTADO";
     public const string IndiceDesempenhoConsultado = "INDICE_DESEMPENHO_CONSULTADO";
     public const string MedalhasConsultadas = "MEDALHAS_CONSULTADAS";
+    public const string MencaoConcedida = "MENCAO_CONCEDIDA";
+    public const string MencaoRemovida = "MENCAO_REMOVIDA";
 
     // Seção 7: retenção
     public const string AuditoriaEliminadaPorPrazo = "AUDITORIA_ELIMINADA_POR_PRAZO";

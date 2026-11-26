@@ -41,6 +41,7 @@ const MEDALHAS: MedalhasDoGarcom = {
     { mes: '2026-10-01', conquistadas: ['mesa-cheia', 'meta-batida'] },
     { mes: '2026-09-01', conquistadas: [] },
   ],
+  mencoes: [],
 };
 
 describe('Gestão de usuários (UC04)', () => {
@@ -239,5 +240,44 @@ describe('Gestão de usuários (UC04)', () => {
     await fixture.whenStable();
 
     expect(pagina.querySelector('.medalhas-da-conta')).toBeNull();
+  });
+  it('o Gerente dá uma menção honrosa escolhendo ícone, cor e texto, e pode removê-la', async () => {
+    const pagina = await renderizar();
+    botao(linha(pagina, 'Carla Mendes'), 'Editar').click();
+    await fixture.whenStable();
+    http.expectOne(`${API}/api/indicadores/medalhas?garcomId=11`).flush(MEDALHAS);
+    await fixture.whenStable();
+
+    botao(pagina, 'Menção honrosa').click();
+    await fixture.whenStable();
+    pagina.querySelector<HTMLButtonElement>('[role=radio][aria-label="Estrela"]')!.click();
+    pagina.querySelector<HTMLButtonElement>('[role=radio][aria-label="Roxo"]')!.click();
+    preencher(pagina, '#mencao-titulo', 'Melhor ideia do mês');
+    preencher(pagina, '#mencao-descricao', 'Sugeriu o cardápio infantil.');
+    await fixture.whenStable();
+    expect(pagina.querySelector('.previa')?.textContent).toContain('Melhor ideia do mês');
+    botao(pagina, 'Dar menção').click();
+
+    const pedido = http.expectOne({ method: 'POST', url: `${API}/api/mencoes` });
+    expect(pedido.request.body).toEqual({
+      garcomId: 11,
+      titulo: 'Melhor ideia do mês',
+      descricao: 'Sugeriu o cardápio infantil.',
+      icone: 'estrela',
+      cor: 'roxo',
+      mes: '2026-11-01',
+    });
+    pedido.flush({ id: 9, titulo: 'Melhor ideia do mês', descricao: 'Sugeriu o cardápio infantil.', icone: 'estrela', cor: 'roxo', mes: '2026-11-01' });
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('app-nova-mencao')).toBeNull();
+    expect(pagina.querySelector('.mencoes')?.textContent).toContain('Melhor ideia do mês');
+    expect(avisos.aviso()?.mensagem).toContain('Menção honrosa dada');
+
+    pagina.querySelector<HTMLButtonElement>('[aria-label="Remover Melhor ideia do mês"]')!.click();
+    http.expectOne({ method: 'DELETE', url: `${API}/api/mencoes/9` }).flush(null);
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.mencoes')).toBeNull();
   });
 });

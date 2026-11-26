@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Gastra.Api.Tests.Infraestrutura;
+using Gastra.Application.UseCases.Promocoes;
 using Gastra.Communication.Responses;
 using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
@@ -359,5 +360,68 @@ public class IndicadoresControllerTests(GastraApiFactory factory) : IClassFixtur
 
         Assert.Equal(garcom.Id, medalhas.GarcomId);
         Assert.Equal(HttpStatusCode.NotFound, (await _gerente.GetAsync($"{Rota}/medalhas")).StatusCode);
+    }
+
+    // --- Menções honrosas ---
+
+    private async Task<HttpResponseMessage> Conceder(HttpClient cliente, int garcomId, string titulo = "Menos faltas",
+        string icone = "relogio", string cor = "verde", string? mes = null) =>
+        await cliente.PostAsJsonAsync("/api/mencoes",
+            new { garcomId, titulo, descricao = "Nenhuma falta em outubro.", icone, cor, mes }, Json);
+
+    [Fact]
+    public async Task Mencao_PeloGerente_ApareceParaOGarcomJuntoDasMedalhas_ESemOTextoNoLog()
+    {
+        var (cliente, garcom) = await ClienteGarcom();
+
+        var resposta = await Conceder(_gerente, garcom.Id, mes: "2026-10-15");
+
+        Assert.Equal(HttpStatusCode.Created, resposta.StatusCode);
+        var mencao = Assert.Single((await Ler<MedalhasResponse>(cliente, $"{Rota}/medalhas")).Mencoes);
+        Assert.Equal(("Menos faltas", "Nenhuma falta em outubro.", "relogio", "verde", new DateOnly(2026, 10, 1)),
+            (mencao.Titulo, mencao.Descricao, mencao.Icone, mencao.Cor, mencao.Mes));
+        var registro = (await factory.Auditoria(EventoAuditoria.MencaoConcedida)).Last();
+        Assert.DoesNotContain("Menos faltas", registro.Detalhes);
+        Assert.DoesNotContain("Nenhuma falta", registro.Detalhes);
+    }
+
+    [Fact]
+    public async Task Mencao_PeloGarcom_Retorna403()
+    {
+        var (cliente, garcom) = await ClienteGarcom();
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await Conceder(cliente, garcom.Id)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Mencao_SemTitulo_ComIconeForaDaLista_OuNoFuturo_Retorna400()
+    {
+        var (_, garcom) = await ClienteGarcom();
+        var futuro = HojeNoRestaurante.Data().AddMonths(1).ToString("yyyy-MM-dd");
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await Conceder(_gerente, garcom.Id, titulo: " ")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await Conceder(_gerente, garcom.Id, icone: "foguete")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await Conceder(_gerente, garcom.Id, cor: "rosa")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await Conceder(_gerente, garcom.Id, mes: futuro)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Mencao_ParaQuemNaoEGarcom_Retorna404()
+    {
+        var gerente = await factory.CriarUsuario($"gerente-{Guid.NewGuid():N}@gastra.test", PapelUsuario.Gerente);
+
+        Assert.Equal(HttpStatusCode.NotFound, (await Conceder(_gerente, gerente.Id)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Mencao_Removida_SaiDasMedalhas()
+    {
+        var (cliente, garcom) = await ClienteGarcom();
+        var criada = (await (await Conceder(_gerente, garcom.Id)).Content.ReadFromJsonAsync<MencaoHonrosaResponse>(Json))!;
+
+        Assert.Equal(HttpStatusCode.NoContent, (await _gerente.DeleteAsync($"/api/mencoes/{criada.Id}")).StatusCode);
+
+        Assert.Empty((await Ler<MedalhasResponse>(cliente, $"{Rota}/medalhas")).Mencoes);
+        Assert.Equal(HttpStatusCode.NotFound, (await _gerente.DeleteAsync($"/api/mencoes/{criada.Id}")).StatusCode);
     }
 }

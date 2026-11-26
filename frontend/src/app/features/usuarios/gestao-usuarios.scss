@@ -59,5 +59,20 @@
   padding-top: 16px;
   border-top: 1px solid var(--borda);
 
-  h2 { margin: 0 0 12px; font-size: 1rem; }
+  h2 { margin: 0; font-size: 1rem; }
+
+  .topo-medalhas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  app-nova-mencao {
+    display: block;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--borda);
+  }
 }

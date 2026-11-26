@@ -24,6 +24,8 @@ import {
   Praca,
   Promocao,
   MedalhasDoGarcom,
+  MencaoHonrosa,
+  NovaMencaoHonrosa,
   RankingDeDesempenho,
   PerfisDeConsumo,
   RelatorioAvaliacoes,
@@ -246,6 +248,14 @@ export class GastraApiService {
   obterMedalhas(garcomId?: number): Observable<MedalhasDoGarcom> {
     const params: Record<string, number> = garcomId === undefined ? {} : { garcomId };
     return this.http.get<MedalhasDoGarcom>(`${this.api}/api/indicadores/medalhas`, { params });
+  }
+
+  concederMencao(mencao: NovaMencaoHonrosa): Observable<MencaoHonrosa> {
+    return this.http.post<MencaoHonrosa>(`${this.api}/api/mencoes`, mencao);
+  }
+
+  removerMencao(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/mencoes/${id}`);
   }
 
   // --- Gerente: relatórios (UC16, UC17). Sem datas, a API usa os últimos 30 dias. ---

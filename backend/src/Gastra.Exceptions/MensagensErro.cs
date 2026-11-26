@@ -58,6 +58,12 @@ public static class MensagensErro
     public static string DestaqueNoPassado => Obter(nameof(DestaqueNoPassado));
     public static string DestaqueRepetido => Obter(nameof(DestaqueRepetido));
     public static string DestaqueNaoEncontrado => Obter(nameof(DestaqueNaoEncontrado));
+    public static string TituloDaMencaoInvalido => Obter(nameof(TituloDaMencaoInvalido));
+    public static string DescricaoDaMencaoMuitoLonga => Obter(nameof(DescricaoDaMencaoMuitoLonga));
+    public static string IconeDaMencaoInvalido => Obter(nameof(IconeDaMencaoInvalido));
+    public static string CorDaMencaoInvalida => Obter(nameof(CorDaMencaoInvalida));
+    public static string MencaoNoFuturo => Obter(nameof(MencaoNoFuturo));
+    public static string MencaoNaoEncontrada => Obter(nameof(MencaoNaoEncontrada));
     public static string ItemNaoEstaAConfirmar => Obter(nameof(ItemNaoEstaAConfirmar));
     public static string MotivoDoAjusteObrigatorio => Obter(nameof(MotivoDoAjusteObrigatorio));
     public static string MotivoDoAjusteMuitoLongo => Obter(nameof(MotivoDoAjusteMuitoLongo));

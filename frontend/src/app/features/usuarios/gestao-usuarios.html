@@ -177,8 +177,23 @@
       </form>
       @if (medalhasEmFoco(); as medalhas) {
         <section class="medalhas-da-conta" aria-labelledby="t-medalhas-conta">
-          <h2 id="t-medalhas-conta">Medalhas</h2>
-          <app-medalhas [dados]="medalhas" />
+          <header class="topo-medalhas">
+            <h2 id="t-medalhas-conta">Medalhas</h2>
+            @if (!dandoMencao()) {
+              <button class="botao secundario compacto" type="button" (click)="dandoMencao.set(true)">
+                <app-icone nome="mais" /> Menção honrosa
+              </button>
+            }
+          </header>
+          @if (dandoMencao()) {
+            <app-nova-mencao
+              [garcomId]="medalhas.garcomId"
+              [meses]="mesesDaMencao()"
+              (salva)="mencaoDada($event)"
+              (cancelar)="dandoMencao.set(false)"
+            />
+          }
+          <app-medalhas [dados]="medalhas" [podeRemover]="true" (remover)="removerMencao($event)" />
         </section>
       }
     </app-folha>
