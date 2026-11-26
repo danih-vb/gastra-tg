@@ -3,15 +3,16 @@
 Este manual explica como usar o GASTRA no dia a dia do restaurante. Ele é escrito para quem vai operar o sistema —
 garçom, metre, gerente, coordenador — e para o cliente que abre a conta pelo celular.
 
-As telas aqui são as do protótipo navegável (`docs/ux-ui/prototipo/`), que é o desenho que as telas implementadas
-em Angular seguem. Onde a tela implementada ficou diferente do desenho, o texto avisa.
+As telas aqui são capturas do sistema em execução, com os dados simulados de demonstração. Onde ainda não há
+captura, como nas telas de erro, aparece a tela do protótipo navegável (`docs/ux-ui/prototipo/`), que é o desenho
+que as telas implementadas seguem.
 
 | Perfil | Onde usa | O que faz |
 |---|---|---|
-| **Garçom** | Celular | Abre mesa, lança pedido, entrega, fecha a conta |
-| **Metre** | Tablet ou computador | Monta o turno, distribui os garçons pelas praças, acompanha o salão |
-| **Gerente** | Computador | Análises, cardápio, promoções, praças e mesas, contas de acesso |
-| **Coordenador** | Computador | Cardápio e promoções |
+| **Garçom** | Celular | Abre mesa, lança pedido, confirma o que o Metre ou o Gerente lançou, entrega, fecha a conta |
+| **Metre** | Tablet ou computador | Monta o turno, distribui os garçons pelas praças, acompanha o salão, lança itens e cortesias |
+| **Gerente** | Computador | Análises, cardápio, promoções, destaques e metas, praças, mesas e QR codes, contas de acesso, menções honrosas |
+| **Coordenador** | Computador | Cardápio, promoções, destaques e metas |
 | **Cliente** | Celular, pelo QR code da mesa | Vê o cardápio e a própria conta |
 
 ---
@@ -72,6 +73,15 @@ O botão de sair fica no canto direito da barra do topo, em todas as telas. Sair
 Algumas ações do Gerente também derrubam sessões, e isso é intencional: quando alguém tem a senha redefinida, é
 inativado, ou tem a verificação em duas etapas zerada, as sessões abertas daquela conta caem na hora.
 
+### 1.3 Instalar no celular
+
+O GASTRA pode ficar na tela de início do celular, com ícone próprio e sem a barra do navegador. No Chrome, toque em
+**Instalar app** (ou no menu ⋮ → **Adicionar à tela inicial**). O aparelho guarda só a aparência do sistema: mesas,
+comandas e contas vêm sempre do servidor, então não há risco de ver um dado velho.
+
+O navegador só oferece a instalação em endereço seguro (HTTPS). Na rede do restaurante, enquanto o sistema não está
+publicado com HTTPS, a instalação depende de um ajuste no Chrome, descrito no `frontend/README.md`.
+
 ---
 
 ## 2. Garçom
@@ -80,7 +90,7 @@ O garçom trabalha pelo celular. O menu de baixo tem três telas: **Comandas**, 
 
 ### 2.1 Abrir uma mesa
 
-<img src="../ux-ui/telas/garcom-mesas.png" alt="Mesas do garçom" width="320">
+<img src="../ux-ui/telas-reais/garcom-mesas.png" alt="Mesas do garçom" width="320">
 
 No alto ficam os **destaques de hoje** e as **metas do mês** que o Gerente escolheu: o destaque do dia é o item
 para oferecer primeiro naquele dia, e a meta do mês mostra quantas unidades a equipe já vendeu e quanto falta.
@@ -92,7 +102,7 @@ Para abrir: **toque na mesa livre** e, na lista que aparece, **toque no número 
 abre nesse segundo toque — tocar no número já é a confirmação. O número igual à capacidade da mesa vem destacado,
 que é o caso mais comum.
 
-<img src="../ux-ui/telas/garcom-abrir-mesa.png" alt="Abrir mesa" width="320">
+<img src="../ux-ui/telas-reais/garcom-abrir-mesa.png" alt="Abrir mesa" width="320">
 
 São **dois toques** até a mesa aberta. Isso não é detalhe de desenho: é um requisito do sistema (RNF02), porque
 abrir mesa é a ação mais repetida do turno.
@@ -117,7 +127,7 @@ Dentro da comanda, o botão **Lançar item** abre o cardápio; escolha o item e 
 nome ou pela restrição ("sem glúten"), sem precisar de acento. Os destaques do dia e as metas do mês vêm primeiro na
 lista, em cor.
 
-<img src="../ux-ui/telas/garcom-lancar-item.png" alt="Lançar item" width="320">
+<img src="../ux-ui/telas-reais/garcom-lancar-item.png" alt="Lançar item" width="320">
 
 São **três toques** do cardápio até o item na conta (também RNF02). Logo depois do lançamento aparece um aviso com
 **Desfazer**, para o caso de ter tocado no item errado — desfazer aqui cancela o item com o motivo "erro de
@@ -126,7 +136,7 @@ lançamento".
 O preço que entra na conta é o **do momento do lançamento**. Se o Gerente mudar o preço no cardápio depois, as
 comandas que já estavam abertas continuam com o preço antigo.
 
-<img src="../ux-ui/telas/garcom-comanda.png" alt="Comanda aberta" width="320">
+<img src="../ux-ui/telas-reais/garcom-comanda.png" alt="Comanda aberta" width="320">
 
 ### 2.3 Restrições alimentares
 
@@ -159,7 +169,7 @@ Sugestão é um extra; o salão não para por causa dela.
 
 Cada item lançado fica **Pendente** até alguém dizer o que aconteceu com ele.
 
-<img src="../ux-ui/telas/garcom-pendencias.png" alt="Itens a entregar" width="320">
+<img src="../ux-ui/telas-reais/garcom-pendencias.png" alt="Itens a entregar" width="320">
 
 A tela **A entregar** junta os itens pendentes de todas as mesas do garçom, do mais antigo para o mais novo.
 
@@ -183,7 +193,7 @@ novo.
 
 ### 2.6 Fechar a conta
 
-<img src="../ux-ui/telas/garcom-fechar.png" alt="Fechar a conta" width="320">
+<img src="../ux-ui/telas-reais/garcom-fechar.png" alt="Fechar a conta" width="320">
 
 A tela de fechamento mostra o subtotal, a **taxa de serviço de 10%** e o total. A taxa vem ligada por padrão e pode
 ser retirada a pedido do cliente, com um toque — é direito dele, e o sistema não esconde isso. Se ele mudar de ideia,
@@ -200,13 +210,13 @@ saiu da cozinha.
 
 ### 2.7 Desempenho
 
-<img src="../ux-ui/telas/garcom-desempenho.png" alt="Desempenho do garçom" width="320">
+<img src="../ux-ui/telas-reais/garcom-desempenho.png" alt="Desempenho do garçom" width="320">
 
 Cada garçom vê a própria posição no ranking do período, com o faturamento por turno, a média de mesas atendidas e,
 quando há avaliações suficientes, a nota dos clientes. O garçom vê **só os próprios números** e a posição; não vê o
 desempenho dos colegas.
 
-**Medalhas.** Abaixo do índice ficam as medalhas do mês, com quanto falta para cada uma, e o que foi conquistado nos
+**Medalhas e menções honrosas.** Abaixo do índice ficam as medalhas do mês, com quanto falta para cada uma, e o que foi conquistado nos
 meses anteriores:
 
 | Medalha | Como se ganha no mês |
@@ -221,6 +231,9 @@ meses anteriores:
 <img src="../ux-ui/telas-reais/garcom-medalhas.png" alt="Medalhas do garçom" width="320">
 
 As medalhas premiam cada um pelo próprio mês e a equipe junta, e não só quem fica em primeiro.
+
+Abaixo das medalhas aparecem as **menções honrosas** que o Gerente deu, por algo que o sistema não mede: quem faltou
+menos, quem trouxe a melhor ideia. Cada uma tem ícone, cor, título, descrição e o mês a que se refere.
 
 **Como a avaliação entra no índice.** Quando algum garçom recebeu pelo menos 5 avaliações no período, o índice passa a
 ser 40% faturamento, 30% mesas e 30% avaliação. A nota considerada é uma média que puxa quem tem poucas avaliações para
@@ -238,7 +251,7 @@ O metre monta o turno: quem está presente e em qual praça cada um atende.
 
 **Passo 1 — presença.** Marque quem chegou.
 
-<img src="../ux-ui/telas/metre-presenca.png" alt="Presença do turno" width="420">
+<img src="../ux-ui/telas-reais/metre-presenca.png" alt="Presença do turno" width="420">
 
 A tela mostra **presentes × vagas**. Se chegou mais gente do que existe vaga nas praças, o sistema explica o
 problema e não deixa gerar a sugestão: alguém vai ter que ficar de fora do salão, e essa é uma decisão do metre,
@@ -246,7 +259,7 @@ não do cálculo.
 
 **Passo 2 — sugestão.** O sistema distribui os presentes pelas praças e mostra por que cada um foi para onde foi.
 
-<img src="../ux-ui/telas/metre-sugestao.png" alt="Sugestão de alocação" width="420">
+<img src="../ux-ui/telas-reais/metre-sugestao.png" alt="Sugestão de alocação" width="420">
 
 A distribuição não é sorteio. Cada garçom recebe um índice que pesa duas coisas:
 
@@ -289,7 +302,7 @@ O metre monta o turno à mão, e o sistema avisa que a sugestão automática nã
 
 ### 3.4 Salão agora
 
-<img src="../ux-ui/telas/metre-salao.png" alt="Salão agora" width="420">
+<img src="../ux-ui/telas-reais/metre-salao.png" alt="Salão agora" width="420">
 
 Visão do salão em tempo real: praças, mesas ocupadas, há quanto tempo, quanto já está na conta e qual garçom
 atende. Serve para o metre saber onde está o gargalo sem ter que atravessar o salão.
@@ -314,7 +327,7 @@ O menu do Gerente tem quatro telas: **Análises**, **Cardápio**, **Salão** e *
 
 ### 4.1 Análises
 
-<img src="../ux-ui/telas/gerente-analises.png" alt="Análises" width="520">
+<img src="../ux-ui/telas-reais/gerente-analises.png" alt="Análises" width="520">
 
 Os indicadores do período escolhido: faturamento, ticket médio, mesas atendidas, faturamento por praça, movimento
 por horário e o ranking de garçons.
@@ -338,7 +351,7 @@ movimento suficiente (pelo menos 50 comandas com dois itens ou mais), a tela avi
 
 ### 4.2 Cardápio
 
-<img src="../ux-ui/telas/gerente-cardapio.png" alt="Gestão do cardápio" width="520">
+<img src="../ux-ui/telas-reais/gerente-cardapio.png" alt="Gestão do cardápio" width="520">
 
 Cadastrar item, editar, mudar preço, marcar como indisponível e pôr foto. A foto pode vir do computador, pelo botão
 **Importar** (JPG, PNG ou WEBP, até 5 MB), ou de um endereço na internet.
@@ -377,7 +390,7 @@ próprio formulário:
 
 ### 4.4 Salão: praças e mesas
 
-<img src="../ux-ui/telas/gerente-salao.png" alt="Gestão do salão" width="520">
+<img src="../ux-ui/telas-reais/gerente-salao.png" alt="Gestão do salão" width="520">
 
 Cada praça é um cartão, com as **vagas de garçom por turno** e as mesas dela. O total de vagas é o teto que o metre
 enxerga ao montar o turno: mexer aqui muda o que ele pode fazer lá.
@@ -395,9 +408,17 @@ Para criar mesa, use o botão do cartão da praça — a mesa já nasce nela.
 Sem nenhuma praça cadastrada, o botão de nova mesa fica desligado e a tela explica que o primeiro passo é criar uma
 praça.
 
+**QR codes das mesas.** O botão **QR codes** monta uma etiqueta por mesa, com o número da mesa, o QR e a praça,
+pronta para imprimir e recortar; dá para imprimir uma praça só ou o salão inteiro. O QR é fixo e abre o
+**cardápio digital** daquela mesa. A conta, não: ela continua pelo QR que o garçom mostra na comanda, que muda a cada
+atendimento, para quem passou pela mesa antes não ver a conta dos próximos clientes.
+
+O endereço que vai dentro do QR vem preenchido com o endereço por onde o Gerente abriu o sistema. Se ele abriu pelo
+próprio computador (`localhost`), troque pelo endereço da rede antes de imprimir, senão o QR não abre no celular.
+
 ### 4.5 Usuários
 
-<img src="../ux-ui/telas/gerente-usuarios.png" alt="Gestão de usuários" width="520">
+<img src="../ux-ui/telas-reais/gerente-usuarios.png" alt="Gestão de usuários" width="520">
 
 Cadastrar, editar, inativar e reativar contas; redefinir senha; zerar a verificação em duas etapas.
 
@@ -417,6 +438,11 @@ A coluna de verificação em duas etapas mostra "Não exigida" para Garçom e Me
 
 Em **Editar**, o Gerente também põe a **foto** do funcionário, que aparece na lista e ao lado do botão de sair. Na
 conta de um garçom, a mesma tela mostra as **medalhas** do mês e o histórico de conquistas (seção 2.7).
+
+**Menção honrosa.** Ainda no perfil do garçom, o botão **Menção honrosa** abre a escolha de um ícone e de uma cor de
+uma lista pronta, o título, a descrição e o mês. Uma prévia mostra como o garçom vai ver. A menção pode ser removida
+depois, pelo **×** ao lado dela. O título e a descrição não vão para o registro de auditoria, que guarda só quem
+recebeu, o ícone, a cor e o mês.
 
 <img src="../ux-ui/telas-reais/gerente-medalhas.png" alt="Medalhas no perfil do garçom" width="520">
 
@@ -441,26 +467,26 @@ na tela da comanda, em **Conta do cliente**. Cada comanda tem o seu código, ent
 código não é digitado ([#217](https://github.com/danih-vb/gastra-tg/issues/217)). Sem QR, em `/cliente`, dá para ver
 o cardápio.
 
-<img src="../ux-ui/telas/cliente-inicio.png" alt="Início do cliente" width="320">
+<img src="../ux-ui/telas-reais/cliente-inicio.png" alt="Início do cliente" width="320">
 
 O pedido continua sendo feito com o garçom: nenhuma tela do cliente envia pedido. Na conta, o cliente pode **chamar o
 garçom**, que vê o chamado nas mesas e em A entregar e toca em **Atendi**, e **dividir o total** entre as pessoas.
 
 ### 6.1 Cardápio digital
 
-<img src="../ux-ui/telas/cliente-cardapio.png" alt="Cardápio digital" width="320">
+<img src="../ux-ui/telas-reais/cliente-cardapio.png" alt="Cardápio digital" width="320">
 
 O cardápio com foto, descrição, preço e as marcações de vegano, vegetariano, sem glúten, sem lactose e infantil.
 Item indisponível não aparece.
 
-<img src="../ux-ui/telas/cliente-filtro.png" alt="Filtro do cardápio" width="320">
+<img src="../ux-ui/telas-reais/cliente-filtro.png" alt="Filtro do cardápio" width="320">
 
 O filtro por categoria e por marcação ajuda quem tem restrição a achar o que pode comer — sem precisar contar a
 restrição para o sistema.
 
 ### 6.2 A conta
 
-<img src="../ux-ui/telas/cliente-conta.png" alt="Conta do cliente" width="320">
+<img src="../ux-ui/telas-reais/cliente-conta.png" alt="Conta do cliente" width="320">
 
 O que já foi lançado, o subtotal, a taxa de serviço e o total. A tela se atualiza sozinha a cada segundo
 enquanto a mesa está aberta, e para quando a conta fecha. Item cancelado aparece riscado e marcado como **não

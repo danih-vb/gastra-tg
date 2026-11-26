@@ -3,10 +3,10 @@
 > **Gerado a partir da execução real dos testes automatizados** (`docs/testes/gerar_relatorio_testes.py`).
 > Não edite à mão: rode os testes e o script de novo.
 
-- **Execução:** 23/11/2026 13:31, commit `2b2eb0f`.
+- **Execução:** 26/11/2026 13:50, commit `d0bc45a + #285, #286 e #287`.
 - **Ambiente:** MySQL 8.4 real (testes de views, triggers e restrições), serviço Python no ar (testes de contrato),
   .NET 10, Python 3.13 e Angular 22 sobre Vitest.
-- **Resultado:** 557 cenários e 615 casos executados: 615 passaram, 0 falharam e 0 foram ignorados.
+- **Resultado:** 570 cenários e 629 casos executados: 629 passaram, 0 falharam e 0 foram ignorados.
 
 Cobre o critério da issue #48 para os **testes automatizados**: pelo menos um cenário por bloco (comandas,
 alocação por programação linear, recomendação e LGPD), com o resultado executado. Cada bloco aparece nas três
@@ -20,20 +20,20 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 
 | Camada | Cenários | Casos | Passaram | Falharam | Ignorados |
 |---|---|---|---|---|---|
-| Backend .NET | 343 | 394 | 394 | 0 | 0 |
+| Backend .NET | 352 | 404 | 404 | 0 | 0 |
 | Analítica Python | 61 | 68 | 68 | 0 | 0 |
-| Frontend Angular | 153 | 153 | 153 | 0 | 0 |
+| Frontend Angular | 157 | 157 | 157 | 0 | 0 |
 
 ## Resumo por bloco
 
 | Bloco | Cenários | Casos | Passaram | Falharam | Ignorados |
 |---|---|---|---|---|---|
-| Núcleo de comandas | 151 | 160 | 160 | 0 | 0 |
+| Núcleo de comandas | 153 | 162 | 162 | 0 | 0 |
 | Cardápio e promoções | 75 | 98 | 98 | 0 | 0 |
 | Alocação de garçons (programação linear) | 61 | 67 | 67 | 0 | 0 |
 | Recomendação de pratos (ciência de dados) | 54 | 60 | 60 | 0 | 0 |
-| BI e índice de desempenho | 63 | 69 | 69 | 0 | 0 |
-| LGPD, auditoria e segurança | 114 | 115 | 115 | 0 | 0 |
+| BI e índice de desempenho | 73 | 80 | 80 | 0 | 0 |
+| LGPD, auditoria e segurança | 115 | 116 | 116 | 0 | 0 |
 | Banco de dados (views, triggers e restrições) | 14 | 14 | 14 | 0 | 0 |
 | Integração backend ↔ Python | 12 | 15 | 15 | 0 | 0 |
 | Arquitetura e infraestrutura | 13 | 17 | 17 | 0 | 0 |
@@ -175,24 +175,26 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 131 | Abre na praça do garçom e separa as mesas dele das dos colegas | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
 | 132 | Mesa de colega não abre comanda: avisa de quem é | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
 | 133 | Sem alocação confirmada, mostra todas as praças e avisa o motivo | Frontend Angular | `Mesas (UC10)` | 1 | ✅ Passou |
-| 134 | Abre a comanda só para leitura, com as restrições (RN04) | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 135 | Agrupa as mesas por praça, com garçom, pendências e restrição | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 136 | Mostra quantos itens da mesa estão atrasados | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 137 | O gerente altera o preço de um item da mesa, com motivo | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 138 | O metre lança um item comum, que vai para o garçom confirmar | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 139 | O metre lança uma cortesia com motivo e a mesa passa a mostrá-la | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 140 | Soma o que está em consumo e o que falta entregar | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
-| 141 | Conta os minutos desde o lançamento | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 142 | Escreve o tempo do jeito que o garçom lê | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 143 | Sugere a composição de 1 pessoas (infantil: false) como Solo | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 144 | Sugere a composição de 2 pessoas (infantil: false) como Casal | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 145 | Sugere a composição de 3 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 146 | Sugere a composição de 3 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 147 | Sugere a composição de 4 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 148 | Sugere a composição de 5 pessoas (infantil: false) como GrupoGrande | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 149 | Sugere a composição de 6 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
-| 150 | Trata até as 17h como almoço, como as views de BI | Frontend Angular | `turno atual` | 1 | ✅ Passou |
-| 151 | Usa a data do aparelho, e não UTC | Frontend Angular | `turno atual` | 1 | ✅ Passou |
+| 134 | Filtra pela praça e usa o endereço digitado no link | Frontend Angular | `QR codes das mesas (#219)` | 1 | ✅ Passou |
+| 135 | Uma etiqueta por mesa, em ordem de praça e número, com o QR do cardápio daquela mesa | Frontend Angular | `QR codes das mesas (#219)` | 1 | ✅ Passou |
+| 136 | Abre a comanda só para leitura, com as restrições (RN04) | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 137 | Agrupa as mesas por praça, com garçom, pendências e restrição | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 138 | Mostra quantos itens da mesa estão atrasados | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 139 | O gerente altera o preço de um item da mesa, com motivo | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 140 | O metre lança um item comum, que vai para o garçom confirmar | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 141 | O metre lança uma cortesia com motivo e a mesa passa a mostrá-la | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 142 | Soma o que está em consumo e o que falta entregar | Frontend Angular | `Salão agora (painel do Metre)` | 1 | ✅ Passou |
+| 143 | Conta os minutos desde o lançamento | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 144 | Escreve o tempo do jeito que o garçom lê | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 145 | Sugere a composição de 1 pessoas (infantil: false) como Solo | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 146 | Sugere a composição de 2 pessoas (infantil: false) como Casal | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 147 | Sugere a composição de 3 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 148 | Sugere a composição de 3 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 149 | Sugere a composição de 4 pessoas (infantil: false) como GrupoPequeno | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 150 | Sugere a composição de 5 pessoas (infantil: false) como GrupoGrande | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 151 | Sugere a composição de 6 pessoas (infantil: true) como Familia | Frontend Angular | `rótulos e regras de apresentação` | 1 | ✅ Passou |
+| 152 | Trata até as 17h como almoço, como as views de BI | Frontend Angular | `turno atual` | 1 | ✅ Passou |
+| 153 | Usa a data do aparelho, e não UTC | Frontend Angular | `turno atual` | 1 | ✅ Passou |
 
 ## Cardápio e promoções
 
@@ -409,63 +411,73 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 4 | Medalhas do garcom mostra as do mes e o historico e registra a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
 | 5 | Medalhas o garcom nao ve as de outro | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
 | 6 | Medalhas o gerente ve as de qualquer garcom eso de garcom | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 7 | Perfis de consumo com historico real traz os nomes do cardapio do mais comum ao menos e registra a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 8 | Perfis de consumo com historico simulado nao mostra perfis que nao sao deste restaurante | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 9 | Perfis de consumo com servico analitico fora responde 200 sem perfis | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 10 | Perfis de consumo sao do gerente | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 11 | Periodo invalido ou longo demais retorna 400 | Backend .NET | `IndicadoresControllerTests` | 2 | ✅ Passou |
-| 12 | Periodo sem filtro sao os ultimos 30 dias com fim inclusivo | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 13 | Ranking com avaliacoes usa a nota de quem tem o minimo e esconde a dos outros | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 14 | Ranking o garcom ve so a propria posicao sem nome dos colegas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 15 | Ranking o gerente ve todos | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 16 | Relatorio de avaliacoes sem nenhuma avaliacao nao divide por zero | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 17 | Relatorio de avaliacoes traz media e as cinco faixas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 18 | Relatorio de garcons calcula medias e totais com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 19 | Relatorio de horarios traz hora e dia da semana com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 20 | Relatorio de pracas mostra todas as pracas inclusive sem movimento | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 21 | Relatorio do cardapio agrupa por categoria com participacao | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 22 | Relatorio do cardapio classifica cada item dentro da propria categoria | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 23 | Relatorios sao do gerente e registram a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
-| 24 | Abaixo do minimo nota nao aparece e o garcom recebe a media geral | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 25 | Com avaliacoes pesos viram 40 30 30 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 26 | Compara por turno quem trabalhou mais nao ganha so por isso | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 27 | Empate no indice divide a posicao | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 28 | Media bayesiana poucas notas altas nao passam muitas notas quase altas | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 29 | Mesma venda e mesmas mesas avaliacao desempata | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 30 | Ninguem com o minimo avaliacao sai do indice como antes | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 31 | Quem lidera faturamento e mesas por turno faz 100 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 32 | Sem avaliacoes mesas atendidas pesam metade | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 33 | Sem turnos fica fora do ranking | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
-| 34 | Bem avaliado exige o minimo de avaliacoes e a media | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
-| 35 | Mesa cheia mostra o progresso ate o alvo | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
-| 36 | Meta batida e da equipe toda | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
-| 37 | Seis medalhas sem nenhuma conquistada num mes vazio | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
-| 38 | Top 3 so ate a terceira posicao | Backend .NET | `MedalhasTests` | 3 | ✅ Passou |
-| 39 | Avaliacoes por garcom somam as notas das comandas dele pelo dia do fechamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 40 | Faturamento medio por praca inclui praca sem movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 41 | Faturamento por hora e por dia da semana usam o horario de brasilia | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 42 | Faturamento por turno do garcom e a media dos turnos no intervalo com fim exclusivo | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 43 | Indicadores por garcom contam turnos mesas e minutos de atendimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 44 | Indicadores por item trazem categoria quantidade e faturamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 45 | Indicadores por praca somam comandas e turnos com movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
-| 46 | Com histórico ainda simulado, explica em vez de mostrar perfis que não são deste restaurante | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 47 | Com o serviço de análise fora do ar, os perfis avisam e o resto do painel continua (D3) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 48 | Destaca como alto potencial a praça acima da média, pela mesma regra da RN03 | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 49 | Monta o mapa de calor por praça e hora, com o pico | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 50 | Mostra a média das avaliações e a distribuição, sem ligar nota a garçom (RF25) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 51 | Mostra os perfis de consumo com os itens que os caracterizam (RF09) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 52 | Pede os seis relatórios com o mesmo período e mostra os totais | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 53 | Período sem comanda fechada explica em vez de mostrar zeros | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 54 | Ranking com os detalhes do garçom e itens ordenados pelo faturamento | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 55 | Sem avaliação no período, diz isso em vez de mostrar média zero | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 56 | Separa os itens nos quatro grupos da engenharia de cardápio | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 57 | Trocar o período pede os relatórios de novo | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
-| 58 | Abaixo do mínimo, não mostra a nota | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 59 | Com avaliações, mostra a nota do próprio garçom | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 60 | Mostra a posição do próprio garçom e o que entra no índice | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 61 | Mostra as medalhas do mês com o que falta e as conquistas dos meses anteriores | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 62 | Sem turnos no período, explica em vez de mostrar tela vazia | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
-| 63 | Inclui o dia de hoje em cada opção | Frontend Angular | `datas do período` | 1 | ✅ Passou |
+| 7 | Mencao para quem nao e garcom retorna 404 | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 8 | Mencao pelo garcom retorna 403 | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 9 | Mencao pelo gerente aparece para o garcom junto das medalhas e sem o texto no log | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 10 | Mencao removida sai das medalhas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 11 | Mencao sem titulo com icone fora da lista ou no futuro retorna 400 | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 12 | Perfis de consumo com historico real traz os nomes do cardapio do mais comum ao menos e registra a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 13 | Perfis de consumo com historico simulado nao mostra perfis que nao sao deste restaurante | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 14 | Perfis de consumo com servico analitico fora responde 200 sem perfis | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 15 | Perfis de consumo sao do gerente | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 16 | Periodo invalido ou longo demais retorna 400 | Backend .NET | `IndicadoresControllerTests` | 2 | ✅ Passou |
+| 17 | Periodo sem filtro sao os ultimos 30 dias com fim inclusivo | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 18 | Ranking com avaliacoes usa a nota de quem tem o minimo e esconde a dos outros | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 19 | Ranking o garcom ve so a propria posicao sem nome dos colegas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 20 | Ranking o gerente ve todos | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 21 | Relatorio de avaliacoes sem nenhuma avaliacao nao divide por zero | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 22 | Relatorio de avaliacoes traz media e as cinco faixas | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 23 | Relatorio de garcons calcula medias e totais com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 24 | Relatorio de horarios traz hora e dia da semana com nome | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 25 | Relatorio de pracas mostra todas as pracas inclusive sem movimento | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 26 | Relatorio do cardapio agrupa por categoria com participacao | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 27 | Relatorio do cardapio classifica cada item dentro da propria categoria | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 28 | Relatorios sao do gerente e registram a consulta | Backend .NET | `IndicadoresControllerTests` | 1 | ✅ Passou |
+| 29 | Abaixo do minimo nota nao aparece e o garcom recebe a media geral | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 30 | Com avaliacoes pesos viram 40 30 30 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 31 | Compara por turno quem trabalhou mais nao ganha so por isso | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 32 | Empate no indice divide a posicao | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 33 | Media bayesiana poucas notas altas nao passam muitas notas quase altas | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 34 | Mesma venda e mesmas mesas avaliacao desempata | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 35 | Ninguem com o minimo avaliacao sai do indice como antes | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 36 | Quem lidera faturamento e mesas por turno faz 100 | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 37 | Sem avaliacoes mesas atendidas pesam metade | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 38 | Sem turnos fica fora do ranking | Backend .NET | `IndiceDeDesempenhoTests` | 1 | ✅ Passou |
+| 39 | Bem avaliado exige o minimo de avaliacoes e a media | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
+| 40 | Mesa cheia mostra o progresso ate o alvo | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
+| 41 | Meta batida e da equipe toda | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
+| 42 | Seis medalhas sem nenhuma conquistada num mes vazio | Backend .NET | `MedalhasTests` | 1 | ✅ Passou |
+| 43 | Top 3 so ate a terceira posicao | Backend .NET | `MedalhasTests` | 3 | ✅ Passou |
+| 44 | Guarda o mes pelo primeiro dia e tira espacos do texto | Backend .NET | `MencaoHonrosaTests` | 1 | ✅ Passou |
+| 45 | Icone ou cor fora da lista lanca excecao | Backend .NET | `MencaoHonrosaTests` | 1 | ✅ Passou |
+| 46 | Texto longo demais lanca excecao | Backend .NET | `MencaoHonrosaTests` | 1 | ✅ Passou |
+| 47 | Titulo vazio lanca excecao | Backend .NET | `MencaoHonrosaTests` | 2 | ✅ Passou |
+| 48 | Avaliacoes por garcom somam as notas das comandas dele pelo dia do fechamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 49 | Faturamento medio por praca inclui praca sem movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 50 | Faturamento por hora e por dia da semana usam o horario de brasilia | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 51 | Faturamento por turno do garcom e a media dos turnos no intervalo com fim exclusivo | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 52 | Indicadores por garcom contam turnos mesas e minutos de atendimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 53 | Indicadores por item trazem categoria quantidade e faturamento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 54 | Indicadores por praca somam comandas e turnos com movimento | Backend .NET | `RepositorioIndicadoresTests` | 1 | ✅ Passou |
+| 55 | Com histórico ainda simulado, explica em vez de mostrar perfis que não são deste restaurante | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 56 | Com o serviço de análise fora do ar, os perfis avisam e o resto do painel continua (D3) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 57 | Destaca como alto potencial a praça acima da média, pela mesma regra da RN03 | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 58 | Monta o mapa de calor por praça e hora, com o pico | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 59 | Mostra a média das avaliações e a distribuição, sem ligar nota a garçom (RF25) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 60 | Mostra os perfis de consumo com os itens que os caracterizam (RF09) | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 61 | Pede os seis relatórios com o mesmo período e mostra os totais | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 62 | Período sem comanda fechada explica em vez de mostrar zeros | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 63 | Ranking com os detalhes do garçom e itens ordenados pelo faturamento | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 64 | Sem avaliação no período, diz isso em vez de mostrar média zero | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 65 | Separa os itens nos quatro grupos da engenharia de cardápio | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 66 | Trocar o período pede os relatórios de novo | Frontend Angular | `Análises (UC16, UC17)` | 1 | ✅ Passou |
+| 67 | Abaixo do mínimo, não mostra a nota | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 68 | Com avaliações, mostra a nota do próprio garçom | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 69 | Mostra a posição do próprio garçom e o que entra no índice | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 70 | Mostra as medalhas do mês com o que falta e as conquistas dos meses anteriores | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 71 | Mostra as menções honrosas do Gerente, sem botão de remover | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 72 | Sem turnos no período, explica em vez de mostrar tela vazia | Frontend Angular | `Desempenho (UC17)` | 1 | ✅ Passou |
+| 73 | Inclui o dia de hoje em cada opção | Frontend Angular | `datas do período` | 1 | ✅ Passou |
 
 ## LGPD, auditoria e segurança
 
@@ -555,36 +567,37 @@ sem dublê), que dependem de dados de operação e entram no marco M6.
 | 82 | Mostra a verificação em duas etapas só para quem usa (RF16) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
 | 83 | Na própria conta não oferece inativar, senha nem zerar as duas etapas | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
 | 84 | No perfil do garçom, o Gerente vê as medalhas e o histórico de conquistas | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 85 | Reativar não pede confirmação: é ação sem perda | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 86 | Redefine a senha avisando que as sessões caem (#141) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 87 | Zerar as duas etapas só aparece para quem já configurou, e explica o efeito (RN07) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
-| 88 | Com acesso liberado, vai para a tela inicial do papel | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 89 | Mostra a mensagem da API quando a senha está errada | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 90 | Não chama a API com o formulário vazio | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 91 | Não segue um "voltar" que aponta para fora do sistema | Frontend Angular | `Login` | 1 | ✅ Passou |
-| 92 | Avisa que a chave aparece uma única vez (RN07) | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 93 | Desenha o QR code da URI otpauth no próprio navegador | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 94 | Erro ao gerar a chave aparece na tela em vez de deixar o cartão vazio | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 95 | Mantém a chave digitável como contingência de quem não consegue apontar a câmera | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 96 | Nos acessos seguintes pede só o código, sem chave nem QR | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
-| 97 | Confirmar o segundo fator libera o acesso e descarta o token temporário | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 98 | Login do garçom libera o acesso direto e guarda nome, papel e validade | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 99 | Login do gerente no primeiro acesso pede a configuração do autenticador, sem liberar acesso | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 100 | Lê a validade do JWT em milissegundos e trata token malformado como vencido | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 101 | Restaura a sessão guardada ao recarregar a página | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 102 | Sair encerra a sessão no navegador mesmo se a API falhar | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 103 | Sessão guardada com token vencido é descartada | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
-| 104 | 401 do próprio login (senha errada) não mexe na navegação | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 105 | 401 fora do login encerra a sessão e leva ao login | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 106 | Envia o token nas chamadas à API | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 107 | Nunca envia o token para outro endereço | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
-| 108 | A raiz leva o Coordenador para /cardapio | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 109 | A raiz leva o Garcom para /comandas | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 110 | A raiz leva o Gerente para /analises | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 111 | A raiz leva o Metre para /alocacao | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 112 | Com o papel certo, deixa entrar | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 113 | Com outro papel, manda para sem permissão | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
-| 114 | Sem login, manda para o login lembrando a tela pedida | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 85 | O Gerente dá uma menção honrosa escolhendo ícone, cor e texto, e pode removê-la | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 86 | Reativar não pede confirmação: é ação sem perda | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 87 | Redefine a senha avisando que as sessões caem (#141) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 88 | Zerar as duas etapas só aparece para quem já configurou, e explica o efeito (RN07) | Frontend Angular | `Gestão de usuários (UC04)` | 1 | ✅ Passou |
+| 89 | Com acesso liberado, vai para a tela inicial do papel | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 90 | Mostra a mensagem da API quando a senha está errada | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 91 | Não chama a API com o formulário vazio | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 92 | Não segue um "voltar" que aponta para fora do sistema | Frontend Angular | `Login` | 1 | ✅ Passou |
+| 93 | Avisa que a chave aparece uma única vez (RN07) | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 94 | Desenha o QR code da URI otpauth no próprio navegador | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 95 | Erro ao gerar a chave aparece na tela em vez de deixar o cartão vazio | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 96 | Mantém a chave digitável como contingência de quem não consegue apontar a câmera | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 97 | Nos acessos seguintes pede só o código, sem chave nem QR | Frontend Angular | `Segundo fator (UC02)` | 1 | ✅ Passou |
+| 98 | Confirmar o segundo fator libera o acesso e descarta o token temporário | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 99 | Login do garçom libera o acesso direto e guarda nome, papel e validade | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 100 | Login do gerente no primeiro acesso pede a configuração do autenticador, sem liberar acesso | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 101 | Lê a validade do JWT em milissegundos e trata token malformado como vencido | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 102 | Restaura a sessão guardada ao recarregar a página | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 103 | Sair encerra a sessão no navegador mesmo se a API falhar | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 104 | Sessão guardada com token vencido é descartada | Frontend Angular | `SessaoService` | 1 | ✅ Passou |
+| 105 | 401 do próprio login (senha errada) não mexe na navegação | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 106 | 401 fora do login encerra a sessão e leva ao login | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 107 | Envia o token nas chamadas à API | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 108 | Nunca envia o token para outro endereço | Frontend Angular | `autenticacaoInterceptor` | 1 | ✅ Passou |
+| 109 | A raiz leva o Coordenador para /cardapio | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 110 | A raiz leva o Garcom para /comandas | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 111 | A raiz leva o Gerente para /analises | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 112 | A raiz leva o Metre para /alocacao | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 113 | Com o papel certo, deixa entrar | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 114 | Com outro papel, manda para sem permissão | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
+| 115 | Sem login, manda para o login lembrando a tela pedida | Frontend Angular | `guardas de rota` | 1 | ✅ Passou |
 
 ## Banco de dados (views, triggers e restrições)
 
