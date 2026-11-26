@@ -82,6 +82,9 @@ O garçom trabalha pelo celular. O menu de baixo tem três telas: **Comandas**, 
 
 <img src="../ux-ui/telas/garcom-mesas.png" alt="Mesas do garçom" width="320">
 
+No alto ficam os **destaques de hoje** e as **metas do mês** que o Gerente escolheu: o destaque do dia é o item
+para oferecer primeiro naquele dia, e a meta do mês mostra quantas unidades a equipe já vendeu e quanto falta.
+
 A tela abre no mapa das mesas da praça do garçom naquele turno. Mesa tracejada está livre; mesa com borda escura é
 dele, e mostra há quanto tempo está aberta, o valor da conta e os itens a entregar; mesa cinza é de um colega.
 
@@ -110,7 +113,9 @@ decisão de quem está vendo o salão.
 
 ### 2.2 Lançar um item
 
-Dentro da comanda, o botão **Lançar item** abre o cardápio; escolha o item e a quantidade.
+Dentro da comanda, o botão **Lançar item** abre o cardápio; escolha o item e a quantidade. A busca acha o item pelo
+nome ou pela restrição ("sem glúten"), sem precisar de acento. Os destaques do dia e as metas do mês vêm primeiro na
+lista, em cor.
 
 <img src="../ux-ui/telas/garcom-lancar-item.png" alt="Lançar item" width="320">
 
@@ -166,6 +171,16 @@ A tela **A entregar** junta os itens pendentes de todas as mesas do garçom, do 
 
 Item cancelado sai da conta, mas não some do histórico.
 
+**Itens para confirmar.** O Metre e o Gerente também podem lançar itens na mesa (seção 3.4). Esses itens aparecem na
+comanda em **Para confirmar**, ainda fora da conta e fora da tela do cliente, até o garçom tocar em **Confirmar** ou
+**Recusar**. A conta não fecha enquanto houver item para confirmar. Recusar cancela o item, com motivo.
+
+<img src="../ux-ui/telas-reais/garcom-confirmar.png" alt="Itens para confirmar" width="320">
+
+**Cortesia e preço ajustado.** Uma cortesia lançada pelo Metre ou pelo Gerente aparece na comanda com a etiqueta
+**Cortesia** e entra por R$ 0,00. Um item com preço ajustado pelo Gerente mostra o preço antigo riscado ao lado do
+novo.
+
 ### 2.6 Fechar a conta
 
 <img src="../ux-ui/telas/garcom-fechar.png" alt="Fechar a conta" width="320">
@@ -190,6 +205,22 @@ saiu da cozinha.
 Cada garçom vê a própria posição no ranking do período, com o faturamento por turno, a média de mesas atendidas e,
 quando há avaliações suficientes, a nota dos clientes. O garçom vê **só os próprios números** e a posição; não vê o
 desempenho dos colegas.
+
+**Medalhas.** Abaixo do índice ficam as medalhas do mês, com quanto falta para cada uma, e o que foi conquistado nos
+meses anteriores:
+
+| Medalha | Como se ganha no mês |
+|---|---|
+| Pódio | Ficar entre os 3 primeiros do índice |
+| Mesa cheia | Atender 100 mesas |
+| Maratonista | Trabalhar 20 turnos |
+| Bem avaliado | Receber pelo menos 5 avaliações, com média 4,5 ou mais |
+| Vendedor de destaque | Vender 20 unidades dos itens que são meta do mês |
+| Meta batida | A equipe bater alguma meta do mês |
+
+<img src="../ux-ui/telas-reais/garcom-medalhas.png" alt="Medalhas do garçom" width="320">
+
+As medalhas premiam cada um pelo próprio mês e a equipe junta, e não só quem fica em primeiro.
 
 **Como a avaliação entra no índice.** Quando algum garçom recebeu pelo menos 5 avaliações no período, o índice passa a
 ser 40% faturamento, 30% mesas e 30% avaliação. A nota considerada é uma média que puxa quem tem poucas avaliações para
@@ -263,6 +294,18 @@ O metre monta o turno à mão, e o sistema avisa que a sugestão automática nã
 Visão do salão em tempo real: praças, mesas ocupadas, há quanto tempo, quanto já está na conta e qual garçom
 atende. Serve para o metre saber onde está o gargalo sem ter que atravessar o salão.
 
+Em **Ver**, na linha da mesa, o Metre pode:
+
+- **Lançar item** — escolhe na mesma lista do garçom. O item fica **para o garçom confirmar** (seção 2.5) e só entra
+  na conta depois disso.
+- **Lançar cortesia** — o item entra por R$ 0,00, com um motivo ("aniversário", por exemplo). Vale também para item
+  que não está à venda no cardápio, como uma torta de aniversário.
+
+<img src="../ux-ui/telas-reais/metre-lancar-item.png" alt="Lançar item pelo Metre" width="520">
+
+O Gerente usa a mesma tela e, além disso, pode **alterar o preço** de um item já lançado, com motivo. O preço
+original fica guardado e o cliente vê os dois na conta.
+
 ---
 
 ## 4. Gerente
@@ -307,6 +350,14 @@ para o que for lançado daqui para frente.
 
 Marcar um item como indisponível tira ele do cardápio digital do cliente e impede novos lançamentos; o aviso
 oferece **Desfazer**, porque errar o item na pressa é fácil.
+
+**Destaques e metas.** Na aba **Destaques**, escolha o item e o tipo:
+
+- **Destaque de hoje** — vale só no dia e aparece colorido para os garçons;
+- **Meta deste mês** — vale o mês inteiro e pede a quantidade a vender. A tela mostra quanto a equipe já vendeu;
+  cortesias não contam.
+
+<img src="../ux-ui/telas-reais/gerente-destaques.png" alt="Destaques e metas" width="520">
 
 ### 4.3 Promoções
 
@@ -364,12 +415,17 @@ Cadastrar, editar, inativar e reativar contas; redefinir senha; zerar a verifica
 
 A coluna de verificação em duas etapas mostra "Não exigida" para Garçom e Metre, que não usam o recurso.
 
+Em **Editar**, o Gerente também põe a **foto** do funcionário, que aparece na lista e ao lado do botão de sair. Na
+conta de um garçom, a mesma tela mostra as **medalhas** do mês e o histórico de conquistas (seção 2.7).
+
+<img src="../ux-ui/telas-reais/gerente-medalhas.png" alt="Medalhas no perfil do garçom" width="520">
+
 ---
 
 ## 5. Coordenador
 
 O Coordenador vê uma tela só: **Cardápio** — que é onde ficam também as promoções, em abas. Vale para ele tudo o
-que está nas seções 4.2 e 4.3.
+que está nas seções 4.2 e 4.3, inclusive os destaques e as metas.
 
 Ele **não** vê análises, salão nem usuários. Isso é garantido dos dois lados: o menu não mostra, e a API recusa o
 acesso mesmo que alguém digite o endereço na mão.
