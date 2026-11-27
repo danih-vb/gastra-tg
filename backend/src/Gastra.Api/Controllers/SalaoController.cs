@@ -47,6 +47,7 @@ public class SalaoController : ControllerBase
     }
 
     /// <summary>Praças do salão, com quantos garçons cada uma comporta (entrada da alocação, RN03).</summary>
+    [Authorize(Roles = "Gerente,Metre,Garcom")]
     [HttpGet("pracas")]
     [ProducesResponseType(typeof(List<PracaResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListarPracas([FromServices] IListarPracasUseCase useCase)
@@ -85,6 +86,7 @@ public class SalaoController : ControllerBase
     }
 
     /// <summary>Mesas do salão: é a lista que o garçom usa para abrir a comanda (UC10).</summary>
+    [Authorize(Roles = "Gerente,Metre,Garcom")]
     [HttpGet("mesas")]
     [ProducesResponseType(typeof(List<MesaResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListarMesas([FromServices] IListarMesasUseCase useCase)
