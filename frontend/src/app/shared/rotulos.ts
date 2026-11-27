@@ -97,5 +97,19 @@ export function tempoRelativo(dataIso: string, agora = Date.now()): string {
   if (minutos < 1) return 'agora';
   if (minutos < 60) return `há ${minutos} min`;
   const horas = Math.floor(minutos / 60);
-  return horas === 1 ? 'há 1 h' : `há ${horas} h`;
+  if (horas < 24) return `há ${horas} h`;
+  const dias = Math.floor(horas / 24);
+  return dias === 1 ? 'há 1 dia' : `há ${dias} dias`;
+}
+
+/** "45 min", "2 h 15 min", "3 dias": quanto tempo uma mesa está aberta, sem fazer o garçom dividir por 60. */
+export function duracao(minutos: number): string {
+  if (minutos < 60) return `${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) {
+    const resto = minutos % 60;
+    return resto ? `${horas} h ${resto} min` : `${horas} h`;
+  }
+  const dias = Math.floor(horas / 24);
+  return dias === 1 ? '1 dia' : `${dias} dias`;
 }

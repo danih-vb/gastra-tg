@@ -15,6 +15,14 @@ Base analisada: o schema `gastra_dev` depois de todas as migrations até
 > `promocao_item_cardapio`, a engenharia reversa foi rodada de novo: a entidade que faltava agora confere, inclusive
 > a relação N:N (seções 1.2 e 1.3).
 
+> **Atualização da fase final (26/11/2026):** a engenharia reversa foi rodada de novo sobre as 15 tabelas e as 16 chaves
+> estrangeiras atuais. Entraram no MER e no DER a `DestaqueDoCardapio` (ENT12, REL12) e a `MencaoHonrosa` (ENT13,
+> REL13 e REL14), os atributos da cortesia, do ajuste de preço e do lançamento para confirmar em `ItemDoPedido`, a
+> `foto` do usuário e o `atendimento_chamado_em` da comanda. Todos os relacionamentos conferem com as chaves
+> estrangeiras (`engenharia-reversa/comparacao.txt`). Ficaram só no banco `usuario.bloqueada_ate` e
+> `usuario.tentativas_falhas`: são o mecanismo de bloqueio por tentativas de acesso, e não dado do negócio
+> (linha 9 da seção 1.3).
+
 ## Resumo do que a validação encontrou e corrigiu
 
 | # | Achado | Correção |
@@ -88,6 +96,8 @@ obrigatoriedade, e o N:N confere com a tabela associativa:
 | 6 | 11 colunas aceitam vazio, mas o DER não marcava o atributo como opcional | **Divergência corrigida no DER** | Ver 1.4 |
 | 7 | Restrições que existem só no banco | Detalhe físico | O DER conceitual não tem notação para elas. Ver 1.5 |
 | 8 | `comanda.garcom_id` e `alocacao.garcom_id` apontam para `usuario`, e não para uma entidade Garçom | Regra fora do alcance do banco | Uma chave estrangeira não consegue exigir que o usuário tenha papel Garçom. A regra é garantida na aplicação: só o Garçom abre comanda (autorização por papel, RNF04) |
+| 9 | `usuario.bloqueada_ate` e `usuario.tentativas_falhas` não aparecem no DER | Detalhe de segurança | Guardam o bloqueio temporário depois de tentativas de acesso erradas. São controle de acesso, e não dado do negócio |
+| 10 | `mencao_honrosa` tem duas chaves estrangeiras para `usuario` | Mapeamento padrão | Uma para cada relacionamento: `garcom_id` (REL13, quem recebe) e `concedida_por_id` (REL14, quem concede). Como no item 8, o papel de cada um é garantido na aplicação |
 
 ### 1.4 Opcionalidade corrigida no DER
 
@@ -249,6 +259,8 @@ Legenda:
 | `comanda.codigo_acesso_cliente` | Credencial | Cliente | Dá acesso à conta da mesa (UC20). Único, nunca vai para log |
 | `avaliacao_atendimento.comentario` | Pode virar pessoal se o cliente escrever dado dele | Cliente | Texto livre e opcional (RF25). A tela avisa para não escrever dado pessoal. Nunca vai para log nem para view, e **não sai na resposta do Gerente**: ele vê só média e distribuição (RN08) |
 | `avaliacao_atendimento.nota` | Não pessoal | Cliente | Presa à comanda, que não identifica o cliente. Exposta só agregada: a nota de uma comanda isolada apontaria para o atendimento daquela mesa (RN08) |
+| `usuario.foto` | Pessoal | Funcionário | Opcional; só o Gerente põe ou tira. Fica numa pasta separada das fotos públicas do cardápio e só é entregue com login (`GET /api/usuarios/fotos/{nome}`: o Gerente vê todas; os demais, a própria). Fora de relatório, view e log. O arquivo é apagado quando a foto é trocada ou a conta é inativada (#291) |
+| `mencao_honrosa.titulo`, `mencao_honrosa.descricao` | Pessoal, por vínculo a um garçom identificado | Funcionário | Só o Gerente concede e remove; o garçom vê só as próprias. O texto nunca vai para o registro de auditoria, que guarda só quem recebeu, o ícone, a cor e o mês |
 | `comanda.quantidade_pessoas`, `comanda.composicao` | Não pessoal | — | Informação observável da mesa (RN01), sem identidade. Não é usada para inferir atributo sensível (RN05) |
 | `item_pedido.*` | Não pessoal | — | Consumo de uma comanda anônima. As views de BI e das regras de associação só usam ids |
 | `promocao.*`, `promocao_item_cardapio.*` | Não pessoal | — | Dado do cardápio |

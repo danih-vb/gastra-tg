@@ -1,7 +1,7 @@
 # GASTRA — Manual do usuário
 
-Este manual explica como usar o GASTRA no dia a dia do restaurante. Ele é escrito para quem vai operar o sistema —
-garçom, metre, gerente, coordenador — e para o cliente que abre a conta pelo celular.
+Este manual explica como usar o GASTRA no dia a dia do restaurante. Ele é escrito para quem vai operar o sistema
+(garçom, metre, gerente, coordenador) e para o cliente que abre a conta pelo celular.
 
 As telas aqui são capturas do sistema em execução, com os dados simulados de demonstração. Onde ainda não há
 captura, como nas telas de erro, aparece a tela do protótipo navegável (`docs/ux-ui/prototipo/`), que é o desenho
@@ -37,7 +37,7 @@ que as telas implementadas seguem.
 O login é o **e-mail** da pessoa mais a senha. Quem cria as contas é o Gerente (seção 4.5); ninguém se cadastra
 sozinho.
 
-Se alguma coisa não confere, o sistema mostra sempre a **mesma mensagem** — para e-mail que não existe, para conta
+Se alguma coisa não confere, o sistema mostra sempre a **mesma mensagem**: para e-mail que não existe, para conta
 inativada e para senha errada. É de propósito: mensagens diferentes contariam a quem está tentando adivinhar quais
 e-mails têm conta no sistema.
 
@@ -60,7 +60,7 @@ completar:
 
 <img src="../ux-ui/telas/acesso-codigo.png" alt="Código de seis dígitos" width="320">
 
-Se o código expirar antes de você terminar de digitar, espere o próximo no aplicativo e digite de novo — cada
+Se o código expirar antes de você terminar de digitar, espere o próximo no aplicativo e digite de novo, porque cada
 código vale por 30 segundos.
 
 Garçom e Metre não usam a verificação em duas etapas. É uma escolha de projeto: eles entram muitas vezes por turno,
@@ -99,7 +99,7 @@ A tela abre no mapa das mesas da praça do garçom naquele turno. Mesa tracejada
 dele, e mostra há quanto tempo está aberta, o valor da conta e os itens a entregar; mesa cinza é de um colega.
 
 Para abrir: **toque na mesa livre** e, na lista que aparece, **toque no número de pessoas** que sentaram. A comanda
-abre nesse segundo toque — tocar no número já é a confirmação. O número igual à capacidade da mesa vem destacado,
+abre nesse segundo toque: tocar no número já é a confirmação. O número igual à capacidade da mesa vem destacado,
 que é o caso mais comum.
 
 <img src="../ux-ui/telas-reais/garcom-abrir-mesa.png" alt="Abrir mesa" width="320">
@@ -117,7 +117,7 @@ O sistema sugere sozinho a **composição da mesa** a partir do número de pesso
 | 5 ou mais | Grupo grande |
 | Qualquer número, com item infantil na conta | Família |
 
-A sugestão pode ser trocada à mão quando não bate com a realidade — uma mesa de 4 que é claramente uma família,
+A sugestão pode ser trocada à mão quando não bate com a realidade, como uma mesa de 4 que é claramente uma família,
 por exemplo. Depois de trocada à mão, o sistema **para de reclassificar** aquela mesa sozinho, para não desfazer a
 decisão de quem está vendo o salão.
 
@@ -130,7 +130,7 @@ lista, em cor.
 <img src="../ux-ui/telas-reais/garcom-lancar-item.png" alt="Lançar item" width="320">
 
 São **três toques** do cardápio até o item na conta (também RNF02). Logo depois do lançamento aparece um aviso com
-**Desfazer**, para o caso de ter tocado no item errado — desfazer aqui cancela o item com o motivo "erro de
+**Desfazer**, para o caso de ter tocado no item errado. Desfazer aqui cancela o item com o motivo "erro de
 lançamento".
 
 O preço que entra na conta é o **do momento do lançamento**. Se o Gerente mudar o preço no cardápio depois, as
@@ -145,7 +145,7 @@ comandas que já estavam abertas continuam com o preço antigo.
 Dá para registrar restrições da mesa: vegano, vegetariano, sem glúten, sem lactose, alergia ou outro (com
 observação livre).
 
-> No campo de observação, **escreva só o que a cozinha precisa saber** — "alergia a camarão", não o nome nem
+> No campo de observação, **escreva só o que a cozinha precisa saber**: "alergia a camarão", não o nome nem
 > qualquer outro dado da pessoa. A própria tela avisa isso. Esse campo é apagado quando a conta fecha.
 
 As restrições aparecem **só para o garçom e o metre, e só enquanto a mesa está aberta**. Quando a conta fecha, elas
@@ -159,7 +159,7 @@ camada analítica, que cruza o histórico de pedidos.
 
 <img src="../ux-ui/telas/garcom-sugestoes-indisponiveis.png" alt="Sugestões indisponíveis" width="320">
 
-Quando há alergia registrada, o sistema pede que o garçom **confirme com o cliente** antes de lançar — sugestão é
+Quando há alergia registrada, o sistema pede que o garçom **confirme com o cliente** antes de lançar, porque sugestão é
 sugestão, não garantia.
 
 E quando o serviço de análise está fora do ar, a tela diz isso e **o resto da comanda continua funcionando**.
@@ -173,7 +173,7 @@ Cada item lançado fica **Pendente** até alguém dizer o que aconteceu com ele.
 
 A tela **A entregar** junta os itens pendentes de todas as mesas do garçom, do mais antigo para o mais novo.
 
-- **Entregar** não pede confirmação e não oferece desfazer — a API não volta atrás nessa.
+- **Entregar** não pede confirmação e não oferece desfazer: a API não volta atrás nessa.
 - **Cancelar** exige um motivo: erro de lançamento, cliente desistiu ou item em falta. O motivo é o que permite
   depois separar erro de operação de falta de estoque nos relatórios.
 
@@ -196,7 +196,7 @@ novo.
 <img src="../ux-ui/telas-reais/garcom-fechar.png" alt="Fechar a conta" width="320">
 
 A tela de fechamento mostra o subtotal, a **taxa de serviço de 10%** e o total. A taxa vem ligada por padrão e pode
-ser retirada a pedido do cliente, com um toque — é direito dele, e o sistema não esconde isso. Se ele mudar de ideia,
+ser retirada a pedido do cliente, com um toque, porque é direito dele, e o sistema não esconde isso. Se ele mudar de ideia,
 outro toque recoloca, enquanto a conta estiver aberta. O fechamento em si
 pede confirmação, porque conta fechada não reabre.
 
@@ -251,7 +251,7 @@ O metre monta o turno: quem está presente e em qual praça cada um atende.
 
 ### 3.1 Montar o turno, em três passos
 
-**Passo 1 — presença.** Marque quem chegou.
+**Passo 1: presença.** Marque quem chegou.
 
 <img src="../ux-ui/telas-reais/metre-presenca.png" alt="Presença do turno" width="420">
 
@@ -259,14 +259,14 @@ A tela mostra **presentes × vagas**. Se chegou mais gente do que existe vaga na
 problema e não deixa gerar a sugestão: alguém vai ter que ficar de fora do salão, e essa é uma decisão do metre,
 não do cálculo.
 
-**Passo 2 — sugestão.** O sistema distribui os presentes pelas praças e mostra por que cada um foi para onde foi.
+**Passo 2: sugestão.** O sistema distribui os presentes pelas praças e mostra por que cada um foi para onde foi.
 
 <img src="../ux-ui/telas-reais/metre-sugestao.png" alt="Sugestão de alocação" width="420">
 
 A distribuição não é sorteio. Cada garçom recebe um índice que pesa duas coisas:
 
-- **60%** — o faturamento médio por turno dele nos últimos 30 dias;
-- **40%** — há quantos turnos ele não pega uma praça de alto potencial.
+- **60%:** o faturamento médio por turno dele nos últimos 30 dias;
+- **40%:** há quantos turnos ele não pega uma praça de alto potencial.
 
 "Praça de alto potencial" é a que fatura acima da média das praças com movimento. O segundo peso existe para o
 rodízio: sem ele, o mesmo garçom pegaria sempre a praça boa, e os outros nunca teriam chance de melhorar o próprio
@@ -279,14 +279,14 @@ indicador de desempenho, que só o Gerente consulta. Quem é novo na casa aparec
 dias"* e, para a regra, conta como quem vendeu menos. O garçom que consulta o salão vê as praças, mas não o motivo
 dos colegas.
 
-**Passo 3 — confirmar.** Depois de confirmada, a alocação do turno **não muda mais**. O quadro fica só para
+**Passo 3: confirmar.** Depois de confirmada, a alocação do turno **não muda mais**. O quadro fica só para
 leitura.
 
 <img src="../ux-ui/telas/metre-confirmada.png" alt="Alocação confirmada" width="420">
 
 ### 3.2 Ajustar antes de confirmar
 
-Antes de confirmar, o metre pode mover qualquer garçom — quem está no salão sabe coisas que o histórico não sabe.
+Antes de confirmar, o metre pode mover qualquer garçom, porque quem está no salão sabe coisas que o histórico não sabe.
 
 Se a praça de destino já está com todas as vagas ocupadas, o sistema não recusa e pronto: ele pede **com quem
 trocar**, e faz a troca nos dois sentidos.
@@ -311,9 +311,9 @@ atende. Serve para o metre saber onde está o gargalo sem ter que atravessar o s
 
 Em **Ver**, na linha da mesa, o Metre pode:
 
-- **Lançar item** — escolhe na mesma lista do garçom. O item fica **para o garçom confirmar** (seção 2.5) e só entra
+- **Lançar item:** escolhe na mesma lista do garçom. O item fica **para o garçom confirmar** (seção 2.5) e só entra
   na conta depois disso.
-- **Lançar cortesia** — o item entra por R$ 0,00, com um motivo ("aniversário", por exemplo). Vale também para item
+- **Lançar cortesia:** o item entra por R$ 0,00, com um motivo ("aniversário", por exemplo). Vale também para item
   que não está à venda no cardápio, como uma torta de aniversário.
 
 <img src="../ux-ui/telas-reais/metre-lancar-item.png" alt="Lançar item pelo Metre" width="520">
@@ -334,7 +334,7 @@ O menu do Gerente tem quatro telas: **Análises**, **Cardápio**, **Salão** e *
 Os indicadores do período escolhido: faturamento, ticket médio, mesas atendidas, faturamento por praça, movimento
 por horário e o ranking de garçons.
 
-Todos os números vêm calculados da API. A tela não faz conta nenhuma — é regra do projeto, para não existirem duas
+Todos os números vêm calculados da API. A tela não faz conta nenhuma. É regra do projeto, para não existirem duas
 versões do mesmo número (uma na tela, outra no relatório).
 
 Entre os indicadores está a **avaliação do atendimento** (seção 6.3): a média das notas do período e quantas
@@ -346,7 +346,7 @@ notas de cada valor os clientes deram.
 > garçom, é uma decisão nova, que muda o que se promete a quem avalia.
 
 Mais abaixo ficam os **perfis de consumo**: os tipos de mesa que o sistema encontrou no histórico do último ano,
-agrupando as comandas só pelo que foi pedido — por exemplo, um perfil em que quase toda mesa pede a porção infantil,
+agrupando as comandas só pelo que foi pedido. Por exemplo, um perfil em que quase toda mesa pede a porção infantil,
 o suco e uma sobremesa. Cada perfil mostra quantas mesas são daquele tipo e os itens que mais o caracterizam. É o
 mesmo agrupamento que a sugestão de pratos ao garçom usa para acertar mais. Enquanto o restaurante ainda não tem
 movimento suficiente (pelo menos 50 comandas com dois itens ou mais), a tela avisa em vez de mostrar perfis.
@@ -368,8 +368,8 @@ oferece **Desfazer**, porque errar o item na pressa é fácil.
 
 **Destaques e metas.** Na aba **Destaques**, escolha o item e o tipo:
 
-- **Destaque de hoje** — vale só no dia e aparece colorido para os garçons;
-- **Meta deste mês** — vale o mês inteiro e pede a quantidade a vender. A tela mostra quanto a equipe já vendeu;
+- **Destaque de hoje:** vale só no dia e aparece colorido para os garçons;
+- **Meta deste mês:** vale o mês inteiro e pede a quantidade a vender. A tela mostra quanto a equipe já vendeu;
   cortesias não contam.
 
 <img src="../ux-ui/telas-reais/gerente-destaques.png" alt="Destaques e metas" width="520">
@@ -383,7 +383,7 @@ Cada promoção mostra a situação: **Vigente hoje**, **Agendada** ou **Encerra
 <img src="../ux-ui/telas/gerente-nova-promocao.png" alt="Nova promoção" width="520">
 
 Ao criar, escolha desconto em valor ou em porcentagem e os itens participantes. A **prévia dos preços** aparece
-enquanto se preenche, com o preço de antes e o de depois de cada item — dá para ver o efeito antes de salvar.
+enquanto se preenche, com o preço de antes e o de depois de cada item, para ver o efeito antes de salvar.
 
 O sistema recusa desconto fixo maior que o preço do item e porcentagem de 100% ou mais, e explica o motivo no
 próprio formulário:
@@ -397,7 +397,7 @@ próprio formulário:
 Cada praça é um cartão, com as **vagas de garçom por turno** e as mesas dela. O total de vagas é o teto que o metre
 enxerga ao montar o turno: mexer aqui muda o que ele pode fazer lá.
 
-Para criar mesa, use o botão do cartão da praça — a mesa já nasce nela.
+Para criar mesa, use o botão do cartão da praça: a mesa já nasce nela.
 
 > **A praça de uma mesa não muda depois de criada.** Na edição, o campo nem aparece: no lugar dele o sistema mostra
 > a praça atual e explica o motivo. Se a mesa pudesse trocar de praça, o histórico de faturamento por praça
@@ -405,7 +405,7 @@ Para criar mesa, use o botão do cartão da praça — a mesa já nasce nela.
 > verdade, o caminho é criar a mesa na praça nova.
 >
 > *(Diferença em relação ao protótipo: lá o campo existia e a tela avisava antes de salvar. Na implementação o
-> campo não aparece — avisar depois de deixar escolher era pedir para a pessoa errar.)*
+> campo não aparece, porque avisar depois de deixar escolher era pedir para a pessoa errar.)*
 
 Sem nenhuma praça cadastrada, o botão de nova mesa fica desligado e a tela explica que o primeiro passo é criar uma
 praça.
@@ -426,16 +426,16 @@ próprio computador (`localhost`), troque pelo endereço da rede antes de imprim
 
 Cadastrar, editar, inativar e reativar contas; redefinir senha; zerar a verificação em duas etapas.
 
-- **Contas não são apagadas.** Inativar bloqueia o acesso na hora — inclusive de quem está com o sistema aberto — e
+- **Contas não são apagadas.** Inativar bloqueia o acesso na hora (inclusive de quem está com o sistema aberto) e
   preserva o histórico de comandas e alocações daquela pessoa. Dá para reativar depois. Apagar a conta apagaria o
   passado do restaurante junto.
 - **Reativar** não pede confirmação: é ação sem perda.
 - **Redefinir senha** derruba as sessões abertas daquela conta e invalida a senha antiga. O sistema não mostra a
-  senha anterior a ninguém — ele guarda só o resumo criptografado dela.
+  senha anterior a ninguém: ele guarda só o resumo criptografado dela.
 - **Zerar a verificação em duas etapas** é o que se faz quando a pessoa perdeu o celular: no próximo login ela
   vincula o aplicativo de novo, com uma chave nova, e a antiga é descartada.
 - **Na própria conta**, a tela oferece só "Editar", e o campo de papel fica travado. Ninguém se inativa, redefine a
-  própria senha por aqui nem zera o próprio segundo fator — a API recusa de qualquer jeito, e a tela explica em vez
+  própria senha por aqui nem zera o próprio segundo fator. A API recusa de qualquer jeito, e a tela explica em vez
   de deixar tentar.
 
 A coluna de verificação em duas etapas mostra "Não exigida" para Garçom e Metre, que não usam o recurso.
@@ -456,7 +456,7 @@ recebeu, o ícone, a cor e o mês.
 
 ## 5. Coordenador
 
-O Coordenador vê uma tela só: **Cardápio** — que é onde ficam também as promoções, em abas. Vale para ele tudo o
+O Coordenador vê uma tela só: **Cardápio**, que é onde ficam também as promoções, em abas. Vale para ele tudo o
 que está nas seções 4.2 e 4.3, inclusive os destaques e as metas.
 
 Ele **não** vê análises, salão nem usuários. Isso é garantido dos dois lados: o menu não mostra, e a API recusa o
@@ -487,7 +487,7 @@ Item indisponível não aparece.
 
 <img src="../ux-ui/telas-reais/cliente-filtro.png" alt="Filtro do cardápio" width="320">
 
-O filtro por categoria e por marcação ajuda quem tem restrição a achar o que pode comer — sem precisar contar a
+O filtro por categoria e por marcação ajuda quem tem restrição a achar o que pode comer, sem precisar contar a
 restrição para o sistema.
 
 ### 6.2 A conta
