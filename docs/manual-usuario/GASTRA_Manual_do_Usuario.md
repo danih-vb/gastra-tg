@@ -235,6 +235,8 @@ As medalhas premiam cada um pelo próprio mês e a equipe junta, e não só quem
 Abaixo das medalhas aparecem as **menções honrosas** que o Gerente deu, por algo que o sistema não mede: quem faltou
 menos, quem trouxe a melhor ideia. Cada uma tem ícone, cor, título, descrição e o mês a que se refere.
 
+<img src="../ux-ui/telas-reais/garcom-mencao-honrosa.png" alt="Menção honrosa vista pelo garçom" width="320">
+
 **Como a avaliação entra no índice.** Quando algum garçom recebeu pelo menos 5 avaliações no período, o índice passa a
 ser 40% faturamento, 30% mesas e 30% avaliação. A nota considerada é uma média que puxa quem tem poucas avaliações para
 a média do restaurante, para poucas notas altas não valerem mais que muitas notas quase tão altas. Quem teve **menos
@@ -416,6 +418,8 @@ atendimento, para quem passou pela mesa antes não ver a conta dos próximos cli
 O endereço que vai dentro do QR vem preenchido com o endereço por onde o Gerente abriu o sistema. Se ele abriu pelo
 próprio computador (`localhost`), troque pelo endereço da rede antes de imprimir, senão o QR não abre no celular.
 
+<img src="../ux-ui/telas-reais/gerente-qr-codes.png" alt="QR codes das mesas" width="520">
+
 ### 4.5 Usuários
 
 <img src="../ux-ui/telas-reais/gerente-usuarios.png" alt="Gestão de usuários" width="520">
@@ -445,6 +449,8 @@ depois, pelo **×** ao lado dela. O título e a descrição não vão para o reg
 recebeu, o ícone, a cor e o mês.
 
 <img src="../ux-ui/telas-reais/gerente-medalhas.png" alt="Medalhas no perfil do garçom" width="520">
+
+<img src="../ux-ui/telas-reais/gerente-mencao-honrosa.png" alt="Dar uma menção honrosa" width="520">
 
 ---
 

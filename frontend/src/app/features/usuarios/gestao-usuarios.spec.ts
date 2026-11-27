@@ -250,6 +250,7 @@ describe('Gestão de usuários (UC04)', () => {
 
     botao(pagina, 'Menção honrosa').click();
     await fixture.whenStable();
+    expect(pagina.querySelector<HTMLSelectElement>('#mencao-mes')!.value).toBe('2026-11-01');
     pagina.querySelector<HTMLButtonElement>('[role=radio][aria-label="Estrela"]')!.click();
     pagina.querySelector<HTMLButtonElement>('[role=radio][aria-label="Roxo"]')!.click();
     preencher(pagina, '#mencao-titulo', 'Melhor ideia do mês');
