@@ -259,7 +259,7 @@ Legenda:
 | `comanda.codigo_acesso_cliente` | Credencial | Cliente | Dá acesso à conta da mesa (UC20). Único, nunca vai para log |
 | `avaliacao_atendimento.comentario` | Pode virar pessoal se o cliente escrever dado dele | Cliente | Texto livre e opcional (RF25). A tela avisa para não escrever dado pessoal. Nunca vai para log nem para view, e **não sai na resposta do Gerente**: ele vê só média e distribuição (RN08) |
 | `avaliacao_atendimento.nota` | Não pessoal | Cliente | Presa à comanda, que não identifica o cliente. Exposta só agregada: a nota de uma comanda isolada apontaria para o atendimento daquela mesa (RN08) |
-| `usuario.foto` | Pessoal | Funcionário | Opcional; só o Gerente põe ou tira. Arquivo com nome aleatório, fora de relatório, view e log. Sai da conta quando ela é inativada |
+| `usuario.foto` | Pessoal | Funcionário | Opcional; só o Gerente põe ou tira. Fica numa pasta separada das fotos públicas do cardápio e só é entregue com login (`GET /api/usuarios/fotos/{nome}`: o Gerente vê todas; os demais, a própria). Fora de relatório, view e log. O arquivo é apagado quando a foto é trocada ou a conta é inativada (#291) |
 | `mencao_honrosa.titulo`, `mencao_honrosa.descricao` | Pessoal, por vínculo a um garçom identificado | Funcionário | Só o Gerente concede e remove; o garçom vê só as próprias. O texto nunca vai para o registro de auditoria, que guarda só quem recebeu, o ícone, a cor e o mês |
 | `comanda.quantidade_pessoas`, `comanda.composicao` | Não pessoal | — | Informação observável da mesa (RN01), sem identidade. Não é usada para inferir atributo sensível (RN05) |
 | `item_pedido.*` | Não pessoal | — | Consumo de uma comanda anônima. As views de BI e das regras de associação só usam ids |

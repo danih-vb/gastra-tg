@@ -59,8 +59,9 @@ TEXTOS = [
 
 DADOS_PESSOAIS = [
     ["Foto do funcionário", "Pessoal", "Funcionário",
-     "Opcional; só o Gerente põe ou tira; arquivo com nome aleatório; não vai para relatório, view nem log; sai da "
-     "conta quando ela é inativada"],
+     "Opcional; só o Gerente põe ou tira; guardada fora das fotos públicas do cardápio e entregue só a quem está "
+     "logado (o Gerente vê todas; os demais, a própria); não vai para relatório, view nem log; o arquivo é apagado "
+     "quando a foto é trocada ou a conta é inativada"],
     ["Título e descrição da menção honrosa", "Pessoal, por vínculo a um garçom identificado", "Funcionário",
      "Só o Gerente concede e remove; o garçom vê só as próprias; o texto nunca vai para o registro de auditoria"],
 ]
