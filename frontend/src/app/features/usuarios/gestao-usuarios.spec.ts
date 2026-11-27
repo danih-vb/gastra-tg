@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MedalhasDoGarcom, Usuario } from '../../core/api/modelos';
 import { API, sessaoDoGarcom } from '../../core/api/testes';
 import { ARMAZENAMENTO_DA_SESSAO } from '../../core/configuracao';
+import { SessaoService } from '../../core/sessao/sessao.service';
 import { AvisoService } from '../../shared/aviso/aviso.service';
 import { GestaoUsuarios } from './gestao-usuarios';
 
@@ -280,5 +281,92 @@ describe('Gestão de usuários (UC04)', () => {
     await fixture.whenStable();
 
     expect(pagina.querySelector('.mencoes')).toBeNull();
+  });
+
+  describe('foto do crachá', () => {
+    const originais = { criar: URL.createObjectURL, liberar: URL.revokeObjectURL };
+
+    beforeEach(() => {
+      // O jsdom não implementa endereços blob:.
+      URL.createObjectURL = () => 'blob:teste';
+      URL.revokeObjectURL = () => undefined;
+    });
+
+    afterEach(() => {
+      URL.createObjectURL = originais.criar;
+      URL.revokeObjectURL = originais.liberar;
+    });
+
+    function escolherArquivo(pagina: HTMLElement): File {
+      const campo = pagina.querySelector<HTMLInputElement>('#conta-foto')!;
+      const foto = new File([new Uint8Array([1, 2, 3])], 'carla.png', { type: 'image/png' });
+      Object.defineProperty(campo, 'files', { value: [foto], configurable: true });
+      campo.dispatchEvent(new Event('change'));
+      return foto;
+    }
+
+    /** O crachá da lista e o do painel buscam a foto com o token, cada um com o seu pedido. */
+    async function entregarFotos(endereco: string): Promise<number> {
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const pedidos = http.match(`${API}${endereco}`);
+      pedidos.forEach((p) => p.flush(new Blob([new Uint8Array([1])], { type: 'image/png' })));
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return pedidos.length;
+    }
+
+    it('envia o arquivo direto para a conta, e o crachá busca a foto pela rota com login', async () => {
+      const pagina = await renderizar();
+      botao(linha(pagina, 'Carla Mendes'), 'Editar').click();
+      await fixture.whenStable();
+      http.expectOne(`${API}/api/indicadores/medalhas?garcomId=11`).flush(MEDALHAS);
+      await fixture.whenStable();
+
+      const foto = escolherArquivo(pagina);
+
+      const envio = http.expectOne({ method: 'PUT', url: `${API}/api/usuarios/11/foto` });
+      expect((envio.request.body as FormData).get('arquivo')).toBe(foto);
+      envio.flush({ ...CONTAS[2], foto: '/api/usuarios/fotos/nova.png' });
+
+      expect(await entregarFotos('/api/usuarios/fotos/nova.png')).toBe(2);
+      expect(avisos.aviso()?.mensagem).toBe('Foto atualizada');
+      expect(linha(pagina, 'Carla Mendes').querySelector('app-avatar img')!.getAttribute('src')).toBe('blob:teste');
+    });
+
+    it('tirar a foto pede à API que apague o arquivo', async () => {
+      CONTAS[2] = { ...CONTAS[2], foto: '/api/usuarios/fotos/antiga.png' };
+      try {
+        const pagina = await renderizar();
+        await entregarFotos('/api/usuarios/fotos/antiga.png');
+        botao(linha(pagina, 'Carla Mendes'), 'Editar').click();
+        await fixture.whenStable();
+        http.expectOne(`${API}/api/indicadores/medalhas?garcomId=11`).flush(MEDALHAS);
+        await entregarFotos('/api/usuarios/fotos/antiga.png');
+
+        botao(pagina, 'Tirar foto').click();
+        http.expectOne({ method: 'DELETE', url: `${API}/api/usuarios/11/foto` }).flush({ ...CONTAS[2], foto: null });
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(avisos.aviso()?.mensagem).toBe('Foto removida');
+        expect(linha(pagina, 'Carla Mendes').querySelector('app-avatar img')).toBeNull();
+      } finally {
+        CONTAS[2] = { ...CONTAS[2], foto: null };
+      }
+    });
+
+    it('quando o Gerente troca a própria foto, o crachá do cabeçalho acompanha', async () => {
+      const pagina = await renderizar();
+      botao(linha(pagina, 'Roberta Lima'), 'Editar').click();
+      await fixture.whenStable();
+
+      escolherArquivo(pagina);
+      http.expectOne({ method: 'PUT', url: `${API}/api/usuarios/1/foto` })
+        .flush({ ...CONTAS[0], foto: '/api/usuarios/fotos/minha.png' });
+      await entregarFotos('/api/usuarios/fotos/minha.png');
+
+      expect(TestBed.inject(SessaoService).usuario()?.foto).toBe('/api/usuarios/fotos/minha.png');
+    });
   });
 });

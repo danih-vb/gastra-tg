@@ -150,7 +150,7 @@ public class Usuario : EntidadeBase
     /// <summary>Desfaz a inativação: a conta volta com a mesma senha e o mesmo autenticador.</summary>
     public void Reativar() => Ativo = true;
 
-    /// <summary>Nula tira a foto. A URL já vem validada: é uma foto importada pelo próprio sistema.</summary>
+    /// <summary>Nula tira a foto. O endereço é sempre o de uma foto guardada pelo próprio sistema, nunca um link externo.</summary>
     public void DefinirFoto(string? foto) => Foto = string.IsNullOrWhiteSpace(foto) ? null : foto.Trim();
 
     public static string NormalizarEmail(string email) => email.Trim().ToLowerInvariant();

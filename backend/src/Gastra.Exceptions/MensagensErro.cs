@@ -20,6 +20,7 @@ public static class MensagensErro
     public static string CategoriaInvalida => Obter(nameof(CategoriaInvalida));
     public static string ImagemInvalida => Obter(nameof(ImagemInvalida));
     public static string FotoInvalida => Obter(nameof(FotoInvalida));
+    public static string FotoDeContaInativa => Obter(nameof(FotoDeContaInativa));
     public static string FlagDieteticaInvalida => Obter(nameof(FlagDieteticaInvalida));
     public static string ItemCardapioNaoEncontrado => Obter(nameof(ItemCardapioNaoEncontrado));
     public static string RequisicaoInvalida => Obter(nameof(RequisicaoInvalida));

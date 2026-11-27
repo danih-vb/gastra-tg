@@ -4,6 +4,7 @@ using Gastra.Domain.Auditoria;
 using Gastra.Domain.Entidades;
 using Gastra.Domain.Repositorios;
 using Gastra.Domain.Seguranca;
+using Gastra.Domain.Servicos;
 using Gastra.Exceptions;
 
 namespace Gastra.Application.UseCases.Usuarios;
@@ -17,6 +18,7 @@ public interface IAlterarSituacaoUsuarioUseCase
 public class AlterarSituacaoUsuarioUseCase(
     IRepositorioUsuario repositorio,
     IUsuarioLogado usuarioLogado,
+    IArmazenamentoDeFotosDeFuncionarios fotos,
     IRegistradorAuditoria auditoria,
     IUnitOfWork unitOfWork) : IAlterarSituacaoUsuarioUseCase
 {
@@ -24,6 +26,8 @@ public class AlterarSituacaoUsuarioUseCase(
     {
         var usuario = await repositorio.ObterPorId(id)
                       ?? throw new NaoEncontradoException(MensagensErro.UsuarioNaoEncontrado);
+
+        var foto = FotoDoFuncionario.Nome(usuario.Foto);
 
         if (request.Ativo)
         {
@@ -43,5 +47,9 @@ public class AlterarSituacaoUsuarioUseCase(
         await auditoria.Registrar(request.Ativo ? EventoAuditoria.ContaReativada : EventoAuditoria.ContaInativada,
             alvo: (nameof(Usuario), usuario.Id));
         await unitOfWork.Commit();
+
+        // LGPD: a inativação tirou a foto da conta; o arquivo sai do disco junto, depois de gravado no banco.
+        if (!request.Ativo && foto is not null)
+            fotos.Apagar(foto);
     }
 }

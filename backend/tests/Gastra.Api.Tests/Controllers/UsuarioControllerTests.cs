@@ -1,9 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
 using Gastra.Api.Tests.Infraestrutura;
+using Gastra.Application.UseCases.Usuarios;
 using Gastra.Communication.Responses;
 using Gastra.Domain.Auditoria;
 using Gastra.Domain.Enums;
+using Gastra.Domain.Repositorios;
+using Microsoft.Extensions.DependencyInjection;
 using static Gastra.Api.Tests.Infraestrutura.GastraApiFactory;
 
 namespace Gastra.Api.Tests.Controllers;
@@ -192,34 +195,190 @@ public class UsuarioControllerTests(GastraApiFactory factory) : IClassFixture<Ga
 
     // --- Foto do funcionário ---
 
-    [Fact]
-    public async Task Foto_PeloGerente_ApareceNaContaENoLogin_ESaiAoInativar()
+    private static readonly byte[] Png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3, 4];
+
+    private static MultipartFormDataContent Arquivo(byte[] conteudo)
     {
-        var email = $"foto-{Guid.NewGuid():N}@gastra.test";
+        var corpo = new ByteArrayContent(conteudo);
+        corpo.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+        return new MultipartFormDataContent { { corpo, "arquivo", "foto.png" } };
+    }
+
+    private async Task<UsuarioResponse> PorFoto(int id)
+    {
+        var resposta = await _cliente.PutAsync($"{Rota}/{id}/foto", Arquivo(Png));
+        resposta.EnsureSuccessStatusCode();
+        return (await resposta.Content.ReadFromJsonAsync<UsuarioResponse>(Json))!;
+    }
+
+    private static bool NoDisco(string endereco) =>
+        File.Exists(Path.Combine(DiretorioDasFotosDeFuncionarios, endereco[FotoDoFuncionario.Prefixo.Length..]));
+
+    [Fact]
+    public async Task Foto_PeloGerente_ApareceNaContaENoLogin_ESoSaiComLogin()
+    {
+        var email = NovoEmail("foto");
         var usuario = await Cadastrar(email);
 
-        var resposta = await _cliente.PutAsJsonAsync($"{Rota}/{usuario.Id}/foto",
-            new { foto = "/api/cardapio/fotos/abc123.jpg" }, Json);
+        var conta = await PorFoto(usuario.Id);
 
-        resposta.EnsureSuccessStatusCode();
-        Assert.Equal("/api/cardapio/fotos/abc123.jpg", (await resposta.Content.ReadFromJsonAsync<UsuarioResponse>(Json))!.Foto);
+        Assert.StartsWith(FotoDoFuncionario.Prefixo, conta.Foto);
         var login = await (await TentarLogin(email)).Content.ReadFromJsonAsync<LoginResponse>(Json);
-        Assert.Equal("/api/cardapio/fotos/abc123.jpg", login!.Foto);
+        Assert.Equal(conta.Foto, login!.Foto);
 
-        await _cliente.PatchAsJsonAsync($"{Rota}/{usuario.Id}/situacao", new { ativo = false }, Json);
-        var depois = await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{usuario.Id}", Json);
-        Assert.Null(depois!.Foto);
+        // Sem login, não sai; nem pela rota pública do cardápio, que lê outra pasta.
+        var anonimo = factory.CreateClient();
+        Assert.Equal(HttpStatusCode.Unauthorized, (await anonimo.GetAsync(conta.Foto)).StatusCode);
+        var nome = conta.Foto![FotoDoFuncionario.Prefixo.Length..];
+        Assert.Equal(HttpStatusCode.NotFound, (await anonimo.GetAsync($"/api/cardapio/fotos/{nome}")).StatusCode);
+
+        var peloGerente = await _cliente.GetAsync(conta.Foto);
+        Assert.Equal(HttpStatusCode.OK, peloGerente.StatusCode);
+        Assert.Equal("image/png", peloGerente.Content.Headers.ContentType!.MediaType);
+        Assert.True(peloGerente.Headers.CacheControl!.NoStore);
+        Assert.Equal(Png, await peloGerente.Content.ReadAsByteArrayAsync());
     }
 
     [Fact]
-    public async Task Foto_DeOutroSite_Retorna400()
+    public async Task Foto_ODonoVeAPropria_EOutroFuncionarioNao()
     {
-        var usuario = await Cadastrar($"foto-{Guid.NewGuid():N}@gastra.test");
+        var email = NovoEmail("foto-dono");
+        var conta = await PorFoto((await Cadastrar(email)).Id);
 
-        var resposta = await _cliente.PutAsJsonAsync($"{Rota}/{usuario.Id}/foto",
-            new { foto = "https://exemplo.com/rastreio.png" }, Json);
+        var dono = factory.CreateClient();
+        Autenticar(dono, await factory.Login(dono, email));
+        var colega = factory.CreateClient();
+        Autenticar(colega, await factory.TokenGarcom(colega));
+
+        Assert.Equal(HttpStatusCode.OK, (await dono.GetAsync(conta.Foto)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await colega.GetAsync(conta.Foto)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Foto_Trocada_ApagaAAnteriorDoDisco()
+    {
+        var usuario = await Cadastrar(NovoEmail("foto-troca"));
+        var primeira = (await PorFoto(usuario.Id)).Foto!;
+
+        var segunda = (await PorFoto(usuario.Id)).Foto!;
+
+        Assert.NotEqual(primeira, segunda);
+        Assert.False(NoDisco(primeira));
+        Assert.True(NoDisco(segunda));
+        Assert.Equal(HttpStatusCode.NotFound, (await _cliente.GetAsync(primeira)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Foto_Tirada_ApagaDoDisco()
+    {
+        var usuario = await Cadastrar(NovoEmail("foto-tira"));
+        var foto = (await PorFoto(usuario.Id)).Foto!;
+
+        var resposta = await _cliente.DeleteAsync($"{Rota}/{usuario.Id}/foto");
+
+        Assert.Equal(HttpStatusCode.OK, resposta.StatusCode);
+        Assert.Null((await resposta.Content.ReadFromJsonAsync<UsuarioResponse>(Json))!.Foto);
+        Assert.False(NoDisco(foto));
+        Assert.Equal(HttpStatusCode.NotFound, (await _cliente.GetAsync(foto)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Inativar_TiraAFotoDaConta_EApagaDoDisco()
+    {
+        var usuario = await Cadastrar(NovoEmail("foto-inativa"));
+        var foto = (await PorFoto(usuario.Id)).Foto!;
+        Assert.True(NoDisco(foto));
+
+        await _cliente.PatchAsJsonAsync($"{Rota}/{usuario.Id}/situacao", new { ativo = false }, Json);
+
+        var depois = await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{usuario.Id}", Json);
+        Assert.Null(depois!.Foto);
+        Assert.False(NoDisco(foto));
+        Assert.Equal(HttpStatusCode.NotFound, (await _cliente.GetAsync(foto)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Foto_EmContaInativa_Retorna422()
+    {
+        var usuario = await Cadastrar(NovoEmail("foto-inativa-422"));
+        await _cliente.PatchAsJsonAsync($"{Rota}/{usuario.Id}/situacao", new { ativo = false }, Json);
+
+        var resposta = await _cliente.PutAsync($"{Rota}/{usuario.Id}/foto", Arquivo(Png));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, resposta.StatusCode);
+        Assert.Equal(["Reative a conta antes de pôr uma foto."], await LerErros(resposta));
+    }
+
+    [Fact]
+    public async Task Foto_ComTextoDisfarcadoDePng_Retorna400()
+    {
+        var usuario = await Cadastrar(NovoEmail("foto-svg"));
+
+        var resposta = await _cliente.PutAsync($"{Rota}/{usuario.Id}/foto", Arquivo("<svg onload=alert(1)>"u8.ToArray()));
 
         Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+        Assert.Equal(["A foto deve ser JPG, PNG ou WEBP, com até 5 MB."], await LerErros(resposta));
+    }
+
+    [Fact]
+    public async Task Foto_PorGarcomOuSemLogin_EBarrada()
+    {
+        var usuario = await Cadastrar(NovoEmail("foto-barrada"));
+        var garcom = factory.CreateClient();
+        Autenticar(garcom, await factory.TokenGarcom(garcom));
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await garcom.PutAsync($"{Rota}/{usuario.Id}/foto", Arquivo(Png))).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized,
+            (await factory.CreateClient().PutAsync($"{Rota}/{usuario.Id}/foto", Arquivo(Png))).StatusCode);
+    }
+
+    [Fact]
+    public async Task FotoAntiga_NaPastaDoCardapio_VaiParaAPastaPrivada()
+    {
+        // Como ficava até a versão 1.0: a foto do funcionário era uma foto pública do cardápio.
+        Directory.CreateDirectory(DiretorioDasFotos);
+        var sozinha = $"{Guid.NewGuid():N}.png";
+        var compartilhada = $"{Guid.NewGuid():N}.png";
+        await File.WriteAllBytesAsync(Path.Combine(DiretorioDasFotos, sozinha), Png);
+        await File.WriteAllBytesAsync(Path.Combine(DiretorioDasFotos, compartilhada), Png);
+
+        var comFotoSo = await factory.CriarUsuario(NovoEmail("legado"), PapelUsuario.Garcom);
+        var comFotoDoPrato = await factory.CriarUsuario(NovoEmail("legado"), PapelUsuario.Garcom);
+        var foraDaPasta = await factory.CriarUsuario(NovoEmail("legado"), PapelUsuario.Garcom);
+        var prato = await factory.CriarItemCardapio();
+        var fotoForaDaPasta = $"/api/cardapio/fotos/{Guid.NewGuid():N}.png";
+
+        using (var escopo = factory.Services.CreateScope())
+        {
+            var usuarios = escopo.ServiceProvider.GetRequiredService<IRepositorioUsuario>();
+            (await usuarios.ObterPorId(comFotoSo.Id))!.DefinirFoto($"/api/cardapio/fotos/{sozinha}");
+            (await usuarios.ObterPorId(comFotoDoPrato.Id))!.DefinirFoto($"/api/cardapio/fotos/{compartilhada}");
+            (await usuarios.ObterPorId(foraDaPasta.Id))!.DefinirFoto(fotoForaDaPasta);
+            (await escopo.ServiceProvider.GetRequiredService<IRepositorioItemCardapio>().ObterPorId(prato))!
+                .DefinirImagem($"/api/cardapio/fotos/{compartilhada}");
+            await escopo.ServiceProvider.GetRequiredService<IUnitOfWork>().Commit();
+        }
+
+        using (var escopo = factory.Services.CreateScope())
+        {
+            var recolher = escopo.ServiceProvider.GetRequiredService<IRecolherFotosAntigasDeFuncionariosUseCase>();
+            Assert.Equal(2, await recolher.Executar());
+        }
+
+        var primeira = await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{comFotoSo.Id}", Json);
+        var segunda = await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{comFotoDoPrato.Id}", Json);
+        var terceira = await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{foraDaPasta.Id}", Json);
+
+        Assert.StartsWith(FotoDoFuncionario.Prefixo, primeira!.Foto);
+        Assert.Equal(Png, await _cliente.GetByteArrayAsync(primeira.Foto));
+        Assert.False(File.Exists(Path.Combine(DiretorioDasFotos, sozinha)));
+
+        // O prato continua com a foto dele; o funcionário ganhou uma cópia só sua.
+        Assert.StartsWith(FotoDoFuncionario.Prefixo, segunda!.Foto);
+        Assert.True(File.Exists(Path.Combine(DiretorioDasFotos, compartilhada)));
+
+        // Arquivo que não está nesta pasta: a conta não perde a referência.
+        Assert.Equal(fotoForaDaPasta, terceira!.Foto);
     }
 
     // --- Inativar e reativar ---
