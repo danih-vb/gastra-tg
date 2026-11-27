@@ -20,7 +20,12 @@ TSV, XML = sys.argv[1], sys.argv[2]
 MAPA = {"Praca": "praca", "Mesa": "mesa", "Usuario": "usuario", "Comanda": "comanda",
         "ItemDoPedido": "item_pedido", "ItemDoCardapio": "item_cardapio", "Alocacao": "alocacao",
         "RestricaoAlimentar": "restricao_alimentar", "RegistroAuditoria": "registro_auditoria",
-        "Promocao": "promocao"}
+        "Promocao": "promocao", "AvaliacaoAtendimento": "avaliacao_atendimento",
+        "DestaqueDoCardapio": "destaque_cardapio", "MencaoHonrosa": "mencao_honrosa"}
+# Colunas de controle de acesso (bloqueio por tentativas, RNF04): mecanismo de segurança, não dado do negócio.
+SO_NO_FISICO = {("usuario", "bloqueada_ate"), ("usuario", "tentativas_falhas")}
+# Quando há duas chaves estrangeiras para a mesma tabela, qual delas é de cada relacionamento.
+COLUNA_DO_RELACIONAMENTO = {("MencaoHonrosa", "recebe"): "garcom_id", ("MencaoHonrosa", "concede"): "concedida_por_id"}
 CARD = {"0": "(1,1)", "1": "(0,1)", "2": "(1,n)", "3": "(0,n)"}  # códigos do brModelo
 
 
@@ -91,7 +96,12 @@ for e in entidades:
     nomes = {a["nome"] for a in e["atributos"]}
     for c in colunas.values():
         if c["nome"] not in nomes and c["nome"] != "id":
-            origem = "chave estrangeira" if (tabela, c["nome"]) in fk_por_coluna else "sem atributo correspondente"
+            if (tabela, c["nome"]) in fk_por_coluna:
+                origem = "chave estrangeira"
+            elif (tabela, c["nome"]) in SO_NO_FISICO:
+                origem = "controle de acesso, fora do conceitual"
+            else:
+                origem = "sem atributo correspondente"
             print(f"- {tabela}.{c['nome']}: só no físico ({origem})")
 
 print("\n## Relacionamentos x chaves estrangeiras")
@@ -101,7 +111,8 @@ for r in relacionamentos:
     achou = False
     for filho, card_filho, pai, card_pai in ((e1, c1, e2, c2), (e2, c2, e1, c1)):
         for k in fisico["fks"]:
-            if inverso.get(k["tabela"]) == filho and inverso.get(k["ref"]) == pai:
+            coluna = COLUNA_DO_RELACIONAMENTO.get((filho, r["nome"]))
+            if inverso.get(k["tabela"]) == filho and inverso.get(k["ref"]) == pai and coluna in (None, k["coluna"]):
                 nulo = next(c["nulo"] for c in tabelas[k["tabela"]]["colunas"] if c["nome"] == k["coluna"])
                 esperado = "(0,1)" if nulo else "(1,1)"
                 situacao = "confere" if card_filho == esperado else f"DIVERGE (físico indica {esperado})"
