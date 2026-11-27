@@ -55,5 +55,10 @@ depois.
 | `registrar_entrega_final.py` | menção honrosa, RF30 (QR codes das mesas), app no celular, Tabela 2 lida do relatório de testes |
 | `revisar_travessoes.py` | revisão de estilo: travessões do texto corrido trocados por vírgula, parênteses ou dois-pontos |
 | `inserir_apendice_a.py` | Apêndice A, o manual do usuário, com as capturas reais no lugar das telas do protótipo |
+| `registrar_diagramas.py` | Figuras 2, 3, 5 e 6 (casos de uso, DER e modelo lógico da fase final), contagens do MER e do banco, Quadro 6 com a foto e a menção honrosa |
+
+Os diagramas vêm de fora desta pasta: `docs/diagramas/_fontes/atualizar_uc_fase_final.py` (casos de uso),
+`docs/modelagem/der/acrescentar_fase_final.js` e `acrescentar_atributos_restantes.js` (DER, no brModelo) e
+`docs/modelagem/engenharia-reversa/` (modelo lógico). Atualize-os antes de rodar `registrar_diagramas.py`.
 
 Depois de qualquer um deles, no Word: Ctrl+A e F9, e exportar o PDF.
