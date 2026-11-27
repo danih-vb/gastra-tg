@@ -86,6 +86,15 @@ export class SessaoService {
     return usuario.token;
   }
 
+  /** O Gerente trocou a própria foto: o crachá do cabeçalho acompanha sem precisar entrar de novo. */
+  atualizarFoto(foto: string | null): void {
+    const usuario = this.usuarioAtual();
+    if (usuario === null) return;
+    const atualizado = { ...usuario, foto };
+    this.armazenamento.setItem(CHAVE, JSON.stringify(atualizado));
+    this.usuarioAtual.set(atualizado);
+  }
+
   temPapel(...papeis: Papel[]): boolean {
     const usuario = this.usuarioAtual();
     return usuario !== null && papeis.includes(usuario.papel);

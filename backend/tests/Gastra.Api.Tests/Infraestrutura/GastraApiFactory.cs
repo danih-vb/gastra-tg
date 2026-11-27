@@ -28,6 +28,11 @@ public class GastraApiFactory : WebApplicationFactory<Program>
 {
     public const string SenhaPadrao = "Senha-de-teste-123";
 
+    public static readonly string DiretorioDasFotos = Path.Combine(Path.GetTempPath(), "gastra-testes-fotos");
+
+    public static readonly string DiretorioDasFotosDeFuncionarios =
+        Path.Combine(Path.GetTempPath(), "gastra-testes-fotos-funcionarios");
+
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     {
         Converters = { new JsonStringEnumConverter() },
@@ -50,7 +55,8 @@ public class GastraApiFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Testes");
         builder.UseSetting("Jwt:ChaveAssinatura", "chave-exclusiva-dos-testes-de-integracao-do-gastra");
         builder.UseSetting("Auditoria:EliminacaoAutomatica", "false");
-        builder.UseSetting("Fotos:Diretorio", Path.Combine(Path.GetTempPath(), "gastra-testes-fotos"));
+        builder.UseSetting("Fotos:Diretorio", DiretorioDasFotos);
+        builder.UseSetting("Fotos:DiretorioFuncionarios", DiretorioDasFotosDeFuncionarios);
 
         // Todos os testes saem do mesmo IP falso: com limite, uma classe esgotaria a cota da outra.
         // Os testes do limite (LimiteDeRequisicoesTests) religam com uma cota pequena.

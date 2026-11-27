@@ -63,6 +63,7 @@ app.MapHealthChecks("/health");
 
 await AplicadorDeMigrations.Executar(app);
 await InicializadorAdministrador.Executar(app);
+await RecolhedorDeFotosAntigas.Executar(app);
 
 app.Run();
 

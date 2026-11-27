@@ -58,6 +58,8 @@ services:
       Jwt__ChaveAssinatura: ${JWT_CHAVE_ASSINATURA:-}
       ServicoAnalitico__UrlBase: http://analitica:8000
       Fotos__Diretorio: /app/fotos
+      # Fotos dos funcionários: noutro volume, longe das do cardápio, que são públicas.
+      Fotos__DiretorioFuncionarios: /app/fotos-funcionarios
       # Chaves que criptografam o segredo do segundo fator: num volume, sobrevivem a uma nova imagem da API.
       Seguranca__PastaDasChaves: /app/chaves
       Administrador__Nome: ${ADMIN_NOME:-Administrador}
@@ -65,6 +67,7 @@ services:
       Administrador__Senha: ${ADMIN_SENHA:-}
     volumes:
       - gastra_fotos:/app/fotos
+      - gastra_fotos_funcionarios:/app/fotos-funcionarios
       - gastra_chaves:/app/chaves
     ports:
       # Só na própria máquina: de fora, o caminho é o nginx do frontend (D12). Aberta para a rede, a API aceitaria
@@ -90,4 +93,5 @@ services:
 volumes:
   gastra_chaves:
   gastra_fotos:
+  gastra_fotos_funcionarios:
   gastra_mysql_data:

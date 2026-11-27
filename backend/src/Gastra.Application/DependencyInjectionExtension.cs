@@ -42,6 +42,8 @@ public static class DependencyInjectionExtension
         services.AddScoped<Gastra.Application.UseCases.Indicadores.IConcederMencaoUseCase, Gastra.Application.UseCases.Indicadores.ConcederMencaoUseCase>();
         services.AddScoped<Gastra.Application.UseCases.Indicadores.IRemoverMencaoUseCase, Gastra.Application.UseCases.Indicadores.RemoverMencaoUseCase>();
         services.AddScoped<Gastra.Application.UseCases.Usuarios.IDefinirFotoUsuarioUseCase, Gastra.Application.UseCases.Usuarios.DefinirFotoUsuarioUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Usuarios.IObterFotoUsuarioUseCase, Gastra.Application.UseCases.Usuarios.ObterFotoUsuarioUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Usuarios.IRecolherFotosAntigasDeFuncionariosUseCase, Gastra.Application.UseCases.Usuarios.RecolherFotosAntigasDeFuncionariosUseCase>();
         services.AddScoped<Gastra.Application.UseCases.Destaques.ICriarDestaqueUseCase, Gastra.Application.UseCases.Destaques.CriarDestaqueUseCase>();
         services.AddScoped<Gastra.Application.UseCases.Destaques.IListarDestaquesUseCase, Gastra.Application.UseCases.Destaques.ListarDestaquesUseCase>();
         services.AddScoped<Gastra.Application.UseCases.Destaques.IRemoverDestaqueUseCase, Gastra.Application.UseCases.Destaques.RemoverDestaqueUseCase>();

@@ -1,3 +1,4 @@
+using Gastra.Application.Fotos;
 using Gastra.Application.UseCases.Usuarios;
 using Gastra.Communication.Enums;
 using Gastra.Communication.Requests;
@@ -91,21 +92,40 @@ public class UsuarioController : ControllerBase
     }
 
     /// <summary>
-    /// UC04 — Desfazer a vinculação do app autenticador de um Gerente ou Coordenador que perdeu o celular. O próximo
-    /// login volta a pedir a configuração, com um segredo novo (RN07).
+    /// Pôr ou trocar a foto do crachá do funcionário (JPG, PNG ou WEBP, até 5 MB). A foto anterior é apagada do
+    /// servidor, e a nova só é vista por quem está logado (GET /api/usuarios/fotos/{nome}).
     /// </summary>
     [HttpPut("{id:int}/foto")]
+    [RequestSizeLimit(FormatoDeFoto.TamanhoMaximo + 1024 * 1024)]
     [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> DefinirFoto(
         int id,
-        [FromBody] FotoUsuarioRequest request,
+        IFormFile? arquivo,
         [FromServices] IDefinirFotoUsuarioUseCase useCase)
     {
-        return Ok(await useCase.Executar(id, request));
+        using var memoria = new MemoryStream();
+        if (arquivo is not null)
+            await arquivo.CopyToAsync(memoria);
+
+        return Ok(await useCase.Executar(id, memoria.ToArray()));
     }
 
+    /// <summary>Tirar a foto do crachá. O arquivo é apagado do servidor.</summary>
+    [HttpDelete("{id:int}/foto")]
+    [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> TirarFoto(int id, [FromServices] IDefinirFotoUsuarioUseCase useCase)
+    {
+        return Ok(await useCase.Executar(id, conteudo: null));
+    }
+
+    /// <summary>
+    /// UC04 — Desfazer a vinculação do app autenticador de um Gerente ou Coordenador que perdeu o celular. O próximo
+    /// login volta a pedir a configuração, com um segredo novo (RN07).
+    /// </summary>
     [HttpDelete("{id:int}/segundo-fator")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
