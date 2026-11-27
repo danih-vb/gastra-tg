@@ -5,19 +5,22 @@ apresenta o sistema do ponto de vista de cada usuário. A seção 5.2 reúne a v
 a integração contínua (5.2.1), os testes automatizados (5.2.2), os dois estudos feitos sobre os algoritmos — a
 calibração dos pesos da alocação de garçons (5.2.3) e a validação dos blocos analíticos sobre um histórico simulado
 (5.2.4) —, a avaliação heurística das telas (5.2.5) e os testes operacionais (5.2.6). Os números deste capítulo correspondem ao estado do
-repositório em 5 de novembro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
+repositório em 21 de novembro de 2026 e são reproduzíveis: cada tabela indica o script ou o teste que a gera.
 
 ## 5.1 APRESENTAÇÃO DO PRODUTO E TELAS
 
-O GASTRA é uma aplicação web única, que apresenta a cada papel apenas as telas que lhe cabem. Esta seção percorre
-o sistema em funcionamento, pela perspectiva de cada usuário; as figuras são capturas do sistema completo em
+O GASTRA é uma aplicação web única, que libera a cada papel apenas as telas que lhe cabem. As telas dos outros
+papéis aparecem no menu em cinza, com um cadeado, para que cada usuário saiba o que fica com outra pessoa, e a
+barra superior mostra quem está conectado, com as iniciais, o nome e o papel ao lado do botão de sair. Esta seção
+percorre o sistema em funcionamento, pela perspectiva de cada usuário; as figuras são capturas do sistema completo em
 execução, com os dados simulados do semeador, e o funcionamento detalhado de cada tela está no manual do usuário,
 no Apêndice A.
 
 O Garçom usa o sistema no celular (Figura 18). A tela inicial mostra as mesas do salão, com as da praça em que ele
 foi alocado no turno destacadas, e abre uma mesa em dois toques — a mesa livre e a quantidade de pessoas —, dentro
-do limite do RNF02. Na comanda, ele vê as restrições da mesa, os itens a entregar e as sugestões de pratos, e
-lança cada item em dois toques. Se a mesa tem uma restrição que o item não atende, o sistema avisa antes do
+do limite do RNF02. Na comanda, ele vê as restrições da mesa, os itens a entregar, com as cortesias marcadas, e
+as sugestões de pratos, e lança cada item em dois toques. A lista abre com o cardápio inteiro, e uma busca encontra
+o item pelo nome ou pela restrição, sem depender de acento (Figura 19). Se a mesa tem uma restrição que o item não atende, o sistema avisa antes do
 lançamento, sem impedi-lo; se o serviço analítico estiver fora do ar, a comanda continua funcionando e apenas as
 sugestões deixam de aparecer. A tela A entregar reúne os itens pendentes de todas as mesas do garçom, do mais
 antigo ao mais novo, e marca como atrasado o que passou de 15 minutos (Figura 19). O fechamento só é liberado com
@@ -31,9 +34,9 @@ valores dos colegas.
 
 Fonte: elaborado pelos autores.
 
-**Figura 19 – Garçom: itens a entregar, fechamento e desempenho**
+**Figura 19 – Garçom: busca, itens a entregar, fechamento e desempenho**
 
-![Garçom: itens a entregar, fechamento e desempenho](../../ux-ui/telas-reais/paineis/garcom-2.png)
+![Garçom: busca, itens a entregar, fechamento e desempenho](../../ux-ui/telas-reais/paineis/garcom-2.png)
 
 Fonte: elaborado pelos autores.
 
@@ -42,11 +45,13 @@ confirma, podendo antes mover qualquer garçom de praça. A sugestão mostra, em
 motivo da escolha — a faixa de vendas em relação à equipe e há quantos turnos ele não recebe uma praça de alto
 movimento —, sem exibir valores de faturamento, que são indicadores restritos ao Gerente (decisão D14). Depois de
 confirmada, a alocação não muda mais e passa a compor o histórico usado pela RN03. Em Salão agora, o Metre
-acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados.
+acompanha as mesas ocupadas de cada praça, com os itens a entregar e os atrasados, e pode lançar uma cortesia na
+mesa, por R$ 0,00 e com motivo (RF26). O Gerente usa a mesma tela para ajustar o preço de um item já lançado; o
+preço original fica guardado e o cliente vê os dois valores na conta.
 
-**Figura 20 – Metre: alocação do turno e salão**
+**Figura 20 – Metre: alocação do turno, salão e cortesia**
 
-![Metre: alocação do turno e salão](../../ux-ui/telas-reais/paineis/metre.png)
+![Metre: alocação do turno, salão e cortesia](../../ux-ui/telas-reais/paineis/metre.png)
 
 Fonte: elaborado pelos autores.
 
@@ -59,21 +64,23 @@ pela popularidade e pelo valor de venda dentro da categoria (KASAVANA; SMITH, 19
 cardápio, com fotos e promoções, as praças, as mesas e as contas de usuário; o Coordenador tem acesso somente ao
 cardápio e às promoções.
 
-**Figura 21 – Gerente: análises, cardápio, salão e usuários**
+**Figura 21 – Gerente: análises, cardápio, ajuste de preço e usuários**
 
-![Gerente: análises, cardápio, salão e usuários](../../ux-ui/telas-reais/paineis/gerente.png)
+![Gerente: análises, cardápio, ajuste de preço e usuários](../../ux-ui/telas-reais/paineis/gerente.png)
 
 Fonte: elaborado pelos autores.
 
 O Cliente não se autentica (Figura 22). Na tela da comanda, o garçom mostra um QR code que abre a conta da mesa no
 celular do cliente; ali ele acompanha os itens lançados e a situação de cada um, atualizados a cada segundo
 (RNF01), chama o garçom e divide o total entre as pessoas da mesa. O cardápio digital tem fotos e filtros por
-restrição alimentar. Depois que a conta é fechada, o cliente pode avaliar o atendimento com uma nota de 1 a 5 e um
+restrição alimentar, com um ícone para cada restrição. Tocar em um prato abre a foto ampliada com a descrição, e o
+cliente pode marcar os que lhe interessam em uma lista que fica apenas no próprio celular, sem identificá-lo; da
+lista, ele chama o garçom para fazer o pedido. Depois que a conta é fechada, o cliente pode avaliar o atendimento com uma nota de 1 a 5 e um
 comentário opcional, sem que nada o identifique.
 
-**Figura 22 – Cliente: cardápio digital e conta**
+**Figura 22 – Cliente: conta, cardápio digital e lista de interesse**
 
-![Cliente: cardápio digital e conta](../../ux-ui/telas-reais/paineis/cliente.png)
+![Cliente: conta, cardápio digital e lista de interesse](../../ux-ui/telas-reais/paineis/cliente.png)
 
 Fonte: elaborado pelos autores.
 
@@ -85,8 +92,8 @@ O trabalho foi organizado em dez marcos no quadro de projeto do GitHub, do levan
 defesa (M10), e executado em sprints semanais, conforme descrito na seção 1.5. Cada tarefa foi registrada como
 issue, com critérios de aceite, prioridade, marco e sprint, e cada mudança no repositório entrou por Pull
 Request: uma regra do repositório impede a integração na branch de desenvolvimento sem a aprovação do outro
-integrante. Entre 17 de agosto e 5 de novembro de 2026, foram
-integrados 104 Pull Requests e fechadas 123 issues.
+integrante. Entre 17 de agosto e 21 de novembro de 2026, foram
+integrados 120 Pull Requests e fechadas 138 issues.
 
 A revisão cruzada foi apoiada por integração contínua: a cada Pull Request, o GitHub Actions (GITHUB, 2026) executa cinco
 verificações independentes, cujo resultado aparece no próprio Pull Request para o revisor. A primeira compila o backend e
@@ -125,21 +132,21 @@ conjuntos de dados.
 
 | Bloco | Cenários | Casos | Aprovados |
 |---|---:|---:|---:|
-| Núcleo de comandas | 126 | 135 | 135 |
-| Cardápio e promoções | 62 | 83 | 83 |
+| Núcleo de comandas | 139 | 148 | 148 |
+| Cardápio e promoções | 65 | 86 | 86 |
 | Alocação de garçons (programação linear) | 61 | 67 | 67 |
-| Recomendação de pratos (ciência de dados) | 52 | 58 | 58 |
+| Recomendação de pratos (ciência de dados) | 54 | 60 | 60 |
 | BI e índice de desempenho | 54 | 58 | 58 |
-| LGPD, auditoria e segurança | 108 | 109 | 109 |
+| LGPD, auditoria e segurança | 110 | 111 | 111 |
 | Banco de dados (views, triggers e restrições) | 14 | 14 | 14 |
 | Integração backend e serviço analítico | 12 | 15 | 15 |
-| Arquitetura e infraestrutura | 9 | 13 | 13 |
-| **Total** | **498** | **552** | **552** |
+| Arquitetura e infraestrutura | 13 | 17 | 17 |
+| **Total** | **522** | **576** | **576** |
 
-Fonte: elaborado pelos autores, a partir da execução de 05/11/2026 (script `gerar_relatorio_testes.py`).
+Fonte: elaborado pelos autores, a partir da execução de 21/11/2026 (script `gerar_relatorio_testes.py`).
 
-Os 552 casos foram aprovados, nenhum falhou e nenhum foi ignorado. Por camada, são 350 casos no backend, 66 na
-camada analítica e 136 no frontend. Cada bloco do trabalho é verificado nas três camadas: a mesma regra de
+Os 576 casos foram aprovados, nenhum falhou e nenhum foi ignorado. Por camada, são 361 casos no backend, 68 na
+camada analítica e 147 no frontend. Cada bloco do trabalho é verificado nas três camadas: a mesma regra de
 negócio é testada no domínio, na interface de programação e na tela que a apresenta ao usuário. O bloco de
 proteção de dados é o segundo maior, porque cada restrição da LGPD foi traduzida em ao menos um teste que falha se
 ela for violada — por exemplo, o que verifica que nenhuma view expõe dado pessoal, o que verifica que o Gerente
@@ -420,8 +427,20 @@ modelo assim que o serviço sobe e, vencido o prazo, responde na hora com o mode
 treinado em segundo plano. No sistema corrigido, o primeiro pedido de sugestão depois da subida foi respondido em
 0,006 segundo. A rodada também levou às duas correções de usabilidade descritas na seção 5.2.5.
 
-> **[A PREENCHER depois da segunda rodada.]** Os passos que ainda dependem da dupla: a medição do RNF01 com dois
-> celulares (tempo do lançamento pelo garçom até o item aparecer na conta do cliente, em dez repetições); a leitura
-> do QR code pelo celular do cliente; a confirmação da alocação pelo Metre; a parada do serviço analítico com o
-> sistema em uso; e o teste em máquina limpa (#177), com o sistema subindo em um computador sem as ferramentas de
-> desenvolvimento. Registrar a quantidade de passos executados e aprovados por papel, como no resumo do plano.
+A segunda rodada, em 18 e 19 de novembro de 2026, cobriu os passos que dependiam do sistema em uso contínuo. O
+RNF01 foi medido com duas janelas abertas ao mesmo tempo no mesmo computador, uma com o garçom e outra com a conta do
+cliente: em dez lançamentos seguidos, o item apareceu na conta do cliente em média 0,83 segundo depois da
+confirmação do garçom, com máximo de 0,91 segundo, todos dentro dos dois segundos do requisito. O QR code da comanda
+foi lido pela câmera de um celular na mesma rede e abriu a conta da mesa certa; para isso, o sistema precisa ser
+aberto pelo endereço do computador na rede, e não por `localhost`, já que o QR code leva o endereço em que a comanda
+foi aberta. O Metre gerou a sugestão de alocação, mudou um garçom de praça e confirmou; a partir daí a alocação
+deixou de aceitar ajustes, e o garçom passou a ver a própria praça no celular. Com o serviço analítico parado, o
+garçom abriu uma mesa, lançou um item e fechou a conta normalmente, e o espaço das sugestões passou a mostrar
+"Sugestões indisponíveis agora", como prevê a decisão D3.
+
+A segunda rodada também encontrou um defeito. Cada tela do sistema é carregada na primeira vez que alguém entra
+nela, a partir de um arquivo que leva no nome o código da versão. Depois de uma atualização, uma aba aberta antes
+dela continuava pedindo o arquivo da versão anterior, que já não existia, e o botão "Fechar conta" deixava de
+responder, sem mensagem de erro. Como o celular do garçom fica o turno inteiro na mesma página, isso aconteceria a
+cada atualização do sistema. A correção recarrega a página no endereço de destino quando falta esse arquivo e, se
+ele continuar faltando logo em seguida, não recarrega de novo, para não entrar em repetição.

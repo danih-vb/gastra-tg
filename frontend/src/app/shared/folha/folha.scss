@@ -52,6 +52,8 @@
   }
 }
 
+.folha.larga { max-width: 720px; }
+
 @keyframes subir {
   from { transform: translateY(24px); opacity: 0.4; }
   to { transform: none; opacity: 1; }

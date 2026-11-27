@@ -8,6 +8,7 @@ import {
   CategoriaRestricao,
   Comanda,
   ComandaDoCliente,
+  Destaque,
   GarcomDoTurno,
   ItemCardapio,
   ItemDoPedido,
@@ -22,6 +23,9 @@ import {
   PeriodoAlocacao,
   Praca,
   Promocao,
+  MedalhasDoGarcom,
+  MencaoHonrosa,
+  NovaMencaoHonrosa,
   RankingDeDesempenho,
   PerfisDeConsumo,
   RelatorioAvaliacoes,
@@ -30,6 +34,7 @@ import {
   RelatorioHorarios,
   RelatorioPracas,
   SugestoesDaComanda,
+  TipoDestaque,
   Usuario,
 } from './modelos';
 
@@ -112,6 +117,41 @@ export class GastraApiService {
   }
 
   /** UC23 — marca o item como entregue ou cancela com motivo da lista fechada (RN02). */
+  /** Destaques do dia e metas do mês, de hoje em diante, com quanto a equipe já vendeu. */
+  listarDestaques(): Observable<Destaque[]> {
+    return this.http.get<Destaque[]>(`${this.api}/api/destaques`);
+  }
+
+  criarDestaque(itemCardapioId: number, tipo: TipoDestaque, meta: number | null): Observable<Destaque> {
+    return this.http.post<Destaque>(`${this.api}/api/destaques`, { itemCardapioId, tipo, meta });
+  }
+
+  removerDestaque(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/destaques/${id}`);
+  }
+
+  /** O garçom confirma ou recusa um item lançado pelo Metre ou pelo Gerente na mesa dele. */
+  confirmarItem(comandaId: number, itemId: number, aceitar: boolean): Observable<void> {
+    return this.http.post<void>(`${this.api}/api/comandas/${comandaId}/itens/${itemId}/confirmacao`, { aceitar });
+  }
+
+  /** Cortesia do Metre ou do Gerente: o item entra na comanda por R$ 0,00. */
+  lancarCortesia(comandaId: number, itemCardapioId: number, quantidade: number, motivo: string): Observable<ItemDoPedido> {
+    return this.http.post<ItemDoPedido>(`${this.api}/api/comandas/${comandaId}/cortesias`, {
+      itemCardapioId,
+      quantidade,
+      motivo,
+    });
+  }
+
+  /** Só o Gerente: preço novo para um item já lançado, com motivo. */
+  alterarPrecoDoItem(comandaId: number, itemId: number, preco: number, motivo: string): Observable<ItemDoPedido> {
+    return this.http.patch<ItemDoPedido>(`${this.api}/api/comandas/${comandaId}/itens/${itemId}/preco`, {
+      preco,
+      motivo,
+    });
+  }
+
   atualizarSituacaoDoItem(
     comandaId: number,
     itemId: number,
@@ -202,6 +242,20 @@ export class GastraApiService {
   /** UC17 — para o Garçom, a API já devolve apenas a própria posição. */
   obterDesempenho(): Observable<RankingDeDesempenho> {
     return this.http.get<RankingDeDesempenho>(`${this.api}/api/indicadores/desempenho`);
+  }
+
+  /** Medalhas do mês e o histórico de conquistas. O garçom recebe só as dele; o Gerente escolhe de quem. */
+  obterMedalhas(garcomId?: number): Observable<MedalhasDoGarcom> {
+    const params: Record<string, number> = garcomId === undefined ? {} : { garcomId };
+    return this.http.get<MedalhasDoGarcom>(`${this.api}/api/indicadores/medalhas`, { params });
+  }
+
+  concederMencao(mencao: NovaMencaoHonrosa): Observable<MencaoHonrosa> {
+    return this.http.post<MencaoHonrosa>(`${this.api}/api/mencoes`, mencao);
+  }
+
+  removerMencao(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.api}/api/mencoes/${id}`);
   }
 
   // --- Gerente: relatórios (UC16, UC17). Sem datas, a API usa os últimos 30 dias. ---
@@ -310,6 +364,11 @@ export class GastraApiService {
   }
 
   /** RF18 — inativar não apaga: a conta perde o acesso na hora e o histórico continua. */
+  /** Foto do crachá do funcionário: o endereço vem do envio de foto; nulo tira a foto. */
+  definirFotoDoUsuario(id: number, foto: string | null): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}/foto`, { foto });
+  }
+
   alterarSituacaoDoUsuario(id: number, ativo: boolean): Observable<void> {
     return this.http.patch<void>(`${this.api}/api/usuarios/${id}/situacao`, { ativo });
   }

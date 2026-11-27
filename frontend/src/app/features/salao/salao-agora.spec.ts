@@ -1,7 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { API, comanda, itemDoPedido, mesa, praca } from '../../core/api/testes';
+import { API, comanda, itemCardapio, itemDoPedido, mesa, praca } from '../../core/api/testes';
+import { ARMAZENAMENTO_DA_SESSAO } from '../../core/configuracao';
+import { Papel } from '../../core/sessao/modelos';
+import { ArmazenamentoEmMemoria } from '../../core/sessao/testes';
 import { provedoresDeLocalizacao } from '../../core/localizacao';
 import { SalaoAgora } from './salao-agora';
 
@@ -9,10 +12,20 @@ describe('Salão agora (painel do Metre)', () => {
   let http: HttpTestingController;
   let fixture: ComponentFixture<SalaoAgora>;
 
-  async function renderizar(): Promise<HTMLElement> {
+  async function renderizar(papel: Papel = 'Metre'): Promise<HTMLElement> {
+    const armazenamento = new ArmazenamentoEmMemoria();
+    armazenamento.setItem(
+      'gastra.sessao',
+      JSON.stringify({ token: 't', nome: 'Helena', papel, expiraEm: Date.now() + 60_000 }),
+    );
     await TestBed.configureTestingModule({
       imports: [SalaoAgora],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provedoresDeLocalizacao()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provedoresDeLocalizacao(),
+        { provide: ARMAZENAMENTO_DA_SESSAO, useValue: armazenamento },
+      ],
     }).compileComponents();
 
     http = TestBed.inject(HttpTestingController);
@@ -40,6 +53,113 @@ describe('Salão agora (painel do Metre)', () => {
   }
 
   afterEach(() => http.verify());
+
+  function botao(pagina: HTMLElement, rotulo: string): HTMLButtonElement | undefined {
+    return [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes(rotulo));
+  }
+
+  function preencher(pagina: HTMLElement, seletor: string, valor: string): void {
+    const campo = pagina.querySelector<HTMLInputElement>(seletor)!;
+    campo.value = valor;
+    campo.dispatchEvent(new Event('input'));
+  }
+
+  it('o metre lança uma cortesia com motivo e a mesa passa a mostrá-la', async () => {
+    const pagina = await renderizar('Metre');
+    botao(pagina, 'Ver')!.click();
+    await fixture.whenStable();
+
+    expect(botao(pagina, 'Alterar preço')).toBeUndefined();
+
+    botao(pagina, 'Lançar cortesia')!.click();
+    http
+      .expectOne(`${API}/api/cardapio`)
+      .flush([itemCardapio({ id: 7, nome: 'Tortinha de aniversário', preco: 18, disponivel: false })]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
+    await fixture.whenStable();
+
+    // Fora de venda, a torta só pode sair como cortesia: na lista de cortesia o botão vem liberado.
+    pagina.querySelector<HTMLButtonElement>('button[aria-label="Cortesia: Tortinha de aniversário"]')!.click();
+    await fixture.whenStable();
+    botao(pagina, 'Aumentar')?.click();
+    pagina.querySelector<HTMLButtonElement>('button[aria-label="Diminuir"]')!.click();
+    preencher(pagina, '#cortesia-motivo', 'Aniversário');
+    await fixture.whenStable();
+    botao(pagina, 'Cortesia 1 ×')!.click();
+
+    const pedido = http.expectOne(`${API}/api/comandas/501/cortesias`);
+    expect(pedido.request.body).toEqual({ itemCardapioId: 7, quantidade: 1, motivo: 'Aniversário' });
+    pedido.flush(itemDoPedido({ cortesia: true, valor: 0 }));
+    http.expectOne(`${API}/api/comandas/501`).flush(
+      comanda({
+        id: 501,
+        mesaId: 10,
+        itens: [itemDoPedido({ nome: 'Tortinha de aniversário', cortesia: true, valor: 0, motivoDoAjuste: 'Aniversário' })],
+      }),
+    );
+    await fixture.whenStable();
+
+    expect(texto(pagina.querySelector('app-folha')!)).toContain('Cortesia · Aniversário');
+  });
+
+  it('o metre lança um item comum, que vai para o garçom confirmar', async () => {
+    const pagina = await renderizar('Metre');
+    botao(pagina, 'Ver')!.click();
+    await fixture.whenStable();
+
+    botao(pagina, 'Lançar item')!.click();
+    http
+      .expectOne(`${API}/api/cardapio`)
+      .flush([
+        itemCardapio({ id: 7, nome: 'Tortinha de aniversário', disponivel: false }),
+        itemCardapio({ id: 8, nome: 'Moqueca de peixe', preco: 89 }),
+      ]);
+    http.expectOne(`${API}/api/destaques`).flush([]);
+    await fixture.whenStable();
+
+    // No lançamento comum, o que está fora de venda aparece, mas não pode ser escolhido.
+    expect(pagina.querySelector<HTMLButtonElement>('button[aria-label="Lançar: Tortinha de aniversário"]')!.disabled).toBe(true);
+    pagina.querySelector<HTMLButtonElement>('button[aria-label="Lançar: Moqueca de peixe"]')!.click();
+    await fixture.whenStable();
+    botao(pagina, 'para o garçom confirmar')!.click();
+
+    const pedido = http.expectOne(`${API}/api/comandas/501/itens`);
+    expect(pedido.request.body).toEqual({ itemCardapioId: 8, quantidade: 1 });
+    pedido.flush(itemDoPedido({ status: 'AConfirmar', lancadoPor: 'Metre' }));
+    http.expectOne(`${API}/api/comandas/501`).flush(
+      comanda({ id: 501, mesaId: 10, itens: [itemDoPedido({ nome: 'Moqueca de peixe', status: 'AConfirmar', lancadoPor: 'Metre' })] }),
+    );
+    await fixture.whenStable();
+
+    expect(texto(pagina.querySelector('app-folha')!)).toContain('A confirmar');
+  });
+
+  it('o gerente altera o preço de um item da mesa, com motivo', async () => {
+    const pagina = await renderizar('Gerente');
+    botao(pagina, 'Ver')!.click();
+    await fixture.whenStable();
+
+    botao(pagina, 'Alterar preço')!.click();
+    await fixture.whenStable();
+    preencher(pagina, '#ajuste-preco', '30');
+    preencher(pagina, '#ajuste-motivo', 'Prato demorou');
+    await fixture.whenStable();
+    botao(pagina, 'Salvar preço')!.click();
+
+    const pedido = http.expectOne(`${API}/api/comandas/501/itens/90/preco`);
+    expect(pedido.request.body).toEqual({ preco: 30, motivo: 'Prato demorou' });
+    pedido.flush(itemDoPedido({ precoUnitarioNoMomento: 30, precoOriginal: 68 }));
+    http.expectOne(`${API}/api/comandas/501`).flush(
+      comanda({
+        id: 501,
+        mesaId: 10,
+        itens: [itemDoPedido({ precoUnitarioNoMomento: 30, valor: 30, precoOriginal: 68, motivoDoAjuste: 'Prato demorou' })],
+      }),
+    );
+    await fixture.whenStable();
+
+    expect(texto(pagina.querySelector('app-folha')!)).toContain('R$ 68,00 R$ 30,00 · Prato demorou');
+  });
 
   it('mostra quantos itens da mesa estão atrasados', async () => {
     await TestBed.configureTestingModule({

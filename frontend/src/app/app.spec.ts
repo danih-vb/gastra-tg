@@ -41,6 +41,12 @@ describe('App', () => {
     expect(pagina.querySelector('.barra')?.textContent).toContain('GASTRA');
   });
 
+  it('mostra o rodapé em todas as páginas, com ou sem login', async () => {
+    const pagina = await renderizar(null);
+
+    expect(pagina.querySelector('footer.rodape')?.textContent).toContain('FATEC Araraquara');
+  });
+
   it('sem login, não mostra menu nem botão de sair', async () => {
     const pagina = await renderizar(null);
 
@@ -52,7 +58,9 @@ describe('App', () => {
     const pagina = await renderizar('Garcom');
 
     expect(itensDoMenu(pagina)).toEqual(['Comandas', 'A entregar', 'Desempenho']);
-    expect(pagina.querySelector('.barra')?.textContent).toContain('Ana · Garçom');
+    expect(pagina.querySelector('.barra .quem')?.textContent).toContain('Ana');
+    expect(pagina.querySelector('.barra .quem')?.textContent).toContain('Garçom');
+    expect(pagina.querySelector('.barra .avatar')?.textContent?.trim()).toBe('A');
   });
 
   it('o metre vê a alocação e o salão, e não as telas do garçom', async () => {
@@ -61,10 +69,27 @@ describe('App', () => {
     expect(itensDoMenu(pagina)).toEqual(['Alocação', 'Salão agora']);
   });
 
-  it('o gerente vê a gestão, mas não a alocação do metre', async () => {
+  it('o gerente vê a gestão e o salão agora, mas não a alocação do metre', async () => {
     const pagina = await renderizar('Gerente');
 
-    expect(itensDoMenu(pagina)).toEqual(['Análises', 'Cardápio', 'Salão', 'Usuários']);
+    expect(itensDoMenu(pagina)).toEqual(['Salão agora', 'Análises', 'Cardápio', 'Salão', 'Usuários']);
+  });
+
+  it('as telas dos outros papéis aparecem sem link, dizendo de quem são', async () => {
+    const pagina = await renderizar('Garcom');
+    const bloqueados = [...pagina.querySelectorAll('nav .bloqueado')];
+
+    expect(bloqueados.map((b) => b.textContent?.trim())).toEqual([
+      'Alocação',
+      'Salão agora',
+      'Análises',
+      'Cardápio',
+      'Salão',
+      'Usuários',
+    ]);
+    expect(bloqueados.every((b) => b.closest('a') === null)).toBe(true);
+    expect(bloqueados[0].getAttribute('title')).toBe('Só para Metre');
+    expect(bloqueados[3].getAttribute('title')).toBe('Só para Gerente e Coordenador');
   });
 
   it('o coordenador vê só o cardápio, onde ficam também as promoções', async () => {

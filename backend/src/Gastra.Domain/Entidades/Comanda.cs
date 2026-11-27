@@ -104,7 +104,9 @@ public class Comanda : EntidadeBase
 
     /// <summary>RF03: lança um item, copiando o preço vigente no cardápio.</summary>
     /// <param name="precoPromocional">Preço com promoção vigente (RF22). Nunca acima do preço do cardápio.</param>
-    public ItemDoPedido AdicionarItem(ItemDoCardapio item, int quantidade, decimal? precoPromocional = null)
+    /// <param name="lancadoPor">Metre ou Gerente: o item espera o garçom da mesa confirmar. Nulo quando é o garçom.</param>
+    public ItemDoPedido AdicionarItem(
+        ItemDoCardapio item, int quantidade, decimal? precoPromocional = null, PapelUsuario? lancadoPor = null)
     {
         GarantirAberta();
 
@@ -115,6 +117,8 @@ public class Comanda : EntidadeBase
             throw new ArgumentOutOfRangeException(nameof(precoPromocional), "O preço promocional precisa ser positivo e não maior que o do cardápio.");
 
         var pedido = new ItemDoPedido(item.Id, quantidade, precoPromocional ?? item.Preco);
+        if (lancadoPor is not null)
+            pedido.AguardarConfirmacaoDoGarcom(lancadoPor.Value);
         _itens.Add(pedido);
 
         // RN01: item infantil em mesa de 3 ou mais pessoas reclassifica a composição — a não ser que
@@ -122,6 +126,30 @@ public class Comanda : EntidadeBase
         if (!ComposicaoAjustadaManualmente && item.FlagsDieteticas.Contains(FlagDietetica.OpcaoInfantil))
             Composicao = Classificar(QuantidadePessoas, true);
 
+        return pedido;
+    }
+
+    /// <summary>
+    /// Cortesia lançada pelo Metre ou pelo Gerente (uma torta de aniversário, por exemplo). Vale também para item
+    /// indisponível no cardápio: assim o restaurante cadastra um item que não é vendido e só sai como cortesia.
+    /// </summary>
+    public ItemDoPedido AdicionarCortesia(ItemDoCardapio item, int quantidade, string motivo)
+    {
+        GarantirAberta();
+
+        var pedido = ItemDoPedido.CriarCortesia(item.Id, quantidade, item.Preco, motivo);
+        _itens.Add(pedido);
+        return pedido;
+    }
+
+    /// <summary>O Gerente muda o preço de um item já lançado nesta comanda, com motivo.</summary>
+    public ItemDoPedido AlterarPrecoDoItem(int itemDoPedidoId, decimal novoPreco, string motivo)
+    {
+        GarantirAberta();
+
+        var pedido = _itens.SingleOrDefault(i => i.Id == itemDoPedidoId)
+                     ?? throw new KeyNotFoundException("O item não pertence a esta comanda.");
+        pedido.AlterarPreco(novoPreco, motivo);
         return pedido;
     }
 
@@ -163,7 +191,9 @@ public class Comanda : EntidadeBase
     }
 
     /// <summary>RN02: itens ainda pendentes impedem o fechamento e ficam visíveis como lembrete.</summary>
-    public bool PossuiPendencias() => _itens.Any(i => i.Status == StatusItemPedido.Pendente);
+    /// <summary>RN02: item a entregar ou à espera da confirmação do garçom impede o fechamento.</summary>
+    public bool PossuiPendencias() =>
+        _itens.Any(i => i.Status is StatusItemPedido.Pendente or StatusItemPedido.AConfirmar);
 
     public decimal CalcularSubtotal() => _itens.Sum(i => i.CalcularValor());
 

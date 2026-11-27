@@ -132,6 +132,115 @@ public class ComandaTests
         Assert.Equal(MotivoCancelamento.ItemEmFalta, pedido.MotivoCancelamento);
     }
 
+    // --- Cortesia e ajuste de preço ---
+
+    [Fact]
+    public void Cortesia_EntraPorZero_GuardaOPrecoDoCardapio_EValeParaItemIndisponivel()
+    {
+        var comanda = AbrirComanda();
+
+        var cortesia = comanda.AdicionarCortesia(Item(32m, disponivel: false), 1, "  Aniversário  ");
+
+        Assert.True(cortesia.Cortesia);
+        Assert.Equal(0m, cortesia.PrecoUnitarioNoMomento);
+        Assert.Equal(32m, cortesia.PrecoOriginal);
+        Assert.Equal("Aniversário", cortesia.MotivoDoAjuste);
+        Assert.Equal(0m, comanda.CalcularSubtotal());
+        Assert.Equal(StatusItemPedido.Pendente, cortesia.Status);
+    }
+
+    [Fact]
+    public void Cortesia_SemMotivo_LancaExcecao()
+    {
+        Assert.Throws<ArgumentException>(() => AbrirComanda().AdicionarCortesia(Item(), 1, "   "));
+    }
+
+    [Fact]
+    public void AlterarPreco_MudaOValorEGuardaOPrimeiroPreco()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 2);
+
+        comanda.AlterarPrecoDoItem(pedido.Id, 40m, "Prato demorou");
+        comanda.AlterarPrecoDoItem(pedido.Id, 35m, "Cliente frequente");
+
+        Assert.Equal(35m, pedido.PrecoUnitarioNoMomento);
+        Assert.Equal(50m, pedido.PrecoOriginal);
+        Assert.Equal("Cliente frequente", pedido.MotivoDoAjuste);
+        Assert.Equal(70m, comanda.CalcularSubtotal());
+    }
+
+    [Fact]
+    public void AlterarPreco_DeItemCancelado_LancaExcecao()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 1);
+        pedido.Cancelar(MotivoCancelamento.ErroDeLancamento);
+
+        Assert.Throws<InvalidOperationException>(() => comanda.AlterarPrecoDoItem(pedido.Id, 10m, "Teste"));
+    }
+
+    [Fact]
+    public void ComandaFechada_NaoAceitaCortesiaNemAjuste()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 1);
+        pedido.MarcarEntregue();
+        comanda.Fechar();
+
+        Assert.Throws<InvalidOperationException>(() => comanda.AdicionarCortesia(Item(), 1, "Aniversário"));
+        Assert.Throws<InvalidOperationException>(() => comanda.AlterarPrecoDoItem(pedido.Id, 10m, "Teste"));
+    }
+
+    // --- Lançamento pelo Metre ou pelo Gerente, com confirmação do garçom ---
+
+    [Fact]
+    public void LancadoPeloMetre_EsperaOGarcom_ForaDaConta_EImpedeOFechamento()
+    {
+        var comanda = AbrirComanda();
+
+        var pedido = comanda.AdicionarItem(Item(50m), 2, lancadoPor: PapelUsuario.Metre);
+
+        Assert.Equal(StatusItemPedido.AConfirmar, pedido.Status);
+        Assert.Equal(PapelUsuario.Metre, pedido.LancadoPor);
+        Assert.Equal(0m, comanda.CalcularSubtotal());
+        Assert.True(comanda.PossuiPendencias());
+    }
+
+    [Fact]
+    public void GarcomConfirma_ItemEntraNaContaComoPendente()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 2, lancadoPor: PapelUsuario.Gerente);
+
+        pedido.ConfirmarPeloGarcom();
+
+        Assert.Equal(StatusItemPedido.Pendente, pedido.Status);
+        Assert.Equal(100m, comanda.CalcularSubtotal());
+    }
+
+    [Fact]
+    public void GarcomRecusa_ItemSaiDaContaComOMotivo()
+    {
+        var comanda = AbrirComanda();
+        var pedido = comanda.AdicionarItem(Item(50m), 1, lancadoPor: PapelUsuario.Metre);
+
+        pedido.RecusarPeloGarcom();
+
+        Assert.Equal(StatusItemPedido.Cancelado, pedido.Status);
+        Assert.Equal(MotivoCancelamento.RecusadoPeloGarcom, pedido.MotivoCancelamento);
+        Assert.False(comanda.PossuiPendencias());
+    }
+
+    [Fact]
+    public void ConfirmarItemQueNaoEsperaOGarcom_LancaExcecao()
+    {
+        var pedido = AbrirComanda().AdicionarItem(Item(50m), 1);
+
+        Assert.Throws<InvalidOperationException>(() => pedido.ConfirmarPeloGarcom());
+        Assert.Throws<InvalidOperationException>(() => pedido.RecusarPeloGarcom());
+    }
+
     // --- RF04: taxa de serviço ---
 
     [Fact]

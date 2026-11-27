@@ -34,6 +34,44 @@ public static class ValidadorComanda
             throw new ErroValidacaoException([MensagensErro.QuantidadeItemInvalida]);
     }
 
+    public const int QuantidadeMaximaDeCortesia = 20;
+    public const decimal PrecoMaximo = 99_999.99m;
+
+    public static void ValidarCortesia(CortesiaRequest request)
+    {
+        var erros = new List<string>();
+
+        if (request.Quantidade is < 1 or > QuantidadeMaximaDeCortesia)
+            erros.Add(MensagensErro.QuantidadeCortesiaInvalida);
+
+        ValidarMotivo(request.Motivo, erros);
+
+        if (erros.Count > 0)
+            throw new ErroValidacaoException(erros);
+    }
+
+    public static void ValidarAlteracaoDePreco(AlterarPrecoItemRequest request)
+    {
+        var erros = new List<string>();
+
+        if (request.Preco is < 0 or > PrecoMaximo || decimal.Round(request.Preco, 2) != request.Preco)
+            erros.Add(MensagensErro.PrecoAjustadoInvalido);
+
+        ValidarMotivo(request.Motivo, erros);
+
+        if (erros.Count > 0)
+            throw new ErroValidacaoException(erros);
+    }
+
+    private static void ValidarMotivo(string? motivo, List<string> erros)
+    {
+        var limpo = motivo?.Trim() ?? string.Empty;
+        if (limpo.Length == 0)
+            erros.Add(MensagensErro.MotivoDoAjusteObrigatorio);
+        else if (limpo.Length > ItemDoPedido.TamanhoMaximoDoMotivo)
+            erros.Add(MensagensErro.MotivoDoAjusteMuitoLongo);
+    }
+
     /// <summary>RF25: nota dentro da escala e comentário curto — texto longo do cliente não serve a ninguém.</summary>
     public static void ValidarAvaliacao(AvaliacaoRequest request)
     {

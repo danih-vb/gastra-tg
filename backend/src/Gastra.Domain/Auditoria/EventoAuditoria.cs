@@ -31,12 +31,19 @@ public static class EventoAuditoria
     public const string MesaEditada = "MESA_EDITADA";
     public const string PromocaoCriada = "PROMOCAO_CRIADA";
     public const string PromocaoRemovida = "PROMOCAO_REMOVIDA";
+    public const string DestaqueCriado = "DESTAQUE_CRIADO";
+    public const string FotoDoUsuarioAlterada = "FOTO_DO_USUARIO_ALTERADA";
+    public const string DestaqueRemovido = "DESTAQUE_REMOVIDO";
 
     // 4.3 Comandas
     public const string ComandaAberta = "COMANDA_ABERTA";
     public const string ComposicaoAjustada = "COMPOSICAO_AJUSTADA";
     public const string ItemRegistrado = "ITEM_REGISTRADO";
     public const string ItemCancelado = "ITEM_CANCELADO";
+    public const string CortesiaLancada = "CORTESIA_LANCADA";
+    public const string ItemConfirmadoPeloGarcom = "ITEM_CONFIRMADO_PELO_GARCOM";
+    public const string ItemRecusadoPeloGarcom = "ITEM_RECUSADO_PELO_GARCOM";
+    public const string PrecoDoItemAlterado = "PRECO_DO_ITEM_ALTERADO";
     public const string RestricaoRegistrada = "RESTRICAO_REGISTRADA";
     public const string TaxaServicoRemovida = "TAXA_SERVICO_REMOVIDA";
     public const string TaxaServicoRecolocada = "TAXA_SERVICO_RECOLOCADA";
@@ -57,6 +64,9 @@ public static class EventoAuditoria
     // 4.5 Análises
     public const string RelatorioBiConsultado = "RELATORIO_BI_CONSULTADO";
     public const string IndiceDesempenhoConsultado = "INDICE_DESEMPENHO_CONSULTADO";
+    public const string MedalhasConsultadas = "MEDALHAS_CONSULTADAS";
+    public const string MencaoConcedida = "MENCAO_CONCEDIDA";
+    public const string MencaoRemovida = "MENCAO_REMOVIDA";
 
     // Seção 7: retenção
     public const string AuditoriaEliminadaPorPrazo = "AUDITORIA_ELIMINADA_POR_PRAZO";

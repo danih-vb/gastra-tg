@@ -3,15 +3,25 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { Observable, forkJoin } from 'rxjs';
 import { GastraApiService } from '../../core/api/gastra-api.service';
-import { CategoriaItemCardapio, FlagDietetica, ItemCardapio, Promocao, TipoDesconto } from '../../core/api/modelos';
+import {
+  CategoriaItemCardapio,
+  Destaque,
+  FlagDietetica,
+  ItemCardapio,
+  Promocao,
+  TipoDesconto,
+  TipoDestaque,
+} from '../../core/api/modelos';
+import { EtiquetaDestaque } from '../../shared/destaque/etiqueta-destaque';
+import { EscolherItem } from '../../shared/escolher-item/escolher-item';
 import { AvisoService } from '../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
-import { CATEGORIAS, FLAGS } from '../../shared/rotulos';
+import { CATEGORIAS, FLAGS, ICONES_DAS_FLAGS } from '../../shared/rotulos';
 import { dataDeHoje } from '../comandas/turno';
 
-type Aba = 'itens' | 'promocoes';
+type Aba = 'itens' | 'promocoes' | 'destaques';
 type Painel = 'novo-item' | 'preco' | 'foto' | 'nova-promocao' | 'remover-promocao' | null;
 
 /** "12,50", "12.50" e "1.234,50" viram número; vazio vira NaN para a validação da API responder. */
@@ -34,7 +44,7 @@ export function precoComDesconto(preco: number, tipo: TipoDesconto, valor: numbe
 @Component({
   selector: 'app-gestao-cardapio',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, DatePipe, FormsModule, Folha, Icone],
+  imports: [CurrencyPipe, DatePipe, FormsModule, Folha, Icone, EtiquetaDestaque, EscolherItem],
   templateUrl: './gestao-cardapio.html',
   styleUrl: './gestao-cardapio.scss',
 })
@@ -49,6 +59,12 @@ export class GestaoCardapio {
   protected readonly errosDoPainel = signal<string[]>([]);
   protected readonly itens = signal<ItemCardapio[]>([]);
   protected readonly promocoes = signal<Promocao[]>([]);
+  protected readonly destaques = signal<Destaque[]>([]);
+  /** Item escolhido na lista, à espera do tipo de destaque. */
+  protected readonly itemDoDestaque = signal<ItemCardapio | null>(null);
+  protected destaqueTipo: TipoDestaque = 'DestaqueDoDia';
+  protected destaqueMeta: number | null = null;
+
 
   protected readonly busca = signal('');
   protected readonly categoria = signal<CategoriaItemCardapio | 'todas'>('todas');
@@ -72,6 +88,7 @@ export class GestaoCardapio {
 
   protected readonly CATEGORIAS = CATEGORIAS;
   protected readonly FLAGS = FLAGS;
+  protected readonly ICONES_DAS_FLAGS = ICONES_DAS_FLAGS;
   protected readonly flagsPossiveis = Object.keys(FLAGS) as FlagDietetica[];
 
   protected readonly itensFiltrados = computed(() => {
@@ -242,13 +259,35 @@ export class GestaoCardapio {
     this.salvar(this.api.removerPromocao(promocao.id), `Promoção “${promocao.descricao}” removida`);
   }
 
+  /** Destaque do dia vale hoje; meta do mês vale este mês. */
+  protected criarDestaque(): void {
+    const item = this.itemDoDestaque();
+    if (!item || this.salvando()) return;
+    const meta = this.destaqueTipo === 'MetaDoMes' ? Number(this.destaqueMeta) : null;
+    this.salvar(
+      this.api.criarDestaque(item.id, this.destaqueTipo, meta),
+      this.destaqueTipo === 'MetaDoMes' ? `Meta do mês criada: ${item.nome}` : `Destaque de hoje: ${item.nome}`,
+    );
+    this.itemDoDestaque.set(null);
+    this.destaqueMeta = null;
+  }
+
+  protected removerDestaque(destaque: Destaque): void {
+    this.salvar(this.api.removerDestaque(destaque.id), `Destaque removido: ${destaque.nome}`);
+  }
+
   protected carregar(): void {
     this.carregando.set(true);
     this.erros.set([]);
-    forkJoin({ itens: this.api.listarCardapio(), promocoes: this.api.listarPromocoes() }).subscribe({
-      next: ({ itens, promocoes }) => {
+    forkJoin({
+      itens: this.api.listarCardapio(),
+      promocoes: this.api.listarPromocoes(),
+      destaques: this.api.listarDestaques(),
+    }).subscribe({
+      next: ({ itens, promocoes, destaques }) => {
         this.itens.set(itens);
         this.promocoes.set(promocoes);
+        this.destaques.set(destaques);
         this.carregando.set(false);
       },
       error: (erro: unknown) => {

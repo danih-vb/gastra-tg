@@ -48,6 +48,10 @@ internal static class MapeadorComanda
         Quantidade = item.Quantidade,
         PrecoUnitarioNoMomento = item.PrecoUnitarioNoMomento,
         Valor = item.CalcularValor(),
+        Cortesia = item.Cortesia,
+        LancadoPor = item.LancadoPor?.ToString(),
+        PrecoOriginal = item.PrecoOriginal,
+        MotivoDoAjuste = item.MotivoDoAjuste,
         Status = item.Status.Adapt<ComunicacaoEnums.StatusItemPedido>(),
         MotivoCancelamento = item.MotivoCancelamento?.Adapt<ComunicacaoEnums.MotivoCancelamento>(),
         DataHoraRegistro = item.DataHoraRegistro,
@@ -59,11 +63,13 @@ internal static class MapeadorComanda
         Mesa = numeroDaMesa,
         DataHoraAbertura = comanda.DataHoraAbertura,
         Fechada = comanda.DataHoraFechamento is not null,
-        Itens = comanda.Itens.Select(i => new ItemConsultaCliente
+        Itens = comanda.Itens.Where(i => i.Status != StatusItemPedido.AConfirmar).Select(i => new ItemConsultaCliente
         {
             Nome = nomes.TryGetValue(i.ItemDoCardapioId, out var nome) ? nome : string.Empty,
             Quantidade = i.Quantidade,
             Valor = i.CalcularValor(),
+            Cortesia = i.Cortesia,
+            ValorOriginal = i.PrecoOriginal is null || i.Cortesia ? null : i.PrecoOriginal * i.Quantidade,
             Situacao = i.Status.ToString(),
         }).ToList(),
         Subtotal = comanda.CalcularSubtotal(),

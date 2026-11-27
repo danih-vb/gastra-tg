@@ -14,6 +14,9 @@ const INTERVALO_MS = 1_000;
  * UC20 — conta da mesa em tempo real (RF13), aberta pelo QR code. Tela pública: mostra só itens e valores daquela
  * mesa, sem nome de garçom, restrição alimentar ou qualquer dado pessoal (RN04).
  */
+/** Código da mesa na aba atual, para o cardápio chamar o garçom. Some ao fechar a aba. */
+export const CHAVE_DA_MESA = 'gastra.mesaDaAba';
+
 @Component({
   selector: 'app-conta-do-cliente',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,13 +50,19 @@ export class ContaDoCliente implements OnInit, OnDestroy {
     Pendente: { texto: 'Aguardando', classe: 'aviso' },
     Entregue: { texto: 'Entregue', classe: 'sucesso' },
     Cancelado: { texto: 'Cancelado · não cobrado', classe: '' },
+    AConfirmar: { texto: 'Aguardando', classe: 'aviso' },
   };
 
   constructor() {
     // Trocar só o código na mesma rota reaproveita o componente: sem isto, a tela continuaria mostrando a conta
     // (ou o erro) do código anterior.
     effect(() => {
-      this.codigo();
+      const codigo = this.codigo();
+      try {
+        sessionStorage.setItem(CHAVE_DA_MESA, codigo);
+      } catch {
+        // Sem armazenamento, o cardápio só não mostra o botão de chamar o garçom.
+      }
       this.carregar();
     });
   }

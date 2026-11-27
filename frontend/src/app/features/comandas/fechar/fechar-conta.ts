@@ -34,7 +34,9 @@ export class FecharConta implements OnInit {
   protected readonly fechada = signal(false);
 
   protected readonly mesa = computed(() => this.mesas().find((m) => m.id === this.comanda()?.mesaId) ?? null);
-  protected readonly pendentes = computed(() => this.comanda()?.itens.filter((i) => i.status === 'Pendente') ?? []);
+  protected readonly pendentes = computed(
+    () => this.comanda()?.itens.filter((i) => i.status === 'Pendente' || i.status === 'AConfirmar') ?? [],
+  );
   protected readonly cobrados = computed(() => this.comanda()?.itens.filter((i) => i.status !== 'Cancelado') ?? []);
 
   // O id da rota só existe depois que o Angular preenche as entradas, e não dentro do construtor.

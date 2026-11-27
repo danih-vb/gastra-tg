@@ -17,8 +17,11 @@ const CAMINHOS: Record<string, string> = {
   relogio: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   trofeu:
     '<path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M8 20h8"/>',
+  estrela: '<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>',
+  alvo: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
   sair: '<path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/>',
-  faisca: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/>',
+  faisca:
+    '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/>',
   cadeado: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>',
   escudo: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
   qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
@@ -28,6 +31,17 @@ const CAMINHOS: Record<string, string> = {
   avancar: '<path d="M9 5l7 7-7 7"/>',
   importar: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   sino: '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
+  folha: '<path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19l8-8"/>',
+  broto:
+    '<path d="M12 21v-9"/><path d="M12 12c0-4-3-6-7-6 0 4 3 6 7 6zM12 11c0-4 3-6 7-6 0 4-3 6-7 6z"/>',
+  'sem-gluten':
+    '<path d="M12 21V7"/><path d="M12 9c-2.5-.5-4-2.5-4-5 2.5.5 4 2.5 4 5zM12 9c2.5-.5 4-2.5 4-5-2.5.5-4 2.5-4 5zM12 14c-2.5-.5-4-2.5-4-5 2.5.5 4 2.5 4 5zM12 14c2.5-.5 4-2.5 4-5-2.5.5-4 2.5-4 5z"/><path d="M4 4l16 16"/>',
+  'sem-lactose':
+    '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 01-12 0c0-3.5 3-7 6-11z"/><path d="M4 4l16 16"/>',
+  crianca:
+    '<circle cx="12" cy="12" r="9"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0M9 10v.01M15 10v.01"/>',
+  lupa: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  coracao: '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>',
 };
 
 @Component({

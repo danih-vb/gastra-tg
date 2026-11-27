@@ -22,6 +22,7 @@ public class RegistrarItemPedidoUseCase(
     IRepositorioItemCardapio repositorioCardapio,
     IRepositorioPromocao repositorioPromocao,
     IRegistradorAuditoria auditoria,
+    IUsuarioLogado usuarioLogado,
     IUnitOfWork unitOfWork) : IRegistrarItemPedidoUseCase
 {
     public async Task<ItemPedidoResponse> Executar(int comandaId, ItemPedidoRequest request)
@@ -40,10 +41,13 @@ public class RegistrarItemPedidoUseCase(
         var hoje = HojeNoRestaurante.Data();
         var precoPromocional = Promocao.PrecoPromocional(item, await repositorioPromocao.ListarVigentes(hoje), hoje);
 
-        var pedido = comanda.AdicionarItem(item, request.Quantidade, precoPromocional);
+        // Lançado pelo Metre ou pelo Gerente, o item espera o garçom da mesa, que é quem responde por ela.
+        var papel = usuarioLogado.ObterPapel();
+        PapelUsuario? lancadoPor = papel is PapelUsuario.Metre or PapelUsuario.Gerente ? papel : null;
+        var pedido = comanda.AdicionarItem(item, request.Quantidade, precoPromocional, lancadoPor);
 
         await auditoria.Registrar(EventoAuditoria.ItemRegistrado, alvo: (nameof(Comanda), comanda.Id),
-            detalhes: new { ItemCardapioId = item.Id, pedido.Quantidade });
+            detalhes: new { ItemCardapioId = item.Id, pedido.Quantidade, LancadoPor = lancadoPor?.ToString() });
         await unitOfWork.Commit();
 
         return MapeadorComanda.MontarItem(pedido, new Dictionary<int, string> { [item.Id] = item.Nome });

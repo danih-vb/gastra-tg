@@ -12,7 +12,7 @@ import { Icone } from '../icone/icone';
   imports: [Icone],
   template: `
     <div class="fundo" [class.dialogo]="dialogo()" (click)="fundoClicado($event)">
-      <section class="folha" role="dialog" aria-modal="true" [attr.aria-label]="titulo()" tabindex="-1">
+      <section class="folha" [class.larga]="larga()" role="dialog" aria-modal="true" [attr.aria-label]="titulo()" tabindex="-1">
         <header>
           <div>
             <h2>{{ titulo() }}</h2>
@@ -38,6 +38,8 @@ export class Folha {
   readonly subtitulo = input('');
   /** Em tela de computador (gerente) o painel abre no centro, como diálogo, em vez de subir do rodapé. */
   readonly dialogo = input(false);
+  /** Folha com bastante conteúdo por linha (a mesa no Salão agora): mais larga no computador. */
+  readonly larga = input(false);
   readonly fechar = output<void>();
 
   constructor() {

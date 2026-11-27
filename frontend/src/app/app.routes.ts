@@ -59,7 +59,7 @@ export const routes: Routes = [
   {
     path: 'salao-agora',
     title: 'Salão agora — GASTRA',
-    canActivate: [exigePapel('Metre')],
+    canActivate: [exigePapel('Metre', 'Gerente')],
     loadComponent: () => import('./features/salao/salao-agora').then((m) => m.SalaoAgora),
   },
   // UC05–UC09 — cardápio e promoções (Gerente e Coordenador).
@@ -82,6 +82,12 @@ export const routes: Routes = [
     title: 'Salão — GASTRA',
     canActivate: [exigePapel('Gerente')],
     loadComponent: () => import('./features/salao/gestao-salao').then((m) => m.GestaoSalao),
+  },
+  {
+    path: 'salao/qr-codes',
+    title: 'QR codes das mesas — GASTRA',
+    canActivate: [exigePapel('Gerente')],
+    loadComponent: () => import('./features/salao/qr-das-mesas').then((m) => m.QrDasMesas),
   },
   {
     path: 'usuarios',

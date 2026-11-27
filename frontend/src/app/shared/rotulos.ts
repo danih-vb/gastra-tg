@@ -24,6 +24,15 @@ export const FLAGS: Record<FlagDietetica, string> = {
   OpcaoInfantil: 'Infantil',
 };
 
+/** Ícone de cada restrição, ao lado do nome: ajuda a achar o que serve sem ler etiqueta por etiqueta. */
+export const ICONES_DAS_FLAGS: Record<FlagDietetica, string> = {
+  Vegano: 'folha',
+  Vegetariano: 'broto',
+  SemGluten: 'sem-gluten',
+  SemLactose: 'sem-lactose',
+  OpcaoInfantil: 'crianca',
+};
+
 export const RESTRICOES: Record<CategoriaRestricao, string> = {
   Vegano: 'Vegano',
   Vegetariano: 'Vegetariano',
@@ -37,6 +46,7 @@ export const MOTIVOS: Record<MotivoCancelamento, string> = {
   ErroDeLancamento: 'Erro de lançamento',
   ClienteDesistiu: 'Cliente desistiu',
   ItemEmFalta: 'Item em falta',
+  RecusadoPeloGarcom: 'Recusado pelo garçom',
 };
 
 export const PAPEIS: Record<Papel, string> = {
@@ -63,6 +73,11 @@ export function composicaoSugerida(pessoas: number, temItemInfantil = false): Co
   if (pessoas === 2) return 'Casal';
   if (temItemInfantil) return 'Familia';
   return pessoas <= 4 ? 'GrupoPequeno' : 'GrupoGrande';
+}
+
+/** Para buscar sem depender de acento nem de maiúscula: "pure" acha "Purê". */
+export function semAcento(texto: string): string {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 /** "há 12 min", "agora": tempo desde um instante devolvido pela API. */

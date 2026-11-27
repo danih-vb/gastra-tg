@@ -8,10 +8,11 @@ import { Papel } from '../sessao/modelos';
 export type CategoriaItemCardapio = 'Entrada' | 'PratoPrincipal' | 'Sobremesa' | 'Bebida';
 export type FlagDietetica = 'Vegano' | 'Vegetariano' | 'SemGluten' | 'SemLactose' | 'OpcaoInfantil';
 export type CategoriaRestricao = 'Vegano' | 'Vegetariano' | 'SemGluten' | 'SemLactose' | 'Alergia' | 'Outro';
-export type MotivoCancelamento = 'ErroDeLancamento' | 'ClienteDesistiu' | 'ItemEmFalta';
+export type MotivoCancelamento = 'ErroDeLancamento' | 'ClienteDesistiu' | 'ItemEmFalta' | 'RecusadoPeloGarcom';
 export type ComposicaoMesa = 'Solo' | 'Casal' | 'GrupoPequeno' | 'Familia' | 'GrupoGrande';
 export type StatusComanda = 'Aberta' | 'Fechada';
-export type StatusItemPedido = 'Pendente' | 'Entregue' | 'Cancelado';
+/** AConfirmar: lançado pelo Metre ou pelo Gerente, espera o garçom da mesa. */
+export type StatusItemPedido = 'Pendente' | 'Entregue' | 'Cancelado' | 'AConfirmar';
 export type PeriodoAlocacao = 'Almoco' | 'Jantar';
 
 export interface ItemCardapio {
@@ -48,6 +49,13 @@ export interface ItemDoPedido {
   quantidade: number;
   precoUnitarioNoMomento: number;
   valor: number;
+  /** Cortesia do Metre ou do Gerente: entra por R$ 0,00. */
+  cortesia: boolean;
+  /** 'Metre' ou 'Gerente' quando não foi o garçom da mesa que lançou. */
+  lancadoPor: 'Metre' | 'Gerente' | null;
+  /** Preço antes da cortesia ou do ajuste do Gerente; nulo se nunca mudou. */
+  precoOriginal: number | null;
+  motivoDoAjuste: string | null;
   status: StatusItemPedido;
   motivoCancelamento: MotivoCancelamento | null;
   dataHoraRegistro: string;
@@ -154,7 +162,15 @@ export interface ComandaDoCliente {
   mesa: string;
   dataHoraAbertura: string;
   fechada: boolean;
-  itens: { nome: string; quantidade: number; valor: number; situacao: StatusItemPedido }[];
+  itens: {
+    nome: string;
+    quantidade: number;
+    valor: number;
+    cortesia: boolean;
+    /** Valor antes do ajuste do Gerente, para mostrar o desconto. */
+    valorOriginal: number | null;
+    situacao: StatusItemPedido;
+  }[];
   subtotal: number;
   taxaServico: number;
   total: number;
@@ -191,6 +207,58 @@ export interface RankingDeDesempenho {
   minimoDeAvaliacoes: number;
   totalNoRanking: number;
   posicoes: PosicaoNoRanking[];
+}
+
+export type CodigoDaMedalha =
+  | 'top-3'
+  | 'mesa-cheia'
+  | 'maratonista'
+  | 'bem-avaliado'
+  | 'vendedor-de-destaque'
+  | 'meta-batida';
+
+export interface Medalha {
+  codigo: CodigoDaMedalha;
+  conquistada: boolean;
+  /** De 0 até o alvo; no top-3 é a posição do mês e no bem-avaliado, a média das notas. */
+  progresso: number;
+  alvo: number;
+}
+
+export type IconeDaMencao = 'trofeu' | 'estrela' | 'coracao' | 'faisca' | 'alvo' | 'relogio' | 'pessoas' | 'check';
+export type CorDaMencao = 'laranja' | 'marinho' | 'verde' | 'vermelho' | 'roxo' | 'dourado';
+
+/** Reconhecimento dado pelo Gerente por algo que o sistema não mede. */
+export interface MencaoHonrosa {
+  id: number;
+  titulo: string;
+  descricao: string | null;
+  icone: IconeDaMencao;
+  cor: CorDaMencao;
+  /** Primeiro dia do mês. */
+  mes: string;
+}
+
+export interface NovaMencaoHonrosa {
+  garcomId: number;
+  titulo: string;
+  descricao: string | null;
+  icone: IconeDaMencao;
+  cor: CorDaMencao;
+  /** Qualquer dia do mês; sem ele, vale o mês atual. */
+  mes?: string;
+}
+
+export interface MedalhasDoGarcom {
+  garcomId: number;
+  nome: string;
+  /** Primeiro dia do mês atual. */
+  mes: string;
+  medalhas: Medalha[];
+  /** Do mês atual para trás: o que foi conquistado em cada um. */
+  historico: { mes: string; conquistadas: CodigoDaMedalha[] }[];
+  /** Da mais recente para a mais antiga. */
+  mencoes: MencaoHonrosa[];
 }
 
 // --- Gerente: relatórios de BI (UC16) ---
@@ -310,6 +378,8 @@ export interface Usuario {
   papel: Papel;
   ativo: boolean;
   segundoFatorConfigurado: boolean;
+  /** Foto do crachá, posta pelo Gerente. */
+  foto: string | null;
 }
 
 export interface NovoUsuario {
@@ -317,4 +387,20 @@ export interface NovoUsuario {
   email: string;
   senha: string;
   papel: Papel;
+}
+
+/** Destaque do dia: o item aparece primeiro e colorido para o garçom. Meta do mês: com quantidade a vender. */
+export type TipoDestaque = 'DestaqueDoDia' | 'MetaDoMes';
+
+export interface Destaque {
+  id: number;
+  itemCardapioId: number;
+  nome: string;
+  tipo: TipoDestaque;
+  dataInicio: string;
+  dataFim: string;
+  meta: number | null;
+  /** Unidades vendidas pela equipe no período, sem cortesias e sem cancelados. */
+  vendidos: number;
+  vigenteHoje: boolean;
 }

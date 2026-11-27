@@ -1,5 +1,6 @@
 using Gastra.Domain.Entidades;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gastra.Infrastructure.DataAccess;
 
@@ -18,9 +19,30 @@ public class GastraDbContext(DbContextOptions<GastraDbContext> options) : DbCont
     public DbSet<RegistroAuditoria> RegistrosAuditoria => Set<RegistroAuditoria>();
     public DbSet<Promocao> Promocoes => Set<Promocao>();
     public DbSet<AvaliacaoAtendimento> Avaliacoes => Set<AvaliacaoAtendimento>();
+    public DbSet<DestaqueDoCardapio> Destaques => Set<DestaqueDoCardapio>();
+    public DbSet<MencaoHonrosa> MencoesHonrosas => Set<MencaoHonrosa>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(GastraDbContext).Assembly);
     }
+
+    /// <summary>
+    /// Todo horário do banco é gravado em UTC (DateTime.UtcNow), mas o MySQL não guarda o fuso e o EF devolve o valor
+    /// sem dizer que é UTC. A API mandava "11:55" sem o "Z", e o navegador mostrava como hora local: três horas a mais
+    /// na conta do cliente e "há 0 min" em tudo por três horas. Na leitura, o valor passa a sair marcado como UTC.
+    /// </summary>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveConversion<HorarioEmUtc>();
+        configurationBuilder.Properties<DateTime?>().HaveConversion<HorarioEmUtcAnulavel>();
+    }
+
+    private sealed class HorarioEmUtc() : ValueConverter<DateTime, DateTime>(
+        gravado => gravado,
+        lido => DateTime.SpecifyKind(lido, DateTimeKind.Utc));
+
+    private sealed class HorarioEmUtcAnulavel() : ValueConverter<DateTime?, DateTime?>(
+        gravado => gravado,
+        lido => lido.HasValue ? DateTime.SpecifyKind(lido.Value, DateTimeKind.Utc) : lido);
 }

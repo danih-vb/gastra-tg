@@ -47,14 +47,12 @@
       <li>
         <div class="principal-item">
           <strong>Faturamento por turno</strong>
-          <span class="pequeno suave">vale {{ ranking()!.pesoFaturamento * 100 | number: '1.0-0' }}% do índice</span>
         </div>
         <span class="num">{{ minha.faturamentoPorTurno | currency: 'BRL' }}</span>
       </li>
       <li>
         <div class="principal-item">
           <strong>Mesas atendidas por turno</strong>
-          <span class="pequeno suave">vale {{ ranking()!.pesoMesasAtendidas * 100 | number: '1.0-0' }}% do índice</span>
         </div>
         <span class="num">{{ minha.mesasPorTurno | number: '1.1-1' }}</span>
       </li>
@@ -62,9 +60,6 @@
         <li>
           <div class="principal-item">
             <strong>Avaliação dos clientes</strong>
-            <span class="pequeno suave">
-              vale {{ ranking()!.pesoAvaliacao * 100 | number: '1.0-0' }}% do índice
-            </span>
           </div>
           <span class="num">
             @if (minha.notaConsiderada !== null) {
@@ -83,10 +78,16 @@
       </li>
     </ul>
   </section>
-
 } @else {
   <div class="cartao pad vazio">
     <p><strong>Ainda sem turnos no período.</strong></p>
     <p class="suave">O índice aparece depois do seu primeiro turno com mesas atendidas.</p>
   </div>
+}
+
+@if (!carregando() && !erros().length && medalhas(); as medalhas) {
+  <section class="cartao pad" aria-labelledby="t-medalhas">
+    <h2 id="t-medalhas">Medalhas de {{ medalhas.mes | date: 'MMMM' }}</h2>
+    <app-medalhas [dados]="medalhas" />
+  </section>
 }

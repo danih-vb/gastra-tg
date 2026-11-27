@@ -68,7 +68,7 @@
                 <span class="etiqueta sucesso">0</span>
               }
               <span class="valor num">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
-              <button class="botao compacto fantasma" type="button" (click)="comandaAberta.set(linha.comanda)">Ver</button>
+              <button class="botao compacto fantasma" type="button" (click)="abrirComanda(linha.comanda)">Ver</button>
             </li>
           }
         </ul>
@@ -83,7 +83,8 @@
   <app-folha
     [titulo]="'Mesa ' + numeroDaMesa(comanda.mesaId)"
     [subtitulo]="comanda.garcomNome + ' · ' + COMPOSICOES[comanda.composicao] + ', ' + comanda.quantidadePessoas + ' pessoas'"
-    (fechar)="comandaAberta.set(null)"
+    [larga]="true"
+    (fechar)="fecharComanda()"
   >
     @if (comanda.restricoes.length) {
       <div class="alerta aviso">
@@ -96,6 +97,7 @@
         </div>
       </div>
     }
+    @if (!lancandoCortesia() && !lancandoItem() && !itemEmAjuste()) {
     <ul class="lista" style="margin-top: 8px">
       @for (item of comanda.itens; track item.id) {
         <li>
@@ -104,18 +106,130 @@
             @if (item.status === 'Cancelado' && item.motivoCancelamento) {
               <span class="pequeno suave">{{ MOTIVOS[item.motivoCancelamento] }}</span>
             }
+            @if (item.cortesia) {
+              <span class="pequeno suave">Cortesia · {{ item.motivoDoAjuste }}</span>
+            } @else if (item.precoOriginal !== null) {
+              <span class="pequeno suave">
+                <s>{{ item.precoOriginal | currency: 'BRL' }}</s> {{ item.precoUnitarioNoMomento | currency: 'BRL' }} ·
+                {{ item.motivoDoAjuste }}
+              </span>
+            }
           </div>
+          @if (item.cortesia) {
+            <span class="etiqueta marca">Cortesia</span>
+          } @else {
+            @if (item.status === 'AConfirmar') {
+              <span class="num suave">{{ item.precoUnitarioNoMomento * item.quantidade | currency: 'BRL' }}</span>
+            } @else {
+              <span class="num">{{ item.valor | currency: 'BRL' }}</span>
+            }
+          }
           <span
             class="etiqueta"
             [class.aviso]="item.status === 'Pendente'"
             [class.sucesso]="item.status === 'Entregue'"
           >
-            {{ item.status === 'Pendente' ? 'A entregar' : item.status }}
+            {{ item.status === 'Pendente' ? 'A entregar' : item.status === 'AConfirmar' ? 'A confirmar' : item.status }}
           </span>
+          @if (ehGerente() && item.status !== 'Cancelado' && !item.cortesia) {
+            <button class="botao compacto fantasma" type="button" (click)="abrirAjuste(item)">Alterar preço</button>
+          }
         </li>
       } @empty {
         <li class="suave">Nada lançado ainda.</li>
       }
     </ul>
+    }
+
+    @if (errosDaFolha().length) {
+      <div class="alerta erro" role="alert">
+        <app-icone nome="alerta" />
+        <div>
+          @for (erro of errosDaFolha(); track erro) {
+            <div>{{ erro }}</div>
+          }
+        </div>
+      </div>
+    }
+
+    @if ((lancandoCortesia() || lancandoItem()) && itemEscolhido(); as item) {
+      <div class="escolhido">
+        <button class="botao-icone" type="button" aria-label="Voltar à lista" (click)="itemEscolhido.set(null)">
+          <app-icone nome="voltar" />
+        </button>
+        <div>
+          <h3>{{ item.nome }}</h3>
+          @if (item.descricao) {
+            <p class="pequeno suave">{{ item.descricao }}</p>
+          }
+        </div>
+      </div>
+      @if (item.flagsDieteticas.length) {
+        <div class="chips">
+          @for (flag of item.flagsDieteticas; track flag) {
+            <span class="etiqueta"><app-icone [nome]="ICONES_DAS_FLAGS[flag]" /> {{ FLAGS[flag] }}</span>
+          }
+        </div>
+      }
+      <div class="seletor-qtd" role="group" aria-label="Quantidade">
+        <button class="botao-icone" type="button" aria-label="Diminuir" [disabled]="quantidade() === 1" (click)="quantidade.set(quantidade() - 1)">
+          <app-icone nome="menos" />
+        </button>
+        <output aria-live="polite">{{ quantidade() }}</output>
+        <button class="botao-icone" type="button" aria-label="Aumentar" [disabled]="quantidade() === 20" (click)="quantidade.set(quantidade() + 1)">
+          <app-icone nome="mais" />
+        </button>
+      </div>
+      @if (lancandoCortesia()) {
+        <div class="campo">
+          <label for="cortesia-motivo">Motivo</label>
+          <input id="cortesia-motivo" class="entrada" name="motivo" maxlength="120" placeholder="Aniversário" [(ngModel)]="cortesiaMotivo" />
+        </div>
+        <button class="botao largo" type="button" [disabled]="salvando() || !cortesiaMotivo.trim()" (click)="confirmarCortesia()">
+          <app-icone nome="coracao" /> Cortesia {{ quantidade() }} × · {{ 0 | currency: 'BRL' }}
+          <span class="vale">(vale {{ precoDoEscolhido() | currency: 'BRL' }})</span>
+        </button>
+      } @else {
+        <button class="botao largo" type="button" [disabled]="salvando()" (click)="confirmarLancamento()">
+          Lançar {{ quantidade() }} × · {{ precoDoEscolhido() | currency: 'BRL' }} para o garçom confirmar
+        </button>
+      }
+    } @else if (lancandoCortesia() || lancandoItem()) {
+      <div class="cabecalho-escolha">
+        <strong>{{ lancandoCortesia() ? 'Cortesia para a mesa' : 'Lançar para o garçom confirmar' }}</strong>
+        <button class="botao fantasma compacto" type="button" (click)="fecharFormularios()">Cancelar</button>
+      </div>
+      <app-escolher-item
+        [itens]="cardapio()"
+        [destaques]="destaques()"
+        [rotulo]="lancandoCortesia() ? 'Cortesia' : 'Lançar'"
+        [icone]="lancandoCortesia() ? 'coracao' : 'mais'"
+        [aceitarForaDeVenda]="lancandoCortesia()"
+        (escolhido)="itemEscolhido.set($event); quantidade.set(1)"
+      />
+    } @else if (itemEmAjuste(); as item) {
+      <form class="formulario" (ngSubmit)="confirmarAjuste()">
+        <p><strong>{{ item.quantidade }} × {{ item.nome }}</strong></p>
+        <label for="ajuste-preco">Preço unitário (R$)</label>
+        <input id="ajuste-preco" name="preco" type="number" min="0" step="0.01" required [(ngModel)]="novoPreco" />
+        <label for="ajuste-motivo">Motivo</label>
+        <input id="ajuste-motivo" name="motivo" maxlength="120" required [(ngModel)]="motivoDoAjuste" />
+        <div class="botoes">
+          <button class="botao secundario" type="button" (click)="fecharFormularios()">Cancelar</button>
+          <button class="botao" type="submit" [disabled]="salvando() || novoPreco === null || !motivoDoAjuste.trim()">
+            Salvar preço
+          </button>
+        </div>
+      </form>
+    } @else {
+      <div class="botoes-da-mesa">
+        <button class="botao secundario" type="button" (click)="abrirLancamento()">
+          <app-icone nome="mais" /> Lançar item
+        </button>
+        <button class="botao secundario" type="button" (click)="abrirCortesia()">
+          <app-icone nome="mais" /> Lançar cortesia
+        </button>
+      </div>
+    }
   </app-folha>
 }

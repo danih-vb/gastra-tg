@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Usuario } from '../../core/api/modelos';
+import { MedalhasDoGarcom, Usuario } from '../../core/api/modelos';
 import { API, sessaoDoGarcom } from '../../core/api/testes';
 import { ARMAZENAMENTO_DA_SESSAO } from '../../core/configuracao';
 import { AvisoService } from '../../shared/aviso/aviso.service';
@@ -18,11 +18,31 @@ function sessaoDoGerente(): Storage {
 }
 
 const CONTAS: Usuario[] = [
-  { id: 1, nome: 'Roberta Lima', email: 'roberta@gastra.test', papel: 'Gerente', ativo: true, segundoFatorConfigurado: true },
-  { id: 2, nome: 'Marcos Tavares', email: 'marcos@gastra.test', papel: 'Coordenador', ativo: true, segundoFatorConfigurado: true },
-  { id: 11, nome: 'Carla Mendes', email: 'carla@gastra.test', papel: 'Garcom', ativo: true, segundoFatorConfigurado: false },
-  { id: 19, nome: 'Paulo Henrique', email: 'paulo@gastra.test', papel: 'Garcom', ativo: false, segundoFatorConfigurado: false },
+  { id: 1, nome: 'Roberta Lima', email: 'roberta@gastra.test', papel: 'Gerente', ativo: true, segundoFatorConfigurado: true, foto: null },
+  { id: 2, nome: 'Marcos Tavares', email: 'marcos@gastra.test', papel: 'Coordenador', ativo: true, segundoFatorConfigurado: true, foto: null },
+  { id: 11, nome: 'Carla Mendes', email: 'carla@gastra.test', papel: 'Garcom', ativo: true, segundoFatorConfigurado: false, foto: null },
+  { id: 19, nome: 'Paulo Henrique', email: 'paulo@gastra.test', papel: 'Garcom', ativo: false, segundoFatorConfigurado: false, foto: null },
 ];
+
+const MEDALHAS: MedalhasDoGarcom = {
+  garcomId: 11,
+  nome: 'Carla Mendes',
+  mes: '2026-11-01',
+  medalhas: [
+    { codigo: 'top-3', conquistada: true, progresso: 2, alvo: 3 },
+    { codigo: 'mesa-cheia', conquistada: false, progresso: 64, alvo: 100 },
+    { codigo: 'maratonista', conquistada: true, progresso: 20, alvo: 20 },
+    { codigo: 'bem-avaliado', conquistada: false, progresso: 0, alvo: 4.5 },
+    { codigo: 'vendedor-de-destaque', conquistada: false, progresso: 8, alvo: 20 },
+    { codigo: 'meta-batida', conquistada: false, progresso: 0, alvo: 1 },
+  ],
+  historico: [
+    { mes: '2026-11-01', conquistadas: ['top-3', 'maratonista'] },
+    { mes: '2026-10-01', conquistadas: ['mesa-cheia', 'meta-batida'] },
+    { mes: '2026-09-01', conquistadas: [] },
+  ],
+  mencoes: [],
+};
 
 describe('Gestão de usuários (UC04)', () => {
   let http!: HttpTestingController;
@@ -200,5 +220,65 @@ describe('Gestão de usuários (UC04)', () => {
     await fixture.whenStable();
 
     expect(avisos.aviso()?.mensagem).toContain('zerada');
+  });
+  it('no perfil do garçom, o Gerente vê as medalhas e o histórico de conquistas', async () => {
+    const pagina = await renderizar();
+
+    botao(linha(pagina, 'Carla Mendes'), 'Editar').click();
+    await fixture.whenStable();
+    http.expectOne(`${API}/api/indicadores/medalhas?garcomId=11`).flush(MEDALHAS);
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.medalhas-da-conta')?.textContent).toContain('Maratonista');
+    expect(pagina.querySelectorAll('.medalhas-da-conta .historico li').length).toBe(2);
+  });
+
+  it('em conta que não é de garçom, não busca medalhas', async () => {
+    const pagina = await renderizar();
+
+    botao(linha(pagina, 'Marcos Tavares'), 'Editar').click();
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.medalhas-da-conta')).toBeNull();
+  });
+  it('o Gerente dá uma menção honrosa escolhendo ícone, cor e texto, e pode removê-la', async () => {
+    const pagina = await renderizar();
+    botao(linha(pagina, 'Carla Mendes'), 'Editar').click();
+    await fixture.whenStable();
+    http.expectOne(`${API}/api/indicadores/medalhas?garcomId=11`).flush(MEDALHAS);
+    await fixture.whenStable();
+
+    botao(pagina, 'Menção honrosa').click();
+    await fixture.whenStable();
+    expect(pagina.querySelector<HTMLSelectElement>('#mencao-mes')!.value).toBe('2026-11-01');
+    pagina.querySelector<HTMLButtonElement>('[role=radio][aria-label="Estrela"]')!.click();
+    pagina.querySelector<HTMLButtonElement>('[role=radio][aria-label="Roxo"]')!.click();
+    preencher(pagina, '#mencao-titulo', 'Melhor ideia do mês');
+    preencher(pagina, '#mencao-descricao', 'Sugeriu o cardápio infantil.');
+    await fixture.whenStable();
+    expect(pagina.querySelector('.previa')?.textContent).toContain('Melhor ideia do mês');
+    botao(pagina, 'Dar menção').click();
+
+    const pedido = http.expectOne({ method: 'POST', url: `${API}/api/mencoes` });
+    expect(pedido.request.body).toEqual({
+      garcomId: 11,
+      titulo: 'Melhor ideia do mês',
+      descricao: 'Sugeriu o cardápio infantil.',
+      icone: 'estrela',
+      cor: 'roxo',
+      mes: '2026-11-01',
+    });
+    pedido.flush({ id: 9, titulo: 'Melhor ideia do mês', descricao: 'Sugeriu o cardápio infantil.', icone: 'estrela', cor: 'roxo', mes: '2026-11-01' });
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('app-nova-mencao')).toBeNull();
+    expect(pagina.querySelector('.mencoes')?.textContent).toContain('Melhor ideia do mês');
+    expect(avisos.aviso()?.mensagem).toContain('Menção honrosa dada');
+
+    pagina.querySelector<HTMLButtonElement>('[aria-label="Remover Melhor ideia do mês"]')!.click();
+    http.expectOne({ method: 'DELETE', url: `${API}/api/mencoes/9` }).flush(null);
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('.mencoes')).toBeNull();
   });
 });

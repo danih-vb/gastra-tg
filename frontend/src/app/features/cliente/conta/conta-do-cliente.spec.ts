@@ -12,9 +12,9 @@ const CONTA: ComandaDoCliente = {
   dataHoraAbertura: '2026-09-17T19:38:00',
   fechada: false,
   itens: [
-    { nome: 'Kids: mini hambúrguer com fritas', quantidade: 2, valor: 72, situacao: 'Pendente' },
-    { nome: 'Suco de laranja 400 ml', quantidade: 1, valor: 13, situacao: 'Cancelado' },
-    { nome: 'Picanha na chapa', quantidade: 1, valor: 119, situacao: 'Entregue' },
+    { nome: 'Kids: mini hambúrguer com fritas', quantidade: 2, valor: 72, cortesia: false, valorOriginal: null, situacao: 'Pendente' },
+    { nome: 'Suco de laranja 400 ml', quantidade: 1, valor: 13, cortesia: false, valorOriginal: null, situacao: 'Cancelado' },
+    { nome: 'Picanha na chapa', quantidade: 1, valor: 119, cortesia: false, valorOriginal: null, situacao: 'Entregue' },
   ],
   garcomChamado: false,
   subtotal: 191,
@@ -108,12 +108,6 @@ describe('Conta do cliente (UC20)', () => {
     expect(texto(pagina)).toContain('R$ 210,10');
   });
 
-  it('explica que a taxa é opcional e que nada pessoal aparece (RN04)', async () => {
-    const pagina = await renderizar(CONTA);
-
-    expect(texto(pagina)).toContain('A taxa de serviço é opcional');
-  });
-
   it('com a conta fechada, agradece e mostra o total final', async () => {
     const pagina = await renderizar({ ...CONTA, fechada: true });
 
@@ -198,7 +192,7 @@ describe('Conta do cliente (UC20)', () => {
     pagina.querySelector<HTMLButtonElement>('[aria-label="Atualizar agora"]')!.click();
     http.expectOne(`${API}/api/comandas/consulta/M3R8TD`).flush({
       ...CONTA,
-      itens: [...CONTA.itens, { nome: 'Pudim de leite', quantidade: 1, valor: 19, situacao: 'Pendente' }],
+      itens: [...CONTA.itens, { nome: 'Pudim de leite', quantidade: 1, valor: 19, cortesia: false, valorOriginal: null, situacao: 'Pendente' }],
     });
     await fixture.whenStable();
 

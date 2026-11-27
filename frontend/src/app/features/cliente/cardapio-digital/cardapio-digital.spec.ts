@@ -13,7 +13,12 @@ describe('Cardápio digital (UC19)', () => {
   async function renderizar(): Promise<HTMLElement> {
     await TestBed.configureTestingModule({
       imports: [CardapioDigital],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), provedoresDeLocalizacao()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provedoresDeLocalizacao(),
+      ],
     }).compileComponents();
 
     http = TestBed.inject(HttpTestingController);
@@ -22,9 +27,26 @@ describe('Cardápio digital (UC19)', () => {
 
     // A rota do cliente é a pública: só itens disponíveis, sem login.
     http.expectOne(`${API}/api/cardapio/digital`).flush([
-      itemCardapio({ id: 1, nome: 'Risoto de cogumelos', preco: 68, precoPromocional: 57.8, flagsDieteticas: ['Vegetariano', 'SemGluten'] }),
-      itemCardapio({ id: 2, nome: 'Picanha na chapa', preco: 119, flagsDieteticas: ['SemGluten'] }),
-      itemCardapio({ id: 3, nome: 'Pudim de leite', categoria: 'Sobremesa', preco: 19, flagsDieteticas: ['Vegetariano'] }),
+      itemCardapio({
+        id: 1,
+        nome: 'Risoto de cogumelos',
+        preco: 68,
+        precoPromocional: 57.8,
+        flagsDieteticas: ['Vegetariano', 'SemGluten'],
+      }),
+      itemCardapio({
+        id: 2,
+        nome: 'Picanha na chapa',
+        preco: 119,
+        flagsDieteticas: ['SemGluten'],
+      }),
+      itemCardapio({
+        id: 3,
+        nome: 'Pudim de leite',
+        categoria: 'Sobremesa',
+        preco: 19,
+        flagsDieteticas: ['Vegetariano'],
+      }),
     ]);
     await fixture.whenStable();
     return fixture.nativeElement as HTMLElement;
@@ -35,7 +57,9 @@ describe('Cardápio digital (UC19)', () => {
   }
 
   function chip(pagina: HTMLElement, rotulo: string): HTMLButtonElement {
-    return [...pagina.querySelectorAll<HTMLButtonElement>('.chip')].find((c) => c.textContent?.includes(rotulo))!;
+    return [...pagina.querySelectorAll<HTMLButtonElement>('.chip')].find((c) =>
+      c.textContent?.includes(rotulo),
+    )!;
   }
 
   afterEach(() => http.verify());
@@ -43,7 +67,10 @@ describe('Cardápio digital (UC19)', () => {
   it('agrupa por categoria e mostra o preço promocional junto do cheio', async () => {
     const pagina = await renderizar();
 
-    expect([...pagina.querySelectorAll('section.cartao h2')].map((h) => h.textContent)).toEqual(['Pratos', 'Sobremesas']);
+    expect([...pagina.querySelectorAll('section.cartao h2')].map((h) => h.textContent)).toEqual([
+      'Pratos',
+      'Sobremesas',
+    ]);
     expect(texto(pagina)).toContain('R$ 68,00');
     expect(texto(pagina)).toContain('R$ 57,80');
     expect(texto(pagina)).toContain('Promoção');
@@ -54,6 +81,61 @@ describe('Cardápio digital (UC19)', () => {
 
     expect(texto(pagina)).toContain('Para pedir, chame o garçom');
     expect(texto(pagina)).toContain('Tem alergia?');
+  });
+
+  it('tocar no item abre a foto e os detalhes', async () => {
+    const pagina = await renderizar();
+
+    [...pagina.querySelectorAll<HTMLButtonElement>('button.abrir')]
+      .find((b) => b.textContent?.includes('Pudim'))!
+      .click();
+    await fixture.whenStable();
+
+    expect(pagina.querySelector('app-folha')?.textContent).toContain('Pudim de leite');
+    expect(texto(pagina.querySelector('app-folha')!)).toContain('R$ 19,00');
+  });
+
+  it('monta a lista "Tenho interesse" no próprio celular, com o total', async () => {
+    localStorage.removeItem('gastra.queroPedir');
+    const pagina = await renderizar();
+    const coracao = (nome: string) =>
+      pagina.querySelector<HTMLButtonElement>(`.favorito[aria-label="Tenho interesse: ${nome}"]`)!;
+
+    coracao('Picanha na chapa').click();
+    coracao('Pudim de leite').click();
+    await fixture.whenStable();
+
+    expect(texto(pagina)).toContain('Tenho interesse (2)');
+    expect(JSON.parse(localStorage.getItem('gastra.queroPedir')!)).toEqual([2, 3]);
+
+    pagina.querySelector<HTMLButtonElement>('.barra-lista button')!.click();
+    await fixture.whenStable();
+    expect(texto(pagina.querySelector('app-folha')!)).toContain('R$ 138,00');
+
+    coracao('Pudim de leite').click();
+    await fixture.whenStable();
+    expect(texto(pagina)).toContain('Tenho interesse (1)');
+    localStorage.removeItem('gastra.queroPedir');
+  });
+
+  it('vindo da conta da mesa, a lista já oferece chamar o garçom', async () => {
+    localStorage.removeItem('gastra.queroPedir');
+    sessionStorage.setItem('gastra.mesaDaAba', 'abc123');
+    const pagina = await renderizar();
+
+    pagina.querySelector<HTMLButtonElement>('.favorito')!.click();
+    await fixture.whenStable();
+    pagina.querySelector<HTMLButtonElement>('.barra-lista button')!.click();
+    await fixture.whenStable();
+    [...pagina.querySelectorAll<HTMLButtonElement>('app-folha button')]
+      .find((b) => b.textContent?.includes('Chamar o garçom'))!
+      .click();
+
+    http.expectOne(`${API}/api/comandas/consulta/abc123/chamado`).flush(null);
+    await fixture.whenStable();
+    expect(texto(pagina)).toContain('Garçom chamado');
+    sessionStorage.removeItem('gastra.mesaDaAba');
+    localStorage.removeItem('gastra.queroPedir');
   });
 
   it('os filtros combinam entre si', async () => {
@@ -79,7 +161,9 @@ describe('Cardápio digital (UC19)', () => {
 
     expect(texto(pagina)).toContain('Nenhum prato com todos esses filtros');
 
-    [...pagina.querySelectorAll<HTMLButtonElement>('button')].find((b) => b.textContent?.includes('Limpar filtros'))!.click();
+    [...pagina.querySelectorAll<HTMLButtonElement>('button')]
+      .find((b) => b.textContent?.includes('Limpar filtros'))!
+      .click();
     await fixture.whenStable();
 
     expect(pagina.querySelectorAll('.prato').length).toBe(3);

@@ -49,7 +49,7 @@ public static class ValidadorItemCardapio
     /// caminho do próprio servidor; qualquer outra coisa (javascript:, data:) fica de fora, porque o endereço vai
     /// direto para o navegador do cliente no cardápio digital.
     /// </summary>
-    private static bool ImagemValida(string? imagem)
+    internal static bool ImagemValida(string? imagem)
     {
         if (string.IsNullOrWhiteSpace(imagem))
             return true;

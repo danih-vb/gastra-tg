@@ -10,6 +10,9 @@ public class Usuario : EntidadeBase
     public PapelUsuario Papel { get; private set; }
     public bool Ativo { get; private set; }
 
+    /// <summary>Foto do funcionário, posta pelo Gerente para o crachá do sistema. Sai quando a conta é inativada.</summary>
+    public string? Foto { get; private set; }
+
     /// <summary>Segredo do app autenticador, já protegido (criptografado). Nulo até a configuração.</summary>
     public string? SegredoTotp { get; private set; }
 
@@ -139,11 +142,16 @@ public class Usuario : EntidadeBase
     public void Inativar()
     {
         Ativo = false;
+        // LGPD: a foto só serve para identificar o funcionário em atividade.
+        Foto = null;
         EncerrarSessoes();
     }
 
     /// <summary>Desfaz a inativação: a conta volta com a mesma senha e o mesmo autenticador.</summary>
     public void Reativar() => Ativo = true;
+
+    /// <summary>Nula tira a foto. A URL já vem validada: é uma foto importada pelo próprio sistema.</summary>
+    public void DefinirFoto(string? foto) => Foto = string.IsNullOrWhiteSpace(foto) ? null : foto.Trim();
 
     public static string NormalizarEmail(string email) => email.Trim().ToLowerInvariant();
 }

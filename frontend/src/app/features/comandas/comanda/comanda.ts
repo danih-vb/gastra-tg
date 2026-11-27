@@ -1,5 +1,13 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
@@ -10,6 +18,7 @@ import {
   CategoriaItemCardapio,
   CategoriaRestricao,
   Comanda as ComandaDaApi,
+  Destaque,
   ItemCardapio,
   ItemDoPedido,
   Mesa,
@@ -19,14 +28,26 @@ import {
 import { AvisoService } from '../../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Folha } from '../../../shared/folha/folha';
+import { EtiquetaDestaque } from '../../../shared/destaque/etiqueta-destaque';
 import { Icone } from '../../../shared/icone/icone';
-import { CATEGORIAS, COMPOSICOES, FLAGS, MOTIVOS, RESTRICOES, atrasado, composicaoSugerida, tempoRelativo } from '../../../shared/rotulos';
+import {
+  CATEGORIAS,
+  COMPOSICOES,
+  FLAGS,
+  ICONES_DAS_FLAGS,
+  MOTIVOS,
+  RESTRICOES,
+  atrasado,
+  composicaoSugerida,
+  semAcento,
+  tempoRelativo,
+} from '../../../shared/rotulos';
 
 /** UC12, UC13, UC18 e UC23 — a tela em que o garçom passa o atendimento inteiro. */
 @Component({
   selector: 'app-comanda',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, FormsModule, RouterLink, Folha, Icone],
+  imports: [CurrencyPipe, FormsModule, RouterLink, Folha, Icone, EtiquetaDestaque],
   templateUrl: './comanda.html',
   styleUrl: './comanda.scss',
 })
@@ -49,7 +70,8 @@ export class Comanda implements OnInit {
   protected readonly cardapio = signal<ItemCardapio[]>([]);
   private readonly mesas = signal<Mesa[]>([]);
   protected readonly sugestoes = signal<SugestoesDaComanda | null>(null);
-  protected readonly categoria = signal<CategoriaItemCardapio>('Entrada');
+  /** Sem categoria marcada, a lista mostra o cardápio inteiro, na ordem das categorias. Tocar de novo desmarca. */
+  protected readonly categoria = signal<CategoriaItemCardapio | null>(null);
 
   // Painéis abertos
   protected readonly itemParaLancar = signal<ItemCardapio | null>(null);
@@ -65,19 +87,61 @@ export class Comanda implements OnInit {
   protected readonly CATEGORIAS = CATEGORIAS;
   protected readonly COMPOSICOES = COMPOSICOES;
   protected readonly FLAGS = FLAGS;
+  protected readonly ICONES_DAS_FLAGS = ICONES_DAS_FLAGS;
   protected readonly MOTIVOS = MOTIVOS;
   protected readonly RESTRICOES = RESTRICOES;
   protected readonly motivosPossiveis = Object.keys(MOTIVOS) as MotivoCancelamento[];
   protected readonly restricoesPossiveis = Object.keys(RESTRICOES) as CategoriaRestricao[];
-  protected readonly composicoesPossiveis = Object.keys(COMPOSICOES) as (keyof typeof COMPOSICOES)[];
+  protected readonly composicoesPossiveis = Object.keys(
+    COMPOSICOES,
+  ) as (keyof typeof COMPOSICOES)[];
 
   /** A comanda traz o id da mesa; o número que a equipe usa vem da lista de mesas. */
-  protected readonly mesa = computed(() => this.mesas().find((m) => m.id === this.comanda()?.mesaId) ?? null);
+  protected readonly mesa = computed(
+    () => this.mesas().find((m) => m.id === this.comanda()?.mesaId) ?? null,
+  );
 
-  protected readonly pendentes = computed(() => this.comanda()?.itens.filter((i) => i.status === 'Pendente') ?? []);
-  protected readonly resolvidos = computed(() => this.comanda()?.itens.filter((i) => i.status !== 'Pendente') ?? []);
-  protected readonly itensDaCategoria = computed(() => this.cardapio().filter((i) => i.categoria === this.categoria()));
-  protected readonly composicaoDoAjuste = computed(() => composicaoSugerida(this.pessoasNoAjuste()));
+  protected readonly pendentes = computed(
+    () => this.comanda()?.itens.filter((i) => i.status === 'Pendente') ?? [],
+  );
+  protected readonly resolvidos = computed(
+    () => this.comanda()?.itens.filter((i) => i.status === 'Entregue' || i.status === 'Cancelado') ?? [],
+  );
+  /** Itens que o Metre ou o Gerente lançou: só entram na conta depois que o garçom confirma. */
+  protected readonly aConfirmar = computed(
+    () => this.comanda()?.itens.filter((i) => i.status === 'AConfirmar') ?? [],
+  );
+  protected readonly destaques = signal<Destaque[]>([]);
+  /** Só o que vale hoje: o destaque de outro dia não muda a lista do garçom. */
+  protected readonly destaquePorItem = computed(
+    () => new Map(this.destaques().filter((d) => d.vigenteHoje).map((d) => [d.itemCardapioId, d])),
+  );
+  protected readonly busca = signal('');
+  /** Com algo digitado, a busca vale para o cardápio inteiro, pelo nome ou pela restrição ("sem glúten"). */
+  protected readonly itensDaCategoria = computed(() => {
+    const termo = semAcento(this.busca().trim());
+    if (!termo) {
+      const categoria = this.categoria();
+      const destacados = this.destaquePorItem();
+      const primeiroOsDestaques = (a: ItemCardapio, b: ItemCardapio) =>
+        Number(destacados.has(b.id)) - Number(destacados.has(a.id));
+      if (categoria === null) {
+        const ordem = CATEGORIAS.map((c) => c.chave);
+        return [...this.cardapio()].sort(
+          (a, b) => primeiroOsDestaques(a, b) || ordem.indexOf(a.categoria) - ordem.indexOf(b.categoria),
+        );
+      }
+      return this.cardapio()
+        .filter((i) => i.categoria === categoria)
+        .sort(primeiroOsDestaques);
+    }
+    return this.cardapio().filter((i) =>
+      semAcento([i.nome, ...i.flagsDieteticas.map((f) => FLAGS[f])].join(' ')).includes(termo),
+    );
+  });
+  protected readonly composicaoDoAjuste = computed(() =>
+    composicaoSugerida(this.pessoasNoAjuste()),
+  );
 
   // O id da rota só existe depois que o Angular preenche as entradas, e não dentro do construtor.
   ngOnInit(): void {
@@ -130,13 +194,26 @@ export class Comanda implements OnInit {
       return;
     }
     const quantidade = this.quantidade();
-    this.executar(this.api.registrarItem(comanda.id, item.id, quantidade), (lancado: ItemDoPedido) => {
-      this.itemParaLancar.set(null);
-      this.avisos.mostrar(`${quantidade} × ${item.nome} lançado`, {
-        rotulo: 'Desfazer',
-        executar: () => this.cancelar(lancado, 'ErroDeLancamento'),
-      });
-    });
+    this.executar(
+      this.api.registrarItem(comanda.id, item.id, quantidade),
+      (lancado: ItemDoPedido) => {
+        this.itemParaLancar.set(null);
+        this.avisos.mostrar(`${quantidade} × ${item.nome} lançado`, {
+          rotulo: 'Desfazer',
+          executar: () => this.cancelar(lancado, 'ErroDeLancamento'),
+        });
+      },
+    );
+  }
+
+  protected responderLancamento(item: ItemDoPedido, aceitar: boolean): void {
+    const comanda = this.comanda();
+    if (!comanda || this.salvando()) {
+      return;
+    }
+    this.executar(this.api.confirmarItem(comanda.id, item.id, aceitar), () =>
+      this.avisos.mostrar(`${item.nome}: ${aceitar ? 'confirmado' : 'recusado'}`),
+    );
   }
 
   /** UC23 — entregar não tem volta na API, por isso o aviso não oferece "Desfazer". */
@@ -163,11 +240,14 @@ export class Comanda implements OnInit {
     if (!comanda) {
       return;
     }
-    this.executar(this.api.atualizarSituacaoDoItem(comanda.id, item.id, 'Cancelado', motivo), () => {
-      this.itemParaCancelar.set(null);
-      this.motivo.set(null);
-      this.avisos.mostrar(`${item.nome}: cancelado`);
-    });
+    this.executar(
+      this.api.atualizarSituacaoDoItem(comanda.id, item.id, 'Cancelado', motivo),
+      () => {
+        this.itemParaCancelar.set(null);
+        this.motivo.set(null);
+        this.avisos.mostrar(`${item.nome}: cancelado`);
+      },
+    );
   }
 
   /** UC13 — RF14: categoria da lista fechada e um detalhe opcional, apagado no fechamento. */
@@ -197,10 +277,13 @@ export class Comanda implements OnInit {
     if (!comanda || this.salvando()) {
       return;
     }
-    this.executar(this.api.ajustarComposicao(comanda.id, this.pessoasNoAjuste(), composicao), () => {
-      this.ajustandoComposicao.set(false);
-      this.avisos.mostrar(`Composição: ${COMPOSICOES[composicao]}`);
-    });
+    this.executar(
+      this.api.ajustarComposicao(comanda.id, this.pessoasNoAjuste(), composicao),
+      () => {
+        this.ajustandoComposicao.set(false);
+        this.avisos.mostrar(`Composição: ${COMPOSICOES[composicao]}`);
+      },
+    );
   }
 
   protected irParaFechamento(): void {
@@ -227,12 +310,24 @@ export class Comanda implements OnInit {
       comanda: this.api.obterComanda(id),
       cardapio: this.api.listarCardapio(),
       mesas: this.api.listarMesas(),
+      // Sem os destaques a comanda funciona igual: a lista só perde as cores.
+      destaques: this.api.listarDestaques().pipe(catchError(() => of([] as Destaque[]))),
       // D3: sem o serviço de análise, o atendimento continua; só as sugestões somem.
       sugestoes: this.api
         .obterSugestoes(id)
-        .pipe(catchError(() => of<SugestoesDaComanda>({ servicoDisponivel: false, confirmarRestricaoComCliente: false, itens: [], itensForaDaRestricao: [] }))),
+        .pipe(
+          catchError(() =>
+            of<SugestoesDaComanda>({
+              servicoDisponivel: false,
+              confirmarRestricaoComCliente: false,
+              itens: [],
+              itensForaDaRestricao: [],
+            }),
+          ),
+        ),
     }).subscribe({
-      next: ({ comanda, cardapio, mesas, sugestoes }) => {
+      next: ({ comanda, cardapio, mesas, destaques, sugestoes }) => {
+        this.destaques.set(destaques);
         this.comanda.set(comanda);
         this.desenharQrCode(comanda.codigoAcessoCliente);
         this.cardapio.set(cardapio);
@@ -248,7 +343,10 @@ export class Comanda implements OnInit {
   }
 
   /** Executa uma ação e recarrega a comanda: quem manda no estado é a resposta da API, não a tela. */
-  private executar<T>(chamada: import('rxjs').Observable<T>, aoTerminar: (resultado: T) => void): void {
+  private executar<T>(
+    chamada: import('rxjs').Observable<T>,
+    aoTerminar: (resultado: T) => void,
+  ): void {
     this.salvando.set(true);
     this.erros.set([]);
     chamada.subscribe({
@@ -269,7 +367,16 @@ export class Comanda implements OnInit {
     this.api.obterComanda(id).subscribe({ next: (comanda) => this.comanda.set(comanda) });
     this.api
       .obterSugestoes(id)
-      .pipe(catchError(() => of<SugestoesDaComanda>({ servicoDisponivel: false, confirmarRestricaoComCliente: false, itens: [], itensForaDaRestricao: [] })))
+      .pipe(
+        catchError(() =>
+          of<SugestoesDaComanda>({
+            servicoDisponivel: false,
+            confirmarRestricaoComCliente: false,
+            itens: [],
+            itensForaDaRestricao: [],
+          }),
+        ),
+      )
       .subscribe({ next: (sugestoes) => this.sugestoes.set(sugestoes) });
   }
 }

@@ -17,6 +17,7 @@ public class UsuarioConfiguracao : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.SenhaHash).HasColumnName("senha_hash").HasMaxLength(100).IsRequired();
         builder.Property(u => u.Papel).HasColumnName("papel").HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(u => u.Ativo).HasColumnName("ativo").IsRequired();
+        builder.Property(u => u.Foto).HasColumnName("foto").HasMaxLength(300);
         builder.Property(u => u.SegredoTotp).HasColumnName("segredo_totp").HasMaxLength(500);
         builder.Property(u => u.ChaveSessao).HasColumnName("chave_sessao").IsRequired();
         builder.Property(u => u.TentativasFalhas).HasColumnName("tentativas_falhas").IsRequired();

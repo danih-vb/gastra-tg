@@ -12,6 +12,9 @@ public class LoginResponse
     public string? Nome { get; set; }
     public PapelUsuario? Papel { get; set; }
 
+    /// <summary>Foto do crachá, quando o Gerente cadastrou uma.</summary>
+    public string? Foto { get; set; }
+
     public bool RequerSegundoFator { get; set; }
     public bool RequerConfiguracaoSegundoFator { get; set; }
     public string? TokenSegundoFator { get; set; }

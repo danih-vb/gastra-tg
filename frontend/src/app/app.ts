@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { MENU, NOME_DO_PAPEL } from './core/navegacao';
 import { Avisos } from './shared/aviso/avisos';
 import { Icone } from './shared/icone/icone';
+import { Avatar } from './shared/avatar/avatar';
 import { SessaoService } from './core/sessao/sessao.service';
 
 /** Casca da aplicação: cabeçalho, menu conforme o papel e área das telas. */
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Avisos, Icone],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Avisos, Icone, Avatar],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
@@ -18,9 +19,24 @@ export class App {
 
   protected readonly usuario = this.sessao.usuario;
   protected readonly nomeDoPapel = NOME_DO_PAPEL;
+
   protected readonly menu = computed(() => {
     const usuario = this.usuario();
     return usuario ? MENU.filter((item) => item.papeis.includes(usuario.papel)) : [];
+  });
+
+  /**
+   * As telas dos outros papéis aparecem em cinza, sem link: cada um vê o que pode fazer e o que fica com outra
+   * pessoa (sugestão do orientador, 20/11/2026). Quem protege de fato é a guarda de rota e a API.
+   */
+  protected readonly bloqueados = computed(() => {
+    const usuario = this.usuario();
+    return usuario
+      ? MENU.filter((item) => !item.papeis.includes(usuario.papel)).map((item) => ({
+          ...item,
+          dono: 'Só para ' + item.papeis.map((p) => NOME_DO_PAPEL[p]).join(' e '),
+        }))
+      : [];
   });
 
   protected sair(): void {

@@ -190,6 +190,38 @@ public class UsuarioControllerTests(GastraApiFactory factory) : IClassFixture<Ga
         Assert.Equal(["Você não pode alterar o próprio papel."], await LerErros(resposta));
     }
 
+    // --- Foto do funcionário ---
+
+    [Fact]
+    public async Task Foto_PeloGerente_ApareceNaContaENoLogin_ESaiAoInativar()
+    {
+        var email = $"foto-{Guid.NewGuid():N}@gastra.test";
+        var usuario = await Cadastrar(email);
+
+        var resposta = await _cliente.PutAsJsonAsync($"{Rota}/{usuario.Id}/foto",
+            new { foto = "/api/cardapio/fotos/abc123.jpg" }, Json);
+
+        resposta.EnsureSuccessStatusCode();
+        Assert.Equal("/api/cardapio/fotos/abc123.jpg", (await resposta.Content.ReadFromJsonAsync<UsuarioResponse>(Json))!.Foto);
+        var login = await (await TentarLogin(email)).Content.ReadFromJsonAsync<LoginResponse>(Json);
+        Assert.Equal("/api/cardapio/fotos/abc123.jpg", login!.Foto);
+
+        await _cliente.PatchAsJsonAsync($"{Rota}/{usuario.Id}/situacao", new { ativo = false }, Json);
+        var depois = await _cliente.GetFromJsonAsync<UsuarioResponse>($"{Rota}/{usuario.Id}", Json);
+        Assert.Null(depois!.Foto);
+    }
+
+    [Fact]
+    public async Task Foto_DeOutroSite_Retorna400()
+    {
+        var usuario = await Cadastrar($"foto-{Guid.NewGuid():N}@gastra.test");
+
+        var resposta = await _cliente.PutAsJsonAsync($"{Rota}/{usuario.Id}/foto",
+            new { foto = "https://exemplo.com/rastreio.png" }, Json);
+
+        Assert.Equal(HttpStatusCode.BadRequest, resposta.StatusCode);
+    }
+
     // --- Inativar e reativar ---
 
     [Fact]

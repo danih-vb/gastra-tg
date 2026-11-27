@@ -38,6 +38,13 @@ public static class DependencyInjectionExtension
         services.AddScoped<IRankingDesempenhoUseCase, RankingDesempenhoUseCase>();
 
         services.AddScoped<ICriarPromocaoUseCase, CriarPromocaoUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Indicadores.IMedalhasUseCase, Gastra.Application.UseCases.Indicadores.MedalhasUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Indicadores.IConcederMencaoUseCase, Gastra.Application.UseCases.Indicadores.ConcederMencaoUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Indicadores.IRemoverMencaoUseCase, Gastra.Application.UseCases.Indicadores.RemoverMencaoUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Usuarios.IDefinirFotoUsuarioUseCase, Gastra.Application.UseCases.Usuarios.DefinirFotoUsuarioUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Destaques.ICriarDestaqueUseCase, Gastra.Application.UseCases.Destaques.CriarDestaqueUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Destaques.IListarDestaquesUseCase, Gastra.Application.UseCases.Destaques.ListarDestaquesUseCase>();
+        services.AddScoped<Gastra.Application.UseCases.Destaques.IRemoverDestaqueUseCase, Gastra.Application.UseCases.Destaques.RemoverDestaqueUseCase>();
         services.AddScoped<IListarPromocoesUseCase, ListarPromocoesUseCase>();
         services.AddScoped<IRemoverPromocaoUseCase, RemoverPromocaoUseCase>();
 
@@ -70,6 +77,9 @@ public static class DependencyInjectionExtension
         services.AddScoped<IAbrirComandaUseCase, AbrirComandaUseCase>();
         services.AddScoped<IConfirmarComposicaoUseCase, ConfirmarComposicaoUseCase>();
         services.AddScoped<IRegistrarItemPedidoUseCase, RegistrarItemPedidoUseCase>();
+        services.AddScoped<ILancarCortesiaUseCase, LancarCortesiaUseCase>();
+        services.AddScoped<IConfirmarItemUseCase, ConfirmarItemUseCase>();
+        services.AddScoped<IAlterarPrecoDoItemUseCase, AlterarPrecoDoItemUseCase>();
         services.AddScoped<IAtualizarSituacaoItemUseCase, AtualizarSituacaoItemUseCase>();
         services.AddScoped<IRegistrarRestricaoUseCase, RegistrarRestricaoUseCase>();
         services.AddScoped<IAvaliarAtendimentoUseCase, AvaliarAtendimentoUseCase>();

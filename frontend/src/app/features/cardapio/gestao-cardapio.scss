@@ -198,3 +198,47 @@ fieldset.campo {
   object-fit: cover;
   border-radius: 8px;
 }
+
+.destaques-grade {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+
+  @media (min-width: 960px) { grid-template-columns: 3fr 2fr; }
+
+  .titulo-secao { font-size: 1rem; margin-bottom: 8px; }
+}
+
+.escolhido {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tipos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tipo {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 12px;
+  text-align: left;
+  border: 2px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  color: var(--texto);
+  cursor: pointer;
+
+  app-icone { color: #b85a1d; }
+  span { font-size: 0.8125rem; color: var(--texto-suave); }
+
+  &.meta app-icone { color: #2f6fc0; }
+  &[aria-checked='true'] { border-color: var(--laranja-forte); background: var(--laranja-suave); }
+  &.meta[aria-checked='true'] { border-color: #2f6fc0; background: #eaf2fd; }
+}

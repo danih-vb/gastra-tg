@@ -2,13 +2,16 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { GastraApiService } from '../../core/api/gastra-api.service';
-import { Usuario } from '../../core/api/modelos';
+import { MedalhasDoGarcom, MencaoHonrosa, Usuario } from '../../core/api/modelos';
 import { Papel } from '../../core/sessao/modelos';
 import { SessaoService } from '../../core/sessao/sessao.service';
 import { AvisoService } from '../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
+import { Avatar } from '../../shared/avatar/avatar';
+import { Medalhas } from '../../shared/medalhas/medalhas';
+import { NovaMencao } from '../../shared/medalhas/nova-mencao';
 import { PAPEIS } from '../../shared/rotulos';
 
 type Filtro = 'ativos' | 'inativos' | 'todos';
@@ -21,7 +24,7 @@ type Painel = 'conta' | 'inativar' | 'senha' | 'segundo-fator' | null;
 @Component({
   selector: 'app-gestao-usuarios',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, Folha, Icone],
+  imports: [FormsModule, Folha, Icone, Avatar, Medalhas, NovaMencao],
   templateUrl: './gestao-usuarios.html',
   styleUrl: './gestao-usuarios.scss',
 })
@@ -39,6 +42,10 @@ export class GestaoUsuarios {
 
   protected readonly painel = signal<Painel>(null);
   protected readonly usuarioEmFoco = signal<Usuario | null>(null);
+  protected readonly medalhasEmFoco = signal<MedalhasDoGarcom | null>(null);
+  protected readonly dandoMencao = signal(false);
+  /** Os meses do histórico de medalhas: a menção pode ser do mês atual ou de um que já passou. */
+  protected readonly mesesDaMencao = computed(() => this.medalhasEmFoco()?.historico.map((h) => h.mes) ?? []);
   protected formularioDaConta = { nome: '', email: '', papel: '' as Papel | '', senha: '' };
   protected senhaNova = '';
 
@@ -77,7 +84,73 @@ export class GestaoUsuarios {
       papel: usuario?.papel ?? '',
       senha: '',
     };
+    this.medalhasEmFoco.set(null);
+    this.dandoMencao.set(false);
+    if (usuario?.papel === 'Garcom') {
+      this.api.obterMedalhas(usuario.id).subscribe({
+        next: (medalhas) => {
+          if (this.usuarioEmFoco()?.id === medalhas.garcomId) this.medalhasEmFoco.set(medalhas);
+        },
+        error: () => undefined,
+      });
+    }
     this.abrir('conta');
+  }
+
+  /** Envia a foto e já a põe na conta: o Gerente vê no crachá na mesma hora. */
+  protected trocarFoto(campo: HTMLInputElement): void {
+    const usuario = this.usuarioEmFoco();
+    const arquivo = campo.files?.[0];
+    campo.value = '';
+    if (!usuario || !arquivo) return;
+    this.salvando.set(true);
+    this.errosDoPainel.set([]);
+    this.api.enviarFoto(arquivo).subscribe({
+      next: ({ imagem }) => this.gravarFoto(usuario, imagem),
+      error: (erro: unknown) => {
+        this.salvando.set(false);
+        this.errosDoPainel.set(mensagensDeErro(erro));
+      },
+    });
+  }
+
+  protected tirarFoto(): void {
+    const usuario = this.usuarioEmFoco();
+    if (usuario) this.gravarFoto(usuario, null);
+  }
+
+  private gravarFoto(usuario: Usuario, foto: string | null): void {
+    this.salvando.set(true);
+    this.api.definirFotoDoUsuario(usuario.id, foto).subscribe({
+      next: (atualizado) => {
+        this.salvando.set(false);
+        this.usuarioEmFoco.set(atualizado);
+        this.usuarios.update((todos) => todos.map((u) => (u.id === atualizado.id ? atualizado : u)));
+        this.avisos.mostrar(foto ? 'Foto atualizada' : 'Foto removida');
+      },
+      error: (erro: unknown) => {
+        this.salvando.set(false);
+        this.errosDoPainel.set(mensagensDeErro(erro));
+      },
+    });
+  }
+
+  protected mencaoDada(mencao: MencaoHonrosa): void {
+    this.dandoMencao.set(false);
+    this.medalhasEmFoco.update((m) =>
+      m ? { ...m, mencoes: [mencao, ...m.mencoes].sort((a, b) => b.mes.localeCompare(a.mes) || b.id - a.id) } : m,
+    );
+    this.avisos.mostrar('Menção honrosa dada');
+  }
+
+  protected removerMencao(mencao: MencaoHonrosa): void {
+    this.api.removerMencao(mencao.id).subscribe({
+      next: () => {
+        this.medalhasEmFoco.update((m) => (m ? { ...m, mencoes: m.mencoes.filter((x) => x.id !== mencao.id) } : m));
+        this.avisos.mostrar('Menção removida');
+      },
+      error: (erro: unknown) => this.errosDoPainel.set(mensagensDeErro(erro)),
+    });
   }
 
   protected abrirInativacao(usuario: Usuario): void {

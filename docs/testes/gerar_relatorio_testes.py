@@ -27,13 +27,14 @@ TRX = "{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}"
 # Classe de teste -> bloco do TG. Uma classe nova sem bloco cai em "Outros", e o relatório avisa.
 BLOCOS = OrderedDict([
     ("Núcleo de comandas", ["ComandaControllerTests", "ComandaTests", "SalaoControllerTests"]),
-    ("Cardápio e promoções", ["CardapioControllerTests", "ItemDoCardapioTests", "PromocaoControllerTests", "PromocaoTests"]),
+    ("Cardápio e promoções", ["CardapioControllerTests", "ItemDoCardapioTests", "PromocaoControllerTests", "PromocaoTests",
+                              "DestaqueControllerTests", "DestaqueDoCardapioTests"]),
     ("Alocação de garçons (programação linear)", ["AlocacaoControllerTests", "AlocacaoTests", "RegraDeDistribuicaoTests",
                                                    "test_alocacao", "test_calibracao", "test_evolucao"]),
     ("Recomendação de pratos (ciência de dados)", ["SugestoesComandaTests", "test_recomendacao", "test_clusterizacao", "test_provedor_modelo",
                                                     "test_historico_banco", "test_api_analitica"]),
     ("BI e índice de desempenho", ["IndicadoresControllerTests", "IndiceDeDesempenhoTests", "RepositorioIndicadoresTests",
-                                   "EngenhariaDeCardapioTests"]),
+                                   "EngenhariaDeCardapioTests", "MedalhasTests", "MencaoHonrosaTests"]),
     ("LGPD, auditoria e segurança", ["AuditoriaTests", "LimiteDeRequisicoesTests", "EliminacaoAuditoriaTests", "AutenticacaoControllerTests",
                                       "UsuarioControllerTests", "UsuarioTests"]),
     ("Banco de dados (views, triggers e restrições)", ["ObjetosDoBancoTests"]),
@@ -59,6 +60,7 @@ BLOCOS_DO_FRONTEND = [
     ("app.spec.ts", "LGPD, auditoria e segurança"),  # o menu por papel é controle de acesso
     ("shared/rotulos", "Núcleo de comandas"),  # composicaoSugerida e os rótulos de RN01
     ("shared/", "Arquitetura e infraestrutura"),
+    ("core/versao-nova", "Arquitetura e infraestrutura"),  # aba aberta antes de uma atualização
 ]
 
 BACKEND, ANALITICA, FRONTEND = "Backend .NET", "Analítica Python", "Frontend Angular"

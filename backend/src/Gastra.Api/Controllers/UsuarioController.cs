@@ -94,6 +94,18 @@ public class UsuarioController : ControllerBase
     /// UC04 — Desfazer a vinculação do app autenticador de um Gerente ou Coordenador que perdeu o celular. O próximo
     /// login volta a pedir a configuração, com um segredo novo (RN07).
     /// </summary>
+    [HttpPut("{id:int}/foto")]
+    [ProducesResponseType(typeof(UsuarioResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DefinirFoto(
+        int id,
+        [FromBody] FotoUsuarioRequest request,
+        [FromServices] IDefinirFotoUsuarioUseCase useCase)
+    {
+        return Ok(await useCase.Executar(id, request));
+    }
+
     [HttpDelete("{id:int}/segundo-fator")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
