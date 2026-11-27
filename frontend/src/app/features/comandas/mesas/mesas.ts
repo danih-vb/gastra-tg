@@ -10,7 +10,7 @@ import { AvisoService } from '../../../shared/aviso/aviso.service';
 import { mensagensDeErro } from '../../../shared/erros';
 import { Folha } from '../../../shared/folha/folha';
 import { Icone } from '../../../shared/icone/icone';
-import { COMPOSICOES, composicaoSugerida, minutosDesde } from '../../../shared/rotulos';
+import { COMPOSICOES, composicaoSugerida, duracao, minutosDesde } from '../../../shared/rotulos';
 import { dataDeHoje, periodoDoTurno } from '../turno';
 
 interface MesaNaTela {
@@ -49,6 +49,7 @@ export class Mesas implements OnDestroy {
   private readonly alocacao = signal<AlocacaoDoTurno | null>(null);
 
   protected readonly COMPOSICOES = COMPOSICOES;
+  protected readonly duracao = duracao;
   protected readonly pessoasPossiveis = [1, 2, 3, 4, 5, 6, 7, 8];
   protected readonly periodo = periodoDoTurno();
 
