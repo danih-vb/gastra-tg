@@ -97,7 +97,6 @@ CREATE TABLE `comanda` (
     `garcom_id` int NOT NULL,
     `data_hora_abertura` datetime(6) NOT NULL,
     `data_hora_fechamento` datetime(6) NULL,
-    `atendimento_chamado_em` datetime(6) NULL,
     `status` varchar(10) CHARACTER SET utf8mb4 NOT NULL,
     `quantidade_pessoas` int NOT NULL,
     `composicao` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
@@ -328,6 +327,95 @@ CREATE INDEX `IX_promocao_item_cardapio_item_cardapio_id` ON `promocao_item_card
 
 INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
 VALUES ('20260917042940_CriaPromocoes', '9.0.20');
+
+CREATE TABLE `avaliacao_atendimento` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `comanda_id` int NOT NULL,
+    `nota` int NOT NULL,
+    `comentario` varchar(280) CHARACTER SET utf8mb4 NULL,
+    `data_hora_envio` datetime(6) NOT NULL,
+    CONSTRAINT `PK_avaliacao_atendimento` PRIMARY KEY (`id`),
+    CONSTRAINT `CK_avaliacao_nota` CHECK (nota BETWEEN 1 AND 5),
+    CONSTRAINT `FK_avaliacao_atendimento_comanda_comanda_id` FOREIGN KEY (`comanda_id`) REFERENCES `comanda` (`id`) ON DELETE CASCADE
+) CHARACTER SET=utf8mb4;
+
+CREATE UNIQUE INDEX `IX_avaliacao_atendimento_comanda_id` ON `avaliacao_atendimento` (`comanda_id`);
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20260921151404_CriaAvaliacaoAtendimento', '9.0.20');
+
+ALTER TABLE `usuario` ADD `bloqueada_ate` datetime(6) NULL;
+
+ALTER TABLE `usuario` ADD `tentativas_falhas` int NOT NULL DEFAULT 0;
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20260923052133_AdicionaBloqueioPorTentativas', '9.0.20');
+
+ALTER TABLE `comanda` ADD `atendimento_chamado_em` datetime(6) NULL;
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20261101064720_AdicionaChamadoDoGarcom', '9.0.20');
+
+ALTER TABLE `item_pedido` ADD `cortesia` tinyint(1) NOT NULL DEFAULT FALSE;
+
+ALTER TABLE `item_pedido` ADD `motivo_ajuste` varchar(120) CHARACTER SET utf8mb4 NULL;
+
+ALTER TABLE `item_pedido` ADD `preco_original` decimal(10,2) NULL;
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20261121134406_AdicionaCortesiaEAjusteDePreco', '9.0.20');
+
+ALTER TABLE `item_pedido` ADD `lancado_por` varchar(12) CHARACTER SET utf8mb4 NULL;
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20261123153050_AdicionaLancamentoParaConfirmar', '9.0.20');
+
+CREATE TABLE `destaque_cardapio` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `item_cardapio_id` int NOT NULL,
+    `tipo` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+    `data_inicio` date NOT NULL,
+    `data_fim` date NOT NULL,
+    `meta` int NULL,
+    CONSTRAINT `PK_destaque_cardapio` PRIMARY KEY (`id`),
+    CONSTRAINT `CK_destaque_cardapio_periodo_e_meta` CHECK (data_fim >= data_inicio AND ((tipo = 'MetaDoMes' AND meta > 0) OR (tipo = 'DestaqueDoDia' AND meta IS NULL))),
+    CONSTRAINT `FK_destaque_cardapio_item_cardapio_item_cardapio_id` FOREIGN KEY (`item_cardapio_id`) REFERENCES `item_cardapio` (`id`) ON DELETE RESTRICT
+) CHARACTER SET=utf8mb4;
+
+CREATE INDEX `IX_destaque_cardapio_data_fim` ON `destaque_cardapio` (`data_fim`);
+
+CREATE INDEX `IX_destaque_cardapio_item_cardapio_id` ON `destaque_cardapio` (`item_cardapio_id`);
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20261123154200_AdicionaDestaquesEMetas', '9.0.20');
+
+ALTER TABLE `usuario` ADD `foto` varchar(300) CHARACTER SET utf8mb4 NULL;
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20261123155635_AdicionaFotoDoUsuario', '9.0.20');
+
+CREATE TABLE `mencao_honrosa` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `garcom_id` int NOT NULL,
+    `titulo` varchar(60) CHARACTER SET utf8mb4 NOT NULL,
+    `descricao` varchar(200) CHARACTER SET utf8mb4 NULL,
+    `icone` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+    `cor` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+    `mes` date NOT NULL,
+    `concedida_por_id` int NOT NULL,
+    `data_hora_concessao` datetime(6) NOT NULL,
+    CONSTRAINT `PK_mencao_honrosa` PRIMARY KEY (`id`),
+    CONSTRAINT `CK_mencao_honrosa_primeiro_dia_do_mes` CHECK (DAY(mes) = 1),
+    CONSTRAINT `FK_mencao_honrosa_usuario_concedida_por_id` FOREIGN KEY (`concedida_por_id`) REFERENCES `usuario` (`id`) ON DELETE RESTRICT,
+    CONSTRAINT `FK_mencao_honrosa_usuario_garcom_id` FOREIGN KEY (`garcom_id`) REFERENCES `usuario` (`id`) ON DELETE RESTRICT
+) CHARACTER SET=utf8mb4;
+
+CREATE INDEX `IX_mencao_honrosa_concedida_por_id` ON `mencao_honrosa` (`concedida_por_id`);
+
+CREATE INDEX `IX_mencao_honrosa_garcom_id_mes` ON `mencao_honrosa` (`garcom_id`, `mes`);
+
+INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
+VALUES ('20261126154200_AdicionaMencaoHonrosa', '9.0.20');
 
 COMMIT;
 
