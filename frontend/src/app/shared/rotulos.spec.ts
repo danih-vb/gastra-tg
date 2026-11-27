@@ -1,4 +1,4 @@
-import { composicaoSugerida, minutosDesde, tempoRelativo } from './rotulos';
+import { composicaoSugerida, duracao, minutosDesde, tempoRelativo } from './rotulos';
 
 describe('rótulos e regras de apresentação', () => {
   it.each([
@@ -26,5 +26,14 @@ describe('rótulos e regras de apresentação', () => {
     expect(tempoRelativo('2026-09-17T20:29:40', agora)).toBe('agora');
     expect(tempoRelativo('2026-09-17T20:18:00', agora)).toBe('há 12 min');
     expect(tempoRelativo('2026-09-17T18:30:00', agora)).toBe('há 2 h');
+    expect(tempoRelativo('2026-09-13T20:30:00', agora)).toBe('há 4 dias');
+  });
+
+  it('escreve a duração em minutos, horas ou dias', () => {
+    expect(duracao(45)).toBe('45 min');
+    expect(duracao(120)).toBe('2 h');
+    expect(duracao(135)).toBe('2 h 15 min');
+    expect(duracao(1500)).toBe('1 dia');
+    expect(duracao(5804)).toBe('4 dias');
   });
 });

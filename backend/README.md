@@ -200,6 +200,9 @@ cadastrados por ele.
 | Consultar uma conta | `GET /api/usuarios/{id}` |
 | Editar nome, e-mail e papel | `PUT /api/usuarios/{id}` |
 | Inativar (soft delete) ou reativar | `PATCH /api/usuarios/{id}/situacao` |
+| Pôr ou trocar a foto do crachá (JPG, PNG ou WEBP, até 5 MB) | `PUT /api/usuarios/{id}/foto` (multipart, campo `arquivo`) |
+| Tirar a foto | `DELETE /api/usuarios/{id}/foto` |
+| Ver a foto (qualquer papel logado: o Gerente vê todas; os demais, a própria) | `GET /api/usuarios/fotos/{nome}` |
 
 - **Soft delete:** a conta inativada continua no banco (comandas e auditoria apontam para ela),
   mas perde o acesso na hora: o token em uso para de valer e o login é recusado.
@@ -211,6 +214,9 @@ cadastrados por ele.
 - **Senha:** mínimo de 8 caracteres e máximo de 72 bytes. O limite superior existe porque o BCrypt
   ignora o que passa de 72 bytes: uma senha maior seria aceita, mas só o começo dela valeria.
 - A resposta nunca traz hash de senha nem segredo do autenticador.
+- **Foto do funcionário é dado pessoal:** fica numa pasta separada das fotos do cardápio (que são públicas), só sai
+  com login e não fica no cache do navegador. O arquivo é apagado quando a foto é trocada ou tirada e quando a conta
+  é inativada (#291).
 
 ## Salão: praças e mesas (UC24)
 
@@ -381,6 +387,35 @@ Filtro por `inicio` e `fim` na query string (datas inclusivas, `aaaa-mm-dd`). Se
   posição e o total de garçons no ranking, sem nomes nem números dos colegas.
 - **Auditoria (política de log, 4.5):** registra cada consulta de relatório (qual relatório e o período) e cada
   consulta do índice (de quem).
+
+## Fase final: cortesia, lançamento para confirmar, destaques, medalhas e menções (UC26 a UC29)
+
+| Ação | Endpoint | Quem |
+|---|---|---|
+| UC26: lançar cortesia (`itemCardapioId`, `quantidade`, `motivo`) | `POST /api/comandas/{id}/cortesias` | Metre, Gerente |
+| UC26: ajustar o preço de um item já lançado (`preco`, `motivo`) | `PATCH /api/comandas/{id}/itens/{itemId}/preco` | Gerente |
+| UC27: lançar item na mesa de um garçom | `POST /api/comandas/{id}/itens` | Garçom, Metre, Gerente |
+| UC27: confirmar ou recusar o item lançado por outro (`aceitar`) | `POST /api/comandas/{id}/itens/{itemId}/confirmacao` | Garçom |
+| UC28: destaques do dia e metas do mês | `GET /api/destaques` | Gerente, Coordenador, Garçom, Metre |
+| UC28: criar (`itemCardapioId`, `tipo`, `data`, `meta`) ou remover | `POST /api/destaques` · `DELETE /api/destaques/{id}` | Gerente, Coordenador |
+| UC29: medalhas do mês, histórico de seis meses e menções | `GET /api/indicadores/medalhas` (`?garcomId=` para o Gerente) | Garçom (as próprias), Gerente |
+| UC29: dar menção honrosa (`garcomId`, `titulo`, `descricao`, `icone`, `cor`, `mes`) ou removê-la | `POST /api/mencoes` · `DELETE /api/mencoes/{id}` | Gerente |
+
+- **Cortesia** entra por R$ 0,00, guarda o preço do cardápio em `precoOriginal` e não conta como venda nos
+  relatórios. O **ajuste de preço** também guarda o original. Os dois exigem motivo (até 120 caracteres), que não vai
+  para a auditoria.
+- **Item lançado pelo Metre ou pelo Gerente** fica a confirmar: fora da conta, fora da tela do cliente e impedindo o
+  fechamento até o garçom da mesa confirmar ou recusar. A recusa cancela o item com motivo.
+- **Destaque do dia** vale só no dia; **meta do mês** vale o mês inteiro e exige a quantidade. O andamento da meta
+  conta as unidades vendidas pela equipe, sem as cortesias.
+- **Medalhas** são calculadas na hora a partir dos indicadores do mês, nada é gravado: pódio (até 3º no índice),
+  mesa cheia (100 mesas), maratonista (20 turnos), bem avaliado (5 avaliações e média 4,5), vendedor de destaque
+  (20 unidades de itens com meta) e meta batida (a equipe bateu uma meta do mês).
+- **Menção honrosa**: ícone e cor de uma lista fechada, título de até 60 caracteres, descrição opcional de até 200,
+  só para Garçom ativo. Mês no futuro é recusado.
+- **Auditoria:** `CORTESIA_LANCADA`, `PRECO_DO_ITEM_ALTERADO`, `ITEM_CONFIRMADO_PELO_GARCOM`,
+  `ITEM_RECUSADO_PELO_GARCOM`, `DESTAQUE_CRIADO`, `DESTAQUE_REMOVIDO`, `MEDALHAS_CONSULTADAS`, `MENCAO_CONCEDIDA` e
+  `MENCAO_REMOVIDA`. O título e a descrição da menção não vão para o log.
 
 ## Auditoria (política de log, #120)
 

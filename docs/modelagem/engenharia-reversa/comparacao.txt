@@ -1,6 +1,8 @@
 ## Entidades e atributos
 - mesa.praca_id: só no físico (chave estrangeira)
 - Praca.faturamento_medio_historico (derivado): derivado, não é coluna (calculado em view)
+- usuario.bloqueada_ate: só no físico (controle de acesso, fora do conceitual)
+- usuario.tentativas_falhas: só no físico (controle de acesso, fora do conceitual)
 - comanda.mesa_id: só no físico (chave estrangeira)
 - comanda.garcom_id: só no físico (chave estrangeira)
 - item_pedido.comanda_id: só no físico (chave estrangeira)
@@ -10,6 +12,10 @@
 - alocacao.praca_id: só no físico (chave estrangeira)
 - restricao_alimentar.comanda_id: só no físico (chave estrangeira)
 - registro_auditoria.usuario_id: só no físico (chave estrangeira)
+- avaliacao_atendimento.comanda_id: só no físico (chave estrangeira)
+- mencao_honrosa.garcom_id: só no físico (chave estrangeira)
+- mencao_honrosa.concedida_por_id: só no físico (chave estrangeira)
+- destaque_cardapio.item_cardapio_id: só no físico (chave estrangeira)
 
 ## Relacionamentos x chaves estrangeiras
 - Mesa (1,1) — pertence a — Praca (0,n): mesa.praca_id NOT NULL -> confere
@@ -22,6 +28,10 @@
 - RestricaoAlimentar (1,1) — possui — Comanda (0,n): restricao_alimentar.comanda_id NOT NULL -> confere
 - ItemDoCardapio (0,n) — refere-se — Promocao (0,n): N:N na tabela associativa promocao_item_cardapio -> confere
 - RegistroAuditoria (0,1) — é gerado por — Usuario (0,n): registro_auditoria.usuario_id NULL -> confere
+- AvaliacaoAtendimento (1,1) — recebe — Comanda (0,1): avaliacao_atendimento.comanda_id NOT NULL -> confere
+- MencaoHonrosa (1,1) — recebe — Usuario (0,n): mencao_honrosa.garcom_id NOT NULL -> confere
+- MencaoHonrosa (1,1) — concede — Usuario (0,n): mencao_honrosa.concedida_por_id NOT NULL -> confere
+- DestaqueDoCardapio (1,1) — destaca — ItemDoCardapio (0,n): destaque_cardapio.item_cardapio_id NOT NULL -> confere
 
 - tabela item_cardapio_flag: sem entidade correspondente
 
