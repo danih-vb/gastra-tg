@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf 
 
 COPY --from=build /publicado .
 
-# Pasta das fotos do cardápio: o volume herda este dono, e sem isso o usuário abaixo não grava nela.
-RUN mkdir -p /app/fotos /app/chaves && chown $APP_UID /app/fotos /app/chaves
+# Pastas das fotos (cardápio e funcionários): o volume herda este dono, e sem isso o usuário abaixo não grava nela.
+RUN mkdir -p /app/fotos /app/fotos-funcionarios /app/chaves && chown $APP_UID /app/fotos /app/fotos-funcionarios /app/chaves
 
 # Usuário sem privilégio de root, que já vem na imagem oficial.
 USER $APP_UID

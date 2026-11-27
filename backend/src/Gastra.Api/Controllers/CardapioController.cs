@@ -108,7 +108,10 @@ public class CardapioController : ControllerBase
         return Ok(await useCase.Executar(memoria.ToArray()));
     }
 
-    /// <summary>Foto importada (pública): é o que o cardápio digital mostra ao cliente, que não faz login.</summary>
+    /// <summary>
+    /// Foto importada (pública): é o que o cardápio digital mostra ao cliente, que não faz login. As fotos dos
+    /// funcionários não passam por aqui: ficam noutra pasta e só saem por /api/usuarios/fotos, com login.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet("fotos/{nome}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -116,17 +119,7 @@ public class CardapioController : ControllerBase
     public IActionResult ObterFoto(string nome, [FromServices] IArmazenamentoDeFotos armazenamento)
     {
         var foto = armazenamento.Abrir(nome);
-        if (foto is null)
-            return NotFound();
-
-        var tipo = Path.GetExtension(nome) switch
-        {
-            ".png" => "image/png",
-            ".webp" => "image/webp",
-            _ => "image/jpeg",
-        };
-        Response.Headers.XContentTypeOptions = "nosniff";
-        return File(foto, tipo);
+        return foto is null ? NotFound() : ArquivoDeFoto.Responder(this, foto, nome);
     }
 
     /// <summary>UC07 — Marcar item disponível/indisponível.</summary>

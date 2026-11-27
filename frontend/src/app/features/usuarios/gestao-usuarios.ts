@@ -103,30 +103,25 @@ export class GestaoUsuarios {
     const arquivo = campo.files?.[0];
     campo.value = '';
     if (!usuario || !arquivo) return;
-    this.salvando.set(true);
-    this.errosDoPainel.set([]);
-    this.api.enviarFoto(arquivo).subscribe({
-      next: ({ imagem }) => this.gravarFoto(usuario, imagem),
-      error: (erro: unknown) => {
-        this.salvando.set(false);
-        this.errosDoPainel.set(mensagensDeErro(erro));
-      },
-    });
+    this.gravarFoto(this.api.definirFotoDoUsuario(usuario.id, arquivo), 'Foto atualizada');
   }
 
   protected tirarFoto(): void {
     const usuario = this.usuarioEmFoco();
-    if (usuario) this.gravarFoto(usuario, null);
+    if (usuario) this.gravarFoto(this.api.tirarFotoDoUsuario(usuario.id), 'Foto removida');
   }
 
-  private gravarFoto(usuario: Usuario, foto: string | null): void {
+  private gravarFoto(envio: Observable<Usuario>, aviso: string): void {
     this.salvando.set(true);
-    this.api.definirFotoDoUsuario(usuario.id, foto).subscribe({
+    this.errosDoPainel.set([]);
+    envio.subscribe({
       next: (atualizado) => {
         this.salvando.set(false);
         this.usuarioEmFoco.set(atualizado);
         this.usuarios.update((todos) => todos.map((u) => (u.id === atualizado.id ? atualizado : u)));
-        this.avisos.mostrar(foto ? 'Foto atualizada' : 'Foto removida');
+        // A foto anterior foi apagada do servidor: o crachá do cabeçalho precisa da nova.
+        if (atualizado.id === this.meuId()) this.sessao.atualizarFoto(atualizado.foto);
+        this.avisos.mostrar(aviso);
       },
       error: (erro: unknown) => {
         this.salvando.set(false);
