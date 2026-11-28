@@ -23,6 +23,17 @@
 .lista > li {
   flex-wrap: wrap;
   row-gap: 8px;
+
+  /* No celular, o nome do garçom fica inteiro e as etiquetas, o valor e o "Ver" descem para a linha de baixo. */
+  .principal-item { flex: 1 1 180px; }
+
+  /* O valor e o "Ver" ficam juntos, à direita, quando as etiquetas descem. */
+  .fecho {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
 }
 
 .valor {

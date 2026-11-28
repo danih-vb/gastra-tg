@@ -378,7 +378,7 @@ export interface Usuario {
   papel: Papel;
   ativo: boolean;
   segundoFatorConfigurado: boolean;
-  /** Foto do crachá, posta pelo Gerente. */
+  /** Foto do crachá, posta pelo Gerente. Só sai com login: ver GastraApiService.fotoDoFuncionario. */
   foto: string | null;
 }
 

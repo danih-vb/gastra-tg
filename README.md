@@ -6,6 +6,9 @@
 
 [![CI](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/danih-vb/gastra-tg/actions/workflows/ci.yml)
 
+**Versão entregue:** [v1.0](https://github.com/danih-vb/gastra-tg/releases/tag/v1.0) (29/11/2026), com o documento
+final em [`docs/pesquisa/Gastra II.pdf`](docs/pesquisa/Gastra%20II.pdf).
+
 ---
 
 ## Sobre o projeto
@@ -24,9 +27,10 @@ atendimento.
 | **Programação Linear** | Otimização da alocação de garçons por praça (critério RN03) | Escopo original, foco do TG |
 | **LGPD** | Conformidade e minimização de dados pessoais em todo o sistema | Escopo original, foco do TG |
 | **Núcleo do Módulo de Comandas** | Abertura/fechamento de mesa, registro de pedido (front-of-house) | Adicional — necessário para alimentar os blocos analíticos, mas não é o foco |
-| **Cardápio Digital** (consulta) | Consulta via QR/tablet, sem função de pedido | Extra opcional — condicionado a sobrar tempo |
-| **Comanda em tempo real** (consulta pelo cliente) | Cliente acompanha itens e valor parcial da própria comanda | Extra opcional — condicionado a sobrar tempo |
-| **Lista de pendências do garçom** | Itens do pedido ainda não entregues, como lembrete ativo | Extra opcional — condicionado a sobrar tempo |
+| **Cardápio Digital** (consulta) | Consulta pelo QR code fixo da mesa, sem função de pedido | Extra, implementado |
+| **Comanda em tempo real** (consulta pelo cliente) | Cliente acompanha itens e valor parcial da própria comanda | Extra, implementado |
+| **Lista de pendências do garçom** | Itens do pedido ainda não entregues, como lembrete ativo | Extra, implementado |
+| **Gestão da equipe** | Cortesia e ajuste de preço, destaques do dia e metas do mês, medalhas e menções honrosas, app instalável no celular | Fase final, implementado |
 | **Integração com a cozinha** | Acesso a pedidos, confirmação de preparo | Fora do escopo do TG — feature futura, pós-defesa |
 | **Programa de fidelização** | Cadastro voluntário do cliente, identificador persistente, histórico entre visitas | Fora do escopo do TG — feature futura, pós-defesa |
 
@@ -34,10 +38,11 @@ atendimento.
 
 Definida no projeto de pesquisa formal:
 
-- **Backend:** ASP.NET Core
-- **Frontend:** Angular
-- **Análise de dados:** Python (clusterização, regras de associação, programação linear)
-- **Banco de dados:** MySQL, containerizado via Docker Compose no ambiente de desenvolvimento
+- **Backend:** ASP.NET Core (.NET 10) com Entity Framework Core
+- **Frontend:** Angular 22, instalável no celular como aplicativo (PWA)
+- **Análise de dados:** Python com FastAPI (clusterização, regras de associação, programação linear)
+- **Banco de dados:** MySQL 8.4
+- **Ambiente:** Docker Compose com banco, API, serviço analítico e frontend (`infra/`)
 
 ## Notação de diagramas
 
@@ -56,7 +61,7 @@ gastra-tg/
 │   └── src/app/
 │       ├── core/                  # Sessão, interceptador do token, guardas por papel
 │       ├── shared/                # Componentes reutilizados
-│       └── features/              # Um módulo por grupo de casos de uso: acesso, cardapio, comandas, alocacao, analises, cliente
+│       └── features/              # Um módulo por grupo de casos de uso: acesso, cardapio, comandas, alocacao, analises, salao, usuarios, cliente
 ├── data-science/                  # Python — clusterização, regras de associação, PL (serviço FastAPI)
 │   ├── notebooks/                 # Exploração e prototipagem (Jupyter)
 │   ├── src/gastra_analitica/      # Código de produção: api/, recomendacao/, alocacao/
@@ -65,12 +70,14 @@ gastra-tg/
 │       ├── raw/                   # Nunca versionado (dados pessoais/LGPD)
 │       └── processed/             # Dados tratados/anonimizados, versionáveis
 │           └── GASTRA_Dados_Processados.docx
-├── infra/                         # Ambiente de banco via Docker Compose (dev/testes)
-│   ├── docker-compose.yml         # Serviço MySQL containerizado
+├── infra/                         # Ambiente completo via Docker Compose (ver infra/README.md)
+│   ├── docker-compose.yml         # MySQL, API, serviço analítico e frontend
 │   └── .env.example               # Variáveis necessárias, sem valor real (.env não é versionado)
 ├── docs/
-│   ├── pesquisa/                  # Projeto de pesquisa formal
-│   │   ├── Gastra.pdf
+│   ├── pesquisa/                  # Documentos do TG
+│   │   ├── Gastra I.pdf           # TG I: projeto de pesquisa
+│   │   ├── Gastra II.pdf          # TG II: documento final, com o manual no Apêndice A
+│   │   ├── capitulos/             # Scripts que atualizam o Gastra II (ver o README)
 │   │   └── referencias/           # Referências bibliográficas e material de apoio
 │   │       └── GASTRA_Referencias_Bibliograficas.docx
 │   ├── negocio/                   # Business Model Canvas
@@ -97,8 +104,8 @@ gastra-tg/
 │   │   ├── GASTRA_Diagrama_Classes_Camadas.md
 │   │   ├── GASTRA_Politica_Log_Auditoria.md
 │   │   └── GASTRA_Ambiente_Desenvolvimento.md
-│   ├── ux-ui/                      # Wireframes e protótipo navegável
-│   ├── testes/                     # Cenários de teste executados
+│   ├── ux-ui/                      # Protótipo navegável, telas do protótipo e capturas do sistema
+│   ├── testes/                     # Plano de testes operacionais e relatório dos testes executados
 │   ├── manual-usuario/             # Manual de uso do usuário
 │   ├── diagramas/                  # Diagramas de apoio (UML)
 │   │   ├── arquitetura/            # Implantação e caminho de uma requisição
@@ -116,7 +123,11 @@ gastra-tg/
 
 ## Documentação
 
-- **Projeto de pesquisa formal:** [`docs/pesquisa/Gastra.pdf`](docs/pesquisa/Gastra.pdf)
+- **Documento final do TG (TG II):** [`docs/pesquisa/Gastra II.pdf`](docs/pesquisa/Gastra%20II.pdf)
+- **Projeto de pesquisa (TG I):** [`docs/pesquisa/Gastra I.pdf`](docs/pesquisa/Gastra%20I.pdf)
+- **Manual do usuário:** [`docs/manual-usuario/GASTRA_Manual_do_Usuario.md`](docs/manual-usuario/GASTRA_Manual_do_Usuario.md) (versão para imprimir: [`.docx`](docs/manual-usuario/GASTRA_Manual_do_Usuario.docx))
+- **Protótipo navegável:** [`docs/ux-ui/GASTRA_Prototipo_Navegavel.md`](docs/ux-ui/GASTRA_Prototipo_Navegavel.md) · [avaliação heurística](docs/ux-ui/GASTRA_Avaliacao_Heuristica.md)
+- **Testes:** [plano dos testes operacionais](docs/testes/GASTRA_Plano_Testes_Operacionais.md) · [cenários e casos executados](docs/testes/GASTRA_Cenarios_Testes_Executados.md)
 - **Referências bibliográficas:** [`docs/pesquisa/referencias/GASTRA_Referencias_Bibliograficas.docx`](docs/pesquisa/referencias/GASTRA_Referencias_Bibliograficas.docx)
 - **Requisitos e Regras de Negócio:** [`docs/requisitos/GASTRA_Requisitos_RN.docx`](docs/requisitos/GASTRA_Requisitos_RN.docx)
 - **Matriz de Rastreabilidade:** [`docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx`](docs/requisitos/GASTRA_Matriz_Rastreabilidade.docx)

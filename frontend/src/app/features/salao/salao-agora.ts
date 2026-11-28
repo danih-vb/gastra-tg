@@ -9,7 +9,7 @@ import { mensagensDeErro } from '../../shared/erros';
 import { Folha } from '../../shared/folha/folha';
 import { Icone } from '../../shared/icone/icone';
 import { EscolherItem } from '../../shared/escolher-item/escolher-item';
-import { COMPOSICOES, MOTIVOS, RESTRICOES, atrasado, minutosDesde, FLAGS, ICONES_DAS_FLAGS } from '../../shared/rotulos';
+import { COMPOSICOES, MOTIVOS, RESTRICOES, atrasado, duracao, minutosDesde, FLAGS, ICONES_DAS_FLAGS } from '../../shared/rotulos';
 
 interface LinhaDoSalao {
   comanda: Comanda;
@@ -66,6 +66,7 @@ export class SalaoAgora {
 
 
   protected readonly COMPOSICOES = COMPOSICOES;
+  protected readonly duracao = duracao;
   protected readonly MOTIVOS = MOTIVOS;
   protected readonly RESTRICOES = RESTRICOES;
 

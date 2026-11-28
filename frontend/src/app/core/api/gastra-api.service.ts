@@ -363,11 +363,26 @@ export class GastraApiService {
     return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}`, { nome, email, papel });
   }
 
-  /** RF18 — inativar não apaga: a conta perde o acesso na hora e o histórico continua. */
-  /** Foto do crachá do funcionário: o endereço vem do envio de foto; nulo tira a foto. */
-  definirFotoDoUsuario(id: number, foto: string | null): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}/foto`, { foto });
+  /** Foto do crachá do funcionário. A anterior é apagada do servidor. */
+  definirFotoDoUsuario(id: number, arquivo: File): Observable<Usuario> {
+    const corpo = new FormData();
+    corpo.append('arquivo', arquivo);
+    return this.http.put<Usuario>(`${this.api}/api/usuarios/${id}/foto`, corpo);
   }
+
+  tirarFotoDoUsuario(id: number): Observable<Usuario> {
+    return this.http.delete<Usuario>(`${this.api}/api/usuarios/${id}/foto`);
+  }
+
+  /**
+   * A foto de um funcionário só sai com login (LGPD). Um <img src> não leva o token, então ela vem pelo HttpClient,
+   * que passa pelo interceptor, e a tela mostra o arquivo recebido.
+   */
+  fotoDoFuncionario(endereco: string): Observable<Blob> {
+    return this.http.get(`${this.api}${endereco}`, { responseType: 'blob' });
+  }
+
+  /** RF18 — inativar não apaga: a conta perde o acesso na hora e o histórico continua. */
 
   alterarSituacaoDoUsuario(id: number, ativo: boolean): Observable<void> {
     return this.http.patch<void>(`${this.api}/api/usuarios/${id}/situacao`, { ativo });

@@ -51,6 +51,9 @@ Para apresentar ou avaliar o GASTRA sem instalar .NET, Python nem Node:
    ```bash
    docker compose --profile app up -d --build
    ```
+   A **primeira** subida constrói as imagens do zero (backend, frontend e serviço analítico) e levou cerca de
+   **20 minutos** no teste em máquina limpa (#177). O terminal fica parado em "Building" boa parte desse tempo: é
+   normal. As subidas seguintes reaproveitam as imagens e levam segundos.
 3. **Abra `http://localhost:4200`.** É o sistema inteiro: o nginx serve as telas e repassa `/api` para a API.
 4. **Confira:** `docker compose --profile app ps` deve mostrar os quatro serviços `healthy`.
    - telas: `http://localhost:4200/saude`;
@@ -64,8 +67,9 @@ O que acontece na subida:
 - **Histórico real (D10):** com `MYSQL_ANALITICA_PASSWORD` no `.env` e o usuário criado (seção acima), o serviço
   analítico lê as views; sem isso, usa o histórico simulado.
 - **Imagens:** rodam com usuário sem privilégio de root, e nenhum segredo entra nelas; tudo vem do `.env`.
-- **Fotos do cardápio:** as importadas do computador ficam no volume `gastra_fotos`. O `down -v` apaga as fotos
-  junto com o banco.
+- **Fotos do cardápio:** as importadas do computador ficam no volume `gastra_fotos`, e qualquer um as vê (o cliente
+  não faz login). As dos funcionários ficam no volume `gastra_fotos_funcionarios` e só saem com login. O `down -v`
+  apaga as fotos junto com o banco.
 - **Mesma origem (D12):** as telas chamam `/api` no próprio endereço por onde a página foi aberta, e o nginx
   repassa para a API. Não há CORS para configurar, e **abrir pelo IP da máquina funciona no celular da mesma
   rede sem recompilar nada** — útil para demonstrar a parte do cliente num telefone de verdade.
