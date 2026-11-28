@@ -59,6 +59,11 @@ Um `ng` global antigo não suporta Node 24 e gera avisos de incompatibilidade.
 
 ## 2. Montando o projeto do zero
 
+> **Só quer rodar o sistema, sem desenvolver?** Basta o Docker: depois de clonar (2.1), siga
+> ["Sistema inteiro em Docker"](../../infra/README.md#sistema-inteiro-em-docker-mysql--api--serviço-analítico--telas)
+> no `infra/README.md`. Um `docker compose --profile app up -d --build` sobe o banco, a API, o serviço analítico e
+> as telas, em `http://localhost:4200`. As seções abaixo são para quem vai mexer no código.
+
 ### 2.1 Clonar
 
 ```bash
@@ -146,8 +151,9 @@ Com tudo instalado, cada linha abaixo deve dar o resultado esperado.
 | Serviço | Porta | Onde é definida |
 |---|---|---|
 | MySQL (no host) | 3307 | `infra/.env` (`MYSQL_PORT`) |
-| API | 5019 | `backend/src/Gastra.Api/Properties/launchSettings.json` |
-| Frontend | 4200 | padrão do Angular CLI |
+| API | 5019 | `backend/src/Gastra.Api/Properties/launchSettings.json`; no Docker, `API_PORT` |
+| Serviço analítico (Python) | 8000 | `infra/.env` (`ANALITICA_PORT`) |
+| Frontend | 4200 | padrão do Angular CLI; no Docker, `WEB_PORT` |
 
 ---
 

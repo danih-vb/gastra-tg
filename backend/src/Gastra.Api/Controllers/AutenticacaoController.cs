@@ -13,6 +13,7 @@ namespace Gastra.Api.Controllers;
 public class AutenticacaoController : ControllerBase
 {
     /// <summary>UC01 — Autenticar-se com e-mail e senha.</summary>
+    [AllowAnonymous]
     [HttpPost("login")]
     [EnableRateLimiting(LimiteDeRequisicoes.Autenticacao)]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
@@ -25,6 +26,7 @@ public class AutenticacaoController : ControllerBase
     }
 
     /// <summary>Vincula o app autenticador no primeiro acesso de Gerente/Coordenador (RN07).</summary>
+    [AllowAnonymous]
     [HttpPost("segundo-fator/configurar")]
     [EnableRateLimiting(LimiteDeRequisicoes.Autenticacao)]
     [ProducesResponseType(typeof(ConfiguracaoSegundoFatorResponse), StatusCodes.Status200OK)]
@@ -38,6 +40,7 @@ public class AutenticacaoController : ControllerBase
     }
 
     /// <summary>UC02 — Confirmar segundo fator com o código do app autenticador.</summary>
+    [AllowAnonymous]
     [HttpPost("segundo-fator/confirmar")]
     [EnableRateLimiting(LimiteDeRequisicoes.Autenticacao)]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]

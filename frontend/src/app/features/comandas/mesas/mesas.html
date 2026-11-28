@@ -101,7 +101,7 @@
             @if (!linha.comanda) {
               <span class="estado">Livre · {{ linha.mesa.capacidade }} lugares</span>
             } @else if (linha.minha) {
-              <span class="estado">{{ COMPOSICOES[linha.comanda.composicao] }} · {{ linha.minutos }} min</span>
+              <span class="estado">{{ COMPOSICOES[linha.comanda.composicao] }} · {{ duracao(linha.minutos) }}</span>
               <span class="valor">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
             } @else {
               <span class="estado">{{ linha.comanda.garcomNome.split(' ')[0] }}</span>
