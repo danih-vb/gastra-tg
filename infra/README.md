@@ -51,6 +51,9 @@ Para apresentar ou avaliar o GASTRA sem instalar .NET, Python nem Node:
    ```bash
    docker compose --profile app up -d --build
    ```
+   A **primeira** subida constrói as imagens do zero (backend, frontend e serviço analítico) e levou cerca de
+   **20 minutos** no teste em máquina limpa (#177). O terminal fica parado em "Building" boa parte desse tempo: é
+   normal. As subidas seguintes reaproveitam as imagens e levam segundos.
 3. **Abra `http://localhost:4200`.** É o sistema inteiro: o nginx serve as telas e repassa `/api` para a API.
 4. **Confira:** `docker compose --profile app ps` deve mostrar os quatro serviços `healthy`.
    - telas: `http://localhost:4200/saude`;
