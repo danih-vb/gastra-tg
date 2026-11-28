@@ -50,7 +50,7 @@
                 <strong>{{ linha.comanda.garcomNome }}</strong>
                 <span class="pequeno suave">
                   {{ COMPOSICOES[linha.comanda.composicao] }} · {{ linha.comanda.quantidadePessoas }} ·
-                  aberta há {{ linha.minutos }} min
+                  aberta há {{ duracao(linha.minutos) }}
                 </span>
               </div>
               @if (linha.comanda.restricoes.length) {
@@ -65,10 +65,12 @@
               @if (linha.pendentes) {
                 <span class="etiqueta aviso">{{ linha.pendentes }} a entregar</span>
               } @else {
-                <span class="etiqueta sucesso">0</span>
+                <span class="etiqueta sucesso"><app-icone nome="check" /> entregue</span>
               }
-              <span class="valor num">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
-              <button class="botao compacto fantasma" type="button" (click)="abrirComanda(linha.comanda)">Ver</button>
+              <span class="fecho">
+                <span class="valor num">{{ linha.comanda.subtotal | currency: 'BRL' }}</span>
+                <button class="botao compacto fantasma" type="button" (click)="abrirComanda(linha.comanda)">Ver</button>
+              </span>
             </li>
           }
         </ul>
