@@ -8,7 +8,7 @@ namespace Gastra.Api.Tests.Infraestrutura;
 
 /// <summary>Um endpoint da API e quem pode chamá-lo, lido dos atributos do controller e da ação.</summary>
 public sealed record RotaDaApi(string Metodo, string Rota, string Controller, string Acao, bool Publico,
-    IReadOnlySet<string>? Papeis)
+    IReadOnlySet<string>? Papeis, bool RecebeArquivo = false)
 {
     /// <summary>Exige login, mas vale para qualquer papel: <c>[Authorize]</c> sem <c>Roles</c>.</summary>
     public bool QualquerUsuarioLogado => !Publico && Papeis is null;
@@ -65,7 +65,8 @@ public static class MapaDeEndpoints
                     // vazios, que marcam "sem política", para o teste pegar.
                     var publico = anonimo;
                     lista.Add(new RotaDaApi(http.HttpMethods.Single(), rota, controller.Name, acao.Name, publico,
-                        autorizacoes.Count == 0 && !anonimo ? new HashSet<string>() : papeis));
+                        autorizacoes.Count == 0 && !anonimo ? new HashSet<string>() : papeis,
+                        acao.GetParameters().Any(p => p.ParameterType == typeof(Microsoft.AspNetCore.Http.IFormFile))));
                 }
             }
         }
