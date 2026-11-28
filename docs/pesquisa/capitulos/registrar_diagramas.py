@@ -23,8 +23,11 @@ RAIZ = Path(__file__).resolve().parents[3]
 DOCX = RAIZ / "docs" / "pesquisa" / "Gastra II.docx"
 LARGURA_DO_TEXTO = 5760000  # EMU: 16 cm, a largura útil da página.
 ALTURA_MAXIMA = 4680000  # EMU: a altura que DER e lógico já usavam, para caberem na página com legenda e fonte.
+# O DER é quase quadrado e tem letra pequena: ganha a largura toda da página, que ainda cabe com legenda e fonte.
+ALTURA_MAXIMA_POR_FIGURA = {"Diagrama Entidade-Relacionamento conceitual do GASTRA": 5500000}
 
 FIGURAS = {
+    "Business Model Canvas do GASTRA": "docs/negocio/GASTRA_Business_Model_Canvas.png",
     "Diagrama de casos de uso do núcleo de comandas": "docs/diagramas/casos-de-uso/GASTRA_UC_NucleoComandas.png",
     "Diagrama de casos de uso dos blocos analíticos": "docs/diagramas/casos-de-uso/GASTRA_UC_BlocosAnaliticos.png",
     "Diagrama Entidade-Relacionamento conceitual do GASTRA": "docs/modelagem/der/GASTRA_DER.png",
@@ -74,18 +77,19 @@ def trocar_imagem(documento, legenda, caminho) -> bool:
     rid = figura.xpath(".//a:blip/@r:embed")[0]
     parte = documento.part.related_parts[rid]
     novo = (RAIZ / caminho).read_bytes()
-    if parte.blob == novo:
-        return False
+    mudou = parte.blob != novo
     parte._blob = novo
     largura, altura = Image.open(RAIZ / caminho).size
+    teto = ALTURA_MAXIMA_POR_FIGURA.get(legenda, ALTURA_MAXIMA)
     for extent in figura.xpath(".//wp:extent") + figura.xpath(".//a:ext"):
         cx = LARGURA_DO_TEXTO
         cy = round(cx * altura / largura)
-        if cy > ALTURA_MAXIMA:
-            cx, cy = round(ALTURA_MAXIMA * largura / altura), ALTURA_MAXIMA
+        if cy > teto:
+            cx, cy = round(teto * largura / altura), teto
+        mudou = mudou or extent.get("cx") != str(cx)
         extent.set("cx", str(cx))
         extent.set("cy", str(cy))
-    return True
+    return mudou
 
 
 def main() -> None:
