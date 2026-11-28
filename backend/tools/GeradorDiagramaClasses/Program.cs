@@ -150,7 +150,8 @@ string DiagramaDominio()
     [
         ["Praca", "Mesa", "Comanda", "ItemDoPedido"],
         ["Alocacao", "Usuario", "RestricaoAlimentar", "ItemDoCardapio", "ItemCardapioFlag"],
-        ["RegistroAuditoria", "EntidadeBase", "Promocao", "PromocaoItem"],
+        ["RegistroAuditoria", "MencaoHonrosa", "AvaliacaoAtendimento", "DestaqueDoCardapio", "PromocaoItem"],
+        ["EntidadeBase", "Promocao"],
     ];
 
     var porNome = entidades.ToDictionary(t => t.Name);

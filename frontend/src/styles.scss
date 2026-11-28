@@ -356,6 +356,7 @@ textarea.entrada { min-height: 88px; resize: vertical; }
 
 .topo {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 
@@ -363,7 +364,15 @@ textarea.entrada { min-height: 88px; resize: vertical; }
 
   .sub { font-size: 0.875rem; color: var(--texto-suave); }
 
-  .acoes { margin-left: auto; display: flex; gap: 4px; }
+  /* Na tela estreita, os botões descem para baixo do título em vez de quebrar o texto em duas linhas. */
+  .acoes {
+    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    .botao { white-space: nowrap; }
+  }
 }
 
 /* ---------- Componentes das telas de gestão (metre, gerente) ---------- */

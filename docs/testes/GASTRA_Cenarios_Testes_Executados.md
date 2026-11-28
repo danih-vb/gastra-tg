@@ -3,7 +3,7 @@
 > **Gerado a partir da execução real dos testes automatizados** (`docs/testes/gerar_relatorio_testes.py`).
 > Não edite à mão: rode os testes e o script de novo.
 
-- **Execução:** 26/11/2026 13:50, commit `d0bc45a + #285, #286 e #287`.
+- **Execução:** 26/11/2026 22:02, commit `edba3c4`.
 - **Ambiente:** MySQL 8.4 real (testes de views, triggers e restrições), serviço Python no ar (testes de contrato),
   .NET 10, Python 3.13 e Angular 22 sobre Vitest.
 - **Resultado:** 570 cenários e 629 casos executados: 629 passaram, 0 falharam e 0 foram ignorados.

@@ -71,6 +71,7 @@ public class AlocacaoController : ControllerBase
     }
 
     /// <summary>Quem está em qual praça no turno.</summary>
+    [Authorize(Roles = "Gerente,Metre,Garcom")]
     [HttpGet("{data}/{periodo}")]
     [ProducesResponseType(typeof(AlocacaoTurnoResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Obter(
